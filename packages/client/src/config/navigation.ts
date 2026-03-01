@@ -8,9 +8,6 @@
 import {
   LayoutDashboard,
   Brain,
-  GraduationCap,
-  BookOpen,
-  Globe,
   type LucideIcon,
 } from 'lucide-react';
 
@@ -28,15 +25,13 @@ export interface NavigationItem {
 export const mainNavItems: NavigationItem[] = [
   { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard, href: '/home' },
   { id: 'learn', label: 'Learn', icon: Brain, href: '/learn' },
-  { id: 'mentor', label: 'Mentor', icon: GraduationCap, href: '/mentor' },
-  { id: 'courses', label: 'Courses', icon: BookOpen, href: '/my-courses' },
 ];
 
 /**
  * Public navigation items (for unauthenticated users)
  */
 export const publicNavItems: NavigationItem[] = [
-  { id: 'public-courses', label: 'Browse Courses', icon: Globe, href: '/courses' },
+  // Public navigation items can be added here when needed
 ];
 
 /**
