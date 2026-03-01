@@ -1,6 +1,11 @@
 import path from "path";
+import { fileURLToPath } from "url";
 import { config } from "dotenv";
 import app from "./app";
+
+// ES module equivalent of __dirname
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const configfile = process.env.NODE_ENV?.trim() === "development" ? ".env.development" : ".env";
 config({
