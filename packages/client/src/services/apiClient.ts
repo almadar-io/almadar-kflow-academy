@@ -73,16 +73,28 @@ export const extractErrorMessageFromResponse = async (response: Response): Promi
  * Get Firebase auth token for the current user
  */
 const getAuthToken = async (): Promise<string | null> => {
-  const currentUser = auth.currentUser;
-  if (!currentUser) {
-    return null;
-  }
-  try {
-    return await currentUser.getIdToken();
-  } catch (error) {
-    console.error('Failed to get auth token:', error);
-    return null;
-  }
+  return new Promise((resolve) => {
+    const currentUser = auth.currentUser;
+    
+    if (!currentUser) {
+      // Wait a bit and try again (auth might still be initializing)
+      setTimeout(() => {
+        const retryUser = auth.currentUser;
+        if (retryUser) {
+          retryUser.getIdToken().then(resolve).catch(() => resolve(null));
+        } else {
+          console.warn('[apiClient] No authenticated user found');
+          resolve(null);
+        }
+      }, 500);
+      return;
+    }
+    
+    currentUser.getIdToken().then(resolve).catch((error) => {
+      console.error('[apiClient] Failed to get auth token:', error);
+      resolve(null);
+    });
+  });
 };
 
 export const apiClient = {
@@ -95,14 +107,25 @@ export const apiClient = {
     // Get auth token
     const token = await getAuthToken();
     
+    if (!token) {
+      console.error('[apiClient] No auth token available for request:', endpoint);
+    }
+    
+    // Build headers
+    const headers: HeadersInit = {
+      'Content-Type': 'application/json',
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    };
+    
+    // Add any additional headers from options
+    if (options.headers) {
+      Object.assign(headers, options.headers);
+    }
+    
     try {
       const response = await fetch(url, {
-        headers: {
-          'Content-Type': 'application/json',
-          ...(token && { Authorization: `Bearer ${token}` }),
-          ...options.headers,
-        },
         ...options,
+        headers,
       });
       
       if (!response.ok) {
