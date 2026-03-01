@@ -1,5 +1,6 @@
 # Firebase App Hosting configuration for KFlow Academy
-# Documentation: https://firebase.google.com/docs/app-hosting/configure
+# Backend: almadar-kflow-server
+# URL: https://almadar-kflow-server--kflow-b3a39.europe-west4.hosted.app
 
 # Build configuration
 build:
@@ -32,7 +33,7 @@ env:
 
   # CORS configuration
   - variable: CORS_ORIGINS
-    value: "https://kflow-b3a39.web.app,https://kflow-b3a39.firebaseapp.com,https://kflow-academy-app.web.app,https://kflow.academy,https://www.kflow.academy"
+    value: "https://kflow-b3a39.web.app,https://kflow-b3a39.firebaseapp.com,https://kflow.academy,https://www.kflow.academy,https://kflow-dev.web.app,https://kflow-dev.firebaseapp.com"
     availability:
       - RUNTIME
 

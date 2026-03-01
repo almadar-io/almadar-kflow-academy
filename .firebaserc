@@ -5,8 +5,11 @@
   "targets": {
     "kflow-b3a39": {
       "hosting": {
-        "client": [
-          "kflow-academy-app"
+        "prod": [
+          "kflow-b3a39"
+        ],
+        "dev": [
+          "kflow-dev"
         ]
       }
     }

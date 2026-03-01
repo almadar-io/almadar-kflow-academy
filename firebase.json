@@ -1,7 +1,7 @@
 {
   "hosting": [
     {
-      "target": "client",
+      "target": "prod",
       "public": "packages/client/dist",
       "ignore": [
         "firebase.json",
@@ -25,10 +25,25 @@
           ]
         }
       ]
+    },
+    {
+      "target": "dev",
+      "public": "packages/client/dist",
+      "ignore": [
+        "firebase.json",
+        "**/.*",
+        "**/node_modules/**"
+      ],
+      "rewrites": [
+        {
+          "source": "**",
+          "destination": "/index.html"
+        }
+      ]
     }
   ],
   "apphosting": {
-    "backendId": "kflow-academy-server",
+    "backendId": "almadar-kflow-server",
     "rootDir": ".",
     "ignore": [
       "node_modules",
