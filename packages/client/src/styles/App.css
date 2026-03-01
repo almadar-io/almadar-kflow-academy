@@ -1,0 +1,265 @@
+/* Reset and base styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: #f8fafc;
+  color: #1e293b;
+  overscroll-behavior-x: none;
+}
+
+/* Essential styles that are still being used */
+
+/* Back button styling for NotePage */
+.back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background-color: #f3f4f6;
+  color: #374151;
+  border: 1px solid #d1d5db;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.back-btn:hover {
+  background-color: #e5e7eb;
+  border-color: #9ca3af;
+}
+
+/* MindMap node button styles that are still needed */
+.content-edit-btn {
+  opacity: 0.7;
+  transition: all 0.2s ease;
+}
+
+.content-edit-btn:hover {
+  opacity: 1;
+}
+
+.ai-generate-btn {
+  opacity: 0.8;
+  transition: all 0.2s ease;
+}
+
+.ai-generate-btn:hover {
+  opacity: 1;
+  transform: scale(1.1);
+}
+
+.expand-collapse-btn {
+  transition: all 0.2s ease;
+}
+
+.expand-collapse-btn:hover {
+  transform: scale(1.1);
+}
+
+/* SVG-specific styles that can't be replaced with Tailwind */
+.mindmap-link {
+  stroke: #d1d5db;
+  stroke-linecap: round;
+  pointer-events: none;
+}
+
+.dark .mindmap-link {
+  stroke: #4b5563;
+}
+
+.node-rect {
+  fill: white;
+  stroke: #d1d5db;
+  stroke-width: 1;
+  transition: all 0.2s;
+}
+
+.dark .node-rect {
+  fill: #1f2937;
+  stroke: #4b5563;
+}
+
+.node-text {
+  fill: #1e293b;
+  font-weight: 500;
+  pointer-events: none;
+  transition: fill 0.2s;
+}
+
+.dark .node-text {
+  fill: #e5e7eb;
+}
+
+.node-level-badge {
+  fill: #6b7280;
+  font-size: 10px;
+  pointer-events: none;
+}
+
+.dark .node-level-badge {
+  fill: #9ca3af;
+}
+
+/* MindMap node states */
+.mindmap-node.selected .node-rect {
+  stroke: #667eea;
+  stroke-width: 3;
+  fill: #f0f9ff;
+}
+
+.dark .mindmap-node.selected .node-rect {
+  stroke: #818cf8;
+  fill: #312e81;
+}
+
+.mindmap-node.selected .node-text {
+  fill: #1e293b;
+  font-weight: 600;
+}
+
+.dark .mindmap-node.selected .node-text {
+  fill: #e5e7eb;
+}
+
+.mindmap-node:hover .node-rect {
+  stroke: #667eea;
+  stroke-width: 2;
+}
+
+.dark .mindmap-node:hover .node-rect {
+  stroke: #818cf8;
+}
+
+/* Animation classes that can't be easily replaced */
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+@keyframes bounce {
+  0%, 20%, 53%, 80%, 100% {
+    transform: translate3d(0, 0, 0);
+  }
+  40%, 43% {
+    transform: translate3d(0, -30px, 0);
+  }
+  70% {
+    transform: translate3d(0, -15px, 0);
+  }
+  90% {
+    transform: translate3d(0, -4px, 0);
+  }
+}
+
+/* Utility classes for animations */
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
+.animate-pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.animate-bounce {
+  animation: bounce 1s infinite;
+}
+
+/* Focus styles for accessibility */
+.focus\:ring-2:focus {
+  --tw-ring-offset-shadow: var(--tw-ring-inset) 0 0 0 var(--tw-ring-offset-width) var(--tw-ring-offset-color);
+  --tw-ring-shadow: var(--tw-ring-inset) 0 0 0 calc(2px + var(--tw-ring-offset-width)) var(--tw-ring-color);
+  box-shadow: var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow, 0 0 #0000);
+}
+
+.focus\:ring-indigo-500:focus {
+  --tw-ring-opacity: 1;
+  --tw-ring-color: rgb(99 102 241 / var(--tw-ring-opacity));
+}
+
+.focus\:ring-blue-500:focus {
+  --tw-ring-opacity: 1;
+  --tw-ring-color: rgb(59 130 246 / var(--tw-ring-opacity));
+}
+
+/* Responsive utilities that might be needed */
+@media (min-width: 640px) {
+  .sm\:px-6 {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .lg\:px-8 {
+    padding-left: 2rem;
+    padding-right: 2rem;
+  }
+}
+
+/* Custom scrollbar for better UX */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 4px;
+}
+
+.dark ::-webkit-scrollbar-track {
+  background: #1f2937;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: #4b5563;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: #6b7280;
+}
+
+/* Print styles */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  
+  body {
+    background: white !important;
+    color: black !important;
+  }
+}

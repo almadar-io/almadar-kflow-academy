@@ -1,0 +1,31 @@
+{
+  "name": "kflow-academy",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "start": "node packages/server/dist/server.js",
+    "dev": "npm run dev --workspaces --if-present",
+    "dev:server": "npm run dev -w @kflow-academy/server",
+    "dev:client": "npm run dev -w @kflow-academy/client",
+    "build": "npm run build:server",
+    "build:all": "npm run build --workspaces --if-present",
+    "build:client": "npm run build -w @kflow-academy/client",
+    "build:server": "npm run build -w @kflow-academy/server",
+    "test": "npm run test --workspaces --if-present",
+    "lint": "npm run lint --workspaces --if-present",
+    "clean": "npm run clean --workspaces --if-present && rm -rf node_modules"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.1",
+    "esbuild": "^0.27.2",
+    "prettier": "^3.4.2",
+    "typescript": "^5.7.2",
+    "vite": "^6.0.5"
+  },
+  "engines": {
+    "node": "22"
+  }
+}

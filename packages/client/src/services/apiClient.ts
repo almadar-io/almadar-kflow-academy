@@ -1,0 +1,118 @@
+// Centralized API client configuration
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:3001';
+
+// Global error handler
+let globalErrorHandler: ((error: string) => void) | null = null;
+
+/**
+ * Set the global error handler for API errors
+ */
+export const setGlobalErrorHandler = (handler: (error: string) => void) => {
+  globalErrorHandler = handler;
+};
+
+// Helper to extract error message from response
+const extractErrorMessage = async (response: Response): Promise<string> => {
+  try {
+    const errorData = await response.json();
+    // Try to get a user-friendly error message
+    if (errorData.error) {
+      return errorData.error;
+    }
+    if (errorData.details) {
+      return errorData.details;
+    }
+    if (errorData.message) {
+      return errorData.message;
+    }
+  } catch {
+    // If JSON parsing fails, fall back to status text
+  }
+  return response.statusText || `Error ${response.status}`;
+};
+
+// Helper to format error message for display
+export const formatErrorMessage = (error: unknown): string => {
+  if (error instanceof Error) {
+    let message = error.message;
+    // Clean up technical error messages
+    message = message
+      .replace(/^API Error: /, '')
+      .replace(/^Error: /, '')
+      .replace(/Failed to fetch/i, 'Network error. Please check your connection.');
+    return message;
+  }
+  if (typeof error === 'string') {
+    return error;
+  }
+  return 'An unexpected error occurred. Please try again.';
+};
+
+/**
+ * Handle an error and show an alert if the global error handler is set
+ * This can be used for streaming endpoints that don't go through apiClient.fetch()
+ */
+export const handleApiError = (error: unknown): void => {
+  if (globalErrorHandler) {
+    const errorMessage = formatErrorMessage(error);
+    globalErrorHandler(errorMessage);
+  }
+};
+
+/**
+ * Extract error message from a Response object
+ * Can be used for streaming endpoints
+ */
+export const extractErrorMessageFromResponse = async (response: Response): Promise<string> => {
+  return extractErrorMessage(response);
+};
+
+export const apiClient = {
+  baseURL: API_BASE_URL,
+  
+  // Generic fetch wrapper with error handling
+  fetch: async (endpoint: string, options: RequestInit = {}): Promise<any> => {
+    const url = `${API_BASE_URL}${endpoint}`;
+    
+    try {
+      const response = await fetch(url, {
+        headers: {
+          'Content-Type': 'application/json',
+          ...options.headers,
+        },
+        ...options,
+      });
+      
+      if (!response.ok) {
+        const errorMessage = await extractErrorMessage(response);
+        const error = new Error(errorMessage);
+        
+        // Show alert if global error handler is set
+        if (globalErrorHandler) {
+          globalErrorHandler(formatErrorMessage(error));
+        }
+        
+        throw error;
+      }
+      
+      return response.json();
+    } catch (error) {
+      // Show alert for network errors and other fetch failures
+      if (globalErrorHandler && error instanceof Error) {
+        const errorMessage = formatErrorMessage(error);
+        // Show alerts for network errors and API errors
+        if (errorMessage.includes('Network error') || errorMessage.includes('Failed to fetch')) {
+          globalErrorHandler(errorMessage);
+        }
+        // For other errors, only show if they're from API responses (already handled above)
+        // This prevents double-showing for the same error
+      }
+      
+      // Re-throw the error so callers can handle it if needed
+      throw error;
+    }
+  },
+
+  // Health check
+  health: () => apiClient.fetch('/api/health'),
+};

@@ -1,0 +1,22 @@
+export const FORCE_VIEW_CONSTANTS = {
+  MIN_ZOOM: 0.3,
+  MAX_ZOOM: 3,
+  ZOOM_SPEED: 0.001,
+  SCROLL_SPEED: 0.5,
+  NODE_RADIUS: 40,
+  NODE_RADIUS_MIN: 30,
+  NODE_RADIUS_MAX: 60,
+  LAYER_SPACING: 350, // Increased distance between concentric circles
+  CENTER_X: 0,
+  CENTER_Y: 0,
+  CHARGE_STRENGTH: -500, // Increased repulsion between nodes
+  LINK_DISTANCE: 50,
+  LINK_STRENGTH: 0.5,
+  FORCE_ALPHA: 0.3,
+  FORCE_ALPHA_DECAY: 0.0228,
+  FORCE_ALPHA_MIN: 0.001,
+  SIMULATION_ITERATIONS: 300,
+};
+
+
+
