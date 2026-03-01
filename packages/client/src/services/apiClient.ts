@@ -1,5 +1,5 @@
 // Centralized API client configuration
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:3001';
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
 
 // Global error handler
 let globalErrorHandler: ((error: string) => void) | null = null;

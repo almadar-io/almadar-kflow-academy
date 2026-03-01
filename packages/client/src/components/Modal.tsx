@@ -44,7 +44,7 @@ const Modal: React.FC<LegacyModalProps> = ({
   size = 'medium'
 }) => {
   // Log deprecation warning once
-  if (!deprecationWarned && process.env.NODE_ENV === 'development') {
+  if (!deprecationWarned && import.meta.env.DEV) {
     console.warn(
       '[DEPRECATED] Legacy Modal component is deprecated. ' +
       'Please use `import { Modal } from "./molecules/Modal"` instead. ' +
