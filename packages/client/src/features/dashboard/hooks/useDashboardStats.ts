@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { statisticsApi } from '../statisticsApi';
+import { useAuthContext } from '../../auth/AuthContext';
 
 export interface DashboardStats {
   learningStreak: number;
@@ -17,6 +18,7 @@ export function useDashboardStats() {
   const [error, setError] = useState<string | null>(null);
   const hasFetchedRef = useRef(false);
   const isFetchingRef = useRef(false);
+  const { user, loading: authLoading } = useAuthContext();
 
   const loadStats = useCallback(async () => {
     // Prevent concurrent fetches
@@ -51,10 +53,11 @@ export function useDashboardStats() {
   }, []);
 
   useEffect(() => {
-    if (!hasFetchedRef.current) {
+    // Wait for auth to be ready and user is logged in
+    if (!authLoading && user && !hasFetchedRef.current) {
       loadStats();
     }
-  }, [loadStats]);
+  }, [authLoading, user, loadStats]);
 
   return {
     stats,
