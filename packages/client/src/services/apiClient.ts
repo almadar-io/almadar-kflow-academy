@@ -73,28 +73,22 @@ export const extractErrorMessageFromResponse = async (response: Response): Promi
  * Get Firebase auth token for the current user
  */
 const getAuthToken = async (): Promise<string | null> => {
-  return new Promise((resolve) => {
-    const currentUser = auth.currentUser;
-    
-    if (!currentUser) {
-      // Wait a bit and try again (auth might still be initializing)
-      setTimeout(() => {
-        const retryUser = auth.currentUser;
-        if (retryUser) {
-          retryUser.getIdToken().then(resolve).catch(() => resolve(null));
-        } else {
-          console.warn('[apiClient] No authenticated user found');
-          resolve(null);
-        }
-      }, 500);
-      return;
-    }
-    
-    currentUser.getIdToken().then(resolve).catch((error) => {
-      console.error('[apiClient] Failed to get auth token:', error);
-      resolve(null);
-    });
-  });
+  const currentUser = auth.currentUser;
+  
+  if (!currentUser) {
+    console.warn('[apiClient] No current user');
+    return null;
+  }
+  
+  try {
+    // Force refresh to ensure token is valid
+    const token = await currentUser.getIdToken(true);
+    console.log('[apiClient] Got token, length:', token.length);
+    return token;
+  } catch (error) {
+    console.error('[apiClient] Failed to get auth token:', error);
+    return null;
+  }
 };
 
 export const apiClient = {
@@ -104,23 +98,28 @@ export const apiClient = {
   fetch: async (endpoint: string, options: RequestInit = {}): Promise<any> => {
     const url = `${API_BASE_URL}${endpoint}`;
     
-    // Get auth token
-    const token = await getAuthToken();
+    // Check if Authorization header is already provided
+    const hasAuthHeader = options.headers && 
+      (options.headers as Record<string, string>)['Authorization'];
     
-    if (!token) {
-      console.error('[apiClient] No auth token available for request:', endpoint);
+    // Only get token if no auth header provided
+    let token: string | null = null;
+    if (!hasAuthHeader) {
+      token = await getAuthToken();
     }
     
     // Build headers
     const headers: HeadersInit = {
       'Content-Type': 'application/json',
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      ...options.headers,
     };
     
-    // Add any additional headers from options
-    if (options.headers) {
-      Object.assign(headers, options.headers);
+    // Add auth header if we got a token and none was provided
+    if (token && !hasAuthHeader) {
+      (headers as Record<string, string>)['Authorization'] = `Bearer ${token}`;
     }
+    
+    console.log('[apiClient] Request:', endpoint, 'Has auth:', !!(hasAuthHeader || token));
     
     try {
       const response = await fetch(url, {
@@ -130,6 +129,7 @@ export const apiClient = {
       
       if (!response.ok) {
         const errorMessage = await extractErrorMessage(response);
+        console.error('[apiClient] Response error:', endpoint, response.status, errorMessage);
         const error = new Error(errorMessage);
         
         // Show alert if global error handler is set
