@@ -2,7 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router';
 import { BookOpen, Target, Sparkles, Zap, Layers, Brain, ArrowRight, CheckCircle, Code, Globe, GraduationCap } from 'lucide-react';
 import logoWhite from '../assets/kflow-logo-white.svg';
-import CourseScroller from '../components/CourseScroller';
+
 import screenshot1 from '../assets/demo/1-create-learning-path.png';
 import screenshot2 from '../assets/demo/2-generating-concepts.png';
 import screenshot3 from '../assets/demo/3-concepts-list-page.png';
@@ -109,18 +109,7 @@ const LandingPage: React.FC = () => {
         </div>
       </section>
 
-      {/* Featured Courses Section - Highlighted */}
-      <section className="bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 dark:from-gray-900 dark:via-indigo-950 dark:to-gray-900 border-y-4 border-indigo-200 dark:border-indigo-800 shadow-lg">
-        <CourseScroller
-          title="Featured Courses"
-          subtitle="Explore courses created by our expert mentors"
-          maxCourses={6}
-          showViewAll={true}
-          viewAllPath="/courses"
-        />
-      </section>
-
-      {/* Screenshots Section */}
+      {/* Screenshots Section -->
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
         <div className="text-center mb-16">
           <h2 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-gray-100 mb-4">
