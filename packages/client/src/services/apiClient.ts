@@ -1,4 +1,6 @@
 // Centralized API client configuration
+import { auth } from '../config/firebase';
+
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
 
 // Global error handler
@@ -67,17 +69,37 @@ export const extractErrorMessageFromResponse = async (response: Response): Promi
   return extractErrorMessage(response);
 };
 
+/**
+ * Get Firebase auth token for the current user
+ */
+const getAuthToken = async (): Promise<string | null> => {
+  const currentUser = auth.currentUser;
+  if (!currentUser) {
+    return null;
+  }
+  try {
+    return await currentUser.getIdToken();
+  } catch (error) {
+    console.error('Failed to get auth token:', error);
+    return null;
+  }
+};
+
 export const apiClient = {
   baseURL: API_BASE_URL,
   
-  // Generic fetch wrapper with error handling
+  // Generic fetch wrapper with error handling and auth
   fetch: async (endpoint: string, options: RequestInit = {}): Promise<any> => {
     const url = `${API_BASE_URL}${endpoint}`;
+    
+    // Get auth token
+    const token = await getAuthToken();
     
     try {
       const response = await fetch(url, {
         headers: {
           'Content-Type': 'application/json',
+          ...(token && { Authorization: `Bearer ${token}` }),
           ...options.headers,
         },
         ...options,
