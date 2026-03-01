@@ -4,20 +4,14 @@ import LandingPage from '../pages/LandingPage';
 import { NotePageContainer } from '../features/notes/containers';
 import { ConceptListPageContainer, ConceptDetailPageContainer } from '../features/concepts/containers';
 import { LearnPageContainer } from '../features/learning/containers';
-import MentorPageContainer from '../features/mentor/containers/MentorPageContainer';
-import MentorConceptListPageContainer from '../features/mentor/containers/MentorConceptListPageContainer';
-import MentorConceptDetailPageContainer from '../features/mentor/containers/MentorConceptDetailPageContainer';
-import { StudentCoursePageContainer, CoursesPageContainer, MyCourseDetailPageContainer } from '../features/student/containers';
 import { DashboardPageContainer } from '../features/dashboard/containers';
-import PublicCoursesPage from '../pages/PublicCoursesPage';
-import CourseDetailPage from '../pages/CourseDetailPage';
 import { Login, ProtectedRoute } from '../features/auth';
 import { useAuthContext } from '../features/auth/AuthContext';
 import { Loader } from '../components';
 
 /**
- * All routes now use template-based pages (no Layout wrapper).
- * Each page uses its own template which includes Header/Sidebar.
+ * Focused Router: Dashboard and Learn pages only
+ * Mentor and Courses pages temporarily disabled
  */
 
 const HomeRoute: React.FC = () => {
@@ -49,36 +43,12 @@ const AppRouter: React.FC = () => {
         {/* Public Routes (no auth required) */}
         <Route path="/" element={<HomeRoute />} />
         <Route path="/login" element={<Login />} />
-        <Route path="/courses" element={<PublicCoursesPage />} />
-        <Route path="/courses/:courseId" element={<CourseDetailPage />} />
 
         {/* 
-         * Template-based Routes (migrated - no Layout wrapper)
-         * These pages use their own templates which include Header/Sidebar
+         * Core Routes: Dashboard and Learn only
          */}
         <Route path="/home" element={
           <ProtectedRoute><DashboardPageContainer /></ProtectedRoute>
-        } />
-        <Route path="/mentor" element={
-          <ProtectedRoute><MentorPageContainer /></ProtectedRoute>
-        } />
-        <Route path="/mentor/:graphId" element={
-          <ProtectedRoute><MentorConceptListPageContainer /></ProtectedRoute>
-        } />
-        <Route path="/mentor/:graphId/concept/:conceptId" element={
-          <ProtectedRoute><MentorConceptDetailPageContainer /></ProtectedRoute>
-        } />
-        <Route path="/course/:courseId" element={
-          <ProtectedRoute><StudentCoursePageContainer /></ProtectedRoute>
-        } />
-        <Route path="/course/:courseId/lesson/:lessonId" element={
-          <ProtectedRoute><StudentCoursePageContainer /></ProtectedRoute>
-        } />
-        <Route path="/my-courses" element={
-          <ProtectedRoute><CoursesPageContainer /></ProtectedRoute>
-        } />
-        <Route path="/my-courses/:courseId" element={
-          <ProtectedRoute><MyCourseDetailPageContainer /></ProtectedRoute>
         } />
         <Route path="/learn" element={
           <ProtectedRoute><LearnPageContainer /></ProtectedRoute>
@@ -93,10 +63,11 @@ const AppRouter: React.FC = () => {
           <ProtectedRoute><ConceptDetailPageContainer /></ProtectedRoute>
         } />
 
-        {/* 
-         * All routes have been migrated to use templates
-         * Layout wrapper is no longer needed
-         */}
+        {/* Disabled routes - redirect to home */}
+        <Route path="/mentor/*" element={<Navigate to="/home" replace />} />
+        <Route path="/courses/*" element={<Navigate to="/home" replace />} />
+        <Route path="/my-courses/*" element={<Navigate to="/home" replace />} />
+        <Route path="/course/*" element={<Navigate to="/home" replace />} />
 
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>

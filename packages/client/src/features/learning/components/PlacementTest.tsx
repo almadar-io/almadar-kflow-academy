@@ -6,7 +6,7 @@
 import React, { useState, useEffect } from 'react';
 import { usePlacementTest } from '../hooks/usePlacementTest';
 import { placementTestApi } from '../placementTestApi';
-import type { PlacementAnswer } from '../../../../server/src/types/placementTest';
+import type { PlacementAnswer } from '@/types/server/placementTest';
 import { Loader2, CheckCircle2, XCircle } from 'lucide-react';
 
 interface PlacementTestProps {

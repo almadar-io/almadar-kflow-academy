@@ -17,13 +17,36 @@
     "noFallthroughCasesInSwitch": true,
     "baseUrl": ".",
     "paths": {
-      "@/*": ["src/*"]
-    }
+      "@/*": ["src/*"],
+      "@components/*": ["src/components/*"],
+      "@features/*": ["src/features/*"],
+      "@services/*": ["src/services/*"],
+      "@utils/*": ["src/utils/*"],
+      "@hooks/*": ["src/hooks/*"],
+      "@contexts/*": ["src/contexts/*"],
+      "@config/*": ["src/config/*"],
+      "@types/*": ["src/types/*"],
+      "@assets/*": ["src/assets/*"],
+      "@app/*": ["src/app/*"],
+      "@pages/*": ["src/pages/*"]
+    },
+    "types": ["vite/client", "node"]
   },
   "include": ["src"],
   "exclude": [
     "src/**/__tests__/**",
     "src/**/*.test.ts",
-    "src/**/*.test.tsx"
+    "src/**/*.test.tsx",
+    "src/**/*.stories.ts",
+    "src/**/*.stories.tsx",
+    "src/features/mentor/**",
+    "src/features/student/**",
+    "src/features/assessment/**",
+    "src/features/analytics/**",
+    "src/features/enrollment/**",
+    "src/features/public/**",
+    "src/features/templates/**",
+    "src/pages/CourseDetailPage.tsx",
+    "src/pages/PublicCoursesPage.tsx"
   ]
 }

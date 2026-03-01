@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Loader2, CheckCircle2, XCircle, Clock, AlertCircle } from 'lucide-react';
-import type { Assessment, AssessmentQuestion, AssessmentSubmission, AssessmentAnswer } from '../../../../server/src/types/publishing';
+import type { Assessment, AssessmentQuestion, AssessmentSubmission, AssessmentAnswer } from '@/types/server/publishing';
 import { useAnswerEvaluation } from '../hooks/useAnswerEvaluation';
 import { enrollmentApi } from '../enrollmentApi';
 
@@ -27,8 +27,8 @@ const AssessmentView: React.FC<AssessmentViewProps> = ({
   const [questions, setQuestions] = useState<AssessmentQuestion[]>([]);
   
   const { evaluations, evaluateAnswer, clearEvaluation } = useAnswerEvaluation({
-    courseId: assessment.courseId,
-    moduleId: assessment.moduleId,
+    courseId: assessment.courseId || '',
+    moduleId: assessment.moduleId || '',
     lessonId,
   });
 
@@ -36,8 +36,8 @@ const AssessmentView: React.FC<AssessmentViewProps> = ({
   useEffect(() => {
     if (assessment.questions) {
       const qs = assessment.randomizeQuestions
-        ? [...assessment.questions].sort(() => Math.random() - 0.5)
-        : assessment.questions;
+        ? [...(assessment.questions || [])].sort(() => Math.random() - 0.5)
+        : (assessment.questions || []);
       setQuestions(qs);
     }
   }, [assessment]);
@@ -98,7 +98,7 @@ const AssessmentView: React.FC<AssessmentViewProps> = ({
 
     evaluateAnswer(
       questionId,
-      question.question,
+      question.question || '',
       answerText,
       question.correctAnswer,
       question.points
@@ -125,7 +125,7 @@ const AssessmentView: React.FC<AssessmentViewProps> = ({
       }));
 
       const result = await enrollmentApi.submitAssessment(
-        assessment.courseId,
+        assessment.courseId || '',
         assessment.id,
         enrollmentId,
         lessonId,

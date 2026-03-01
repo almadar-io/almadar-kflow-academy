@@ -8,7 +8,7 @@
 
 import { apiClient } from '../../services/apiClient';
 import { auth } from '../../config/firebase';
-import type { Assessment } from '../../../server/src/types/publishing';
+import type { Assessment } from '@/types/server/publishing';
 
 // Helper function for auth headers
 const withAuthHeaders = async (): Promise<HeadersInit> => {

@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { enrollmentApi } from '../enrollmentApi';
-import type { Assessment } from '../../../../server/src/types/publishing';
+import type { Assessment } from '@/types/server/publishing';
 
 interface UseStudentLessonOptions {
   lessonId: string | null;

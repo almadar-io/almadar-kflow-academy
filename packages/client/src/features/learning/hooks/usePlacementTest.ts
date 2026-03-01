@@ -9,7 +9,7 @@ import type {
   PlacementQuestion,
   PlacementAnswer,
   PlacementTestResult,
-} from '../../../../server/src/types/placementTest';
+} from '@/types/server/placementTest';
 
 interface UsePlacementTestOptions {
   goalId?: string;

@@ -10,7 +10,7 @@ import type {
   PlacementAnswer,
   PlacementTestResult,
   GeneratePlacementQuestionsResult,
-} from '../../../server/src/types/placementTest';
+} from '@/types/server/placementTest';
 
 // Helper function for auth headers
 const withAuthHeaders = async (): Promise<HeadersInit> => {

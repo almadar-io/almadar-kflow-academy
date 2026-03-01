@@ -1,6 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { statisticsApi } from '../statisticsApi';
-import { useEnrolledCourses } from '../../student/hooks/useEnrolledCourses';
 
 export interface DashboardStats {
   learningStreak: number;
@@ -19,9 +18,6 @@ export function useDashboardStats() {
   const hasFetchedRef = useRef(false);
   const isFetchingRef = useRef(false);
 
-  // Get enrolled courses to calculate active courses
-  const { enrolledCourses, isLoading: isLoadingCourses } = useEnrolledCourses();
-
   const loadStats = useCallback(async () => {
     // Prevent concurrent fetches
     if (isFetchingRef.current) {
@@ -33,22 +29,16 @@ export function useDashboardStats() {
     setError(null);
 
     try {
-      // Fetch streak and concepts mastered in parallel
+      // Fetch stats from API
       const [streak, conceptsMastered] = await Promise.all([
         statisticsApi.getLearningStreak(),
         statisticsApi.getConceptsMastered(),
       ]);
 
-      // Calculate active courses from enrolled courses
-      const activeCourses = enrolledCourses.filter(course => {
-        if (!course.progress) return false;
-        return course.progress.progressPercentage < 100;
-      }).length;
-
       setStats({
         learningStreak: streak,
         conceptsMastered,
-        activeCourses,
+        activeCourses: 0, // Simplified - no courses feature
       });
       hasFetchedRef.current = true;
     } catch (err: any) {
@@ -58,15 +48,13 @@ export function useDashboardStats() {
       setIsLoading(false);
       isFetchingRef.current = false;
     }
-  }, [enrolledCourses]);
+  }, []);
 
   useEffect(() => {
-    // Only fetch after enrolled courses are loaded
-    if (!isLoadingCourses && !hasFetchedRef.current) {
+    if (!hasFetchedRef.current) {
       loadStats();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isLoadingCourses]); // Re-fetch when enrolled courses change
+  }, [loadStats]);
 
   return {
     stats,
@@ -75,4 +63,3 @@ export function useDashboardStats() {
     refresh: loadStats,
   };
 }
-

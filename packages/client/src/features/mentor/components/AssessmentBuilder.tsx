@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Modal from '../../../components/Modal';
 import { assessmentApi } from '../assessmentApi';
 import { Loader2, Plus, Trash2, Sparkles, Edit2, Save, X, FileText } from 'lucide-react';
-import type { Assessment, AssessmentQuestion } from '../../../../server/src/types/publishing';
+import type { Assessment, AssessmentQuestion } from '@/types/server/publishing';
 
 interface AssessmentBuilderProps {
   isOpen: boolean;

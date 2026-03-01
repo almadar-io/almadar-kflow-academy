@@ -3,7 +3,6 @@
 // expect(element).toHaveTextContent(/react/i)
 // learn more: https://github.com/testing-library/jest-dom
 import '@testing-library/jest-dom';
-import { TextEncoder, TextDecoder } from 'text-encoding';
 
-global.TextEncoder = TextEncoder;
-global.TextDecoder = TextDecoder;
+// TextEncoder/TextDecoder are available in modern Node.js and browsers
+// No need for polyfill
