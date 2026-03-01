@@ -43,7 +43,7 @@
     }
   ],
   "apphosting": {
-    "backendId": "almadar-kflow-server",
+    "backendId": "kflow-academy-server",
     "rootDir": ".",
     "ignore": [
       "node_modules",

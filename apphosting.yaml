@@ -1,6 +1,6 @@
 # Firebase App Hosting configuration for KFlow Academy
-# Backend: almadar-kflow-server
-# URL: https://almadar-kflow-server--kflow-b3a39.europe-west4.hosted.app
+# Backend: kflow-academy-server
+# URL: https://kflow-academy-server--kflow-b3a39.us-central1.hosted.app
 
 # Build configuration
 build:
