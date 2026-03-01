@@ -16,7 +16,14 @@
     "build:server": "npm run build -w @kflow-academy/server",
     "test": "npm run test --workspaces --if-present",
     "lint": "npm run lint --workspaces --if-present",
-    "clean": "npm run clean --workspaces --if-present && rm -rf node_modules"
+    "clean": "npm run clean --workspaces --if-present && rm -rf node_modules",
+    "deploy:client": "npm run build:client && firebase deploy --only hosting:client",
+    "deploy:server": "npm run build:server && firebase deploy --only apphosting",
+    "deploy:all": "npm run deploy:client && npm run deploy:server",
+    "firebase:use": "firebase use kflow-b3a39",
+    "firebase:setup:hosting": "firebase hosting:sites:get kflow-academy-app --project kflow-b3a39 2>/dev/null || firebase hosting:sites:create kflow-academy-app --project kflow-b3a39",
+    "firebase:setup:apphosting": "firebase apphosting:backends:create --backend kflow-academy-server --primary-region us-central1 --root-dir . --project kflow-b3a39",
+    "firebase:setup": "npm run firebase:use && npm run firebase:setup:hosting && npm run firebase:setup:apphosting"
   },
   "devDependencies": {
     "@types/node": "^22.10.1",

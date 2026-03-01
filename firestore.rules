@@ -1,0 +1,187 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // ==================== Helper Functions ====================
+    
+    // Check if user is authenticated
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    // Check if user is the owner
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+    
+    // Check if course is public
+    function isCoursePublic(courseId) {
+      return get(/databases/$(database)/documents/publicCourses/$(courseId)).data.graphId != null;
+    }
+    
+    // ==================== User Data ====================
+    
+    // User profiles
+    match /users/{userId} {
+      allow read: if isAuthenticated();
+      allow write: if isOwner(userId);
+      
+      // User's course enrollments
+      match /courseEnrollments/{enrollmentId} {
+        allow read: if isOwner(userId);
+        allow create: if isOwner(userId);
+        allow update: if isOwner(userId);
+        allow delete: if isOwner(userId);
+      }
+      
+      // User's progress data
+      match /progress/{progressId} {
+        allow read: if isOwner(userId);
+        allow write: if isOwner(userId);
+      }
+      
+      // User's settings
+      match /settings/{settingId} {
+        allow read: if isOwner(userId);
+        allow write: if isOwner(userId);
+      }
+    }
+    
+    // ==================== Knowledge Graphs ====================
+    
+    // Knowledge graphs (mentor-owned)
+    match /knowledge-graphs/{graphId} {
+      // Owner can read/write their own graphs
+      allow read: if isAuthenticated() && resource.data.uid == request.auth.uid;
+      allow write: if isAuthenticated() && (
+        !exists(/databases/$(database)/documents/knowledge-graphs/$(graphId)) ||
+        resource.data.uid == request.auth.uid
+      );
+      
+      // Students can read published graphs they're enrolled in
+      // This is handled at the application level for now
+    }
+    
+    // Stored concept graphs (legacy)
+    match /storedConceptGraphs/{graphId} {
+      allow read: if isAuthenticated() && resource.data.uid == request.auth.uid;
+      allow write: if isAuthenticated() && (
+        !exists(/databases/$(database)/documents/storedConceptGraphs/$(graphId)) ||
+        resource.data.uid == request.auth.uid
+      );
+    }
+    
+    // ==================== Publishing (Legacy) ====================
+    
+    // Published courses collection (legacy - mentor-owned)
+    match /courses/{courseId} {
+      // Anyone can read public courses
+      allow read: if resource.data.isPublic == true && resource.data.status == 'published';
+      // Authenticated users can read courses they own
+      allow read: if isAuthenticated() && resource.data.mentorId == request.auth.uid;
+      // Mentors can write their own courses
+      allow write: if isAuthenticated() && (
+        !exists(/databases/$(database)/documents/courses/$(courseId)) ||
+        resource.data.mentorId == request.auth.uid
+      );
+      
+      // Modules subcollection
+      match /modules/{moduleId} {
+        allow read: if isAuthenticated();
+        allow write: if isAuthenticated() && 
+          get(/databases/$(database)/documents/courses/$(courseId)).data.mentorId == request.auth.uid;
+        
+        // Lessons subcollection
+        match /lessons/{lessonId} {
+          allow read: if isAuthenticated();
+          allow write: if isAuthenticated() && 
+            get(/databases/$(database)/documents/courses/$(courseId)).data.mentorId == request.auth.uid;
+        }
+      }
+      
+      // Enrollments subcollection (legacy)
+      match /enrollments/{enrollmentId} {
+        // Students can read their own enrollment
+        allow read: if isAuthenticated() && resource.data.studentId == request.auth.uid;
+        // Students can create their own enrollment
+        allow create: if isAuthenticated() && request.resource.data.studentId == request.auth.uid;
+        // Students can update their own enrollment (progress)
+        allow update: if isAuthenticated() && resource.data.studentId == request.auth.uid;
+        // Only mentor can delete enrollments
+        allow delete: if isAuthenticated() && 
+          get(/databases/$(database)/documents/courses/$(courseId)).data.mentorId == request.auth.uid;
+      }
+    }
+    
+    // ==================== Public Course Index ====================
+    
+    // Public courses index (read-only for users, write by server)
+    match /publicCourses/{courseId} {
+      // Anyone can read public course listings
+      allow read: if true;
+      // Only server (admin SDK) can write - no client writes allowed
+      allow write: if false;
+    }
+    
+    // Featured courses
+    match /featuredCourses/{courseId} {
+      allow read: if true;
+      allow write: if false; // Admin only via server
+    }
+    
+    // Course categories
+    match /courseCategories/{categoryId} {
+      allow read: if true;
+      allow write: if false; // Admin only via server
+    }
+    
+    // ==================== Assessments ====================
+    
+    // Assessment definitions (linked to lessons)
+    match /assessments/{assessmentId} {
+      // Students can read assessments for courses they're enrolled in
+      allow read: if isAuthenticated();
+      // Mentors can write assessments for their courses
+      allow write: if isAuthenticated();
+    }
+    
+    // Assessment submissions
+    match /assessmentSubmissions/{submissionId} {
+      // Students can read their own submissions
+      allow read: if isAuthenticated() && resource.data.studentId == request.auth.uid;
+      // Students can create submissions
+      allow create: if isAuthenticated() && request.resource.data.studentId == request.auth.uid;
+      // Students can update their own submissions (for saving progress)
+      allow update: if isAuthenticated() && resource.data.studentId == request.auth.uid;
+      // Mentors can read submissions for their assessments
+      allow read: if isAuthenticated();
+    }
+    
+    // ==================== Statistics & Analytics ====================
+    
+    // User statistics
+    match /userStatistics/{userId} {
+      allow read: if isOwner(userId);
+      allow write: if false; // Server-only updates
+    }
+    
+    // Cost tracking
+    match /userCosts/{userId} {
+      allow read: if isOwner(userId);
+      allow write: if false; // Server-only updates
+    }
+    
+    // ==================== Miscellaneous ====================
+    
+    // System configurations (read-only)
+    match /config/{configId} {
+      allow read: if true;
+      allow write: if false;
+    }
+    
+    // Default rule: deny all access
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

@@ -1,0 +1,62 @@
+# Firebase App Hosting configuration for KFlow Academy
+# Documentation: https://firebase.google.com/docs/app-hosting/configure
+
+# Build configuration
+build:
+  command: npm install && npm run build:server
+
+# Run configuration  
+run:
+  runtime: nodejs22
+  command: node packages/server/dist/server.js
+
+runConfig:
+  minInstances: 0
+  maxInstances: 10
+  concurrency: 80
+  cpu: 1
+  memoryMiB: 1024
+
+env:
+  # Use development during build to install devDependencies
+  - variable: NODE_ENV
+    value: development
+    availability:
+      - BUILD
+
+  # Use production at runtime
+  - variable: NODE_ENV
+    value: production
+    availability:
+      - RUNTIME
+
+  # CORS configuration
+  - variable: CORS_ORIGINS
+    value: "https://kflow-b3a39.web.app,https://kflow-b3a39.firebaseapp.com,https://kflow-academy-app.web.app,https://kflow.academy,https://www.kflow.academy"
+    availability:
+      - RUNTIME
+
+  # Firebase Admin SDK credentials (from Cloud Secret Manager)
+  - variable: FB_PROJECT_ID
+    secret: FIREBASE_PROJECT_ID
+
+  - variable: FB_CLIENT_EMAIL
+    secret: FIREBASE_CLIENT_EMAIL
+
+  - variable: FB_PRIVATE_KEY
+    secret: FIREBASE_PRIVATE_KEY
+
+  - variable: FB_DB_ID
+    value: kflow
+    availability:
+      - RUNTIME
+
+  # LLM API Keys (from Cloud Secret Manager)
+  - variable: OPENAI_API_KEY
+    secret: OPENAI_API_KEY
+
+  - variable: GEMINI_API_KEY
+    secret: GEMINI_API_KEY
+
+  - variable: DEEPSEEK_API_KEY
+    secret: DEEPSEEK_API_KEY
