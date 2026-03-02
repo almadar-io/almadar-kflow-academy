@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-webpack5';
 import { ScheduleCalendar } from './ScheduleCalendar';
-import { mockScheduleSlots } from '../../__mocks__/studentMocks';
+import { mockScheduleSlots } from '../../__mocks__/scheduleMocks';
 
 const meta: Meta<typeof ScheduleCalendar> = {
   title: 'Organisms/ScheduleCalendar',

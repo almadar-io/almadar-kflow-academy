@@ -23,9 +23,7 @@ import { Modal } from '../../../components/molecules/Modal';
 import { Typography } from '../../../components/atoms/Typography';
 import { Button } from '../../../components/atoms/Button';
 
-// Feature components (mentor-specific panels)
-import CustomOperationSidePanel from '../../mentor/components/CustomOperationSidePanel';
-import PromptDisplayModal from '../../mentor/components/PromptDisplayModal';
+// Mentor-specific panels removed in cleanup
 import { useConceptsByLayer } from '../../knowledge-graph/hooks/useConceptsByLayer';
 import { useAuthContext } from '../../auth/AuthContext';
 import { getNavigationItems, getUserForTemplate, mainNavItems } from '../../../config/navigation';
@@ -64,6 +62,7 @@ const noop = () => {};
  */
 const ConceptDetailPageContainer: React.FC = () => {
   const { graphId, conceptId } = useParams<{ graphId: string; conceptId: string }>();
+  // eslint-disable-next-line almadar/no-use-navigate
   const navigate = useNavigate();
   const location = useLocation();
   const dispatch = useAppDispatch();
@@ -180,9 +179,6 @@ const ConceptDetailPageContainer: React.FC = () => {
   const [showCustomPanel, setShowCustomPanel] = useState(false);
   const [customOperationLoading, setCustomOperationLoading] = useState(false);
   const [isEditingLesson, setIsEditingLesson] = useState(false);
-  const [showPromptModal, setShowPromptModal] = useState(false);
-  const [operationPrompt, setOperationPrompt] = useState<string | undefined>();
-  const [operationName, setOperationName] = useState<string>('');
 
   // Question widget state (managed by container for proper streaming)
   const [showQuestionWidget, setShowQuestionWidget] = useState(false);
@@ -234,11 +230,6 @@ const ConceptDetailPageContainer: React.FC = () => {
             },
           }
         );
-        if ((result as any).prompt) {
-          setOperationPrompt((result as any).prompt);
-          setOperationName('explain');
-          setShowPromptModal(true);
-        }
         await conceptDetail.refetch();
       } catch (error) {
         console.error('Failed to generate lesson:', error);
@@ -259,11 +250,6 @@ const ConceptDetailPageContainer: React.FC = () => {
           { targetNodeIds: [conceptId], userPrompt: prompt },
           { stream: true, onChunk: onStream }
         );
-        if ((result as any).prompt) {
-          setOperationPrompt((result as any).prompt);
-          setOperationName('custom');
-          setShowPromptModal(true);
-        }
         await conceptDetail.refetch();
       } catch (error) {
         console.error('Error executing custom operation:', error);
@@ -602,27 +588,8 @@ const ConceptDetailPageContainer: React.FC = () => {
     />
   ) : null;
 
-  // Operation Panel content
-  const operationPanel = concept ? (
-    <CustomOperationSidePanel
-      concept={concept}
-      concepts={[concept]}
-      isOpen={true}
-      onClose={() => setShowCustomPanel(false)}
-      onExecute={handleCustomOperation}
-      diff={null}
-      isLoading={customOperationLoading || isCustomOp}
-    />
-  ) : null;
-
-  const promptDisplayModal = (
-    <PromptDisplayModal
-      isOpen={showPromptModal}
-      onClose={() => setShowPromptModal(false)}
-      prompt={operationPrompt}
-      operationName={operationName}
-    />
-  );
+  const operationPanel = null;
+  const promptDisplayModal = null;
 
   // Convert lessonQuestions to QuestionAnswerDisplay format for QuestionWidget
   const questionDisplays: QuestionAnswerDisplay[] = useMemo(() => {

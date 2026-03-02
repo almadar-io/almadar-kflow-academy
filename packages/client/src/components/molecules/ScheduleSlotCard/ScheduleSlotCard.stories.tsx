@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-webpack5';
 import { ScheduleSlotCard } from './ScheduleSlotCard';
-import { mockScheduleSlots } from '../../__mocks__/studentMocks';
+import { mockScheduleSlots } from '../../__mocks__/scheduleMocks';
 
 const meta: Meta<typeof ScheduleSlotCard> = {
   title: 'Molecules/ScheduleSlotCard',

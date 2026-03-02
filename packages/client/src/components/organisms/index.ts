@@ -10,7 +10,6 @@ export * from './RecommendationsCard';
 export * from './EnhancedStatsCards';
 export * from './ConceptCard';
 export * from './ConceptDetailPanel';
-export * from './CourseCard';
 export * from './FlashCard';
 export * from './Form';
 // GoalDisplay - explicit exports to avoid Milestone type conflict
@@ -26,17 +25,11 @@ export * from './Header';
 export * from './LessonCard';
 export * from './LessonPanel';
 export * from './List';
-export * from './MentorConceptListView';
 export * from './Navigation';
 export * from './OperationPanel';
 export * from './QuestionCard';
 export * from './Sidebar';
-export * from './StudentLessonView';
 export * from './Table';
-
-// CourseSidebar - explicit exports to avoid Lesson type conflict
-export { CourseSidebar } from './CourseSidebar';
-export type { CourseSidebarProps, Module, Lesson as CourseSidebarLesson } from './CourseSidebar';
 
 // ProgressTracker - explicit exports to avoid Lesson type conflict
 export { ProgressTracker } from './ProgressTracker';
@@ -75,18 +68,11 @@ export * from './AnnotatedLessonContent';
 // Publishing components
 export * from './PublishingSidebar';
 export * from './ContentReadinessCard';
-export * from './CourseStatsCard';
-export * from './StudentProgressCard';
 export * from './TranslatedContentViewer';
 export * from './BilingualViewer';
 export * from './BulkActionBar';
-export * from './MentorAnalyticsPanel';
-// StudentList - explicit exports to avoid SortOption conflict
-export { StudentList } from './StudentList';
-export type { StudentListProps, Student, FilterOption } from './StudentList';
-export type { SortOption as StudentListSortOption } from './StudentList';
 
-// ScheduleCalendar - explicit exports to avoid ScheduleSlot conflict  
+// ScheduleCalendar - explicit exports to avoid ScheduleSlot conflict
 export { ScheduleCalendar } from './ScheduleCalendar';
 export type { ScheduleCalendarProps, CalendarView } from './ScheduleCalendar';
 export type { ScheduleSlot as ScheduleCalendarSlot } from './ScheduleCalendar';
@@ -95,5 +81,3 @@ export type { ScheduleSlot as ScheduleCalendarSlot } from './ScheduleCalendar';
 export { ScheduleList } from './ScheduleList';
 export type { ScheduleListProps, FilterBy } from './ScheduleList';
 export type { ScheduleSlot as ScheduleListSlot, SortOption as ScheduleListSortOption } from './ScheduleList';
-
-export * from './CourseSettingsForm';

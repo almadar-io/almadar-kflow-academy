@@ -32,9 +32,6 @@ export * from './AnnotationPopover';
 export * from './ContentReadinessIndicator';
 export * from './LanguageSelector';
 export * from './TranslationBanner';
-export * from './StudentCard';
 export * from './ScheduleSlotCard';
 export * from './ScheduleSlotForm';
-export * from './StudentForm';
-export * from './EnrollmentToggle';
 

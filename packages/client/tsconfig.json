@@ -28,7 +28,10 @@
       "@types/*": ["src/types/*"],
       "@assets/*": ["src/assets/*"],
       "@app/*": ["src/app/*"],
-      "@pages/*": ["src/pages/*"]
+      "@pages/*": ["src/pages/*"],
+      "@design-system/*": ["../../../../projects/kflow/design-system/*"],
+      "@almadar/ui": ["../../../../packages/almadar-ui/components/index.ts"],
+      "@almadar/ui/*": ["../../../../packages/almadar-ui/components/*"]
     },
     "types": ["vite/client", "node"]
   },
@@ -39,14 +42,8 @@
     "src/**/*.test.tsx",
     "src/**/*.stories.ts",
     "src/**/*.stories.tsx",
-    "src/features/mentor/**",
-    "src/features/student/**",
     "src/features/assessment/**",
-    "src/features/analytics/**",
-    "src/features/enrollment/**",
     "src/features/public/**",
-    "src/features/templates/**",
-    "src/pages/CourseDetailPage.tsx",
-    "src/pages/PublicCoursesPage.tsx"
+    "src/features/templates/**"
   ]
 }

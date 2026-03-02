@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-webpack5';
 import { ScheduleSlotForm } from './ScheduleSlotForm';
-import { mockStudents, mockCourses, mockScheduleSlots } from '../../__mocks__/studentMocks';
+import { mockStudents, mockCourses, mockScheduleSlots } from '../../__mocks__/scheduleMocks';
 
 const meta: Meta<typeof ScheduleSlotForm> = {
   title: 'Molecules/ScheduleSlotForm',

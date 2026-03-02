@@ -87,38 +87,16 @@ export async function getDailyProgress(): Promise<DailyProgress> {
 }
 
 /**
- * Get recommended courses
- */
-export async function getRecommendedCourses(limit: number = 5): Promise<any[]> {
-  const headers = await withAuthHeaders();
-  const result = await apiClient.fetch(`/api/user/recommendations/courses?limit=${limit}`, {
-    headers: { 'Content-Type': 'application/json', ...headers },
-  });
-  return result.courses || [];
-}
-
-/**
- * Get continue learning courses
- */
-export async function getContinueLearningCourses(limit: number = 5): Promise<any[]> {
-  const headers = await withAuthHeaders();
-  const result = await apiClient.fetch(`/api/user/recommendations/continue-learning?limit=${limit}`, {
-    headers: { 'Content-Type': 'application/json', ...headers },
-  });
-  return result.courses || [];
-}
-
-/**
  * Achievement types
  */
 export type AchievementType =
   | 'first_lesson_completed'
-  | 'first_course_completed'
+  | 'first_story_completed'
   | 'streak_7_days'
   | 'streak_30_days'
   | 'concepts_mastered_10'
   | 'concepts_mastered_50'
-  | 'courses_completed_5';
+  | 'stories_completed_5';
 
 /**
  * Achievement data structure
@@ -149,18 +127,12 @@ export async function getAchievements(): Promise<Achievement[]> {
  */
 export interface JumpBackInItem {
   id: string;
-  type: 'course' | 'learningPath';
+  type: 'story' | 'learningPath';
   title: string;
   description?: string;
   lastAccessedAt: number;
-  progress?: {
-    completedLessons: number;
-    totalLessons: number;
-    progressPercentage: number;
-  };
   metadata: {
-    courseId?: string;
-    enrollmentId?: string;
+    storyId?: string;
     graphId?: string;
     seedConceptId?: string;
     conceptCount?: number;

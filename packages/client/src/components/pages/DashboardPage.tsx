@@ -18,17 +18,14 @@ import { Spinner } from '../atoms/Spinner';
 import {
   ArrowRight,
   Plus,
-  GraduationCap,
   PlayCircle,
   Clock,
-  Loader2,
   CheckCircle,
   BookMarked,
   BookOpen,
   ChevronLeft,
   ChevronRight,
   Sparkles,
-  Target,
 } from 'lucide-react';
 import type { JumpBackInItem } from '../../features/dashboard/preferencesApi';
 import type { RecentActivity } from '../../features/dashboard/statisticsApi';
@@ -68,15 +65,13 @@ export interface DashboardPageProps {
   /**
    * Whether user has learning paths
    */
-  hasLearningPaths?: boolean;
-  
   /**
    * Callbacks
    */
   onJumpBackInClick?: (item: JumpBackInItem) => void;
   onCreateLearningPath?: () => void;
-  onBrowseCourses?: () => void;
-  onMentorStudio?: () => void;
+  onBrowseStories?: () => void;
+  onExplore?: () => void;
   onActivityClick?: (activity: RecentActivity) => void;
   
   /**
@@ -116,11 +111,10 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
     if (minutes > 0) return `${minutes}m ago`;
     return 'Just now';
   },
-  hasLearningPaths = false,
   onJumpBackInClick,
   onCreateLearningPath,
-  onBrowseCourses,
-  onMentorStudio,
+  onBrowseStories,
+  onExplore,
   onActivityClick,
   user,
   navigationItems,
@@ -143,8 +137,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
 
   const getActivityIcon = (type: RecentActivity['type']): React.ReactNode => {
     switch (type) {
-      case 'course_accessed':
-      case 'course_enrolled':
+      case 'story_completed':
         return <BookOpen size={16} className="text-blue-500" />;
       case 'lesson_completed':
         return <CheckCircle size={16} className="text-green-500" />;
@@ -157,10 +150,8 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
 
   const getActivityText = (type: RecentActivity['type']): string => {
     switch (type) {
-      case 'course_accessed':
-        return 'Accessed course';
-      case 'course_enrolled':
-        return 'Enrolled in course';
+      case 'story_completed':
+        return 'Completed story';
       case 'lesson_completed':
         return 'Completed lesson';
       case 'concept_studied':
@@ -195,15 +186,15 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
           variant: 'primary',
         },
         {
-          label: 'Browse Courses',
+          label: 'Browse Stories',
           icon: BookOpen,
-          onClick: onBrowseCourses,
+          onClick: onBrowseStories,
           variant: 'secondary',
         },
         {
-          label: 'Mentoring Studio',
-          icon: GraduationCap,
-          onClick: onMentorStudio,
+          label: 'Explore',
+          icon: Sparkles,
+          onClick: onExplore,
           variant: 'secondary',
         },
       ]}
@@ -222,42 +213,6 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
       <div className="mb-8">
         <EnhancedStatsCards />
       </div>
-
-      {/* Learn Something New CTA */}
-      {!hasLearningPaths && (
-        <section className="mb-8">
-          <Card className="bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 text-white relative overflow-hidden border-0">
-            <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -mr-32 -mt-32"></div>
-            <div className="absolute bottom-0 left-0 w-48 h-48 bg-white/10 rounded-full -ml-24 -mb-24"></div>
-            <div className="relative z-10 p-8">
-              <div className="flex items-start justify-between mb-6">
-                <div className="flex-1">
-                  <div className="flex items-center gap-3 mb-3">
-                    <div className="p-2 bg-white/20 rounded-lg backdrop-blur-sm">
-                      <Sparkles size={24} />
-                    </div>
-                    <Typography variant="h2" className="text-white">
-                      Ready to Learn Something New?
-                    </Typography>
-                  </div>
-                  <Typography variant="large" className="text-white/90 mb-6 max-w-2xl">
-                    Create a personalized learning path tailored to your goals. Our AI will guide you through questions to understand what you want to achieve and build a custom learning journey just for you.
-                  </Typography>
-                  <Button
-                    variant="secondary"
-                    onClick={onCreateLearningPath}
-                    icon={Target}
-                    iconRight={ArrowRight}
-                    className="bg-white text-indigo-600 hover:bg-gray-100 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all"
-                  >
-                    Create Learning Goal
-                  </Button>
-                </div>
-              </div>
-            </div>
-          </Card>
-        </section>
-      )}
 
       {/* Jump Back In */}
       <section className="mb-8">
@@ -286,7 +241,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
                     <div className="flex justify-between items-start mb-4">
                       <div className="flex-1 min-w-0">
                         <Typography variant="small" className="text-indigo-600 dark:text-indigo-400 mb-1 uppercase tracking-wide">
-                          {item.type === 'course' ? 'Continue Course' : 'Continue Learning'}
+                          {item.type === 'story' ? 'Continue Story' : 'Continue Learning'}
                         </Typography>
                         <Typography variant="h4" className="mb-2 line-clamp-2">
                           {item.title}
@@ -303,13 +258,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
                     </div>
 
                     <div className="flex flex-col gap-3">
-                      {item.type === 'course' && item.progress ? (
-                        <div className="flex items-center gap-4 text-sm text-gray-500 dark:text-gray-400">
-                          <span>{item.progress.completedLessons} / {item.progress.totalLessons} lessons</span>
-                          <span>•</span>
-                          <span>{item.progress.progressPercentage}% complete</span>
-                        </div>
-                      ) : item.metadata.conceptCount !== undefined ? (
+                      {item.metadata.conceptCount !== undefined ? (
                         <div className="flex items-center gap-4 text-sm text-gray-500 dark:text-gray-400">
                           <span>{item.metadata.conceptCount} concepts</span>
                           {item.metadata.levelCount !== undefined && (
@@ -329,7 +278,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
                         iconRight={ArrowRight}
                         fullWidth
                       >
-                        {item.type === 'course' ? 'Continue Course' : 'Resume Learning'}
+                        {item.type === 'story' ? 'Continue Story' : 'Resume Learning'}
                       </Button>
                     </div>
                   </div>
@@ -391,14 +340,14 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
               </div>
               <Typography variant="h4" className="mb-1">No active learning</Typography>
               <Typography variant="body" color="secondary" className="mb-4">
-                Start a new learning path or enroll in a course to begin.
+                Start a new learning path or browse stories to begin.
               </Typography>
               <div className="flex gap-3 justify-center">
                 <Button variant="primary" onClick={onCreateLearningPath}>
                   New Learning Path
                 </Button>
-                <Button variant="success" onClick={onBrowseCourses}>
-                  Browse Courses
+                <Button variant="success" onClick={onBrowseStories}>
+                  Browse Stories
                 </Button>
               </div>
             </div>

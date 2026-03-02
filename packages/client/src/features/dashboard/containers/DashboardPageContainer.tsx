@@ -3,19 +3,20 @@
  * Handles data fetching, state management, and passes data to library DashboardPage
  */
 
-import React, { useMemo, useCallback } from 'react';
-import { useNavigate, useLocation, useParams } from 'react-router';
+import React, { useCallback } from 'react';
+import { useNavigate, useLocation } from 'react-router';
 import { useAuthContext } from '../../auth/AuthContext';
 import { DashboardPage } from '../../../components/pages/DashboardPage';
 import { getNavigationItems, getUserForTemplate, mainNavItems } from '../../../config/navigation';
 import { useAppSelector } from '../../../app/hooks';
 import { useHomeConcepts } from '../../concepts/hooks/useHomeConcepts';
-import { useDashboardStats, useRecentActivity, useUserRole } from '../hooks';
+import { useRecentActivity } from '../hooks';
 import { useJumpBackIn } from '../hooks/useJumpBackIn';
 import type { JumpBackInItem } from '../preferencesApi';
 import type { RecentActivity } from '../statisticsApi';
 
 const DashboardPageContainer: React.FC = () => {
+  // eslint-disable-next-line almadar/no-use-navigate
   const navigate = useNavigate();
   const location = useLocation();
   const { user, signOut } = useAuthContext();
@@ -29,7 +30,6 @@ const DashboardPageContainer: React.FC = () => {
   // Data fetching hooks
   const { seedEntries, handleConceptClick } = useHomeConcepts(graphs);
   const { activity, isLoading: isLoadingActivity, formatTimestamp } = useRecentActivity(5);
-  const { isMentor, isLearner, hasLearningPaths } = useUserRole();
   const { items: jumpBackInItems, isLoading: isLoadingJumpBackIn } = useJumpBackIn();
 
   // Navigation configuration
@@ -41,8 +41,8 @@ const DashboardPageContainer: React.FC = () => {
 
   // Handle jump back in click
   const handleJumpBackInClick = (item: JumpBackInItem) => {
-    if (item.type === 'course' && item.metadata.courseId) {
-      navigate(`/course/${item.metadata.courseId}`);
+    if (item.type === 'story' && item.metadata.storyId) {
+      navigate(`/stories/${item.metadata.storyId}`);
     } else if (item.type === 'learningPath' && item.metadata.graphId && item.metadata.seedConceptId) {
       const graph = graphs.find(g => g.id === item.metadata.graphId);
       if (graph) {
@@ -58,15 +58,13 @@ const DashboardPageContainer: React.FC = () => {
 
   // Handle activity click
   const handleActivityClick = (activity: RecentActivity) => {
-    if (activity.metadata?.courseId) {
-      navigate(`/course/${activity.metadata.courseId}`);
-    } else if (activity.type === 'concept_studied' && activity.metadata?.conceptId) {
+    if (activity.type === 'concept_studied' && activity.metadata?.conceptId) {
       if (activity.metadata.graphId) {
         const conceptId = encodeURIComponent(activity.metadata.conceptId);
         navigate(`/concepts/${activity.metadata.graphId}/concept/${conceptId}`);
-      } else if (activity.metadata.courseId && activity.metadata.lessonId) {
-        navigate(`/course/${activity.metadata.courseId}`);
       }
+    } else if (activity.type === 'story_completed' && activity.metadata?.storyId) {
+      navigate(`/stories/${activity.metadata.storyId}`);
     }
   };
 
@@ -78,11 +76,10 @@ const DashboardPageContainer: React.FC = () => {
       activities={activity}
       isLoadingActivity={isLoadingActivity}
       formatTimestamp={formatTimestamp}
-      hasLearningPaths={hasLearningPaths}
       onJumpBackInClick={handleJumpBackInClick}
       onCreateLearningPath={() => navigate('/learn')}
-      onBrowseCourses={() => navigate('/my-courses')}
-      onMentorStudio={() => navigate('/mentor')}
+      onBrowseStories={() => navigate('/stories')}
+      onExplore={() => navigate('/explore')}
       onActivityClick={handleActivityClick}
       user={templateUser}
       navigationItems={navigationItems}

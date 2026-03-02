@@ -15,23 +15,22 @@ const withAuthHeaders = async (): Promise<HeadersInit> => {
 
 export interface RecentActivity {
   id: string;
-  type: 'course_accessed' | 'lesson_completed' | 'concept_studied' | 'course_enrolled';
+  type: 'story_completed' | 'lesson_completed' | 'concept_studied';
   resourceId: string;
   resourceName: string;
   timestamp: number;
   metadata?: {
-    courseId?: string;
+    storyId?: string;
     lessonId?: string;
     conceptId?: string;
-    graphId?: string; // Added for concept navigation
-    progressPercentage?: number;
+    graphId?: string;
   };
 }
 
 export interface StatisticsSummary {
   learningStreak: number;
   conceptsMastered: number;
-  activeCourses: number;
+  storiesCompleted: number;
   recentActivity: RecentActivity[];
 }
 

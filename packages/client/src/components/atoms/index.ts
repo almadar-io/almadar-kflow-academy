@@ -14,5 +14,4 @@ export * from './Divider';
 export * from './TextHighlight';
 export * from './ScheduleTimeInput';
 export * from './DayOfWeekSelector';
-export * from './StudentAvatar';
 

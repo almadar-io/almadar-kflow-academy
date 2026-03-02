@@ -6,13 +6,11 @@
 
 import React, { useState, useMemo } from 'react';
 import Modal from '../../../components/Modal';
-import { 
-  Sparkles, 
-  X, 
-  CheckCircle2, 
-  AlertCircle, 
-  Plus, 
-  ArrowRight, 
+import {
+  Sparkles,
+  CheckCircle2,
+  Plus,
+  ArrowRight,
   Layers,
   Target,
   Network,
@@ -22,11 +20,83 @@ import {
   ChevronDown,
   ChevronUp,
   Code,
-  Copy,
-  Check
 } from 'lucide-react';
-import PromptDisplayModal from '../../mentor/components/PromptDisplayModal';
 import type { EnrichmentResult } from '../enrichmentApi';
+
+// ── Enrichment sub-types ────────────────────────────────────────────────
+
+interface EnrichmentConcept {
+  name: string;
+  description?: string;
+  reason?: string;
+  priority?: 'high' | 'medium' | 'low';
+  suggestedLayer?: number;
+}
+
+interface EnrichmentRelationship {
+  source: string;
+  target: string;
+  type: string;
+  reason?: string;
+  strength?: number;
+}
+
+interface EnrichmentPrerequisite {
+  name: string;
+  reason?: string;
+  existsInGraph: boolean;
+}
+
+interface EnrichmentAddition {
+  concept?: string;
+  name?: string;
+  reason?: string;
+  priority?: 'high' | 'medium' | 'low';
+}
+
+interface LayerCompletenessEnrichment {
+  isComplete?: boolean;
+  missingConcepts?: EnrichmentConcept[];
+  missingRelationships?: EnrichmentRelationship[];
+  metadata?: {
+    completenessScore?: number;
+    isComplete?: boolean;
+    suggestedAdditions?: EnrichmentAddition[];
+  };
+}
+
+interface MilestoneEnrichment {
+  missingConcepts?: EnrichmentConcept[];
+  missingRelationships?: EnrichmentRelationship[];
+}
+
+interface PrerequisiteEnrichment {
+  directPrerequisites?: EnrichmentPrerequisite[];
+  indirectPrerequisites?: EnrichmentPrerequisite[];
+  suggestedPrerequisites?: EnrichmentPrerequisite[];
+}
+
+interface GoalAwareEnrichment {
+  complementaryRelationships?: EnrichmentRelationship[];
+  sequentialRelationships?: EnrichmentRelationship[];
+  hierarchicalRelationships?: EnrichmentRelationship[];
+}
+
+interface CrossLayerEnrichment {
+  bridgingConcepts?: EnrichmentConcept[];
+  missingFoundations?: EnrichmentConcept[];
+}
+
+type EnrichmentItem =
+  | LayerCompletenessEnrichment
+  | MilestoneEnrichment
+  | PrerequisiteEnrichment
+  | GoalAwareEnrichment
+  | CrossLayerEnrichment;
+
+type IndexedEnrichment = EnrichmentItem & { _index: number };
+
+// ── Props & types ───────────────────────────────────────────────────────
 
 interface EnrichmentSuggestionsModalProps {
   isOpen: boolean;
@@ -34,17 +104,17 @@ interface EnrichmentSuggestionsModalProps {
   enrichmentResult: EnrichmentResult | null;
   onApply: (enrichmentResult: EnrichmentResult) => Promise<void>;
   isApplying?: boolean;
-  isLoading?: boolean; // Whether enrichment is still streaming/loading
+  isLoading?: boolean;
 }
 
-type EnrichmentType = 
+type EnrichmentType =
   | 'LayerCompletenessAnalysis'
   | 'MilestoneConceptDiscovery'
   | 'PrerequisiteAnalysis'
   | 'GoalAwareRelationships'
   | 'CrossLayerDiscovery';
 
-const getEnrichmentType = (enrichment: any): EnrichmentType => {
+const getEnrichmentType = (enrichment: EnrichmentItem): EnrichmentType => {
   if ('isComplete' in enrichment) return 'LayerCompletenessAnalysis';
   if ('missingConcepts' in enrichment && 'missingRelationships' in enrichment) return 'MilestoneConceptDiscovery';
   if ('directPrerequisites' in enrichment) return 'PrerequisiteAnalysis';
@@ -96,16 +166,14 @@ export function EnrichmentSuggestionsModal({
   isApplying = false,
   isLoading = false,
 }: EnrichmentSuggestionsModalProps) {
-  const [selectedSuggestions, setSelectedSuggestions] = useState<Set<string>>(new Set());
   const [showJsonResponse, setShowJsonResponse] = useState(false);
-  const [showPromptModal, setShowPromptModal] = useState(false);
-  const [selectedPrompt, setSelectedPrompt] = useState<string | undefined>();
+  const [expandedPromptIdx, setExpandedPromptIdx] = useState<number | null>(null);
 
   // Group enrichments by type
   const groupedEnrichments = useMemo(() => {
-    if (!enrichmentResult) return {} as Record<EnrichmentType, any[]>;
-    
-    const groups: Record<EnrichmentType, any[]> = {
+    if (!enrichmentResult) return {} as Record<EnrichmentType, IndexedEnrichment[]>;
+
+    const groups: Record<EnrichmentType, IndexedEnrichment[]> = {
       LayerCompletenessAnalysis: [],
       MilestoneConceptDiscovery: [],
       PrerequisiteAnalysis: [],
@@ -113,7 +181,7 @@ export function EnrichmentSuggestionsModal({
       CrossLayerDiscovery: [],
     };
 
-    enrichmentResult.enrichments.forEach((enrichment, index) => {
+    enrichmentResult.enrichments.forEach((enrichment: EnrichmentItem, index: number) => {
       const type = getEnrichmentType(enrichment);
       groups[type].push({ ...enrichment, _index: index });
     });
@@ -124,32 +192,37 @@ export function EnrichmentSuggestionsModal({
   // Count total suggestions
   const totalSuggestions = useMemo(() => {
     if (!enrichmentResult) return 0;
-    
+
     let count = 0;
-    enrichmentResult.enrichments.forEach(enrichment => {
-      const type = getEnrichmentType(enrichment);
-      
+    enrichmentResult.enrichments.forEach((raw: EnrichmentItem) => {
+      const type = getEnrichmentType(raw);
+
       if (type === 'LayerCompletenessAnalysis') {
-        count += (enrichment as any).missingConcepts?.length || 0;
-        count += (enrichment as any).missingRelationships?.length || 0;
-        count += (enrichment as any).metadata?.suggestedAdditions?.length || 0;
+        const e = raw as LayerCompletenessEnrichment;
+        count += e.missingConcepts?.length || 0;
+        count += e.missingRelationships?.length || 0;
+        count += e.metadata?.suggestedAdditions?.length || 0;
       } else if (type === 'MilestoneConceptDiscovery') {
-        count += (enrichment as any).missingConcepts?.length || 0;
-        count += (enrichment as any).missingRelationships?.length || 0;
+        const e = raw as MilestoneEnrichment;
+        count += e.missingConcepts?.length || 0;
+        count += e.missingRelationships?.length || 0;
       } else if (type === 'PrerequisiteAnalysis') {
-        count += (enrichment as any).directPrerequisites?.filter((p: any) => !p.existsInGraph).length || 0;
-        count += (enrichment as any).indirectPrerequisites?.filter((p: any) => !p.existsInGraph).length || 0;
-        count += (enrichment as any).suggestedPrerequisites?.length || 0;
+        const e = raw as PrerequisiteEnrichment;
+        count += e.directPrerequisites?.filter(p => !p.existsInGraph).length || 0;
+        count += e.indirectPrerequisites?.filter(p => !p.existsInGraph).length || 0;
+        count += e.suggestedPrerequisites?.length || 0;
       } else if (type === 'GoalAwareRelationships') {
-        count += (enrichment as any).complementaryRelationships?.length || 0;
-        count += (enrichment as any).sequentialRelationships?.length || 0;
-        count += (enrichment as any).hierarchicalRelationships?.length || 0;
+        const e = raw as GoalAwareEnrichment;
+        count += e.complementaryRelationships?.length || 0;
+        count += e.sequentialRelationships?.length || 0;
+        count += e.hierarchicalRelationships?.length || 0;
       } else if (type === 'CrossLayerDiscovery') {
-        count += (enrichment as any).bridgingConcepts?.length || 0;
-        count += (enrichment as any).missingFoundations?.length || 0;
+        const e = raw as CrossLayerEnrichment;
+        count += e.bridgingConcepts?.length || 0;
+        count += e.missingFoundations?.length || 0;
       }
     });
-    
+
     return count;
   }, [enrichmentResult]);
 
@@ -213,9 +286,9 @@ export function EnrichmentSuggestionsModal({
               <p>Waiting for enrichment results...</p>
             </div>
           )}
-          {enrichmentResult && Object.entries(groupedEnrichments).map(([type, enrichments]: [string, any[]]) => {
+          {enrichmentResult && Object.entries(groupedEnrichments).map(([type, enrichments]) => {
             if (enrichments.length === 0) return null;
-            
+
             const enrichmentType = type as EnrichmentType;
             
             return (
@@ -230,29 +303,36 @@ export function EnrichmentSuggestionsModal({
                   </span>
                 </div>
 
-                {enrichments.map((enrichment: any, idx: number) => (
+                {enrichments.map((enrichment, idx) => {
+                  const lce = enrichment as LayerCompletenessEnrichment;
+                  const mce = enrichment as MilestoneEnrichment;
+                  const pae = enrichment as PrerequisiteEnrichment;
+                  const gae = enrichment as GoalAwareEnrichment;
+                  const cle = enrichment as CrossLayerEnrichment;
+
+                  return (
                   <div key={idx} className="mb-4 last:mb-0">
                     {/* Layer Completeness Analysis */}
                     {enrichmentType === 'LayerCompletenessAnalysis' && (
                       <div className="space-y-3">
-                        {enrichment.metadata?.completenessScore !== undefined && (
+                        {lce.metadata?.completenessScore !== undefined && (
                           <div className="flex items-center gap-2">
                             <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                              Completeness: {Math.round((enrichment.metadata.completenessScore || 0) * 100)}%
+                              Completeness: {Math.round((lce.metadata.completenessScore || 0) * 100)}%
                             </span>
-                            {enrichment.metadata.isComplete && (
+                            {lce.metadata.isComplete && (
                               <CheckCircle2 size={16} className="text-green-600 dark:text-green-400" />
                             )}
                           </div>
                         )}
-                        
-                        {enrichment.missingRelationships && enrichment.missingRelationships.length > 0 && (
+
+                        {lce.missingRelationships && lce.missingRelationships.length > 0 && (
                           <div>
                             <h5 className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-2">
-                              Missing Relationships ({enrichment.missingRelationships.length})
+                              Missing Relationships ({lce.missingRelationships.length})
                             </h5>
                             <div className="space-y-2">
-                              {enrichment.missingRelationships.map((rel: any, rIdx: number) => (
+                              {lce.missingRelationships.map((rel, rIdx) => (
                                 <div key={rIdx} className="p-3 bg-gray-50 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600">
                                   <div className="flex items-center gap-2">
                                     <ArrowRight size={14} className="text-indigo-600 dark:text-indigo-400" />
@@ -275,14 +355,14 @@ export function EnrichmentSuggestionsModal({
                             </div>
                           </div>
                         )}
-                        
-                        {enrichment.missingConcepts && enrichment.missingConcepts.length > 0 && (
+
+                        {lce.missingConcepts && lce.missingConcepts.length > 0 && (
                           <div>
                             <h5 className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-2">
-                              Missing Concepts ({enrichment.missingConcepts.length})
+                              Missing Concepts ({lce.missingConcepts.length})
                             </h5>
                             <div className="space-y-2">
-                              {enrichment.missingConcepts.map((concept: any, cIdx: number) => (
+                              {lce.missingConcepts.map((concept, cIdx) => (
                                 <div key={cIdx} className="p-3 bg-gray-50 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600">
                                   <div className="flex items-start justify-between gap-2">
                                     <div className="flex-1">
@@ -313,14 +393,14 @@ export function EnrichmentSuggestionsModal({
                             </div>
                           </div>
                         )}
-                        
-                        {enrichment.metadata?.suggestedAdditions && enrichment.metadata.suggestedAdditions.length > 0 && (
+
+                        {lce.metadata?.suggestedAdditions && lce.metadata.suggestedAdditions.length > 0 && (
                           <div>
                             <h5 className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-2">
-                              Suggested Additions ({enrichment.metadata.suggestedAdditions.length})
+                              Suggested Additions ({lce.metadata.suggestedAdditions.length})
                             </h5>
                             <div className="space-y-2">
-                              {enrichment.metadata.suggestedAdditions.map((addition: any, aIdx: number) => (
+                              {lce.metadata.suggestedAdditions.map((addition, aIdx) => (
                                 <div key={aIdx} className="p-3 bg-gray-50 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600">
                                   <div className="flex items-start justify-between gap-2">
                                     <div className="flex-1">
@@ -347,13 +427,13 @@ export function EnrichmentSuggestionsModal({
                     {/* Milestone Concept Discovery */}
                     {enrichmentType === 'MilestoneConceptDiscovery' && (
                       <div className="space-y-3">
-                        {enrichment.missingConcepts && enrichment.missingConcepts.length > 0 && (
+                        {mce.missingConcepts && mce.missingConcepts.length > 0 && (
                           <div>
                             <h5 className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-2">
-                              Missing Concepts ({enrichment.missingConcepts.length})
+                              Missing Concepts ({mce.missingConcepts.length})
                             </h5>
                             <div className="space-y-2">
-                              {enrichment.missingConcepts.map((concept: any, cIdx: number) => (
+                              {mce.missingConcepts.map((concept, cIdx) => (
                                 <div key={cIdx} className="p-3 bg-gray-50 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600">
                                   <div className="flex items-start justify-between gap-2">
                                     <div className="flex-1">
@@ -374,14 +454,14 @@ export function EnrichmentSuggestionsModal({
                             </div>
                           </div>
                         )}
-                        
-                        {enrichment.missingRelationships && enrichment.missingRelationships.length > 0 && (
+
+                        {mce.missingRelationships && mce.missingRelationships.length > 0 && (
                           <div>
                             <h5 className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-2">
-                              Missing Relationships ({enrichment.missingRelationships.length})
+                              Missing Relationships ({mce.missingRelationships.length})
                             </h5>
                             <div className="space-y-2">
-                              {enrichment.missingRelationships.map((rel: any, rIdx: number) => (
+                              {mce.missingRelationships.map((rel, rIdx) => (
                                 <div key={rIdx} className="p-3 bg-gray-50 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600">
                                   <div className="flex items-center gap-2">
                                     <ArrowRight size={14} className="text-indigo-600 dark:text-indigo-400" />
@@ -410,15 +490,15 @@ export function EnrichmentSuggestionsModal({
                     {/* Prerequisite Analysis */}
                     {enrichmentType === 'PrerequisiteAnalysis' && (
                       <div className="space-y-3">
-                        {enrichment.directPrerequisites && enrichment.directPrerequisites.filter((p: any) => !p.existsInGraph).length > 0 && (
+                        {pae.directPrerequisites && pae.directPrerequisites.filter(p => !p.existsInGraph).length > 0 && (
                           <div>
                             <h5 className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-2">
                               Direct Prerequisites
                             </h5>
                             <div className="space-y-2">
-                              {enrichment.directPrerequisites
-                                .filter((p: any) => !p.existsInGraph)
-                                .map((prereq: any, pIdx: number) => (
+                              {pae.directPrerequisites
+                                .filter(p => !p.existsInGraph)
+                                .map((prereq, pIdx) => (
                                   <div key={pIdx} className="p-3 bg-gray-50 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600">
                                     <div className="flex items-center gap-2">
                                       <Plus size={14} className="text-indigo-600 dark:text-indigo-400" />
@@ -440,13 +520,13 @@ export function EnrichmentSuggestionsModal({
                     {/* Goal-Aware Relationships */}
                     {enrichmentType === 'GoalAwareRelationships' && (
                       <div className="space-y-3">
-                        {enrichment.complementaryRelationships && enrichment.complementaryRelationships.length > 0 && (
+                        {gae.complementaryRelationships && gae.complementaryRelationships.length > 0 && (
                           <div>
                             <h5 className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-2">
-                              Complementary Relationships ({enrichment.complementaryRelationships.length})
+                              Complementary Relationships ({gae.complementaryRelationships.length})
                             </h5>
                             <div className="space-y-2">
-                              {enrichment.complementaryRelationships.map((rel: any, rIdx: number) => (
+                              {gae.complementaryRelationships.map((rel, rIdx) => (
                                 <div key={rIdx} className="p-3 bg-gray-50 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600">
                                   <div className="flex items-center gap-2">
                                     <span className="font-medium text-gray-900 dark:text-gray-100">
@@ -457,7 +537,7 @@ export function EnrichmentSuggestionsModal({
                                       {rel.target}
                                     </span>
                                     <span className="ml-2 px-2 py-0.5 bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-400 rounded text-xs">
-                                      Strength: {Math.round(rel.strength * 100)}%
+                                      Strength: {Math.round((rel.strength || 0) * 100)}%
                                     </span>
                                   </div>
                                   <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
@@ -468,14 +548,14 @@ export function EnrichmentSuggestionsModal({
                             </div>
                           </div>
                         )}
-                        
-                        {enrichment.sequentialRelationships && enrichment.sequentialRelationships.length > 0 && (
+
+                        {gae.sequentialRelationships && gae.sequentialRelationships.length > 0 && (
                           <div>
                             <h5 className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-2">
-                              Sequential Relationships ({enrichment.sequentialRelationships.length})
+                              Sequential Relationships ({gae.sequentialRelationships.length})
                             </h5>
                             <div className="space-y-2">
-                              {enrichment.sequentialRelationships.map((rel: any, rIdx: number) => (
+                              {gae.sequentialRelationships.map((rel, rIdx) => (
                                 <div key={rIdx} className="p-3 bg-gray-50 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600">
                                   <div className="flex items-center gap-2">
                                     <span className="font-medium text-gray-900 dark:text-gray-100">
@@ -486,7 +566,7 @@ export function EnrichmentSuggestionsModal({
                                       {rel.target}
                                     </span>
                                     <span className="ml-2 px-2 py-0.5 bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-400 rounded text-xs">
-                                      Strength: {Math.round(rel.strength * 100)}%
+                                      Strength: {Math.round((rel.strength || 0) * 100)}%
                                     </span>
                                   </div>
                                   <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
@@ -503,13 +583,13 @@ export function EnrichmentSuggestionsModal({
                     {/* Cross-Layer Discovery */}
                     {enrichmentType === 'CrossLayerDiscovery' && (
                       <div className="space-y-3">
-                        {enrichment.bridgingConcepts && enrichment.bridgingConcepts.length > 0 && (
+                        {cle.bridgingConcepts && cle.bridgingConcepts.length > 0 && (
                           <div>
                             <h5 className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-2">
-                              Bridging Concepts ({enrichment.bridgingConcepts.length})
+                              Bridging Concepts ({cle.bridgingConcepts.length})
                             </h5>
                             <div className="space-y-2">
-                              {enrichment.bridgingConcepts.map((concept: any, cIdx: number) => (
+                              {cle.bridgingConcepts.map((concept, cIdx) => (
                                 <div key={cIdx} className="p-3 bg-gray-50 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600">
                                   <div className="flex items-center gap-2 mb-1">
                                     <Plus size={14} className="text-indigo-600 dark:text-indigo-400" />
@@ -533,7 +613,8 @@ export function EnrichmentSuggestionsModal({
                       </div>
                     )}
                   </div>
-                ))}
+                  );
+                })}
               </div>
             );
           })} 
@@ -549,10 +630,7 @@ export function EnrichmentSuggestionsModal({
               {enrichmentResult.prompts.map((promptData, idx) => (
                 <div key={idx} className="border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
                   <button
-                    onClick={() => {
-                      setSelectedPrompt(promptData.prompt);
-                      setShowPromptModal(true);
-                    }}
+                    onClick={() => setExpandedPromptIdx(expandedPromptIdx === idx ? null : idx)}
                     className="w-full flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700/50 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
                   >
                     <div className="flex items-center gap-2">
@@ -561,8 +639,19 @@ export function EnrichmentSuggestionsModal({
                         {promptData.strategy}
                       </span>
                     </div>
-                    <ArrowRight size={16} className="text-gray-600 dark:text-gray-400" />
+                    {expandedPromptIdx === idx ? (
+                      <ChevronUp size={16} className="text-gray-600 dark:text-gray-400" />
+                    ) : (
+                      <ChevronDown size={16} className="text-gray-600 dark:text-gray-400" />
+                    )}
                   </button>
+                  {expandedPromptIdx === idx && (
+                    <div className="p-4 bg-gray-900 dark:bg-gray-950 border-t border-gray-700 dark:border-gray-800 overflow-auto max-h-64">
+                      <pre className="text-xs text-gray-300 dark:text-gray-400 whitespace-pre-wrap break-words">
+                        {promptData.prompt}
+                      </pre>
+                    </div>
+                  )}
                 </div>
               ))}
             </div>

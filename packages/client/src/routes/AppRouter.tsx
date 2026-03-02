@@ -1,17 +1,21 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router';
 import LandingPage from '../pages/LandingPage';
-import { NotePageContainer } from '../features/notes/containers';
 import { ConceptListPageContainer, ConceptDetailPageContainer } from '../features/concepts/containers';
 import { LearnPageContainer } from '../features/learning/containers';
 import { DashboardPageContainer } from '../features/dashboard/containers';
+import {
+  StoryCatalogPageContainer,
+  StoryPlayPageContainer,
+  SeriesViewPageContainer,
+  ExplorePageContainer,
+} from '../features/stories/containers';
 import { Login, ProtectedRoute } from '../features/auth';
 import { useAuthContext } from '../features/auth/AuthContext';
 import { Loader } from '../components';
 
 /**
- * Focused Router: Dashboard and Learn pages only
- * Mentor and Courses pages temporarily disabled
+ * App Router: Dashboard, Learn, and Stories pages
  */
 
 const HomeRoute: React.FC = () => {
@@ -44,9 +48,13 @@ const AppRouter: React.FC = () => {
         <Route path="/" element={<HomeRoute />} />
         <Route path="/login" element={<Login />} />
 
-        {/* 
-         * Core Routes: Dashboard and Learn only
-         */}
+        {/* Public story routes (no auth required) */}
+        <Route path="/stories" element={<StoryCatalogPageContainer />} />
+        <Route path="/stories/:storyId" element={<StoryPlayPageContainer />} />
+        <Route path="/series/:seriesId" element={<SeriesViewPageContainer />} />
+        <Route path="/explore" element={<ExplorePageContainer />} />
+
+        {/* Protected routes */}
         <Route path="/home" element={
           <ProtectedRoute><DashboardPageContainer /></ProtectedRoute>
         } />
@@ -62,12 +70,6 @@ const AppRouter: React.FC = () => {
         <Route path="/concepts/:graphId/concept/:conceptId" element={
           <ProtectedRoute><ConceptDetailPageContainer /></ProtectedRoute>
         } />
-
-        {/* Disabled routes - redirect to home */}
-        <Route path="/mentor/*" element={<Navigate to="/home" replace />} />
-        <Route path="/courses/*" element={<Navigate to="/home" replace />} />
-        <Route path="/my-courses/*" element={<Navigate to="/home" replace />} />
-        <Route path="/course/*" element={<Navigate to="/home" replace />} />
 
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
