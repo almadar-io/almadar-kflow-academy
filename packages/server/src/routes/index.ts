@@ -30,6 +30,7 @@ import enrichmentRoutes from './enrichmentRoutes';
 import graphOperationRoutes from './graphOperationRoutes';
 import translationRoutes from './translation';
 import analyticsRoutes from './analytics';
+import storyRoutes from './storyRoutes';
 
 const router = Router();
 
@@ -60,6 +61,7 @@ router.use('/enrichment', enrichmentRoutes);
 router.use('/graph-operations', graphOperationRoutes);
 router.use('/translation', translationRoutes);
 router.use('/analytics', analyticsRoutes);
+router.use('/content', storyRoutes);
 // Public routes disabled for Lite build
 // router.use('/public', publicRoutes);
 // Course template routes disabled for Lite build

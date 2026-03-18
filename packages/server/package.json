@@ -9,7 +9,7 @@
     "start": "node dist/server.js",
     "clean": "rm -rf dist",
     "lint": "eslint src/",
-    "test": "jest"
+    "test": "node --experimental-vm-modules node_modules/.bin/jest"
   },
   "dependencies": {
     "@google/genai": "^1.29.0",

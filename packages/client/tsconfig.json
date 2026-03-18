@@ -29,9 +29,7 @@
       "@assets/*": ["src/assets/*"],
       "@app/*": ["src/app/*"],
       "@pages/*": ["src/pages/*"],
-      "@design-system/*": ["../../../../projects/kflow/design-system/*"],
-      "@almadar/ui": ["../../../../packages/almadar-ui/components/index.ts"],
-      "@almadar/ui/*": ["../../../../packages/almadar-ui/components/*"]
+      "@design-system/*": ["../../../../projects/kflow/design-system/*"]
     },
     "types": ["vite/client", "node"]
   },

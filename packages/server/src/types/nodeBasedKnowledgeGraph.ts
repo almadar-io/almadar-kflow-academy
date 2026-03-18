@@ -23,6 +23,11 @@ export type NodeType =
   | 'ConceptMetadata'
   | 'GraphMetadata'
   | 'FlashCard'
+  // Story/Series types
+  | 'Story'
+  | 'Series'
+  | 'Season'
+  | 'Episode'
   // Publishing/Course types
   | 'CourseSettings'
   | 'ModuleSettings'
@@ -85,7 +90,13 @@ export type RelationshipType =
   // Student management relationships
   | 'hasEnrolledStudent'
   | 'belongsToStudent'
-  | 'assignedToCourse';
+  | 'assignedToCourse'
+  // Story/Series relationships
+  | 'hasStory'
+  | 'belongsToSeries'
+  | 'hasSeason'
+  | 'hasEpisode'
+  | 'episodeContainsStory';
 
 /**
  * Relationship direction
@@ -275,6 +286,89 @@ export interface FlashCardNodeProperties {
   id: string;
   front: string;
   back: string;
+}
+
+// ==================== Story/Series Node Properties ====================
+
+/**
+ * Story node properties
+ */
+export interface StoryNodeProperties {
+  id: string;
+  title: string;
+  teaser: string;
+  domain: string;
+  difficulty: string;
+  duration: number;
+  coverImage?: string;
+  rating?: number;
+  playCount?: number;
+  seriesId?: string;
+  episodeId?: string;
+  /** Story content steps (for KnowledgeStoryTemplate) */
+  steps?: StoryStep[];
+  gameType?: string;
+  createdAt: number;
+  updatedAt: number;
+}
+
+/**
+ * A single step in a knowledge story
+ */
+export interface StoryStep {
+  id: string;
+  type: 'narrative' | 'challenge' | 'reflection' | 'game' | 'summary';
+  title: string;
+  content: string;
+  gameConfig?: Record<string, unknown>;
+}
+
+/**
+ * Series node properties
+ */
+export interface SeriesNodeProperties {
+  id: string;
+  title: string;
+  description: string;
+  creatorId: string;
+  creatorName: string;
+  creatorAvatar?: string;
+  domain: string;
+  tags: string[];
+  coverImage?: string;
+  status: 'draft' | 'published' | 'featured';
+  subscriberCount: number;
+  rating?: number;
+  createdAt: number;
+  updatedAt: number;
+}
+
+/**
+ * Season node properties
+ */
+export interface SeasonNodeProperties {
+  id: string;
+  title: string;
+  description: string;
+  number: number;
+  coverImage?: string;
+  status: 'draft' | 'published';
+  createdAt: number;
+  updatedAt: number;
+}
+
+/**
+ * Episode node properties
+ */
+export interface EpisodeNodeProperties {
+  id: string;
+  title: string;
+  description: string;
+  number: number;
+  duration: number;
+  difficulty: string;
+  createdAt: number;
+  updatedAt: number;
 }
 
 // ==================== Publishing/Course Node Properties ====================
@@ -477,6 +571,11 @@ export interface NodeTypeIndex {
   ConceptMetadata: string[];  // ConceptMetadata node IDs
   GraphMetadata: string[];     // GraphMetadata node IDs
   FlashCard: string[];        // FlashCard node IDs
+  // Story/Series types (optional for backward compatibility)
+  Story?: string[];              // Story node IDs
+  Series?: string[];             // Series node IDs
+  Season?: string[];             // Season node IDs
+  Episode?: string[];            // Episode node IDs
   // Publishing/Course types (optional for backward compatibility)
   CourseSettings?: string[];       // CourseSettings node IDs
   ModuleSettings?: string[];       // ModuleSettings node IDs
@@ -657,6 +756,14 @@ export function generateNodeId(
       return `student-${userId || 'unknown'}`;
     case 'ScheduleSlot':
       return `schedule-slot-${studentUserId || 'unknown'}-${dayOfWeek || 'unknown'}-${startTime || 'unknown'}`;
+    case 'Story':
+      return name ? `story-${name}` : `story-${graphId || 'unknown'}-${index || 'unknown'}`;
+    case 'Series':
+      return name ? `series-${name}` : `series-${graphId || 'unknown'}-${index || 'unknown'}`;
+    case 'Season':
+      return `season-${graphId || 'unknown'}-${index || 'unknown'}`;
+    case 'Episode':
+      return `episode-${graphId || 'unknown'}-${index || 'unknown'}`;
   }
 
   // TypeScript exhaustiveness check - this should never happen
@@ -984,6 +1091,11 @@ export function createEmptyNodeTypeIndex(): NodeTypeIndex {
     ConceptMetadata: [],
     GraphMetadata: [],
     FlashCard: [],
+    // Story/Series types
+    Story: [],
+    Series: [],
+    Season: [],
+    Episode: [],
     // Publishing/Course types
     CourseSettings: [],
     ModuleSettings: [],
