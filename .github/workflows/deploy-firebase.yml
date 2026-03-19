@@ -1,0 +1,59 @@
+name: Deploy Client to Firebase Hosting
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'packages/client/**'
+      - '.github/workflows/deploy-firebase.yml'
+  workflow_dispatch:
+
+env:
+  NODE_VERSION: '22'
+  FIREBASE_PROJECT: 'kflow-b3a39'
+
+jobs:
+  deploy:
+    name: Deploy to Firebase Hosting
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - name: Install Firebase CLI
+        run: npm install -g firebase-tools
+
+      - name: Authenticate to Firebase
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+        run: |
+          echo "$FIREBASE_SERVICE_ACCOUNT" > $HOME/gcloud-service-account.json
+          echo "GOOGLE_APPLICATION_CREDENTIALS=$HOME/gcloud-service-account.json" >> $GITHUB_ENV
+
+      - name: Install dependencies
+        run: |
+          if [ -f package-lock.json ]; then
+            npm ci
+          else
+            echo "::warning::No package-lock.json found — falling back to npm install"
+            npm install --legacy-peer-deps
+          fi
+        env:
+          NODE_ENV: development
+
+      - name: Build Client
+        run: npm run build:client
+
+      - name: Deploy Client to Firebase Hosting
+        run: firebase deploy --only hosting:prod --project ${{ env.FIREBASE_PROJECT }}
