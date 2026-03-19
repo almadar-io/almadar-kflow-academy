@@ -54,6 +54,15 @@ jobs:
 
       - name: Build Client
         run: npm run build:client
+        env:
+          VITE_API_URL: https://kflow-server--kflow-b3a39.europe-west4.hosted.app
+          VITE_FIREBASE_API_KEY: ***REDACTED_API_KEY***
+          VITE_FIREBASE_AUTH_DOMAIN: kflow-b3a39.firebaseapp.com
+          VITE_FIREBASE_PROJECT_ID: kflow-b3a39
+          VITE_FIREBASE_STORAGE_BUCKET: kflow-b3a39.firebasestorage.app
+          VITE_FIREBASE_MESSAGING_SENDER_ID: '345008351456'
+          VITE_FIREBASE_APP_ID: '***REDACTED_APP_ID***'
+          VITE_FIREBASE_MEASUREMENT_ID: G-1PRVESYBX9
 
       - name: Deploy Client to Firebase Hosting
         run: firebase deploy --only hosting:prod --project ${{ env.FIREBASE_PROJECT }}
