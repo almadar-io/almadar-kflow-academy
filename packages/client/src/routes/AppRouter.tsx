@@ -13,6 +13,7 @@ import {
 import { Login, ProtectedRoute } from '../features/auth';
 import { useAuthContext } from '../features/auth/AuthContext';
 import { Loader } from '../components';
+import { AppLayout } from '../components/AppLayout';
 
 /**
  * App Router: Dashboard, Learn, and Stories pages
@@ -48,11 +49,11 @@ const AppRouter: React.FC = () => {
         <Route path="/" element={<HomeRoute />} />
         <Route path="/login" element={<Login />} />
 
-        {/* Public story routes (no auth required) */}
-        <Route path="/stories" element={<StoryCatalogPageContainer />} />
-        <Route path="/stories/:storyId" element={<StoryPlayPageContainer />} />
-        <Route path="/series/:seriesId" element={<SeriesViewPageContainer />} />
-        <Route path="/explore" element={<ExplorePageContainer />} />
+        {/* Public story routes (no auth required, with app layout) */}
+        <Route path="/stories" element={<AppLayout><StoryCatalogPageContainer /></AppLayout>} />
+        <Route path="/stories/:storyId" element={<AppLayout><StoryPlayPageContainer /></AppLayout>} />
+        <Route path="/series/:seriesId" element={<AppLayout><SeriesViewPageContainer /></AppLayout>} />
+        <Route path="/explore" element={<AppLayout><ExplorePageContainer /></AppLayout>} />
 
         {/* Protected routes */}
         <Route path="/home" element={

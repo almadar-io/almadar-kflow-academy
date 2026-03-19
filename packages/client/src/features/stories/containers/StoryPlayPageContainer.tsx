@@ -2,7 +2,6 @@ import React, { useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router';
 import { useEventBus } from '@almadar/ui';
 import type { KFlowEvent } from '@almadar/ui';
-import { StoriesShellTemplate } from '@design-system/templates/StoriesShellTemplate';
 import { KnowledgeStoryTemplate } from '@design-system/templates/KnowledgeStoryTemplate';
 import { useStory } from '../hooks/useStory';
 import { useStoryProgress } from '../hooks/useStoryProgress';
@@ -36,26 +35,10 @@ export const StoryPlayPageContainer: React.FC = () => {
   }, [on, saveProgress]);
 
   if (isLoading || !story) {
-    return (
-      <StoriesShellTemplate entity={{ activeRoute: 'story' }}>
-        <KnowledgeStoryTemplate entity={undefined} />
-      </StoriesShellTemplate>
-    );
+    return <KnowledgeStoryTemplate entity={undefined} />;
   }
 
-  return (
-    <StoriesShellTemplate
-      entity={{
-        activeRoute: 'story',
-        breadcrumbs: [
-          { label: 'Stories', href: '/stories' },
-          { label: story.title },
-        ],
-      }}
-    >
-      <KnowledgeStoryTemplate entity={story} />
-    </StoriesShellTemplate>
-  );
+  return <KnowledgeStoryTemplate entity={story} />;
 };
 
 StoryPlayPageContainer.displayName = 'StoryPlayPageContainer';

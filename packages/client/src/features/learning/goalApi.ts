@@ -298,7 +298,7 @@ async function handleStreamingGraphWithGoal(
   headers: HeadersInit,
   onStream: (chunk: string, partialGoal: any) => void
 ): Promise<CreateGraphWithGoalResponse> {
-  const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:3001';
+  const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
   
   const response = await fetch(`${API_BASE_URL}/api/learning/goals/with-graph`, {
     method: 'POST',

@@ -32,14 +32,7 @@ export const SeriesViewPageContainer: React.FC = () => {
     return <SeriesViewTemplate entity={undefined} />;
   }
 
-  return (
-    <SeriesViewTemplate
-      entity={{
-        ...seriesView,
-        shell: { activeRoute: 'series' },
-      }}
-    />
-  );
+  return <SeriesViewTemplate entity={{ ...seriesView, shell: { activeRoute: 'series' } }} />;
 };
 
 SeriesViewPageContainer.displayName = 'SeriesViewPageContainer';

@@ -2,7 +2,6 @@ import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router';
 import { useEventBus } from '@almadar/ui';
 import type { KFlowEvent } from '@almadar/ui';
-import { StoriesShellTemplate } from '@design-system/templates/StoriesShellTemplate';
 import { StoryCatalogTemplate } from '@design-system/templates/StoryCatalogTemplate';
 import { useStories } from '../hooks/useStories';
 import { useSeriesList } from '../hooks/useSeries';
@@ -32,11 +31,7 @@ export const StoryCatalogPageContainer: React.FC = () => {
     series,
   };
 
-  return (
-    <StoriesShellTemplate entity={{ activeRoute: 'catalog' }}>
-      <StoryCatalogTemplate entity={entity} />
-    </StoriesShellTemplate>
-  );
+  return <StoryCatalogTemplate entity={entity} />;
 };
 
 StoryCatalogPageContainer.displayName = 'StoryCatalogPageContainer';

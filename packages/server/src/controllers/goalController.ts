@@ -11,8 +11,12 @@ import {
 } from '../services/goalService';
 import { generateConceptId } from '../utils/uuid';
 import { normalizeConcept } from '../utils/validation';
-import { upsertUserGraph } from '../services/graphService';
+import { KnowledgeGraphAccessLayer } from '../services/knowledgeGraphAccess/KnowledgeGraphAccessLayer';
+import { createGraphNode, createRelationship, createEmptyNodeTypeIndex } from '../types/nodeBasedKnowledgeGraph';
+import type { NodeBasedKnowledgeGraph } from '../types/nodeBasedKnowledgeGraph';
 import { handleStreamResponse } from '../utils/streamHandler';
+
+const knowledgeGraphAccess = new KnowledgeGraphAccessLayer();
 import type {
   GenerateGoalQuestionsOptions,
   GoalQuestionAnswer,
@@ -351,27 +355,53 @@ export async function createGraphWithGoalHandler(
             const normalizedSeedConcept = normalizeConcept(seedConcept);
             const seedConceptId = normalizedSeedConcept.id || generateConceptId();
 
-            // Create the knowledge graph
+            // Create the knowledge graph (node-based format)
             const graphId = generateConceptId();
-            const graph = await upsertUserGraph(uid, {
+            const now = Date.now();
+            const nodeBasedGraph: NodeBasedKnowledgeGraph = {
               id: graphId,
               seedConceptId,
-              concepts: {
-                [seedConceptId]: normalizedSeedConcept,
-              },
+              createdAt: now,
+              updatedAt: now,
+              version: 1,
+              name: normalizedSeedConcept.name,
               goalFocused,
               difficulty,
               focus,
-            });
+              nodes: {
+                [graphId]: createGraphNode(graphId, 'Graph', {
+                  id: graphId,
+                  seedConceptId,
+                  createdAt: now,
+                  updatedAt: now,
+                }),
+                [seedConceptId]: createGraphNode(seedConceptId, 'Concept', {
+                  id: seedConceptId,
+                  name: normalizedSeedConcept.name,
+                  description: normalizedSeedConcept.description,
+                  isSeed: true,
+                }),
+              },
+              nodeTypes: {
+                ...createEmptyNodeTypeIndex(),
+                Graph: [graphId],
+                Concept: [seedConceptId],
+              },
+              relationships: [
+                createRelationship(graphId, seedConceptId, 'containsConcept', 'forward'),
+                createRelationship(graphId, seedConceptId, 'hasSeedConcept', 'forward'),
+              ],
+            };
+            await knowledgeGraphAccess.saveGraph(uid, nodeBasedGraph);
 
             // Save the goal with graphId
-            goal.graphId = graph.id;
+            goal.graphId = graphId;
             const savedGoal = await saveGoal(uid, goal);
 
             return {
               goal: savedGoal,
-              graphId: graph.id,
-              seedConceptId: seedConceptId,
+              graphId,
+              seedConceptId,
             };
           } catch (error) {
             console.error('Error processing streamed goal with graph:', error);
@@ -406,30 +436,56 @@ export async function createGraphWithGoalHandler(
     const normalizedSeedConcept = normalizeConcept(seedConcept);
     const seedConceptId = normalizedSeedConcept.id || generateConceptId();
 
-    // Step 3: Create the knowledge graph
+    // Step 3: Create the knowledge graph (node-based format)
     const graphId = generateConceptId();
-    const graph = await upsertUserGraph(uid, {
+    const now = Date.now();
+    const nodeBasedGraph: NodeBasedKnowledgeGraph = {
       id: graphId,
       seedConceptId,
-      concepts: {
-        [seedConceptId]: normalizedSeedConcept,
-      },
+      createdAt: now,
+      updatedAt: now,
+      version: 1,
+      name: normalizedSeedConcept.name,
       goalFocused,
       difficulty,
       focus,
-    });
+      nodes: {
+        [graphId]: createGraphNode(graphId, 'Graph', {
+          id: graphId,
+          seedConceptId,
+          createdAt: now,
+          updatedAt: now,
+        }),
+        [seedConceptId]: createGraphNode(seedConceptId, 'Concept', {
+          id: seedConceptId,
+          name: normalizedSeedConcept.name,
+          description: normalizedSeedConcept.description,
+          isSeed: true,
+        }),
+      },
+      nodeTypes: {
+        ...createEmptyNodeTypeIndex(),
+        Graph: [graphId],
+        Concept: [seedConceptId],
+      },
+      relationships: [
+        createRelationship(graphId, seedConceptId, 'containsConcept', 'forward'),
+        createRelationship(graphId, seedConceptId, 'hasSeedConcept', 'forward'),
+      ],
+    };
+    await knowledgeGraphAccess.saveGraph(uid, nodeBasedGraph);
 
-    // Step 4: Save the goal with graphId (goal must exist before we can link it)
+    // Step 4: Save the goal with graphId
     const goalWithGraphId = {
       ...normalResult.goal,
-      graphId: graph.id,
+      graphId,
     };
     const savedGoal = await saveGoal(uid, goalWithGraphId);
 
     res.json({
       goal: savedGoal,
-      graphId: graph.id,
-      seedConceptId: seedConceptId,
+      graphId,
+      seedConceptId,
     });
   } catch (error) {
     console.error('Error creating graph with goal:', error);
