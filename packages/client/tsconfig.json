@@ -29,7 +29,7 @@
       "@assets/*": ["src/assets/*"],
       "@app/*": ["src/app/*"],
       "@pages/*": ["src/pages/*"],
-      "@design-system/*": ["../../../../projects/kflow/design-system/*"]
+      "@design-system/*": ["../../design-system/*"]
     },
     "types": ["vite/client", "node"]
   },

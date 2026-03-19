@@ -20,7 +20,7 @@ export default defineConfig(({ mode }) => {
         '@assets': path.resolve(__dirname, './src/assets'),
         '@app': path.resolve(__dirname, './src/app'),
         '@pages': path.resolve(__dirname, './src/pages'),
-        '@design-system': path.resolve(__dirname, '../../../../projects/kflow/design-system'),
+        '@design-system': path.resolve(__dirname, '../../design-system'),
         '@almadar/ui': path.resolve(__dirname, '../../../../packages/almadar-ui/components'),
       },
     },
