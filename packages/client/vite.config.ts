@@ -21,7 +21,6 @@ export default defineConfig(({ mode }) => {
         '@app': path.resolve(__dirname, './src/app'),
         '@pages': path.resolve(__dirname, './src/pages'),
         '@design-system': path.resolve(__dirname, '../../design-system'),
-        '@almadar/ui': path.resolve(__dirname, '../../../../packages/almadar-ui/components'),
       },
     },
     build: {
