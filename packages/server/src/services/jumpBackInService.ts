@@ -1,6 +1,6 @@
 import { getFirestore } from '../config/firebaseAdmin';
 import { getStudentEnrollments } from './enrollmentService';
-import { getUserGraphs } from './graphService';
+import { GraphQueryService } from './graphQueryService';
 import { getAllUserProgress } from './userProgressService';
 import type { PublishedCourse } from '../types/publishing';
 
@@ -35,7 +35,7 @@ export async function getJumpBackInItems(uid: string): Promise<JumpBackInItem[]>
   try {
     // Get all active enrollments (not completed)
     const enrollments = await getStudentEnrollments(uid);
-    
+
     for (const enrollment of enrollments) {
       // Skip completed courses
       if (enrollment.accessibleLessonIds.length === 0) continue;
@@ -69,12 +69,13 @@ export async function getJumpBackInItems(uid: string): Promise<JumpBackInItem[]>
       }
     }
 
-    // Get all user graphs (learning paths)
-    const graphs = await getUserGraphs(uid);
-    
+    // Get all user learning paths from knowledgeGraphs (modern format)
+    const graphQueryService = new GraphQueryService();
+    const learningPaths = await graphQueryService.getLearningPathsSummary(uid);
+
     // Get user progress to find most recently accessed graphs
     const allUserProgress = await getAllUserProgress(uid);
-    
+
     // Create a map of graphId -> lastStudied timestamp
     const graphLastAccessed = new Map<string, number>();
     for (const progress of allUserProgress) {
@@ -86,37 +87,19 @@ export async function getJumpBackInItems(uid: string): Promise<JumpBackInItem[]>
       }
     }
 
-    for (const graph of graphs) {
-      // Find seed concept
-      // graph.concepts is a Record<string, Concept> in StoredConceptGraph
-      const concepts = graph.concepts || {};
-      const seedConcept = Object.values(concepts).find(
-        (c: any) => c.id === graph.seedConceptId || c.name === graph.seedConceptId || c.isSeed
-      );
-      
-      if (!seedConcept) continue;
-
-      // Get last accessed time (from userProgress or graph createdAt)
-      const lastAccessed = graphLastAccessed.get(graph.id) || graph.updatedAt || graph.createdAt || 0;
-      
-      // Count concepts and levels
-      const conceptCount = Object.keys(graph.concepts || {}).length;
-      const levelCount = Math.max(
-        ...Object.values(graph.concepts || {}).map((c: any) => c.level || 0),
-        0
-      ) + 1; // Add 1 because levels are 0-indexed
+    for (const path of learningPaths) {
+      const lastAccessed = graphLastAccessed.get(path.id) || path.updatedAt || path.createdAt || 0;
 
       items.push({
-        id: graph.id,
+        id: path.id,
         type: 'learningPath',
-        title: seedConcept.name || `Learning Path ${graph.id}`,
-        description: seedConcept.description,
+        title: path.title || `Learning Path ${path.id}`,
+        description: path.description,
         lastAccessedAt: lastAccessed,
         metadata: {
-          graphId: graph.id,
-          seedConceptId: graph.seedConceptId,
-          conceptCount,
-          levelCount,
+          graphId: path.id,
+          seedConceptId: path.seedConcept?.id,
+          conceptCount: path.conceptCount,
         },
       });
     }
@@ -131,4 +114,3 @@ export async function getJumpBackInItems(uid: string): Promise<JumpBackInItem[]>
     return [];
   }
 }
-

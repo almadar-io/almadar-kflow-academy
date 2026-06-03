@@ -1,48 +1,19 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { statisticsApi, type RecentActivity } from '../statisticsApi';
 
+const RECENT_ACTIVITY_QUERY_KEY = ['recentActivity'] as const;
+
 export function useRecentActivity(limit: number = 10) {
-  const [activity, setActivity] = useState<RecentActivity[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const hasFetchedRef = useRef(false);
-  const isFetchingRef = useRef(false);
-
-  const loadActivity = useCallback(async () => {
-    // Prevent concurrent fetches
-    if (isFetchingRef.current) {
-      return;
-    }
-
-    isFetchingRef.current = true;
-    setIsLoading(true);
-    setError(null);
-
-    try {
-      const activityList = await statisticsApi.getRecentActivity(limit);
-      setActivity(activityList);
-      hasFetchedRef.current = true;
-    } catch (err: any) {
-      console.error('Failed to load recent activity:', err);
-      setError(err.message || 'Failed to load recent activity');
-    } finally {
-      setIsLoading(false);
-      isFetchingRef.current = false;
-    }
-  }, [limit]);
-
-  useEffect(() => {
-    // Only fetch on initial mount, not on re-renders
-    if (!hasFetchedRef.current) {
-      loadActivity();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // Empty deps - only run on mount
+  const query = useQuery<RecentActivity[]>({
+    queryKey: [...RECENT_ACTIVITY_QUERY_KEY, limit],
+    queryFn: () => statisticsApi.getRecentActivity(limit),
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  });
 
   /**
    * Format timestamp to human-readable string
    */
-  const formatTimestamp = useCallback((timestamp: number): string => {
+  const formatTimestamp = (timestamp: number): string => {
     const now = Date.now();
     const diff = now - timestamp;
     const seconds = Math.floor(diff / 1000);
@@ -60,14 +31,15 @@ export function useRecentActivity(limit: number = 10) {
       return minutes === 1 ? '1 minute ago' : `${minutes} minutes ago`;
     }
     return 'Just now';
-  }, []);
+  };
 
   return {
-    activity,
-    isLoading,
-    error,
-    refresh: loadActivity,
+    activity: query.data ?? [],
+    isLoading: query.isLoading,
+    error: query.error ? (query.error as Error).message : null,
+    refresh: async () => {
+      await query.refetch();
+    },
     formatTimestamp,
   };
 }
-

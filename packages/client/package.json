@@ -12,8 +12,10 @@
     "lint": "eslint src/"
   },
   "dependencies": {
+    "@almadar/syntax": "^1.4.0",
     "@almadar/ui": "^2.15.0",
     "@apollo/client": "^3.14.0",
+    "@react-three/postprocessing": "^3.0.4",
     "@reduxjs/toolkit": "^2.8.2",
     "@tanstack/react-query": "^5.85.5",
     "firebase": "^12.1.0",

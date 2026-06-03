@@ -127,12 +127,18 @@ export async function getAchievements(): Promise<Achievement[]> {
  */
 export interface JumpBackInItem {
   id: string;
-  type: 'story' | 'learningPath';
+  type: 'course' | 'learningPath';
   title: string;
   description?: string;
   lastAccessedAt: number;
+  progress?: {
+    completedLessons: number;
+    totalLessons: number;
+    progressPercentage: number;
+  };
   metadata: {
-    storyId?: string;
+    courseId?: string;
+    enrollmentId?: string;
     graphId?: string;
     seedConceptId?: string;
     conceptCount?: number;

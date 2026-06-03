@@ -23,9 +23,17 @@ export default defineConfig(({ mode }) => {
         '@design-system': path.resolve(__dirname, '../../design-system'),
       },
     },
+    optimizeDeps: {
+      esbuildOptions: {
+        external: ['@react-three/postprocessing'],
+      },
+    },
     build: {
       outDir: 'dist',
       sourcemap: true,
+      rollupOptions: {
+        external: ['@react-three/postprocessing'],
+      },
     },
     server: {
       port: 3000,

@@ -68,7 +68,6 @@ export interface DashboardPageProps {
   onJumpBackInClick?: (item: JumpBackInItem) => void;
   onCreateLearningPath?: () => void;
   onBrowseStories?: () => void;
-  onExplore?: () => void;
   onActivityClick?: (activity: RecentActivity) => void;
   
   /**
@@ -111,7 +110,6 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
   onJumpBackInClick,
   onCreateLearningPath,
   onBrowseStories,
-  onExplore,
   onActivityClick,
   user,
   navigationItems,
@@ -141,14 +139,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
       onLogoClick={onLogoClick}
       onLogout={onLogout}
       activities={[]}
-      quickActions={[
-        {
-          label: 'New Learning Path',
-          icon: Plus,
-          onClick: onCreateLearningPath,
-          variant: 'primary',
-        },
-      ]}
+      quickActions={[]}
     >
       {/* Welcome Section */}
       <div className="mb-8">
@@ -192,7 +183,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
                     <div className="flex justify-between items-start mb-4">
                       <div className="flex-1 min-w-0">
                         <Typography variant="small" className="text-indigo-600 dark:text-indigo-400 mb-1 uppercase tracking-wide">
-                          {item.type === 'story' ? 'Continue Story' : 'Continue Learning'}
+                          {item.type === 'course' ? 'Continue Course' : 'Continue Learning'}
                         </Typography>
                         <Typography variant="h4" className="mb-2 line-clamp-2">
                           {item.title}
@@ -229,7 +220,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
                         iconRight={ArrowRight}
                         fullWidth
                       >
-                        {item.type === 'story' ? 'Continue Story' : 'Resume Learning'}
+                        {item.type === 'course' ? 'Continue Course' : 'Resume Learning'}
                       </Button>
                     </div>
                   </div>

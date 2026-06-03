@@ -8,8 +8,6 @@ import { useNavigate, useLocation } from 'react-router';
 import { useAuthContext } from '../../auth/AuthContext';
 import { DashboardPage } from '../../../components/pages/DashboardPage';
 import { getNavigationItems, getUserForTemplate, mainNavItems } from '../../../config/navigation';
-import { useAppSelector } from '../../../app/hooks';
-import { useHomeConcepts } from '../../concepts/hooks/useHomeConcepts';
 import { useRecentActivity } from '../hooks';
 import { useJumpBackIn } from '../hooks/useJumpBackIn';
 import type { JumpBackInItem } from '../preferencesApi';
@@ -20,15 +18,13 @@ const DashboardPageContainer: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { user, signOut } = useAuthContext();
-  const { graphs } = useAppSelector(state => state.concepts);
 
   // Logout handler
   const handleLogout = useCallback(async () => {
     await signOut();
   }, [signOut]);
-  
+
   // Data fetching hooks
-  const { seedEntries, handleConceptClick } = useHomeConcepts(graphs);
   const { activity, isLoading: isLoadingActivity, formatTimestamp } = useRecentActivity(5);
   const { items: jumpBackInItems, isLoading: isLoadingJumpBackIn } = useJumpBackIn();
 
@@ -41,19 +37,10 @@ const DashboardPageContainer: React.FC = () => {
 
   // Handle jump back in click
   const handleJumpBackInClick = (item: JumpBackInItem) => {
-    if (item.type === 'story' && item.metadata.storyId) {
-      navigate(`/stories/${item.metadata.storyId}`);
-    } else if (item.type === 'learningPath' && item.metadata.graphId && item.metadata.seedConceptId) {
-      const graph = graphs.find(g => g.id === item.metadata.graphId);
-      if (graph) {
-        const seedConcept = Array.from(graph.concepts.values()).find(
-          c => c.id === item.metadata.seedConceptId || c.isSeed
-        );
-        if (seedConcept) {
-          handleConceptClick(item.metadata.graphId, seedConcept);
-        }
-      }
+    if (item.type === 'learningPath' && item.metadata.graphId) {
+      navigate(`/concepts/${item.metadata.graphId}`);
     }
+    // Courses not yet implemented for jump back in navigation
   };
 
   // Handle activity click
@@ -79,7 +66,6 @@ const DashboardPageContainer: React.FC = () => {
       onJumpBackInClick={handleJumpBackInClick}
       onCreateLearningPath={() => navigate('/learn')}
       onBrowseStories={() => navigate('/stories')}
-      onExplore={() => navigate('/explore')}
       onActivityClick={handleActivityClick}
       user={templateUser}
       navigationItems={navigationItems}

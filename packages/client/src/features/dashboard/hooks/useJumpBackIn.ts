@@ -1,39 +1,21 @@
-import { useState, useEffect, useRef } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { getJumpBackInItems, type JumpBackInItem } from '../preferencesApi';
 
+const JUMP_BACK_IN_QUERY_KEY = ['jumpBackIn'] as const;
+
 export function useJumpBackIn() {
-  const [items, setItems] = useState<JumpBackInItem[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const hasFetchedRef = useRef(false);
-  const isFetchingRef = useRef(false);
-
-  useEffect(() => {
-    if (hasFetchedRef.current || isFetchingRef.current) return;
-
-    isFetchingRef.current = true;
-    setIsLoading(true);
-    setError(null);
-
-    getJumpBackInItems()
-      .then((data) => {
-        setItems(data);
-        hasFetchedRef.current = true;
-      })
-      .catch((err: any) => {
-        console.error('Failed to load jump back in items:', err);
-        setError(err.message || 'Failed to load jump back in items');
-      })
-      .finally(() => {
-        setIsLoading(false);
-        isFetchingRef.current = false;
-      });
-  }, []);
+  const query = useQuery<JumpBackInItem[]>({
+    queryKey: JUMP_BACK_IN_QUERY_KEY,
+    queryFn: getJumpBackInItems,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  });
 
   return {
-    items,
-    isLoading,
-    error,
+    items: query.data ?? [],
+    isLoading: query.isLoading,
+    error: query.error ? (query.error as Error).message : null,
+    refresh: async () => {
+      await query.refetch();
+    },
   };
 }
-
