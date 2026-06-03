@@ -5,6 +5,7 @@ import { useConceptDetail } from '../../knowledge-graph/hooks/useConceptDetail';
 import { useGetGraph, useLessonAnnotations } from '../../knowledge-graph/hooks';
 import { setCurrentGraphId, selectGraphById } from '../../knowledge-graph/knowledgeGraphSlice';
 import { useExplainConcept } from '../../knowledge-graph/hooks/useExplainConcept';
+import { MarkdownContent } from '../components/MarkdownRenderer';
 import { useAnswerQuestion } from '../../knowledge-graph/hooks/useAnswerQuestion';
 import { useCustomOperation } from '../../knowledge-graph/hooks/useCustomOperation';
 import type { Concept } from '../types';
@@ -685,7 +686,7 @@ const ConceptDetailPageContainer: React.FC = () => {
                     Answer:
                   </Typography>
                   <div className="prose dark:prose-invert max-w-none">
-                    {(viewAnnotation.annotation as QuestionAnswerItem).answer}
+                    <MarkdownContent content={(viewAnnotation.annotation as QuestionAnswerItem).answer} />
                   </div>
                 </div>
               </div>

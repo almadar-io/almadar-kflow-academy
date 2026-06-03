@@ -352,7 +352,7 @@ export const FocusModeTemplate: React.FC<LearnTemplateProps> = ({
         {/* Level Navigation - Cleaner Design */}
         {levels.length > 1 && (
           <div className="w-full mb-4 sm:mb-6 md:mb-8 -mx-1 sm:mx-0">
-            <div className="flex items-center gap-1 overflow-x-auto pb-2 px-1 sm:px-2 sm:justify-center scrollbar-hide">
+            <div className="flex items-center gap-1 overflow-x-auto pb-4 px-1 sm:px-2 sm:justify-center scrollbar-hide">
               <div className="flex items-center gap-1 flex-nowrap">
                 {levels.map((level, index) => {
                   const isSelected = level.id === selectedLevelId;

@@ -8,7 +8,7 @@
 import React, { useState, useEffect } from 'react';
 import { DashboardTemplate, type DashboardActivity } from '../templates/DashboardTemplate';
 import { EnhancedStatsCards } from '../organisms/EnhancedStatsCards';
-import { DailyGoalsCard } from '../organisms/DailyGoalsCard';
+
 import { RecommendationsCard } from '../organisms/RecommendationsCard';
 import { AchievementsCard } from '../organisms/AchievementsCard';
 import { Button } from '../atoms/Button';
@@ -20,12 +20,9 @@ import {
   Plus,
   PlayCircle,
   Clock,
-  CheckCircle,
-  BookMarked,
   BookOpen,
   ChevronLeft,
   ChevronRight,
-  Sparkles,
 } from 'lucide-react';
 import type { JumpBackInItem } from '../../features/dashboard/preferencesApi';
 import type { RecentActivity } from '../../features/dashboard/statisticsApi';
@@ -135,40 +132,6 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
     onJumpBackInClick?.(item);
   };
 
-  const getActivityIcon = (type: RecentActivity['type']): React.ReactNode => {
-    switch (type) {
-      case 'story_completed':
-        return <BookOpen size={16} className="text-blue-500" />;
-      case 'lesson_completed':
-        return <CheckCircle size={16} className="text-green-500" />;
-      case 'concept_studied':
-        return <BookMarked size={16} className="text-purple-500" />;
-      default:
-        return <Clock size={16} className="text-gray-500" />;
-    }
-  };
-
-  const getActivityText = (type: RecentActivity['type']): string => {
-    switch (type) {
-      case 'story_completed':
-        return 'Completed story';
-      case 'lesson_completed':
-        return 'Completed lesson';
-      case 'concept_studied':
-        return 'Studied concept';
-      default:
-        return 'Activity';
-    }
-  };
-
-  // Convert RecentActivity to DashboardActivity for template
-  const dashboardActivities: DashboardActivity[] = activities.map(activity => ({
-    id: activity.id,
-    title: getActivityText(activity.type),
-    description: activity.resourceName,
-    timestamp: formatTimestamp(activity.timestamp),
-  }));
-
   return (
     <DashboardTemplate
       variant="student"
@@ -177,25 +140,13 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
       logo={logo}
       onLogoClick={onLogoClick}
       onLogout={onLogout}
-      activities={dashboardActivities}
+      activities={[]}
       quickActions={[
         {
           label: 'New Learning Path',
           icon: Plus,
           onClick: onCreateLearningPath,
           variant: 'primary',
-        },
-        {
-          label: 'Browse Stories',
-          icon: BookOpen,
-          onClick: onBrowseStories,
-          variant: 'secondary',
-        },
-        {
-          label: 'Explore',
-          icon: Sparkles,
-          onClick: onExplore,
-          variant: 'secondary',
         },
       ]}
     >
@@ -358,67 +309,6 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Main Content Column */}
         <div className="lg:col-span-2 space-y-8">
-          {/* Daily Goals */}
-          <section>
-            <DailyGoalsCard />
-          </section>
-
-          {/* Recent Activity */}
-          <section>
-            <div className="flex items-center gap-2 mb-4">
-              <Clock className="text-indigo-600 dark:text-indigo-400" size={24} />
-              <Typography variant="h3">Recent Activity</Typography>
-            </div>
-
-            {isLoadingActivity ? (
-              <Card>
-                <div className="flex items-center justify-center gap-3 text-gray-500 dark:text-gray-400 p-8">
-                  <Spinner size="sm" />
-                  <Typography variant="body">Loading activity...</Typography>
-                </div>
-              </Card>
-            ) : activities.length > 0 ? (
-              <Card>
-                <div className="space-y-4">
-                  {activities.map((item) => (
-                    <div
-                      key={item.id}
-                      onClick={() => onActivityClick?.(item)}
-                      className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors cursor-pointer group"
-                    >
-                      <div className="flex-shrink-0 w-8 h-8 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center">
-                        {getActivityIcon(item.type)}
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <Typography variant="body" weight="medium" className="group-hover:text-indigo-600 dark:group-hover:text-indigo-400">
-                          {getActivityText(item.type)}
-                        </Typography>
-                        <Typography variant="small" color="secondary" className="truncate">
-                          {item.resourceName}
-                        </Typography>
-                      </div>
-                      <Typography variant="small" color="muted">
-                        {formatTimestamp(item.timestamp)}
-                      </Typography>
-                    </div>
-                  ))}
-                </div>
-              </Card>
-            ) : (
-              <Card>
-                <div className="text-center p-8">
-                  <div className="w-12 h-12 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center mx-auto mb-3 text-gray-400">
-                    <Clock size={24} />
-                  </div>
-                  <Typography variant="h4" className="mb-1">No recent activity</Typography>
-                  <Typography variant="body" color="secondary">
-                    Start learning to see your activity here.
-                  </Typography>
-                </div>
-              </Card>
-            )}
-          </section>
-
           {/* Recommendations */}
           <section>
             <RecommendationsCard />
