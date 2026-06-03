@@ -9,6 +9,7 @@
 
 import type { Request, Response } from 'express';
 import { KnowledgeGraphAccessLayer } from '../services/knowledgeGraphAccess/KnowledgeGraphAccessLayer';
+import { GraphQueryService } from '../services/graphQueryService';
 import type {
   GraphNode,
   Relationship as NodeBasedRelationship,
@@ -18,6 +19,7 @@ import type {
 import { createGraphNode, createRelationship } from '../types/nodeBasedKnowledgeGraph';
 
 const accessLayer = new KnowledgeGraphAccessLayer();
+const queryService = new GraphQueryService();
 
 /**
  * Get user ID from request
@@ -90,6 +92,7 @@ export async function saveGraphHandler(req: Request, res: Response): Promise<voi
     }
 
     const savedGraph = await accessLayer.saveGraph(uid, graph, expectedVersion);
+    queryService.invalidateCache(uid, graphId);
     res.json({ success: true, graphId, graph: savedGraph });
   } catch (error: any) {
     if (error.message === 'Unauthorized') {
@@ -194,6 +197,7 @@ export async function createNodeHandler(req: Request, res: Response): Promise<vo
     const node = createGraphNode(nodeId, type as NodeType, properties);
 
     const createdNode = await accessLayer.createNode(uid, graphId, node);
+    queryService.invalidateCache(uid, graphId);
     res.status(201).json(createdNode);
   } catch (error: any) {
     if (error.message === 'Unauthorized') {
@@ -223,6 +227,7 @@ export async function updateNodeHandler(req: Request, res: Response): Promise<vo
     const updates = req.body;
 
     const updatedNode = await accessLayer.updateNode(uid, graphId, nodeId, updates);
+    queryService.invalidateCache(uid, graphId);
     res.json(updatedNode);
   } catch (error: any) {
     if (error.message === 'Unauthorized') {
@@ -254,6 +259,7 @@ export async function deleteNodeHandler(req: Request, res: Response): Promise<vo
     await accessLayer.deleteNode(uid, graphId, nodeId, {
       cascade: cascade === 'true',
     });
+    queryService.invalidateCache(uid, graphId);
     res.json({ success: true, nodeId });
   } catch (error: any) {
     if (error.message === 'Unauthorized') {
@@ -387,6 +393,7 @@ export async function createRelationshipHandler(req: Request, res: Response): Pr
     );
 
     const createdRel = await accessLayer.createRelationship(uid, graphId, relationship);
+    queryService.invalidateCache(uid, graphId);
     res.status(201).json(createdRel);
   } catch (error: any) {
     if (error.message === 'Unauthorized') {
@@ -415,6 +422,7 @@ export async function deleteRelationshipHandler(req: Request, res: Response): Pr
     const uid = getUserId(req);
 
     await accessLayer.deleteRelationship(uid, graphId, relId);
+    queryService.invalidateCache(uid, graphId);
     res.json({ success: true, relId });
   } catch (error: any) {
     if (error.message === 'Unauthorized') {

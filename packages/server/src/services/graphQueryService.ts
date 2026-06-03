@@ -8,6 +8,7 @@
 
 import { getFirestore } from '../config/firebaseAdmin';
 import { KnowledgeGraphAccessLayer } from './knowledgeGraphAccess/KnowledgeGraphAccessLayer';
+import { cache, CACHE_TTL } from './cacheService';
 import type { NodeBasedKnowledgeGraph, GraphNode } from '../types/nodeBasedKnowledgeGraph';
 import type {
   LearningPathSummary,
@@ -20,6 +21,26 @@ import type {
 } from '../types/graphQueries';
 
 const accessLayer = new KnowledgeGraphAccessLayer();
+
+function cacheKeyLearningPaths(uid: string): string {
+  return `graphQuery:learningPaths:${uid}`;
+}
+
+function cacheKeyGraphSummary(uid: string, graphId: string): string {
+  return `graphQuery:summary:${uid}:${graphId}`;
+}
+
+function cacheKeyConcepts(uid: string, graphId: string, includeRelationships: boolean, groupByLayer: boolean): string {
+  return `graphQuery:concepts:${uid}:${graphId}:${includeRelationships}:${groupByLayer}`;
+}
+
+function cacheKeyConceptDetail(uid: string, graphId: string, conceptId: string): string {
+  return `graphQuery:conceptDetail:${uid}:${graphId}:${conceptId}`;
+}
+
+function cacheKeyMindMap(uid: string, graphId: string, expandAll: boolean): string {
+  return `graphQuery:mindmap:${uid}:${graphId}:${expandAll}`;
+}
 
 /**
  * Get all graph IDs for a user
@@ -40,9 +61,29 @@ async function getAllGraphIds(uid: string): Promise<string[]> {
  */
 export class GraphQueryService {
   /**
+   * Invalidate cached query results for a user and optionally a specific graph.
+   * Call this after any graph mutation.
+   */
+  invalidateCache(uid: string, graphId?: string): void {
+    if (graphId) {
+      cache.clearPattern(`^graphQuery:.*:${uid}:${graphId}`);
+    }
+    cache.delete(cacheKeyLearningPaths(uid));
+    if (!graphId) {
+      cache.clearPattern(`^graphQuery:.*:${uid}`);
+    }
+  }
+
+  /**
    * Get learning paths summary for MentorPage
    */
   async getLearningPathsSummary(uid: string): Promise<LearningPathSummary[]> {
+    const cacheKey = cacheKeyLearningPaths(uid);
+    const cached = cache.get<LearningPathSummary[]>(cacheKey);
+    if (cached) {
+      return cached;
+    }
+
     const graphIds = await getAllGraphIds(uid);
     const summaries: LearningPathSummary[] = [];
 
@@ -50,20 +91,20 @@ export class GraphQueryService {
       try {
         const graph = await accessLayer.getGraph(uid, graphId);
         const summary = this.extractLearningPathSummary(graph);
-        
+
         // Filter out incomplete/abandoned graphs:
         // - Must have either a seed concept OR a LearningGoal node
         // - Must have at least one concept OR a valid goal with description
         const hasSeedConcept = summary.seedConcept !== null;
         const hasGoal = summary.title !== 'Untitled Learning Path' && summary.description !== '';
         const hasConcepts = summary.conceptCount > 0;
-        
+
         // Debug: Check if seedConceptId exists in nodes
         if (!hasSeedConcept && graph.seedConceptId && graph.nodes) {
           const seedNodeExists = graph.nodes[graph.seedConceptId] !== undefined;
           console.warn(`Graph ${graphId}: seedConceptId="${graph.seedConceptId}" exists in nodes: ${seedNodeExists}. Node IDs: ${Object.keys(graph.nodes).slice(0, 5).join(', ')}...`);
         }
-        
+
         // Only include graphs that are actually started (have seed concept or goal) and have content
         if ((hasSeedConcept || hasGoal) && (hasConcepts || hasGoal)) {
           summaries.push(summary);
@@ -78,13 +119,21 @@ export class GraphQueryService {
     }
 
     // Sort by updatedAt descending
-    return summaries.sort((a, b) => b.updatedAt - a.updatedAt);
+    const result = summaries.sort((a, b) => b.updatedAt - a.updatedAt);
+    cache.set(cacheKey, result, CACHE_TTL.GRAPH_QUERY);
+    return result;
   }
 
   /**
    * Get graph summary with goal and stats
    */
   async getGraphSummary(uid: string, graphId: string): Promise<GraphSummary> {
+    const cacheKey = cacheKeyGraphSummary(uid, graphId);
+    const cached = cache.get<GraphSummary>(cacheKey);
+    if (cached) {
+      return cached;
+    }
+
     const graph = await accessLayer.getGraph(uid, graphId);
 
     // Defensive check: nodes might be undefined for legacy/incomplete graphs
@@ -131,7 +180,7 @@ export class GraphQueryService {
       }
     }
 
-    return {
+    const result = {
       id: graph.id,
       goal,
       milestones,
@@ -140,6 +189,8 @@ export class GraphQueryService {
       seedConcept,
       updatedAt: graph.updatedAt,
     };
+    cache.set(cacheKey, result, CACHE_TTL.GRAPH_QUERY);
+    return result;
   }
 
   /**
@@ -154,6 +205,12 @@ export class GraphQueryService {
     }
   ): Promise<ConceptsByLayerResponse> {
     const { includeRelationships = true, groupByLayer = true } = options || {};
+    const cacheKey = cacheKeyConcepts(uid, graphId, includeRelationships, groupByLayer);
+    const cached = cache.get<ConceptsByLayerResponse>(cacheKey);
+    if (cached) {
+      return cached;
+    }
+
     const graph = await accessLayer.getGraph(uid, graphId);
 
     // Defensive check: nodes might be undefined for legacy/incomplete graphs
@@ -197,11 +254,13 @@ export class GraphQueryService {
     // Get layer info
     const layerInfo = this.extractLayerInfo(graph);
 
-    return {
+    const result = {
       concepts,
       groupedByLayer,
       layerInfo,
     };
+    cache.set(cacheKey, result, CACHE_TTL.GRAPH_QUERY);
+    return result;
   }
 
   /**
@@ -212,6 +271,12 @@ export class GraphQueryService {
     graphId: string,
     conceptId: string
   ): Promise<ConceptDetail> {
+    const cacheKey = cacheKeyConceptDetail(uid, graphId, conceptId);
+    const cached = cache.get<ConceptDetail>(cacheKey);
+    if (cached) {
+      return cached;
+    }
+
     const graph = await accessLayer.getGraph(uid, graphId);
     
     // Defensive check: nodes might be undefined for legacy/incomplete graphs
@@ -289,13 +354,15 @@ export class GraphQueryService {
       prerequisites: this.extractRelatedConcepts(graph, conceptId, 'hasPrerequisite', 'source'),
     };
 
-    return {
+    const result = {
       concept,
       lesson,
       flashcards,
       metadata,
       relationships,
     };
+    cache.set(cacheKey, result, CACHE_TTL.GRAPH_QUERY);
+    return result;
   }
 
   /**
@@ -602,6 +669,13 @@ export class GraphQueryService {
   async getMindMapStructure(uid: string, graphId: string, options?: {
     expandAll?: boolean;
   }): Promise<MindMapResponse> {
+    const expandAll = options?.expandAll ?? false;
+    const cacheKey = cacheKeyMindMap(uid, graphId, expandAll);
+    const cached = cache.get<MindMapResponse>(cacheKey);
+    if (cached) {
+      return cached;
+    }
+
     const graph = await accessLayer.getGraph(uid, graphId);
 
     // Defensive check: nodes might be undefined for legacy/incomplete graphs
@@ -741,13 +815,15 @@ export class GraphQueryService {
     const layerCount = sortedLayers.length;
     const conceptCount = nodes.filter(n => n.nodeType === 'Concept').length;
 
-    return {
+    const result = {
       nodes,
       seedNodeId: seedNode.id,
       totalNodes: nodes.length,
       layerCount,
       conceptCount,
     };
+    cache.set(cacheKey, result, CACHE_TTL.GRAPH_QUERY);
+    return result;
   }
 
   /**

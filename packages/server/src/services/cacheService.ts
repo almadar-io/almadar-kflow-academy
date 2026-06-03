@@ -85,5 +85,6 @@ export const CACHE_TTL = {
   USER_PREFERENCES: 10 * 60 * 1000, // 10 minutes
   RECOMMENDATIONS: 15 * 60 * 1000, // 15 minutes
   ACHIEVEMENTS: 10 * 60 * 1000, // 10 minutes
+  GRAPH_QUERY: 5 * 60 * 1000, // 5 minutes
 };
 

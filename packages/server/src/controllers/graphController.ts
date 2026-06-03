@@ -7,7 +7,10 @@ import {
   upsertUserGraph,
   UpsertConceptGraphPayload,
 } from '../services/graphService';
+import { GraphQueryService } from '../services/graphQueryService';
 import { upsertUser } from '../services/userService';
+
+const queryService = new GraphQueryService();
 
 type GraphResponse = { graph: StoredConceptGraph };
 type GraphListResponse = { graphs: StoredConceptGraph[] };
@@ -111,6 +114,7 @@ export const upsertGraph = async (
     }
 
     const graph = await upsertUserGraph(uid, payload);
+    queryService.invalidateCache(uid, payload.id);
     return res.json({ graph });
   } catch (error) {
     console.error('Failed to upsert graph:', error);
@@ -140,6 +144,7 @@ export const removeGraph = async (
     const { graphId } = req.params;
 
     await deleteUserGraph(uid, graphId);
+    queryService.invalidateCache(uid, graphId);
 
     return res.json({ success: true });
   } catch (error) {

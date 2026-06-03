@@ -14,8 +14,11 @@ import {
 import { exportToGraphML, type GraphMLExportOptions } from '../services/graphmlExportService';
 import { getUserGraphById } from '../services/graphService';
 import { getGoalsByGraphId } from '../services/goalService';
+import { GraphQueryService } from '../services/graphQueryService';
 import type { ConvertToNodeBasedOptions } from '../services/knowledgeGraphService';
 import { generateNodeId } from '../types/nodeBasedKnowledgeGraph';
+
+const queryService = new GraphQueryService();
 
 /**
  * Convert ConceptGraph to NodeBasedKnowledgeGraph
@@ -64,6 +67,7 @@ export async function convertGraphHandler(req: Request, res: Response): Promise<
 
     // Save NodeBasedKnowledgeGraph to Firestore
     await saveNodeBasedKnowledgeGraph(uid, result.nodeBasedGraph);
+    queryService.invalidateCache(uid, graphId);
 
     res.json(result);
   } catch (error) {
@@ -288,6 +292,7 @@ export async function updateLayerGoalHandler(req: Request, res: Response): Promi
 
     // Save updated NodeBasedKnowledgeGraph
     await saveNodeBasedKnowledgeGraph(uid, nodeBasedGraph);
+    queryService.invalidateCache(uid, graphId);
 
     // Also update the ConceptGraph so the frontend can see the changes
     const conceptGraph = await getUserGraphById(uid, graphId);
