@@ -12,6 +12,7 @@ import {
   Moon
 } from 'lucide-react';
 import { ThemeProvider } from '../../../contexts/ThemeContext';
+import kflowLogo from '../../../assets/kflow-logo.svg';
 
 const meta: Meta<typeof Sidebar> = {
   title: 'Organisms/Sidebar',
@@ -92,11 +93,7 @@ export const Default: Story = {
 export const WithLogo: Story = {
   args: {
     brandName: 'KFlow',
-    logo: (
-      <div className="h-8 w-8 bg-indigo-600 rounded-lg flex items-center justify-center">
-        <span className="text-white font-bold">K</span>
-      </div>
-    ),
+    logo: <img src={kflowLogo} alt="KFlow" className="h-8 w-8" />,
     items: defaultItems,
     footerContent: <ThemeToggle />,
     userSection: <UserAvatar />,
@@ -176,11 +173,7 @@ export const Interactive: Story = {
 export const FullExample: Story = {
   args: {
     brandName: 'KFlow',
-    logo: (
-      <div className="h-8 w-8 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-lg flex items-center justify-center">
-        <span className="text-white font-bold">K</span>
-      </div>
-    ),
+    logo: <img src={kflowLogo} alt="KFlow" className="h-8 w-8" />,
     items: [
       { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard, active: true },
       { id: 'learn', label: 'Learn', icon: Brain, badge: 2 },

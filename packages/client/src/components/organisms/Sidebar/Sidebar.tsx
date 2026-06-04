@@ -12,6 +12,7 @@ import { Typography } from '../../atoms/Typography';
 import { Badge } from '../../atoms/Badge';
 import { Divider } from '../../atoms/Divider';
 import { cn } from '../../../utils/theme';
+import kflowLogo from '../../../assets/kflow-logo.svg';
 
 export interface SidebarItem {
   /**
@@ -239,9 +240,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
           ) : logoSrc ? (
             <img src={logoSrc} alt={brandName} className="h-8 w-8" />
           ) : (
-            <div className="h-8 w-8 bg-indigo-600 rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-sm">K</span>
-            </div>
+            <img src={kflowLogo} alt={brandName} className="h-8 w-8" />
           )}
           
           {/* Brand name */}
