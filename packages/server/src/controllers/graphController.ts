@@ -114,7 +114,7 @@ export const upsertGraph = async (
     }
 
     const graph = await upsertUserGraph(uid, payload);
-    queryService.invalidateCache(uid, payload.id);
+    await queryService.invalidateCache(uid, payload.id);
     return res.json({ graph });
   } catch (error) {
     console.error('Failed to upsert graph:', error);
@@ -144,7 +144,7 @@ export const removeGraph = async (
     const { graphId } = req.params;
 
     await deleteUserGraph(uid, graphId);
-    queryService.invalidateCache(uid, graphId);
+    await queryService.invalidateCache(uid, graphId);
 
     return res.json({ success: true });
   } catch (error) {

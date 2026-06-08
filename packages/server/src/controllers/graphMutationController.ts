@@ -78,7 +78,7 @@ export async function applyMutationsHandler(
 
     // Save updated graph with version check (will merge if modified)
     const savedGraph = await accessLayer.saveGraph(uid, updatedGraph, expectedVersion);
-    queryService.invalidateCache(uid, graphId);
+    await queryService.invalidateCache(uid, graphId);
 
     // Return updated graph (even if there were errors - client can check errors in response)
     res.json(savedGraph);

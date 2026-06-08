@@ -1,90 +1,188 @@
-/**
- * Simple in-memory cache for statistics and other frequently accessed data
- * For production, consider using Redis or a more robust caching solution
- */
+import { getRedisClient } from "../config/redis";
 
 interface CacheEntry<T> {
   data: T;
   timestamp: number;
-  ttl: number; // Time to live in milliseconds
+  ttl: number;
 }
 
 class SimpleCache {
-  private cache: Map<string, CacheEntry<any>> = new Map();
+  private store: Map<string, CacheEntry<any>> = new Map();
 
-  /**
-   * Get cached value if it exists and hasn't expired
-   */
   get<T>(key: string): T | null {
-    const entry = this.cache.get(key);
+    const entry = this.store.get(key);
     if (!entry) {
       return null;
     }
-
     const now = Date.now();
     if (now - entry.timestamp > entry.ttl) {
-      // Entry expired, remove it
-      this.cache.delete(key);
+      this.store.delete(key);
       return null;
     }
-
     return entry.data as T;
   }
 
-  /**
-   * Set a cached value with TTL
-   */
   set<T>(key: string, data: T, ttlMs: number): void {
-    this.cache.set(key, {
+    this.store.set(key, {
       data,
       timestamp: Date.now(),
       ttl: ttlMs,
     });
   }
 
-  /**
-   * Delete a cached value
-   */
   delete(key: string): void {
-    this.cache.delete(key);
+    this.store.delete(key);
   }
 
-  /**
-   * Clear all cache entries matching a pattern
-   */
   clearPattern(pattern: string): void {
     const regex = new RegExp(pattern);
-    for (const key of this.cache.keys()) {
+    for (const key of this.store.keys()) {
       if (regex.test(key)) {
-        this.cache.delete(key);
+        this.store.delete(key);
       }
     }
   }
 
-  /**
-   * Clear all cache
-   */
   clear(): void {
-    this.cache.clear();
+    this.store.clear();
   }
 
-  /**
-   * Get cache size (for monitoring)
-   */
   size(): number {
-    return this.cache.size;
+    return this.store.size;
+  }
+
+  keys(): IterableIterator<string> {
+    return this.store.keys();
   }
 }
 
-// Singleton cache instance
 export const cache = new SimpleCache();
 
-// Cache TTL constants (in milliseconds)
 export const CACHE_TTL = {
-  STATISTICS: 5 * 60 * 1000, // 5 minutes
-  USER_PREFERENCES: 10 * 60 * 1000, // 10 minutes
-  RECOMMENDATIONS: 15 * 60 * 1000, // 15 minutes
-  ACHIEVEMENTS: 10 * 60 * 1000, // 10 minutes
-  GRAPH_QUERY: 5 * 60 * 1000, // 5 minutes
+  STATISTICS: 30 * 60 * 1000,
+  USER_PREFERENCES: 60 * 60 * 1000,
+  RECOMMENDATIONS: 60 * 60 * 1000,
+  ACHIEVEMENTS: 60 * 60 * 1000,
+  GRAPH_QUERY: 30 * 60 * 1000,
+  JUMP_BACK_IN: 30 * 60 * 1000,
+  ENROLLMENTS: 30 * 60 * 1000,
+  USER_PROGRESS: 15 * 60 * 1000,
+  LEARNING_PATHS: 30 * 60 * 1000,
+  GRAPH: 30 * 60 * 1000,
+  GRAPHOLOGY: 30 * 60 * 1000,
 };
 
+const KEY_PREFIX = "kflow:";
+
+function prefixKey(key: string): string {
+  return key.startsWith(KEY_PREFIX) ? key : `${KEY_PREFIX}${key}`;
+}
+
+export class HybridCache {
+  private memory = new SimpleCache();
+
+  private get redis() {
+    return getRedisClient();
+  }
+
+  async get<T>(key: string): Promise<T | null> {
+    const fullKey = prefixKey(key);
+
+    const redis = this.redis;
+    if (redis) {
+      try {
+        const raw = await redis.get(fullKey);
+        if (raw) {
+          return JSON.parse(raw) as T;
+        }
+        return null;
+      } catch {
+        // fall through to memory
+      }
+    }
+
+    return this.memory.get<T>(fullKey);
+  }
+
+  async set<T>(key: string, data: T, ttlMs: number): Promise<void> {
+    const fullKey = prefixKey(key);
+
+    const redis = this.redis;
+    if (redis) {
+      try {
+        await redis.setex(fullKey, Math.ceil(ttlMs / 1000), JSON.stringify(data));
+        return;
+      } catch {
+        // fall through to memory
+      }
+    }
+
+    this.memory.set(fullKey, data, ttlMs);
+  }
+
+  async delete(key: string): Promise<void> {
+    const fullKey = prefixKey(key);
+
+    const redis = this.redis;
+    if (redis) {
+      try {
+        await redis.del(fullKey);
+      } catch {
+        // ignore
+      }
+    }
+
+    this.memory.delete(fullKey);
+  }
+
+  async deletePattern(pattern: string): Promise<void> {
+    const fullPattern = prefixKey(pattern);
+
+    const redis = this.redis;
+    if (redis) {
+      try {
+        let cursor = "0";
+        do {
+          const reply = await redis.scan(cursor, "MATCH", `${fullPattern}*`, "COUNT", 100);
+          cursor = reply[0];
+          const keys = reply[1];
+          if (keys.length > 0) {
+            await redis.del(...keys);
+          }
+        } while (cursor !== "0");
+      } catch {
+        // fall through to memory
+      }
+    }
+
+    const regex = new RegExp(fullPattern);
+    for (const key of this.memory.keys()) {
+      if (regex.test(key)) {
+        this.memory.delete(key);
+      }
+    }
+  }
+
+  async clear(): Promise<void> {
+    const redis = this.redis;
+    if (redis) {
+      try {
+        let cursor = "0";
+        do {
+          const reply = await redis.scan(cursor, "MATCH", `${KEY_PREFIX}*`, "COUNT", 100);
+          cursor = reply[0];
+          const keys = reply[1];
+          if (keys.length > 0) {
+            await redis.del(...keys);
+          }
+        } while (cursor !== "0");
+      } catch {
+        // ignore
+      }
+    }
+
+    this.memory.clear();
+  }
+}
+
+export const hybridCache = new HybridCache();

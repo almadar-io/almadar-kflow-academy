@@ -8,7 +8,7 @@
 
 import { getFirestore } from '../config/firebaseAdmin';
 import { KnowledgeGraphAccessLayer } from './knowledgeGraphAccess/KnowledgeGraphAccessLayer';
-import { cache, CACHE_TTL } from './cacheService';
+import { cache, CACHE_TTL, hybridCache } from './cacheService';
 import type { NodeBasedKnowledgeGraph, GraphNode } from '../types/nodeBasedKnowledgeGraph';
 import type {
   LearningPathSummary,
@@ -64,13 +64,13 @@ export class GraphQueryService {
    * Invalidate cached query results for a user and optionally a specific graph.
    * Call this after any graph mutation.
    */
-  invalidateCache(uid: string, graphId?: string): void {
+  async invalidateCache(uid: string, graphId?: string): Promise<void> {
     if (graphId) {
-      cache.clearPattern(`^graphQuery:.*:${uid}:${graphId}`);
+      await hybridCache.deletePattern(`graphQuery:.*:${uid}:${graphId}`);
     }
-    cache.delete(cacheKeyLearningPaths(uid));
+    await hybridCache.delete(cacheKeyLearningPaths(uid));
     if (!graphId) {
-      cache.clearPattern(`^graphQuery:.*:${uid}`);
+      await hybridCache.deletePattern(`graphQuery:.*:${uid}`);
     }
   }
 
@@ -79,7 +79,7 @@ export class GraphQueryService {
    */
   async getLearningPathsSummary(uid: string): Promise<LearningPathSummary[]> {
     const cacheKey = cacheKeyLearningPaths(uid);
-    const cached = cache.get<LearningPathSummary[]>(cacheKey);
+    const cached = await hybridCache.get<LearningPathSummary[]>(cacheKey);
     if (cached) {
       return cached;
     }
@@ -92,35 +92,27 @@ export class GraphQueryService {
         const graph = await accessLayer.getGraph(uid, graphId);
         const summary = this.extractLearningPathSummary(graph);
 
-        // Filter out incomplete/abandoned graphs:
-        // - Must have either a seed concept OR a LearningGoal node
-        // - Must have at least one concept OR a valid goal with description
         const hasSeedConcept = summary.seedConcept !== null;
         const hasGoal = summary.title !== 'Untitled Learning Path' && summary.description !== '';
         const hasConcepts = summary.conceptCount > 0;
 
-        // Debug: Check if seedConceptId exists in nodes
         if (!hasSeedConcept && graph.seedConceptId && graph.nodes) {
           const seedNodeExists = graph.nodes[graph.seedConceptId] !== undefined;
           console.warn(`Graph ${graphId}: seedConceptId="${graph.seedConceptId}" exists in nodes: ${seedNodeExists}. Node IDs: ${Object.keys(graph.nodes).slice(0, 5).join(', ')}...`);
         }
 
-        // Only include graphs that are actually started (have seed concept or goal) and have content
         if ((hasSeedConcept || hasGoal) && (hasConcepts || hasGoal)) {
           summaries.push(summary);
         } else {
-          // Log skipped incomplete graphs for debugging
           console.warn(`Skipping incomplete graph ${graphId}: seedConcept=${hasSeedConcept} (seedConceptId="${graph.seedConceptId}"), goal=${hasGoal}, concepts=${summary.conceptCount}, title="${summary.title}"`);
         }
       } catch (error) {
-        // Skip graphs that can't be loaded
         console.error(`Failed to load graph ${graphId}:`, error);
       }
     }
 
-    // Sort by updatedAt descending
     const result = summaries.sort((a, b) => b.updatedAt - a.updatedAt);
-    cache.set(cacheKey, result, CACHE_TTL.GRAPH_QUERY);
+    await hybridCache.set(cacheKey, result, CACHE_TTL.LEARNING_PATHS);
     return result;
   }
 
@@ -129,17 +121,14 @@ export class GraphQueryService {
    */
   async getGraphSummary(uid: string, graphId: string): Promise<GraphSummary> {
     const cacheKey = cacheKeyGraphSummary(uid, graphId);
-    const cached = cache.get<GraphSummary>(cacheKey);
+    const cached = await hybridCache.get<GraphSummary>(cacheKey);
     if (cached) {
       return cached;
     }
 
     const graph = await accessLayer.getGraph(uid, graphId);
-
-    // Defensive check: nodes might be undefined for legacy/incomplete graphs
     const nodes = graph.nodes || {};
 
-    // Extract goal
     const goalNodeIds = graph.nodeTypes?.LearningGoal || [];
     let goal = null;
     if (goalNodeIds.length > 0) {
@@ -147,7 +136,7 @@ export class GraphQueryService {
       if (goalNode) {
         goal = {
           id: goalNode.id,
-          title: goalNode.properties.name || '',  // Use name property
+          title: goalNode.properties.name || '',
           description: goalNode.properties.description || '',
           type: goalNode.properties.type || '',
           target: goalNode.properties.target || '',
@@ -155,20 +144,18 @@ export class GraphQueryService {
       }
     }
 
-    // Extract milestones
     const milestoneNodeIds = graph.nodeTypes?.Milestone || [];
     const milestones = milestoneNodeIds
       .map(id => nodes[id])
       .filter(Boolean)
       .map(node => ({
         id: node.id,
-        title: node.properties.name || '',  // Use name property
+        title: node.properties.name || '',
         description: node.properties.description || '',
         targetDate: node.properties.targetDate,
         completed: node.properties.completed || false,
       }));
 
-    // Extract seed concept
     let seedConcept = null;
     if (graph.seedConceptId) {
       const seedNode = nodes[graph.seedConceptId];
@@ -189,7 +176,7 @@ export class GraphQueryService {
       seedConcept,
       updatedAt: graph.updatedAt,
     };
-    cache.set(cacheKey, result, CACHE_TTL.GRAPH_QUERY);
+    await hybridCache.set(cacheKey, result, CACHE_TTL.GRAPH_QUERY);
     return result;
   }
 
@@ -206,14 +193,13 @@ export class GraphQueryService {
   ): Promise<ConceptsByLayerResponse> {
     const { includeRelationships = true, groupByLayer = true } = options || {};
     const cacheKey = cacheKeyConcepts(uid, graphId, includeRelationships, groupByLayer);
-    const cached = cache.get<ConceptsByLayerResponse>(cacheKey);
+    const cached = await hybridCache.get<ConceptsByLayerResponse>(cacheKey);
     if (cached) {
       return cached;
     }
 
     const graph = await accessLayer.getGraph(uid, graphId);
 
-    // Defensive check: nodes might be undefined for legacy/incomplete graphs
     if (!graph.nodes) {
       return {
         concepts: [],
@@ -233,13 +219,11 @@ export class GraphQueryService {
       }
     }
 
-    // Sort by layer and sequence
     concepts.sort((a, b) => {
       if (a.layer !== b.layer) return a.layer - b.layer;
       return (a.sequence || 0) - (b.sequence || 0);
     });
 
-    // Group by layer if requested
     let groupedByLayer: Record<number, ConceptDisplay[]> | undefined;
     if (groupByLayer) {
       groupedByLayer = {};
@@ -251,7 +235,6 @@ export class GraphQueryService {
       }
     }
 
-    // Get layer info
     const layerInfo = this.extractLayerInfo(graph);
 
     const result = {
@@ -259,7 +242,7 @@ export class GraphQueryService {
       groupedByLayer,
       layerInfo,
     };
-    cache.set(cacheKey, result, CACHE_TTL.GRAPH_QUERY);
+    await hybridCache.set(cacheKey, result, CACHE_TTL.GRAPH_QUERY);
     return result;
   }
 
@@ -272,28 +255,25 @@ export class GraphQueryService {
     conceptId: string
   ): Promise<ConceptDetail> {
     const cacheKey = cacheKeyConceptDetail(uid, graphId, conceptId);
-    const cached = cache.get<ConceptDetail>(cacheKey);
+    const cached = await hybridCache.get<ConceptDetail>(cacheKey);
     if (cached) {
       return cached;
     }
 
     const graph = await accessLayer.getGraph(uid, graphId);
-    
-    // Defensive check: nodes might be undefined for legacy/incomplete graphs
+
     if (!graph.nodes) {
       throw new Error(`Graph ${graphId} has no nodes`);
     }
-    
+
     const conceptNode = graph.nodes[conceptId];
 
     if (!conceptNode || conceptNode.type !== 'Concept') {
       throw new Error(`Concept ${conceptId} not found`);
     }
 
-    // Convert to ConceptDisplay
     const concept = this.convertNodeToConceptDisplay(conceptNode, graph, true);
 
-    // Extract lesson
     const lessonRel = graph.relationships.find(
       rel => rel.source === conceptId && rel.type === 'hasLesson'
     );
@@ -309,7 +289,6 @@ export class GraphQueryService {
       }
     }
 
-    // Extract flashcards
     const flashCardRels = graph.relationships.filter(
       rel => rel.source === conceptId && rel.type === 'hasFlashCard'
     );
@@ -322,7 +301,6 @@ export class GraphQueryService {
         back: node.properties.back || '',
       }));
 
-    // Extract metadata
     const metadataRel = graph.relationships.find(
       rel => rel.source === conceptId && rel.type === 'hasMetadata'
     );
@@ -330,11 +308,8 @@ export class GraphQueryService {
     if (metadataRel) {
       const metadataNode = graph.nodes[metadataRel.target];
       if (metadataNode?.type === 'ConceptMetadata') {
-        // Extract Q&A from metadata if available
-        // Note: answerQuestion stores Q&A in qaPairs property
         const qaPairs = metadataNode.properties.qaPairs || [];
         if (qaPairs.length > 0) {
-          // Convert qaPairs format to qa format for display
           const qa = qaPairs.map((pair: { question: string; answer: string }) => ({
             question: pair.question,
             answer: pair.answer,
@@ -344,10 +319,6 @@ export class GraphQueryService {
       }
     }
 
-    // Extract relationships with names
-    // Note: hasParent: concept -> hasParent -> parent (concept is source, parent is target)
-    // hasChild: concept -> hasChild -> child (concept is source, child is target)
-    // hasPrerequisite: concept -> hasPrerequisite -> prerequisite (concept is source, prerequisite is target)
     const relationships = {
       parents: this.extractRelatedConcepts(graph, conceptId, 'hasParent', 'source'),
       children: this.extractRelatedConcepts(graph, conceptId, 'hasChild', 'source'),
@@ -361,7 +332,7 @@ export class GraphQueryService {
       metadata,
       relationships,
     };
-    cache.set(cacheKey, result, CACHE_TTL.GRAPH_QUERY);
+    await hybridCache.set(cacheKey, result, CACHE_TTL.GRAPH_QUERY);
     return result;
   }
 
@@ -671,7 +642,7 @@ export class GraphQueryService {
   }): Promise<MindMapResponse> {
     const expandAll = options?.expandAll ?? false;
     const cacheKey = cacheKeyMindMap(uid, graphId, expandAll);
-    const cached = cache.get<MindMapResponse>(cacheKey);
+    const cached = await hybridCache.get<MindMapResponse>(cacheKey);
     if (cached) {
       return cached;
     }
@@ -822,7 +793,7 @@ export class GraphQueryService {
       layerCount,
       conceptCount,
     };
-    cache.set(cacheKey, result, CACHE_TTL.GRAPH_QUERY);
+    await hybridCache.set(cacheKey, result, CACHE_TTL.GRAPH_QUERY);
     return result;
   }
 

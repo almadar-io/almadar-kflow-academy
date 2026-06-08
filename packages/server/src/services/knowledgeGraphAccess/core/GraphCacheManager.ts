@@ -1,98 +1,70 @@
 /**
  * Graph Cache Manager
- * 
+ *
  * Handles caching for NodeBasedKnowledgeGraph and graphology graphs.
+ * Node-based graphs use the shared HybridCache (Redis + memory).
+ * Graphology graphs use a private in-memory cache (not serializable to Redis).
  */
 
-import { cache } from '../../cacheService';
+import { hybridCache, CACHE_TTL } from '../../cacheService';
 import type { NodeBasedKnowledgeGraph } from '../../../types/nodeBasedKnowledgeGraph';
 import type Graph from 'graphology';
 
-export class GraphCacheManager {
-  private cacheTTL: number = 5 * 60 * 1000; // 5 minutes
+// Private in-memory store for graphology graphs (not JSON-serializable)
+const graphologyStore = new Map<string, Graph>();
 
-  /**
-   * Get cache key for NodeBasedKnowledgeGraph
-   */
+export class GraphCacheManager {
+  private graphologyTTL: number = CACHE_TTL.GRAPHOLOGY;
+
   getGraphCacheKey(uid: string, graphId: string): string {
     return `graph:${uid}:${graphId}`;
   }
 
-  /**
-   * Get cache key for graphology graph
-   */
   getGraphologyCacheKey(uid: string, graphId: string): string {
     return `graphology:${uid}:${graphId}`;
   }
 
-  /**
-   * Get cached NodeBasedKnowledgeGraph
-   */
-  getCachedGraph(uid: string, graphId: string): NodeBasedKnowledgeGraph | null {
+  async getCachedGraph(uid: string, graphId: string): Promise<NodeBasedKnowledgeGraph | null> {
     const cacheKey = this.getGraphCacheKey(uid, graphId);
-    return cache.get<NodeBasedKnowledgeGraph>(cacheKey) || null;
+    return hybridCache.get<NodeBasedKnowledgeGraph>(cacheKey);
   }
 
-  /**
-   * Set cached NodeBasedKnowledgeGraph
-   */
-  setCachedGraph(uid: string, graphId: string, graph: NodeBasedKnowledgeGraph): void {
+  async setCachedGraph(uid: string, graphId: string, graph: NodeBasedKnowledgeGraph): Promise<void> {
     const cacheKey = this.getGraphCacheKey(uid, graphId);
-    cache.set(cacheKey, graph, this.cacheTTL);
-    // Invalidate graphology cache when node-based graph changes
+    await hybridCache.set(cacheKey, graph, CACHE_TTL.GRAPH);
     this.invalidateGraphologyCache(uid, graphId);
   }
 
-  /**
-   * Get cached graphology graph
-   */
   getCachedGraphologyGraph(uid: string, graphId: string): Graph | null {
     const cacheKey = this.getGraphologyCacheKey(uid, graphId);
-    return cache.get<Graph>(cacheKey) || null;
+    return graphologyStore.get(cacheKey) || null;
   }
 
-  /**
-   * Set cached graphology graph
-   */
   setCachedGraphologyGraph(uid: string, graphId: string, graph: Graph): void {
     const cacheKey = this.getGraphologyCacheKey(uid, graphId);
-    cache.set(cacheKey, graph, this.cacheTTL);
+    graphologyStore.set(cacheKey, graph);
+    // No TTL eviction for graphology — cleared on invalidation or process restart
   }
 
-  /**
-   * Invalidate graphology cache only
-   */
   invalidateGraphologyCache(uid: string, graphId: string): void {
-    cache.delete(this.getGraphologyCacheKey(uid, graphId));
+    graphologyStore.delete(this.getGraphologyCacheKey(uid, graphId));
   }
 
-  /**
-   * Invalidate all cache for a graph
-   */
-  invalidateCache(uid: string, graphId: string): void {
-    cache.delete(this.getGraphCacheKey(uid, graphId));
-    cache.delete(this.getGraphologyCacheKey(uid, graphId));
+  async invalidateCache(uid: string, graphId: string): Promise<void> {
+    await hybridCache.delete(this.getGraphCacheKey(uid, graphId));
+    this.invalidateGraphologyCache(uid, graphId);
   }
 
-  /**
-   * Clear all graph-related cache
-   */
-  clearAllCache(): void {
-    cache.clearPattern('^graph:');
-    cache.clearPattern('^graphology:');
+  async clearAllCache(): Promise<void> {
+    await hybridCache.deletePattern('^graph:');
+    graphologyStore.clear();
   }
 
-  /**
-   * Set cache TTL
-   */
   setCacheTTL(ttl: number): void {
-    this.cacheTTL = ttl;
+    this.graphologyTTL = ttl;
   }
 
-  /**
-   * Get current cache TTL
-   */
   getCacheTTL(): number {
-    return this.cacheTTL;
+    return this.graphologyTTL;
   }
 }

@@ -52,6 +52,23 @@ env:
     availability:
       - RUNTIME
 
+  # Redis cache (optional — falls back to in-memory when absent)
+  - variable: REDIS_URL
+    secret: REDIS_URL
+    availability:
+      - RUNTIME
+
+  # Upstash REST API (optional — for future REST-based cache access)
+  - variable: UPSTASH_REDIS_REST_URL
+    value: "https://capital-skunk-81313.upstash.io"
+    availability:
+      - RUNTIME
+
+  - variable: UPSTASH_REDIS_REST_TOKEN
+    secret: UPSTASH_REDIS_REST_TOKEN
+    availability:
+      - RUNTIME
+
   # LLM API Keys (from Cloud Secret Manager)
   - variable: OPENAI_API_KEY
     secret: OPENAI_API_KEY

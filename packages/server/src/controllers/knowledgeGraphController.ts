@@ -67,7 +67,7 @@ export async function convertGraphHandler(req: Request, res: Response): Promise<
 
     // Save NodeBasedKnowledgeGraph to Firestore
     await saveNodeBasedKnowledgeGraph(uid, result.nodeBasedGraph);
-    queryService.invalidateCache(uid, graphId);
+    await queryService.invalidateCache(uid, graphId);
 
     res.json(result);
   } catch (error) {
@@ -292,7 +292,7 @@ export async function updateLayerGoalHandler(req: Request, res: Response): Promi
 
     // Save updated NodeBasedKnowledgeGraph
     await saveNodeBasedKnowledgeGraph(uid, nodeBasedGraph);
-    queryService.invalidateCache(uid, graphId);
+    await queryService.invalidateCache(uid, graphId);
 
     // Also update the ConceptGraph so the frontend can see the changes
     const conceptGraph = await getUserGraphById(uid, graphId);

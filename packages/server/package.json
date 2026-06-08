@@ -24,6 +24,7 @@
     "graphology-indices": "^0.17.0",
     "graphology-shortest-path": "^2.1.0",
     "graphql": "^16.12.0",
+    "ioredis": "^5.11.1",
     "openai": "^4.20.1",
     "tiktoken": "^1.0.22",
     "type-graphql": "^2.0.0-rc.2"

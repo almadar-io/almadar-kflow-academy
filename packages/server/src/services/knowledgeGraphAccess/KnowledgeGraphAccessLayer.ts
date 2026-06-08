@@ -304,15 +304,15 @@ export class KnowledgeGraphAccessLayer {
   /**
    * Clear cache for a graph
    */
-  clearCache(uid: string, graphId: string): void {
-    this.cacheManager.invalidateCache(uid, graphId);
+  async clearCache(uid: string, graphId: string): Promise<void> {
+    await this.cacheManager.invalidateCache(uid, graphId);
   }
 
   /**
    * Clear all cache
    */
-  clearAllCache(): void {
-    this.cacheManager.clearAllCache();
+  async clearAllCache(): Promise<void> {
+    await this.cacheManager.clearAllCache();
   }
 
   // ==================== Publishing Query Methods ====================

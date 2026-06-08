@@ -12,6 +12,7 @@ import {
 import { generateConceptId } from '../utils/uuid';
 import { normalizeConcept } from '../utils/validation';
 import { KnowledgeGraphAccessLayer } from '../services/knowledgeGraphAccess/KnowledgeGraphAccessLayer';
+import { invalidateLearningPaths, invalidateJumpBackIn } from '../services/cacheInvalidation';
 import { createGraphNode, createRelationship, createEmptyNodeTypeIndex } from '../types/nodeBasedKnowledgeGraph';
 import type { NodeBasedKnowledgeGraph } from '../types/nodeBasedKnowledgeGraph';
 import { handleStreamResponse } from '../utils/streamHandler';
@@ -393,6 +394,8 @@ export async function createGraphWithGoalHandler(
               ],
             };
             await knowledgeGraphAccess.saveGraph(uid, nodeBasedGraph);
+            await invalidateLearningPaths(uid);
+            await invalidateJumpBackIn(uid);
 
             // Save the goal with graphId
             goal.graphId = graphId;
@@ -474,6 +477,8 @@ export async function createGraphWithGoalHandler(
       ],
     };
     await knowledgeGraphAccess.saveGraph(uid, nodeBasedGraph);
+    await invalidateLearningPaths(uid);
+    await invalidateJumpBackIn(uid);
 
     // Step 4: Save the goal with graphId
     const goalWithGraphId = {
