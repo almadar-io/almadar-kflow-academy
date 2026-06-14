@@ -66,11 +66,11 @@ export class GraphQueryService {
    */
   async invalidateCache(uid: string, graphId?: string): Promise<void> {
     if (graphId) {
-      await hybridCache.deletePattern(`graphQuery:.*:${uid}:${graphId}`);
+      await hybridCache.deletePattern(`graphQuery:*:${uid}:${graphId}`);
     }
     await hybridCache.delete(cacheKeyLearningPaths(uid));
     if (!graphId) {
-      await hybridCache.deletePattern(`graphQuery:.*:${uid}`);
+      await hybridCache.deletePattern(`graphQuery:*:${uid}`);
     }
   }
 
@@ -85,32 +85,37 @@ export class GraphQueryService {
     }
 
     const graphIds = await getAllGraphIds(uid);
-    const summaries: LearningPathSummary[] = [];
 
-    for (const graphId of graphIds) {
-      try {
-        const graph = await accessLayer.getGraph(uid, graphId);
-        const summary = this.extractLearningPathSummary(graph);
+    // Load every graph concurrently — each accessLayer.getGraph is independently
+    // cached per-graph, so the cold path was N serial Firestore round-trips.
+    const settled = await Promise.all(
+      graphIds.map(async (graphId): Promise<LearningPathSummary | null> => {
+        try {
+          const graph = await accessLayer.getGraph(uid, graphId);
+          const summary = this.extractLearningPathSummary(graph);
 
-        const hasSeedConcept = summary.seedConcept !== null;
-        const hasGoal = summary.title !== 'Untitled Learning Path' && summary.description !== '';
-        const hasConcepts = summary.conceptCount > 0;
+          const hasSeedConcept = summary.seedConcept !== null;
+          const hasGoal = summary.title !== 'Untitled Learning Path' && summary.description !== '';
+          const hasConcepts = summary.conceptCount > 0;
 
-        if (!hasSeedConcept && graph.seedConceptId && graph.nodes) {
-          const seedNodeExists = graph.nodes[graph.seedConceptId] !== undefined;
-          console.warn(`Graph ${graphId}: seedConceptId="${graph.seedConceptId}" exists in nodes: ${seedNodeExists}. Node IDs: ${Object.keys(graph.nodes).slice(0, 5).join(', ')}...`);
-        }
+          if (!hasSeedConcept && graph.seedConceptId && graph.nodes) {
+            const seedNodeExists = graph.nodes[graph.seedConceptId] !== undefined;
+            console.warn(`Graph ${graphId}: seedConceptId="${graph.seedConceptId}" exists in nodes: ${seedNodeExists}. Node IDs: ${Object.keys(graph.nodes).slice(0, 5).join(', ')}...`);
+          }
 
-        if ((hasSeedConcept || hasGoal) && (hasConcepts || hasGoal)) {
-          summaries.push(summary);
-        } else {
+          if ((hasSeedConcept || hasGoal) && (hasConcepts || hasGoal)) {
+            return summary;
+          }
           console.warn(`Skipping incomplete graph ${graphId}: seedConcept=${hasSeedConcept} (seedConceptId="${graph.seedConceptId}"), goal=${hasGoal}, concepts=${summary.conceptCount}, title="${summary.title}"`);
+          return null;
+        } catch (error) {
+          console.error(`Failed to load graph ${graphId}:`, error);
+          return null;
         }
-      } catch (error) {
-        console.error(`Failed to load graph ${graphId}:`, error);
-      }
-    }
+      })
+    );
 
+    const summaries = settled.filter((s): s is LearningPathSummary => s !== null);
     const result = summaries.sort((a, b) => b.updatedAt - a.updatedAt);
     await hybridCache.set(cacheKey, result, CACHE_TTL.LEARNING_PATHS);
     return result;

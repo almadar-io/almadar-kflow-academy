@@ -56,7 +56,7 @@ export class GraphCacheManager {
   }
 
   async clearAllCache(): Promise<void> {
-    await hybridCache.deletePattern('^graph:');
+    await hybridCache.deletePattern('graph:');
     graphologyStore.clear();
   }
 

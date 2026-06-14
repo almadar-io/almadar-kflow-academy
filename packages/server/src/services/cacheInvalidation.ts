@@ -6,7 +6,7 @@ export const CACHE_KEYS = {
   enrollments: (studentId: string) => `enrollments:${studentId}`,
   userProgressAll: (uid: string) => `userprogress:all:${uid}`,
   graphQuery: (uid: string, graphId?: string) =>
-    graphId ? `graphQuery:.*:${uid}:${graphId}` : `graphQuery:.*:${uid}`,
+    graphId ? `graphQuery:*:${uid}:${graphId}` : `graphQuery:*:${uid}`,
 };
 
 export async function invalidateJumpBackIn(uid: string): Promise<void> {

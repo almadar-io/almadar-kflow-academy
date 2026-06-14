@@ -80,6 +80,15 @@ function prefixKey(key: string): string {
   return key.startsWith(KEY_PREFIX) ? key : `${KEY_PREFIX}${key}`;
 }
 
+// Patterns are glob (Redis SCAN MATCH syntax): `*` is the only wildcard, every
+// other char is literal. This converts that same glob to an anchored RegExp so the
+// in-memory fallback matches identically — Redis and memory must agree or one path
+// silently no-ops (the bug that left graphQuery:* caches stale on the deployed server).
+function globToRegExp(glob: string): RegExp {
+  const escaped = glob.replace(/[.+?^${}()|[\]\\]/g, "\\$&").replace(/\*/g, ".*");
+  return new RegExp(`^${escaped}$`);
+}
+
 export class HybridCache {
   private memory = new SimpleCache();
 
@@ -138,14 +147,14 @@ export class HybridCache {
   }
 
   async deletePattern(pattern: string): Promise<void> {
-    const fullPattern = prefixKey(pattern);
+    const fullPattern = `${prefixKey(pattern)}*`;
 
     const redis = this.redis;
     if (redis) {
       try {
         let cursor = "0";
         do {
-          const reply = await redis.scan(cursor, "MATCH", `${fullPattern}*`, "COUNT", 100);
+          const reply = await redis.scan(cursor, "MATCH", fullPattern, "COUNT", 100);
           cursor = reply[0];
           const keys = reply[1];
           if (keys.length > 0) {
@@ -157,7 +166,7 @@ export class HybridCache {
       }
     }
 
-    const regex = new RegExp(fullPattern);
+    const regex = globToRegExp(fullPattern);
     for (const key of this.memory.keys()) {
       if (regex.test(key)) {
         this.memory.delete(key);
