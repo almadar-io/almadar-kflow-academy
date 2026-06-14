@@ -20,12 +20,10 @@ import {
   deriveSummary,
   progressiveExpand,
   progressiveExpandMultiple,
-  progressiveExpandSingle,
   progressiveExplore,
   advanceNext,
   advanceNextMultiple,
   explain,
-  progressiveExpandMultipleFromText,
 } from '../operations';
 import { createGraph, addConceptsToGraph, getAllConcepts, getConcept } from '../utils/graph';
 import { setLLMProvider } from '../config/llmConfig';
@@ -526,120 +524,6 @@ async function runProgressiveExpand() {
 }
 
 /**
- * Operation: progressiveExpandSingle
- */
-async function runProgressiveExpandSingle() {
-  console.log('\n⚙️  Progressive Expand Single Operation');
-  console.log('Generates sub-layers under a specific concept (e.g., 1.1a, 1.2a, 2.1b)\n');
-  
-  if (!seedConcept) {
-    console.log('❌ No seed concept set. Please create a seed concept first.\n');
-    return;
-  }
-  
-  // Select a concept to expand (should be from a main layer)
-  const concept = await selectConcept('Select concept to expand with sub-layers');
-  if (!concept) return;
-  
-  // Get the latest concept from graph
-  const latestConcept = getConcept(graph, concept.name) || concept;
-  
-  // Check if concept has a layer number
-  if (latestConcept.layer === undefined) {
-    console.log('\n⚠️  Selected concept does not have a layer number.');
-    console.log('   Progressive Expand Single works with concepts that have layer numbers.');
-    console.log('   Consider using progressiveExpand first to generate layered concepts.\n');
-    
-    const proceed = await question('Continue anyway? (y/n) [n]: ');
-    if (proceed.toLowerCase() !== 'y') {
-      console.log('❌ Operation cancelled.\n');
-      return;
-    }
-  }
-  
-  // Check if concept already has sub-layers
-  const allConcepts = getAllConcepts(graph);
-  
-  // Find the concept's letter in its layer
-  const mainLayer = latestConcept.layer || 1;
-  const layerConcepts = allConcepts
-    .filter(cc => cc.layer === mainLayer && !cc.subLayer)
-    .sort((a, b) => a.name.localeCompare(b.name));
-  
-  const conceptIndex = layerConcepts.findIndex(cc => cc.name === latestConcept.name);
-  const conceptLetter = conceptIndex >= 0 ? String.fromCharCode(97 + conceptIndex) : 'a';
-  
-  // Find all existing sub-layers under this concept
-  const existingSubLayers = allConcepts.filter(c => {
-    if (!c.subLayer) return false;
-    // Extract main layer and letter from subLayer (e.g., "1.2a" -> layer 1, letter "a")
-    const match = c.subLayer.match(/^(\d+)\.\d+([a-z])$/);
-    if (!match) return false;
-    const subLayerMainLayer = parseInt(match[1], 10);
-    const subLayerLetter = match[2];
-    
-    return subLayerMainLayer === mainLayer && subLayerLetter === conceptLetter;
-  });
-  
-  // Determine which sub-layer we're working with
-  let targetSubLayerNum = 1;
-  if (existingSubLayers.length > 0) {
-    const subLayerNumbers = existingSubLayers
-      .map(c => {
-        if (!c.subLayer) return 0;
-        const match = c.subLayer.match(/^\d+\.(\d+)/);
-        return match ? parseInt(match[1], 10) : 0;
-      })
-      .filter(n => n > 0);
-    
-    if (subLayerNumbers.length > 0) {
-      targetSubLayerNum = Math.max(...subLayerNumbers);
-    }
-  }
-  
-  const targetSubLayerId = `${mainLayer}.${targetSubLayerNum}${conceptLetter}`;
-  
-  // Find concepts already in the target sub-layer
-  const existingInTargetSubLayer = existingSubLayers.filter(c => c.subLayer === targetSubLayerId);
-  
-  if (existingInTargetSubLayer.length > 0) {
-    console.log(`\n📚 Found ${existingInTargetSubLayer.length} existing concept(s) in sub-layer ${targetSubLayerId}:`);
-    existingInTargetSubLayer.forEach((c, i) => {
-      console.log(`  ${i + 1}. ${c.name}`);
-    });
-    console.log(`\n⏳ Generating NEW concepts for sub-layer ${targetSubLayerId}...`);
-  } else {
-    console.log(`\n📚 No existing concepts in sub-layer ${targetSubLayerId}`);
-    console.log(`⏳ Generating first batch of concepts for sub-layer ${targetSubLayerId}...`);
-  }
-  
-  try {
-    const results = await progressiveExpandSingle(seedConcept, latestConcept, existingSubLayers, graph);
-    graph = addConceptsToGraph(graph, results);
-    
-    // Filter out updated parent concepts from display
-    const newConcepts = results.filter(r => r.subLayer === targetSubLayerId);
-    const updatedParents = results.filter(r => r.name === latestConcept.name || (r.subLayer && r.subLayer !== targetSubLayerId));
-    
-    console.log(`\n✅ Generated ${newConcepts.length} NEW concept(s) for sub-layer ${targetSubLayerId}:`);
-    newConcepts.forEach((concept, i) => {
-      console.log(`\n  ${i + 1}. ${concept.name}`);
-      console.log(`     ${concept.description}`);
-      if (concept.parents.length > 0) {
-        console.log(`     Parents: ${concept.parents.join(', ')}`);
-      }
-    });
-    
-    if (updatedParents.length > 0) {
-      console.log(`\n✓ Updated ${updatedParents.length} parent concept(s)`);
-    }
-    console.log('\n✓ Added to graph\n');
-  } catch (error) {
-    console.error('❌ Error:', error instanceof Error ? error.message : error);
-  }
-}
-
-/**
  * Operation: advanceNext
  */
 async function runAdvanceNext() {
@@ -898,86 +782,6 @@ async function runExplain() {
     console.log('\n--- Lesson (Markdown) ---\n');
     console.log(lessonMarkdown);
     console.log('\n--------------------------\n');
-  } catch (error) {
-    console.error('❌ Error:', error instanceof Error ? error.message : error);
-  }
-}
-
-/**
- * Operation: progressiveExpandMultipleFromText
- */
-async function runProgressiveExpandMultipleFromText() {
-  console.log('\n📝 Progressive Expand Multiple (Text) Operation');
-  console.log('Generates the next learning layer using narrative text with tagged concepts\n');
-
-  const concept = await selectConcept('Select concept to expand (text mode)');
-  if (!concept) return;
-
-  const latestConcept = getConcept(graph, concept.name) || concept;
-
-  const allConcepts = getAllConcepts(graph);
-  const conceptsWithLayers = allConcepts.filter(c => c.layer !== undefined);
-  const maxLayer = conceptsWithLayers.length > 0
-    ? Math.max(...conceptsWithLayers.map(c => c.layer!))
-    : 0;
-  const nextLayer = (latestConcept.layer !== undefined ? latestConcept.layer + 1 : maxLayer + 1);
-
-  const previousLayers = allConcepts.filter(c => {
-    if (c.name === latestConcept.name) return false;
-    if (c.layer === undefined) return false;
-    return c.layer <= (nextLayer - 1);
-  });
-
-  if (previousLayers.length > 0) {
-    console.log(`\n📚 Previous knowledge (${previousLayers.length} concept(s)) considered for context:`);
-    previousLayers.forEach((c, i) => {
-      console.log(`  ${i + 1}. ${c.name}${c.layer !== undefined ? ` (Layer ${c.layer})` : ''}`);
-    });
-    console.log('');
-  }
-
-  const numConceptsInput = await question('Number of concepts to generate (1-10) [5]: ');
-  const numConcepts = numConceptsInput.trim()
-    ? parseInt(numConceptsInput, 10)
-    : 5;
-
-  if (isNaN(numConcepts) || numConcepts < 1 || numConcepts > 10) {
-    console.log('\n❌ Invalid number of concepts. Must be between 1 and 10.\n');
-    return;
-  }
-
-  try {
-    console.log('\n⏳ Generating layer from narrative text...');
-    const result = await progressiveExpandMultipleFromText(latestConcept, previousLayers, numConcepts);
-    
-    // Extract concepts from result (non-streaming returns ProgressiveExpandMultipleFromTextResult)
-    if ('stream' in result && result.stream) {
-      console.error('❌ Streaming is not supported in this script');
-      return;
-    }
-    
-    // Type guard: if it's not a stream, it must be ProgressiveExpandMultipleFromTextResult
-    if (!('concepts' in result)) {
-      console.error('❌ Unexpected result format');
-      return;
-    }
-    
-    const results = result.concepts;
-    graph = addConceptsToGraph(graph, results);
-
-    const newConcepts = results.filter((r: Concept) => r.name !== latestConcept.name);
-    const updatedParent = results.find((r: Concept) => r.name === latestConcept.name);
-
-    console.log(`\n✅ Generated ${newConcepts.length} concepts for Layer ${nextLayer}:`);
-    newConcepts.forEach((concept: Concept, i: number) => {
-      console.log(`  ${i + 1}. ${concept.name}`);
-    });
-
-    if (updatedParent) {
-      console.log(`\n✓ Updated "${latestConcept.name}" children: ${updatedParent.children.join(', ')}`);
-    }
-
-    console.log('\n✓ Added to graph\n');
   } catch (error) {
     console.error('❌ Error:', error instanceof Error ? error.message : error);
   }
@@ -1445,9 +1249,6 @@ async function runDemo() {
       case '10':
         await runProgressiveExpandMultiple();
         break;
-      case '11':
-        await runProgressiveExpandSingle();
-        break;
       case '12':
         await runProgressiveExplore();
         break;
@@ -1459,9 +1260,6 @@ async function runDemo() {
         break;
       case '15':
         await runExplain();
-        break;
-      case '16':
-        await runProgressiveExpandMultipleFromText();
         break;
       case '17':
         await createSeed();

@@ -1,7 +1,6 @@
 import { Request, Response } from 'express';
 import {
   explainConcept,
-  progressiveExpandMultipleFromTextHandler,
   generateLayerPracticeHandler,
   answerQuestionHandler,
 } from '../../controllers/aiController';
@@ -39,7 +38,6 @@ jest.mock('../../services/layerService', () => ({
 // Mock operations
 jest.mock('../../operations', () => ({
   explain: jest.fn(),
-  progressiveExpandMultipleFromText: jest.fn(),
   generateLayerPractice: jest.fn(),
   answerQuestion: jest.fn(),
 }));
@@ -53,16 +51,11 @@ jest.mock('../../utils/prerequisites', () => ({
   processPrerequisitesFromLesson: jest.fn(),
 }));
 
-jest.mock('../../utils/progressiveExpandProcessor', () => ({
-  processProgressiveExpandContent: jest.fn(),
-}));
-
 import { getUserGraphById } from '../../services/graphService';
 import { saveLayer, getLayerByNumber } from '../../services/layerService';
-import { explain, progressiveExpandMultipleFromText, generateLayerPractice, answerQuestion } from '../../operations';
+import { explain, generateLayerPractice, answerQuestion } from '../../operations';
 import { handleStreamResponse } from '../../utils/streamHandler';
 import { processPrerequisitesFromLesson } from '../../utils/prerequisites';
-import { processProgressiveExpandContent } from '../../utils/progressiveExpandProcessor';
 
 describe('AI Controller Handlers - Backend', () => {
   let mockRequest: Partial<Request>;
@@ -249,187 +242,6 @@ describe('AI Controller Handlers - Backend', () => {
       expect(mockResponse.status).toHaveBeenCalledWith(500);
       expect(mockResponse.json).toHaveBeenCalledWith({
         error: 'Failed to generate lesson',
-        details: 'LLM error',
-      });
-    });
-  });
-
-  describe('progressiveExpandMultipleFromTextHandler', () => {
-    it('should return 400 when concept is missing', async () => {
-      mockRequest.body = {
-        previousLayers: [],
-      };
-
-      await progressiveExpandMultipleFromTextHandler(mockRequest as Request, mockResponse as Response);
-
-      expect(mockResponse.status).toHaveBeenCalledWith(400);
-      expect(mockResponse.json).toHaveBeenCalledWith({ error: 'Concept is required' });
-    });
-
-    it('should return 400 when previousLayers is not an array', async () => {
-      mockRequest.body = {
-        concept: mockConcept,
-        previousLayers: 'not-an-array',
-      };
-
-      await progressiveExpandMultipleFromTextHandler(mockRequest as Request, mockResponse as Response);
-
-      expect(mockResponse.status).toHaveBeenCalledWith(400);
-      expect(mockResponse.json).toHaveBeenCalledWith({ error: 'Previous layers must be an array' });
-    });
-
-    it('should return 401 when graphId is provided but user is not authenticated', async () => {
-      mockRequest.body = {
-        concept: mockConcept,
-        previousLayers: [],
-        graphId: 'graph-1',
-      };
-      mockRequest.firebaseUser = undefined;
-
-      await progressiveExpandMultipleFromTextHandler(mockRequest as Request, mockResponse as Response);
-
-      expect(mockResponse.status).toHaveBeenCalledWith(401);
-      expect(mockResponse.json).toHaveBeenCalledWith({ error: 'Unauthorized' });
-    });
-
-    it('should return 404 when graph is not found', async () => {
-      const uid = 'test-uid';
-      const decodedToken = createMockDecodedToken({ uid, email: 'test@example.com' });
-      mockRequest = createMockRequest({ firebaseUser: decodedToken }, decodedToken);
-      mockRequest.body = {
-        concept: mockConcept,
-        previousLayers: [],
-        graphId: 'non-existent',
-      };
-
-      (getUserGraphById as jest.Mock).mockResolvedValue(null);
-
-      await progressiveExpandMultipleFromTextHandler(mockRequest as Request, mockResponse as Response);
-
-      expect(getUserGraphById).toHaveBeenCalledWith(uid, 'non-existent');
-      expect(mockResponse.status).toHaveBeenCalledWith(404);
-      expect(mockResponse.json).toHaveBeenCalledWith({ error: 'Graph not found' });
-    });
-
-    it('should handle streaming response', async () => {
-      const uid = 'test-uid';
-      const decodedToken = createMockDecodedToken({ uid, email: 'test@example.com' });
-      mockRequest = createMockRequest({ firebaseUser: decodedToken }, decodedToken);
-      mockRequest.body = {
-        concept: mockConcept,
-        previousLayers: [],
-        numConcepts: 5,
-      };
-
-      const mockStream = (async function* () {
-        yield { content: 'Generated content' };
-      })();
-
-      (progressiveExpandMultipleFromText as jest.Mock).mockResolvedValue({
-        stream: mockStream,
-        model: 'deepseek-chat',
-      });
-
-      (processProgressiveExpandContent as jest.Mock).mockReturnValue({
-        concepts: [mockConcept],
-        goal: 'Learn React',
-      });
-      (handleStreamResponse as jest.Mock).mockResolvedValue('');
-
-      await progressiveExpandMultipleFromTextHandler(mockRequest as Request, mockResponse as Response);
-
-      expect(progressiveExpandMultipleFromText).toHaveBeenCalled();
-      expect(handleStreamResponse).toHaveBeenCalled();
-    });
-
-    it('should handle non-streaming response', async () => {
-      const uid = 'test-uid';
-      const decodedToken = createMockDecodedToken({ uid, email: 'test@example.com' });
-      mockRequest = createMockRequest({ firebaseUser: decodedToken }, decodedToken);
-      mockRequest.body = {
-        concept: mockConcept,
-        previousLayers: [],
-      };
-
-      const result = {
-        concepts: [{ ...mockConcept, layer: 1 }],
-        goal: 'Learn React',
-        model: 'deepseek-chat',
-        prompt: 'Test prompt',
-        response: 'Test response',
-      };
-
-      // Return non-streaming result (no stream property)
-      (progressiveExpandMultipleFromText as jest.Mock).mockResolvedValue(result);
-
-      await progressiveExpandMultipleFromTextHandler(mockRequest as Request, mockResponse as Response);
-
-      expect(progressiveExpandMultipleFromText).toHaveBeenCalled();
-      expect(mockResponse.json).toHaveBeenCalledWith(
-        expect.objectContaining({
-          concepts: result.concepts,
-          model: result.model,
-        })
-      );
-    });
-
-    it('should fetch previous layer goal when graphId is provided', async () => {
-      const uid = 'test-uid';
-      const decodedToken = createMockDecodedToken({ uid, email: 'test@example.com' });
-      mockRequest = createMockRequest({ firebaseUser: decodedToken }, decodedToken);
-      mockRequest.body = {
-        concept: mockConcept,
-        previousLayers: [{ ...mockConcept, layer: 0 }],
-        graphId: 'graph-1',
-      };
-
-      (getUserGraphById as jest.Mock).mockResolvedValue(mockGraph);
-      (getLayerByNumber as jest.Mock).mockResolvedValue({
-        layerNumber: 0,
-        goal: 'Previous goal',
-      });
-
-      const mockStream = (async function* () {
-        yield { content: 'Generated content' };
-      })();
-
-      (progressiveExpandMultipleFromText as jest.Mock).mockResolvedValue({
-        stream: mockStream,
-        model: 'deepseek-chat',
-      });
-
-      (processProgressiveExpandContent as jest.Mock).mockReturnValue({
-        concepts: [mockConcept],
-        goal: 'Learn React',
-      });
-      (handleStreamResponse as jest.Mock).mockResolvedValue('');
-
-      await progressiveExpandMultipleFromTextHandler(mockRequest as Request, mockResponse as Response);
-
-      expect(getLayerByNumber).toHaveBeenCalledWith(uid, 'graph-1', 0);
-      expect(progressiveExpandMultipleFromText).toHaveBeenCalledWith(
-        expect.anything(),
-        expect.anything(),
-        expect.anything(),
-        expect.objectContaining({
-          previousLayerGoal: 'Previous goal',
-        })
-      );
-    });
-
-    it('should handle errors and return 500', async () => {
-      mockRequest.body = {
-        concept: mockConcept,
-        previousLayers: [],
-      };
-
-      (progressiveExpandMultipleFromText as jest.Mock).mockRejectedValue(new Error('LLM error'));
-
-      await progressiveExpandMultipleFromTextHandler(mockRequest as Request, mockResponse as Response);
-
-      expect(mockResponse.status).toHaveBeenCalledWith(500);
-      expect(mockResponse.json).toHaveBeenCalledWith({
-        error: 'Failed to generate layer from text',
         details: 'LLM error',
       });
     });

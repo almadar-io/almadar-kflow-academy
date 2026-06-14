@@ -322,65 +322,6 @@ export const ConceptsAPI = {
     });
   },
 
-  progressiveExpandMultipleFromText: async (
-    request: ProgressiveExpandMultipleFromTextRequest,
-    onStream?: (chunk: string) => void,
-    onComplete?: () => void
-  ): Promise<ConceptOperationResponse> => {
-    const headers = await withAuthHeaders();
-    
-    // If onStream is provided, use streaming
-    if (onStream) {
-      const result = await handleStreamingRequest<ConceptOperationResponse>({
-        endpoint: '/api/progressive-expand-multiple-from-text',
-        requestBody: request,
-        headers,
-        onStream,
-        onData: () => {
-          // No additional processing needed for each data chunk
-        },
-        onDone: (data) => {
-          // Stream complete - return concepts and model from final event
-          if (data.concepts && Array.isArray(data.concepts)) {
-            return { 
-              concepts: data.concepts,
-              model: data.model || 'deepseek-chat',
-              prompt: data.prompt,
-            };
-          }
-          return { 
-            concepts: [], 
-            model: 'deepseek-chat',
-          };
-        },
-        fallbackResult: () => {
-          return { concepts: [] };
-        },
-      });
-      
-      // Call onComplete after stream is fully processed and result is returned
-      if (onComplete) {
-        onComplete();
-      }
-      
-      return result;
-    }
-    
-    // Non-streaming fallback
-    const result = await apiClient.fetch('/api/progressive-expand-multiple-from-text', {
-      method: 'POST',
-      headers: { "Content-Type": "application/json", ...headers },
-      body: JSON.stringify(request),
-    });
-    
-    // Call onComplete for non-streaming case too
-    if (onComplete) {
-      onComplete();
-    }
-    
-    return result;
-  },
-
   generateLayerPractice: async (
     request: GenerateLayerPracticeRequest,
     onStream?: (chunk: string) => void

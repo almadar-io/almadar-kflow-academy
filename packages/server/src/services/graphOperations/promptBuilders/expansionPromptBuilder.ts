@@ -151,36 +151,54 @@ export function buildFirstLayerPrompt(context: ExpansionPromptContext): string {
  * Build user prompt for subsequent layer expansion
  */
 export function buildSubsequentLayerPrompt(context: ExpansionPromptContext): string {
-  const previousConcepts = context.previousLayers
-    .filter(n => n.type === 'Concept')
-    .map(n => n.properties.name)
-    .filter(Boolean);
+  const conceptNodes = context.previousLayers.filter(
+    n => n.type === 'Concept' && n.properties.name
+  );
+  const totalPrevious = conceptNodes.length;
+
+  // Group prior concepts by level so the prompt always shows the MOST RECENT levels in full.
+  // The old flat `slice(0,20)` kept the oldest concepts (creation order) and silently dropped
+  // the layer being built on once a path passed ~2 levels — defeating "build on the previous level".
+  const byLayer = new Map<number, string[]>();
+  for (const n of conceptNodes) {
+    const layer = typeof n.properties.layer === 'number' ? n.properties.layer : 0;
+    if (!byLayer.has(layer)) byLayer.set(layer, []);
+    byLayer.get(layer)!.push(n.properties.name);
+  }
+  const layersDesc = [...byLayer.keys()].sort((a, b) => b - a);
+  const RECENT_FULL_LAYERS = 3;
+  const recentLines = layersDesc
+    .slice(0, RECENT_FULL_LAYERS)
+    .map(l => `- Level ${l}: ${byLayer.get(l)!.join(', ')}`);
+  const olderLines = layersDesc
+    .slice(RECENT_FULL_LAYERS)
+    .map(l => `- Level ${l}: ${byLayer.get(l)!.length} earlier concept(s)`);
+  const previousConceptsBlock = totalPrevious > 0
+    ? [...recentLines, ...olderLines].join('\n')
+    : '- (none yet)';
 
   // Get existing layer nodes to show previous goals
   const existingLayerNodes = context.existingLayers || context.previousLayers.filter(n => n.type === 'Layer');
   const previousLayerGoals = existingLayerNodes
     .filter(n => n.properties.goal)
     .map(n => ({ name: n.properties.name, goal: n.properties.goal }));
-  const lastLayerGoal = previousLayerGoals.length > 0 
-    ? previousLayerGoals[previousLayerGoals.length - 1].goal 
+  const lastLayerGoal = previousLayerGoals.length > 0
+    ? previousLayerGoals[previousLayerGoals.length - 1].goal
     : undefined;
 
   const builder = createPromptBuilder()
     .withContext({
       conceptName: context.seedConcept.properties.name,
       numConcepts: context.numConcepts,
-      previousConcepts: previousConcepts.slice(0, 20).join(', '),
       difficulty: context.difficulty || 'intermediate'
     });
 
-  // Context with previous layer goals
+  // Context: previous concepts grouped by level, most recent first (so the immediately-prior
+  // level is always present and the model can genuinely build on it).
   let contextContent = `You are expanding the learning path for **{{conceptName}}**.
 
-**Previous Concepts**: {{previousConcepts}}`;
-  
-  if (previousConcepts.length > 20) {
-    contextContent += `\n(And ${previousConcepts.length - 20} more concepts from previous layers)`;
-  }
+**Previous Concepts by level (most recent first):**
+${previousConceptsBlock}`;
 
   // Show previous top-level concepts/layers with their goals
   if (previousLayerGoals.length > 0) {

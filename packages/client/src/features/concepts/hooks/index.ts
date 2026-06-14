@@ -12,11 +12,9 @@
  */
 
 export { useUserProgress } from './useUserProgress';
-export { useConceptActions } from './useConceptActions';
 export { useConceptViewState } from './useConceptViewState';
 export { useConceptLevels } from './useConceptLevels';
 export { useCreateConcept } from './useCreateConcept';
-export { useLoadFirstLayer } from './useLoadFirstLayer';
 export { useSimpleLessonGeneration } from './useSimpleLessonGeneration';
 export { useDeleteGraph } from './useDeleteGraph';
 export { useHomeConcepts } from './useHomeConcepts';

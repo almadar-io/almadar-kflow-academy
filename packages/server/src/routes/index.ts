@@ -1,9 +1,8 @@
 import { Router } from 'express';
 import { 
-  health, 
-  explainConcept, 
-  progressiveExpandMultipleFromTextHandler, 
-  generateLayerPracticeHandler, 
+  health,
+  explainConcept,
+  generateLayerPracticeHandler,
   answerQuestionHandler, 
   customOperationHandler,
   expandConcept,
@@ -14,7 +13,6 @@ import {
   synthesizeHandler,
   exploreHandler,
   tracePathHandler,
-  progressiveExpandSingleHandler,
   progressiveExploreHandler,
   generateFlashCardsHandler
 } from '../controllers/aiController';
@@ -45,7 +43,6 @@ router.post('/generate-next-layer', authenticateFirebase, generateNextLayer);
 router.post('/generate-next-concept', authenticateFirebase, generateNextConcept);
 router.post('/derive-parents', authenticateFirebase, deriveParentsHandler);
 router.post('/derive-summary', authenticateFirebase, deriveSummaryHandler);
-router.post('/progressive-expand-single', authenticateFirebase, progressiveExpandSingleHandler);
 router.post('/progressive-explore', authenticateFirebase, progressiveExploreHandler);
 router.use('/graphs', authenticateFirebase, graphRoutes);
 // Mentor/Student routes disabled for Lite build
@@ -73,7 +70,6 @@ router.use('/content', storyRoutes);
 
 router.post('/explain-concept', authenticateFirebase, explainConcept);
 router.post('/custom-operation', authenticateFirebase, customOperationHandler);
-router.post('/progressive-expand-multiple-from-text', authenticateFirebase, progressiveExpandMultipleFromTextHandler);
 router.post('/generate-layer-practice', authenticateFirebase, generateLayerPracticeHandler);
 router.post('/answer-question', authenticateFirebase, answerQuestionHandler);
 router.post('/generate-flash-cards', authenticateFirebase, generateFlashCardsHandler);
