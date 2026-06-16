@@ -8,6 +8,7 @@ import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { vscDarkPlus as dark } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import { Copy, Check } from 'lucide-react';
 import 'katex/dist/katex.min.css';
+import { normalizeLatexDelimiters } from '@design-system/utils/normalizeLatexDelimiters';
 import { Concept } from '../types';
 
 // Import learning science components
@@ -41,11 +42,11 @@ export const CodeBlock = React.memo(
     useEffect(() => {
       const el = scrollRef.current;
       if (!el) return;
-      const handle = () => {
+      const handle: EventListener = () => {
         savedScrollLeftRef.current = el.scrollLeft;
       };
       el.addEventListener('scroll', handle, { passive: true });
-      return () => el.removeEventListener('scroll', handle as any);
+      return () => el.removeEventListener('scroll', handle);
     }, [language, codeContent]);
 
     // Copy to clipboard handler
@@ -78,7 +79,7 @@ export const CodeBlock = React.memo(
           style={{
             overflowX: 'auto',
             overflowY: 'auto',
-            WebkitOverflowScrolling: 'touch' as any,
+            WebkitOverflowScrolling: 'touch',
             maxHeight: '60vh',
             overscrollBehavior: 'auto',
             touchAction: 'pan-x pan-y',
@@ -86,7 +87,7 @@ export const CodeBlock = React.memo(
             backgroundColor: '#1f2937',
             borderRadius: '0.75rem',
             padding: '1rem',
-          }}
+          } as React.CSSProperties & { WebkitOverflowScrolling: 'touch' }}
         >
           <SyntaxHighlighter
             PreTag="div"
@@ -155,9 +156,10 @@ export const parseMarkdownWithCodeBlocks = (
 };
 
 // Simplified markdown renderer that only handles inline code (fenced code blocks are handled separately)
-export const MarkdownContent = React.memo<{ 
+export const MarkdownContent = React.memo<{
   content: string;
 }>(({ content }) => {
+  const normalizedContent = normalizeLatexDelimiters(content);
   return (
     <MarkdownRenderer
       remarkPlugins={[remarkMath, remarkGfm]}
@@ -195,7 +197,7 @@ export const MarkdownContent = React.memo<{
       },
     }}
   >
-    {content}
+    {normalizedContent}
   </MarkdownRenderer>
   );
 }, (prev, next) => prev.content === next.content);

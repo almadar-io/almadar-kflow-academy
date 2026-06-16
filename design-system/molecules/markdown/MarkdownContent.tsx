@@ -17,6 +17,7 @@ import remarkMath from "remark-math";
 import rehypeKatex from "rehype-katex";
 import rehypeRaw from "rehype-raw";
 import "katex/dist/katex.min.css";
+import { normalizeLatexDelimiters } from "../../utils/normalizeLatexDelimiters";
 
 export interface MarkdownContentProps {
   /** The markdown content to render */
@@ -27,6 +28,7 @@ export interface MarkdownContentProps {
 
 export const MarkdownContent = React.memo<MarkdownContentProps>(
   ({ content, className }) => {
+    const normalizedContent = normalizeLatexDelimiters(content);
     return (
       <div
         className={`prose prose-slate dark:prose-invert max-w-none ${className || ""}`}
@@ -119,7 +121,7 @@ export const MarkdownContent = React.memo<MarkdownContentProps>(
             },
           }}
         >
-          {content}
+          {normalizedContent}
         </ReactMarkdown>
       </div>
     );

@@ -12,12 +12,14 @@ import remarkMath from 'remark-math';
 import rehypeKatex from 'rehype-katex';
 import rehypeRaw from 'rehype-raw';
 import 'katex/dist/katex.min.css';
+import { normalizeLatexDelimiters } from '@design-system/utils/normalizeLatexDelimiters';
 
 export interface MarkdownContentProps {
   content: string;
 }
 
 export const MarkdownContent = React.memo<MarkdownContentProps>(({ content }) => {
+  const normalizedContent = normalizeLatexDelimiters(content);
   return (
     <MarkdownRenderer
       remarkPlugins={[remarkMath, remarkGfm]}
@@ -55,7 +57,7 @@ export const MarkdownContent = React.memo<MarkdownContentProps>(({ content }) =>
         },
       }}
     >
-      {content}
+      {normalizedContent}
     </MarkdownRenderer>
   );
 }, (prev, next) => prev.content === next.content);
