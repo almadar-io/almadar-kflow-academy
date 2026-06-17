@@ -40,23 +40,29 @@ import {
   SimulationGraph,
 } from '@almadar/ui';
 import type { WorldMapSlotContext } from '@almadar/ui';
-import type {
-  SequencerPuzzleEntity,
-  SimulatorPuzzleEntity,
-  ClassifierPuzzleEntity,
-  BuilderPuzzleEntity,
-  DebuggerPuzzleEntity,
-  NegotiatorPuzzleEntity,
-  EventHandlerPuzzleEntity,
-  StateArchitectPuzzleEntity,
-  BattleEntity,
-  WorldMapEntity,
-  PhysicsPreset,
-  MeasurementPoint,
-} from '@almadar/ui';
+import type { PhysicsPreset, MeasurementPoint } from '@almadar/ui';
+import type { EntityRow, EventEmit, FieldValue } from '@almadar/core';
 import { Gamepad2 } from 'lucide-react';
 import type { StoryGameType, StoryAssetConfig } from '../../types/knowledge';
 import { FULL_WIDTH_GAME_TYPES } from '../../types/knowledge';
+
+// ---------------------------------------------------------------------------
+// Field-value helpers (EntityRow fields are FieldValue | undefined)
+// ---------------------------------------------------------------------------
+
+function asString(value: FieldValue | undefined): string {
+  if (value === null || value === undefined) return '';
+  if (typeof value === 'string') return value;
+  if (typeof value === 'number' || typeof value === 'boolean') return String(value);
+  if (value instanceof Date) return value.toISOString();
+  return String(value);
+}
+
+function asNumber(value: FieldValue | undefined): number {
+  if (typeof value === 'number') return value;
+  if (typeof value === 'string') return Number(value) || 0;
+  return 0;
+}
 
 // ---------------------------------------------------------------------------
 // Physics Lab Config (composes PhysicsPreset with target condition)
@@ -76,18 +82,7 @@ export interface PhysicsLabConfig {
 // ---------------------------------------------------------------------------
 
 /** Union of all supported game entity types. */
-export type GameConfigEntity =
-  | SequencerPuzzleEntity
-  | SimulatorPuzzleEntity
-  | ClassifierPuzzleEntity
-  | BuilderPuzzleEntity
-  | DebuggerPuzzleEntity
-  | NegotiatorPuzzleEntity
-  | EventHandlerPuzzleEntity
-  | StateArchitectPuzzleEntity
-  | BattleEntity
-  | WorldMapEntity
-  | PhysicsLabConfig;
+export type GameConfigEntity = EntityRow | PhysicsLabConfig;
 
 export interface StoryGameViewProps {
   gameType: StoryGameType | string;
@@ -96,7 +91,7 @@ export interface StoryGameViewProps {
   assets?: StoryAssetConfig;
   /** Background image for cinematic wrapper (puzzle boards only) */
   backgroundImage?: string;
-  completeEvent?: string;
+  completeEvent?: EventEmit<Record<string, unknown>>;
   className?: string;
 }
 
@@ -181,9 +176,9 @@ function AdventureBoard({
   assets,
   completeEvent,
 }: {
-  entity: WorldMapEntity;
+  entity: EntityRow;
   assets?: StoryAssetConfig;
-  completeEvent: string;
+  completeEvent: EventEmit<Record<string, unknown>>;
 }): React.JSX.Element {
   const { t } = useTranslate();
   const { emit } = useEventBus();
@@ -204,9 +199,9 @@ function AdventureBoard({
   return (
     <WorldMapBoard
       entity={entity}
-      featureEnterEvent="ADVENTURE_FEATURE_ENTER"
-      heroMoveEvent="ADVENTURE_HERO_MOVE"
-      heroSelectEvent="ADVENTURE_HERO_SELECT"
+      featureEnterEvent={'ADVENTURE_FEATURE_ENTER' as EventEmit<{ heroId: string; feature: string; hex: EntityRow }>}
+      heroMoveEvent={'ADVENTURE_HERO_MOVE' as EventEmit<{ heroId: string; toX: number; toY: number }>}
+      heroSelectEvent={'ADVENTURE_HERO_SELECT' as EventEmit<{ heroId: string }>}
       effectSpriteUrls={effectSpriteUrls}
       header={adventureHeader(t)}
       overlay={adventureOverlay}
@@ -235,7 +230,10 @@ function adventureHeader(t: (key: string) => string) {
 function adventureOverlay(ctx: WorldMapSlotContext): React.ReactNode {
   if (!ctx.hoveredHex) return null;
 
-  const pos = ctx.tileToScreen(ctx.hoveredHex.x, ctx.hoveredHex.y);
+  const hex = ctx.hoveredHex;
+  const x = asNumber(hex.x);
+  const y = asNumber(hex.y);
+  const pos = ctx.tileToScreen(x, y);
 
   return (
     <Box
@@ -250,14 +248,14 @@ function adventureOverlay(ctx: WorldMapSlotContext): React.ReactNode {
       <Box className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-[var(--radius-md)] px-3 py-2 shadow-lg">
         <VStack gap="xs">
           <Typography variant="caption" weight="bold" className="capitalize">
-            {ctx.hoveredHex.terrain}
+            {asString(hex.terrain)}
           </Typography>
-          {ctx.hoveredHex.feature && (
+          {hex.feature && (
             <Typography variant="caption" className="text-[var(--color-primary)]">
-              {ctx.hoveredHex.feature}
+              {asString(hex.feature)}
             </Typography>
           )}
-          {ctx.hoveredHex.passable === false && (
+          {hex.passable === false && (
             <Typography variant="caption" className="text-[var(--color-destructive)]">
               Impassable
             </Typography>
@@ -272,19 +270,20 @@ function adventureOverlay(ctx: WorldMapSlotContext): React.ReactNode {
 function adventureSidePanel(t: (key: string) => string) {
   return (ctx: WorldMapSlotContext): React.ReactNode => {
     if (!ctx.selectedHero) return null;
+    const hero = ctx.selectedHero;
     return (
       <Box className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-[var(--radius-md)] p-4">
         <VStack gap="sm">
           <Typography variant="small" weight="bold">
-            {ctx.selectedHero.name}
+            {asString(hero.name)}
           </Typography>
           <HStack gap="sm">
             <Typography variant="caption" className="text-[var(--color-muted-foreground)]">
-              {t('adventure.movement')}: {ctx.selectedHero.movement}
+              {t('adventure.movement')}: {asNumber(hero.movement)}
             </Typography>
-            {ctx.selectedHero.level != null && (
+            {hero.level != null && (
               <Typography variant="caption" className="text-[var(--color-muted-foreground)]">
-                {t('adventure.level')}: {ctx.selectedHero.level}
+                {t('adventure.level')}: {asNumber(hero.level)}
               </Typography>
             )}
           </HStack>
@@ -303,7 +302,7 @@ export const StoryGameView: React.FC<StoryGameViewProps> = ({
   gameConfig,
   assets,
   backgroundImage,
-  completeEvent = 'STORY_GAME_TIER_COMPLETE',
+  completeEvent = 'STORY_GAME_TIER_COMPLETE' as EventEmit<Record<string, unknown>>,
   className,
 }) => {
   const { t } = useTranslate();
@@ -324,70 +323,73 @@ export const StoryGameView: React.FC<StoryGameViewProps> = ({
     );
   }
 
+  const entityRow = gameConfig as EntityRow;
+
   const renderGameBoard = (): React.ReactNode => {
     switch (gameType) {
       // -- Puzzle boards (narrow layout) --
       case 'sequencer':
         return (
           <SequencerBoard
-            entity={gameConfig as SequencerPuzzleEntity}
-            completeEvent={completeEvent}
+            entity={entityRow}
+            completeEvent={completeEvent as EventEmit<{ success: boolean; sequence: string[] }>}
           />
         );
       case 'simulator':
         return (
           <SimulatorBoard
-            entity={gameConfig as SimulatorPuzzleEntity}
-            completeEvent={completeEvent}
+            entity={entityRow}
+            completeEvent={completeEvent as EventEmit<{ success: boolean; attempts: number }>}
           />
         );
       case 'classifier':
         return (
           <ClassifierBoard
-            entity={gameConfig as ClassifierPuzzleEntity}
-            completeEvent={completeEvent}
+            entity={entityRow}
+            completeEvent={completeEvent as EventEmit<{ success: boolean; attempts: number }>}
           />
         );
       case 'builder':
         return (
           <BuilderBoard
-            entity={gameConfig as BuilderPuzzleEntity}
-            completeEvent={completeEvent}
+            entity={entityRow}
+            completeEvent={completeEvent as EventEmit<{ success: boolean; attempts: number }>}
           />
         );
       case 'debugger':
         return (
           <DebuggerBoard
-            entity={gameConfig as DebuggerPuzzleEntity}
-            completeEvent={completeEvent}
+            entity={entityRow}
+            completeEvent={completeEvent as EventEmit<{ success: boolean; attempts: number }>}
           />
         );
       case 'negotiator':
         return (
           <NegotiatorBoard
-            entity={gameConfig as NegotiatorPuzzleEntity}
-            completeEvent={completeEvent}
+            entity={entityRow}
+            completeEvent={completeEvent as EventEmit<{ success: boolean; score: number }>}
           />
         );
       case 'event-handler':
         return (
           <EventHandlerBoard
-            entity={gameConfig as EventHandlerPuzzleEntity}
-            completeEvent={completeEvent}
+            entity={entityRow}
+            completeEvent={completeEvent as EventEmit<{ success: boolean }>}
           />
         );
       case 'state-architect':
         return (
           <StateArchitectBoard
-            entity={gameConfig as StateArchitectPuzzleEntity}
-            completeEvent={completeEvent}
+            entity={entityRow}
+            completeEvent={completeEvent as EventEmit<{ success: boolean; passedTests: number }>}
           />
         );
 
       // -- Full-width boards --
       case 'battle': {
-        const battleEntity = gameConfig as BattleEntity;
-        if (assets?.terrain && !battleEntity.assetManifest) {
+        const battleEntity = entityRow;
+        const assetManifest = (battleEntity.assetManifest as Record<string, unknown> | undefined) ?? {};
+        if (assets?.terrain && !assetManifest.terrains) {
           battleEntity.assetManifest = {
             baseUrl: '',
             terrains: assets.terrain,
@@ -396,14 +398,15 @@ export const StoryGameView: React.FC<StoryGameViewProps> = ({
         return (
           <BattleBoard
             entity={battleEntity}
-            gameEndEvent="UI:BATTLE_COMPLETE"
+            gameEndEvent={'UI:BATTLE_COMPLETE' as EventEmit<{ result: 'victory' | 'defeat' }>}
             effectSpriteUrls={assets?.effects ? Object.values(assets.effects).flat() : []}
           />
         );
       }
       case 'adventure': {
-        const worldEntity = gameConfig as WorldMapEntity;
-        if (assets && !worldEntity.assetManifest) {
+        const worldEntity = entityRow;
+        const assetManifest = (worldEntity.assetManifest as Record<string, unknown> | undefined) ?? {};
+        if (assets && !assetManifest.terrains) {
           worldEntity.assetManifest = {
             baseUrl: '',
             terrains: assets.terrain,

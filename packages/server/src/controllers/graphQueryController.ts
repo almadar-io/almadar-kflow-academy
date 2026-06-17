@@ -21,7 +21,7 @@ const queryService = new GraphQueryService();
  * Get user ID from authenticated request
  */
 function getUserId(req: Request): string {
-  const uid = (req as any).firebaseUser?.uid;
+  const uid = req.firebaseUser?.uid;
   if (!uid) {
     throw new Error('Unauthorized');
   }

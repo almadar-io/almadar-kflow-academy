@@ -14,6 +14,7 @@ import { Login, ProtectedRoute } from '../features/auth';
 import { useAuthContext } from '../features/auth/AuthContext';
 import { Loader } from '../components';
 import { AppLayout } from '../components/AppLayout';
+import { NavigationHandler } from '../components/NavigationHandler';
 
 /**
  * App Router: Dashboard, Learn, and Stories pages
@@ -44,6 +45,7 @@ const HomeRoute: React.FC = () => {
 const AppRouter: React.FC = () => {
   return (
     <Router>
+      <NavigationHandler />
       <Routes>
         {/* Public Routes (no auth required) */}
         <Route path="/" element={<HomeRoute />} />

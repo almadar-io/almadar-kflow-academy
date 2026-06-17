@@ -1,5 +1,5 @@
 import React from 'react';
-import { useNavigate } from 'react-router';
+import { useNavigateEvent } from '../hooks/useNavigateEvent';
 import { BookOpen, Target, Sparkles, Zap, Layers, Brain, ArrowRight, CheckCircle, Code, Globe, GraduationCap } from 'lucide-react';
 import logoWhite from '../assets/kflow-logo-white.svg';
 
@@ -12,7 +12,7 @@ import screenshot6 from '../assets/demo/6-mindmap-view.png';
 import screenshot7 from '../assets/demo/7-final-review.png';
 
 const LandingPage: React.FC = () => {
-  const navigate = useNavigate();
+  const navigate = useNavigateEvent();
 
   const features = [
     {

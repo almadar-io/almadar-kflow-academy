@@ -1,5 +1,5 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigateEvent } from '../hooks/useNavigateEvent';
 import logoWhite from '../assets/kflow-logo-white.svg';
 
 interface PublicLayoutProps {
@@ -7,7 +7,7 @@ interface PublicLayoutProps {
 }
 
 const PublicLayout: React.FC<PublicLayoutProps> = ({ children }) => {
-  const navigate = useNavigate();
+  const navigate = useNavigateEvent();
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 dark:from-gray-900 dark:via-indigo-950 dark:to-gray-900 flex flex-col">

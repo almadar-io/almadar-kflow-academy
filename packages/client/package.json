@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build",
+    "build": "NODE_OPTIONS=--max-old-space-size=8192 tsc && NODE_OPTIONS=--max-old-space-size=8192 vite build",
     "build:clean": "rm -rf dist && tsc && vite build",
     "preview": "vite preview",
     "clean": "rm -rf dist",
@@ -43,7 +43,9 @@
   },
   "devDependencies": {
     "@almadar/eslint-plugin": "^2.8.2",
+    "@typescript-eslint/parser": "^8.56.0",
     "@types/node": "^22.19.13",
+    "eslint": "^9.0.0",
     "@types/react": "^19.1.10",
     "@types/react-dom": "^19.1.7",
     "@vitejs/plugin-react": "^4.3.4",

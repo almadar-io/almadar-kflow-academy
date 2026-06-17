@@ -283,7 +283,7 @@ export const enrollStudentSelfHandler = async (
     if (req.firebaseUser?.email) {
       studentData = {
         userId: uid,
-        name: (req.firebaseUser as any).name || (req.firebaseUser as any).displayName || 'Student',
+        name: req.firebaseUser?.name || (req.firebaseUser as { displayName?: string } | undefined)?.displayName || 'Student',
         email: req.firebaseUser.email,
       };
     }

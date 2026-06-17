@@ -84,7 +84,7 @@ const knowledgeGraphSlice = createSlice({
           }
         } else {
           // Initialize array for optional node types
-          (state.graphs[graphId].nodeTypes as any)[nodeType] = [node.id];
+          (state.graphs[graphId].nodeTypes as Record<string, string[]>)[nodeType] = [node.id];
         }
         
         state.lastUpdated = Date.now();

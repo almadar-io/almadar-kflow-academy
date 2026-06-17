@@ -24,7 +24,7 @@ export function createApolloServer(): ApolloServer {
     context: ({ req }): GraphQLContext => {
       // Extract Firebase user from request (set by authenticateFirebase middleware)
       return {
-        firebaseUser: (req as any).firebaseUser,
+        firebaseUser: req.firebaseUser,
       };
     },
     formatError: (error) => {

@@ -31,7 +31,9 @@
   },
   "devDependencies": {
     "@almadar/eslint-plugin": "^2.8.2",
+    "@typescript-eslint/parser": "^8.56.0",
     "@types/cors": "^2.8.17",
+    "eslint": "^9.0.0",
     "@types/express": "^5.0.0",
     "@types/jest": "^29.5.11",
     "@types/node": "^22.10.1",

@@ -43,7 +43,7 @@ export const CodeBlock = React.memo<CodeBlockProps>(
         savedScrollLeftRef.current = el.scrollLeft;
       };
       el.addEventListener('scroll', handle, { passive: true });
-      return () => el.removeEventListener('scroll', handle as any);
+      return () => el.removeEventListener('scroll', handle);
     }, [language, codeContent]);
 
     // Copy to clipboard handler
@@ -76,7 +76,7 @@ export const CodeBlock = React.memo<CodeBlockProps>(
           style={{
             overflowX: 'auto',
             overflowY: 'auto',
-            WebkitOverflowScrolling: 'touch' as any,
+            WebkitOverflowScrolling: 'touch',
             maxHeight: '60vh',
             overscrollBehavior: 'auto',
             touchAction: 'pan-x pan-y',

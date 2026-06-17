@@ -23,6 +23,9 @@
     "deploy:all": "npm run deploy:prod && npm run deploy:server",
     "firebase:use": "firebase use kflow-b3a39"
   },
+  "dependencies": {
+    "three": "^0.160.1"
+  },
   "devDependencies": {
     "@types/node": "^22.10.1",
     "esbuild": "^0.27.2",

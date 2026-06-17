@@ -71,7 +71,6 @@ export const PlacementTest: React.FC<PlacementTestProps> = ({
     if (!test && !loading) {
       initializeTest();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []); // Only run once on mount
 
   // Handle answer selection

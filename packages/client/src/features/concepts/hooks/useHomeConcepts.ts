@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { useNavigate } from 'react-router';
+import { useNavigateEvent } from '../../../hooks/useNavigateEvent';
 import { ConceptGraph, Concept } from '../types';
 import { useAppDispatch } from '../../../app/hooks';
 import { selectConcept } from '../conceptSlice';
@@ -14,7 +14,7 @@ interface SeedEntry {
 
 export const useHomeConcepts = (graphs: ConceptGraph[]) => {
   const dispatch = useAppDispatch();
-  const navigate = useNavigate();
+  const navigate = useNavigateEvent();
 
   const seedEntries = useMemo<SeedEntry[]>(() =>
     graphs
@@ -43,8 +43,8 @@ export const useHomeConcepts = (graphs: ConceptGraph[]) => {
       .sort((a, b) => {
         // Sort by lastAccessedAt if available, otherwise by createdAt
         // TODO: Add lastAccessedAt tracking to ConceptGraph when concept is viewed
-        const aTime = (a.graph as any).lastAccessedAt ?? a.graph.createdAt ?? 0;
-        const bTime = (b.graph as any).lastAccessedAt ?? b.graph.createdAt ?? 0;
+        const aTime = (a.graph as { lastAccessedAt?: number }).lastAccessedAt ?? a.graph.createdAt ?? 0;
+        const bTime = (b.graph as { lastAccessedAt?: number }).lastAccessedAt ?? b.graph.createdAt ?? 0;
         return bTime - aTime;
       }),
   [graphs]);

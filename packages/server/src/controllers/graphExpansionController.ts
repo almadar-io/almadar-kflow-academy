@@ -118,7 +118,7 @@ export async function progressiveExpandHandler(
   } catch (error) {
     // Handle authorization errors
     if (error && typeof error === 'object' && 'name' in error && error.name === 'AuthorizationError') {
-      const authError = error as any;
+      const authError = error as AuthorizationError;
       const statusCode = authError.code === 'UNAUTHORIZED' ? 401 : authError.code === 'NOT_FOUND' ? 404 : 403;
       res.status(statusCode).json({
         error: authError.message,

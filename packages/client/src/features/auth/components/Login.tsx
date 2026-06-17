@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useAuthContext } from '../AuthContext';
 import { useSelector } from 'react-redux';
-import { useNavigate, useSearchParams } from 'react-router';
+import { useSearchParams } from 'react-router';
+import { useNavigateEvent } from '../../../hooks/useNavigateEvent';
 import { RootState } from '../../../app/store';
 
 const EMAIL_FOR_SIGN_IN_KEY = 'emailForSignIn';
@@ -23,7 +24,7 @@ const Login: React.FC = () => {
     setOnAuthSuccess 
   } = useAuthContext();
   const { loading, error } = useSelector((state: RootState) => state.auth);
-  const navigate = useNavigate();
+  const navigate = useNavigateEvent();
   const [searchParams] = useSearchParams();
   
   // Set up navigation callback when component mounts

@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router';
 import { useEventBus } from '@almadar/ui';
-import type { KFlowEvent } from '@almadar/ui';
+import type { BusEvent } from '@almadar/core';
 import { KnowledgeStoryTemplate } from '@design-system/templates/KnowledgeStoryTemplate';
 import { useStory } from '../hooks/useStory';
 import { useStoryProgress } from '../hooks/useStoryProgress';
@@ -15,7 +15,7 @@ export const StoryPlayPageContainer: React.FC = () => {
   const { on } = useEventBus();
 
   useEffect(() => {
-    const unsubFinish = on('UI:STORY_FINISH', (event: KFlowEvent) => {
+    const unsubFinish = on('UI:STORY_FINISH', (event: BusEvent) => {
       const sid = event.payload?.storyId as string;
       if (sid) {
         saveProgress(sid, 100, true);
@@ -26,7 +26,7 @@ export const StoryPlayPageContainer: React.FC = () => {
   }, [on, navigate, saveProgress]);
 
   useEffect(() => {
-    const unsubComplete = on('UI:STORY_GAME_COMPLETE', (event: KFlowEvent) => {
+    const unsubComplete = on('UI:STORY_GAME_COMPLETE', (event: BusEvent) => {
       const sid = event.payload?.storyId as string;
       const score = (event.payload?.result as { score: number })?.score;
       if (sid && score != null) saveProgress(sid, score, true);

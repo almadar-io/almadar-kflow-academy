@@ -6,7 +6,14 @@
  */
 
 import React, { useState } from 'react';
-import { FormField, FormFieldProps } from '../../molecules/FormField';
+import {
+  FormField,
+  type FormFieldProps,
+  type FormFieldInputProps,
+  type FormFieldTextareaProps,
+  type FormFieldCheckboxProps,
+  type FormFieldRadioProps,
+} from '../../molecules/FormField';
 import { ButtonGroup } from '../../molecules/ButtonGroup';
 import { Alert } from '../../molecules/Alert';
 import { ProgressCard } from '../../molecules/ProgressCard';
@@ -153,59 +160,111 @@ export const Form: React.FC<FormProps> = ({
     }
   };
 
-  const renderFields = () => {
-    if (isMultiStep && currentStepData) {
-      return currentStepData.fields.map((field, index) => {
-        const fieldId = field.inputProps?.id || `field-${index}`;
-        const error = errors[fieldId];
+  const handleFieldInputChange = (
+    field: FormFieldProps,
+    fieldId: string,
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const value = field.type === 'checkbox' ? (e.target as HTMLInputElement).checked : e.target.value;
+    handleFieldChange(fieldId, value);
+    field.inputProps?.onChange?.(e as never);
+  };
+
+  const renderFormField = (field: FormFieldProps, index: number) => {
+    const fieldId = field.inputProps?.id || `field-${index}`;
+    const error = errors[fieldId];
+    const onChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
+      handleFieldInputChange(field, fieldId, e);
+
+    switch (field.type) {
+      case 'input': {
+        const inputField = field as FormFieldInputProps;
         return (
           <FormField
             key={fieldId}
-            type={field.type}
-            label={field.label}
-            helperText={field.helperText}
-            required={field.required}
+            type="input"
+            label={inputField.label}
+            helperText={inputField.helperText}
+            required={inputField.required}
             error={error}
             inputProps={{
-              ...field.inputProps,
+              ...inputField.inputProps,
               id: fieldId,
               value: formData[fieldId] || '',
-              onChange: (e: any) => {
-                const value = field.type === 'checkbox' ? e.target.checked : e.target.value;
-                handleFieldChange(fieldId, value);
-                field.inputProps?.onChange?.(e);
-              },
-            } as any}
+              onChange,
+            }}
           />
         );
-      });
+      }
+      case 'textarea': {
+        const textareaField = field as FormFieldTextareaProps;
+        return (
+          <FormField
+            key={fieldId}
+            type="textarea"
+            label={textareaField.label}
+            helperText={textareaField.helperText}
+            required={textareaField.required}
+            error={error}
+            inputProps={{
+              ...textareaField.inputProps,
+              id: fieldId,
+              value: formData[fieldId] || '',
+              onChange,
+            }}
+          />
+        );
+      }
+      case 'checkbox': {
+        const checkboxField = field as FormFieldCheckboxProps;
+        return (
+          <FormField
+            key={fieldId}
+            type="checkbox"
+            label={checkboxField.label}
+            helperText={checkboxField.helperText}
+            required={checkboxField.required}
+            error={error}
+            inputProps={{
+              ...checkboxField.inputProps,
+              id: fieldId,
+              checked: !!formData[fieldId],
+              onChange,
+            }}
+          />
+        );
+      }
+      case 'radio': {
+        const radioField = field as FormFieldRadioProps;
+        return (
+          <FormField
+            key={fieldId}
+            type="radio"
+            label={radioField.label}
+            helperText={radioField.helperText}
+            required={radioField.required}
+            error={error}
+            inputProps={{
+              ...radioField.inputProps,
+              id: fieldId,
+              value: formData[fieldId] || '',
+              onChange,
+            }}
+          />
+        );
+      }
+      default:
+        return null;
+    }
+  };
+
+  const renderFields = () => {
+    if (isMultiStep && currentStepData) {
+      return currentStepData.fields.map(renderFormField);
     }
 
     if (fields) {
-      return fields.map((field, index) => {
-        const fieldId = field.inputProps?.id || `field-${index}`;
-        const error = errors[fieldId];
-        return (
-          <FormField
-            key={fieldId}
-            type={field.type}
-            label={field.label}
-            helperText={field.helperText}
-            required={field.required}
-            error={error}
-            inputProps={{
-              ...field.inputProps,
-              id: fieldId,
-              value: formData[fieldId] || '',
-              onChange: (e: any) => {
-                const value = field.type === 'checkbox' ? e.target.checked : e.target.value;
-                handleFieldChange(fieldId, value);
-                field.inputProps?.onChange?.(e);
-              },
-            } as any}
-          />
-        );
-      });
+      return fields.map(renderFormField);
     }
 
     return null;

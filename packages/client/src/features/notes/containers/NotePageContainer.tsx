@@ -4,7 +4,8 @@
  */
 
 import React, { useState, useEffect, useMemo } from 'react';
-import { useParams, useNavigate, useLocation } from 'react-router';
+import { useParams, useLocation } from 'react-router';
+import { useNavigateEvent } from '../../../hooks/useNavigateEvent';
 import { useAppSelector, useAppDispatch } from '../../../app/hooks';
 import { selectNote, deleteNote, addChildNote, createNote, editNote, toggleNoteExpanded, expandNote } from '../noteSlice';
 import { NotePage } from '../../../components/pages/NotePage';
@@ -14,7 +15,7 @@ import { Note } from '../types';
 
 const NotePageContainer: React.FC = () => {
   const { id } = useParams<{ id: string }>();
-  const navigate = useNavigate();
+  const navigate = useNavigateEvent();
   const location = useLocation();
   const dispatch = useAppDispatch();
   const { user } = useAuthContext();

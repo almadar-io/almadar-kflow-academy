@@ -7,7 +7,7 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from '../../atoms/Button';
 import { SelectDropdown, SelectOption } from '../SelectDropdown';
-import { DayOfWeekSelector } from '../../atoms/DayOfWeekSelector';
+import { DayOfWeekSelector, type DayOfWeek } from '../../atoms/DayOfWeekSelector';
 import { ScheduleTimeInput } from '../../atoms/ScheduleTimeInput';
 import { Input } from '../../atoms/Input';
 import { Checkbox } from '../../atoms/Checkbox';
@@ -178,7 +178,7 @@ export const ScheduleSlotForm: React.FC<ScheduleSlotFormProps> = ({
       {/* Day of Week */}
       <DayOfWeekSelector
         label="Day of Week"
-        value={formData.dayOfWeek as any}
+        value={formData.dayOfWeek as DayOfWeek}
         onChange={(day) => handleChange('dayOfWeek', day)}
         error={errors.dayOfWeek}
         disabled={isLoading}

@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router';
 import { useEventBus } from '@almadar/ui';
-import type { KFlowEvent } from '@almadar/ui';
+import type { BusEvent } from '@almadar/core';
 import { StoryCatalogTemplate } from '@design-system/templates/StoryCatalogTemplate';
 import { useStories } from '../hooks/useStories';
 import { useSeriesList } from '../hooks/useSeries';
@@ -19,7 +19,7 @@ export const ExplorePageContainer: React.FC = () => {
   const { on } = useEventBus();
 
   useEffect(() => {
-    const unsub = on('UI:STORY_SELECT', (event: KFlowEvent) => {
+    const unsub = on('UI:STORY_SELECT', (event: BusEvent) => {
       const storyId = event.payload?.storyId as string;
       if (storyId) navigate(`/stories/${storyId}`);
     });

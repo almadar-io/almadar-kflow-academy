@@ -34,7 +34,7 @@ export async function generateGoalQuestionsHandler(
   res: Response
 ): Promise<void> {
   try {
-    const uid = (req as any).firebaseUser?.uid;
+    const uid = req.firebaseUser?.uid;
     if (!uid) {
       res.status(401).json({ error: 'Unauthorized' });
       return;
@@ -77,7 +77,7 @@ export async function createGoalHandler(
   res: Response
 ): Promise<void> {
   try {
-    const uid = (req as any).firebaseUser?.uid;
+    const uid = req.firebaseUser?.uid;
     if (!uid) {
       res.status(401).json({ error: 'Unauthorized' });
       return;
@@ -211,7 +211,7 @@ export async function createGraphWithGoalHandler(
   res: Response
 ): Promise<void> {
   try {
-    const uid = (req as any).firebaseUser?.uid;
+    const uid = req.firebaseUser?.uid;
     if (!uid) {
       res.status(401).json({ error: 'Unauthorized' });
       return;
@@ -510,7 +510,7 @@ export async function updateGoalHandler(
   res: Response
 ): Promise<void> {
   try {
-    const uid = (req as any).firebaseUser?.uid;
+    const uid = req.firebaseUser?.uid;
     if (!uid) {
       res.status(401).json({ error: 'Unauthorized' });
       return;
@@ -550,7 +550,7 @@ export async function deleteGoalHandler(
   res: Response
 ): Promise<void> {
   try {
-    const uid = (req as any).firebaseUser?.uid;
+    const uid = req.firebaseUser?.uid;
     if (!uid) {
       res.status(401).json({ error: 'Unauthorized' });
       return;
@@ -586,7 +586,7 @@ export async function getUserGoalsHandler(
   res: Response
 ): Promise<void> {
   try {
-    const uid = (req as any).firebaseUser?.uid;
+    const uid = req.firebaseUser?.uid;
     if (!uid) {
       res.status(401).json({ error: 'Unauthorized' });
       return;
@@ -621,7 +621,7 @@ export async function getGoalByIdHandler(
   res: Response
 ): Promise<void> {
   try {
-    const uid = (req as any).firebaseUser?.uid;
+    const uid = req.firebaseUser?.uid;
     if (!uid) {
       res.status(401).json({ error: 'Unauthorized' });
       return;

@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useCallback, useState } from 'react';
-import { useParams, useNavigate, useLocation } from 'react-router';
+import { useParams, useLocation } from 'react-router';
+import { useNavigateEvent } from '../../../hooks/useNavigateEvent';
 import { useAppDispatch } from '../../../app/hooks';
 import { useGraphSummary, useConceptsByLayer, useGetGraph, useMindMapStructure } from '../../knowledge-graph/hooks';
 import { setCurrentGraphId, selectGraphById } from '../../knowledge-graph/knowledgeGraphSlice';
@@ -82,7 +83,7 @@ type TemplateType = 'journey' | 'path-explorer' | 'focus-mode';
 const ConceptListPageContainer: React.FC = () => {
   const { graphId } = useParams<{ graphId: string }>();
   const dispatch = useAppDispatch();
-  const navigate = useNavigate();
+  const navigate = useNavigateEvent();
   const location = useLocation();
   const { user, signOut } = useAuthContext();
 
@@ -153,7 +154,7 @@ const ConceptListPageContainer: React.FC = () => {
       description: goal.description,
       type: goal.type || 'skill',
       target: goal.target || '',
-      estimatedTime: (goal as any).estimatedTime || null,
+      estimatedTime: (goal as LearningGoal).estimatedTime ?? undefined,
       milestones: graphSummary.graphSummary.milestones || [],
       createdAt: Date.now(),
       updatedAt: Date.now(),
@@ -200,7 +201,7 @@ const ConceptListPageContainer: React.FC = () => {
               onChunk: onStream,
             }
           );
-          result.prompt = (response as any).prompt;
+          result.prompt = (response as { prompt?: string }).prompt;
           break;
         }
 
@@ -212,7 +213,7 @@ const ConceptListPageContainer: React.FC = () => {
               onChunk: onStream,
             }
           );
-          result.prompt = (response as any).prompt;
+          result.prompt = (response as { prompt?: string }).prompt;
           break;
         }
 
@@ -224,7 +225,7 @@ const ConceptListPageContainer: React.FC = () => {
               onChunk: onStream,
             }
           );
-          result.prompt = (response as any).prompt;
+          result.prompt = (response as { prompt?: string }).prompt;
           break;
         }
 
@@ -240,7 +241,7 @@ const ConceptListPageContainer: React.FC = () => {
               onChunk: onStream,
             }
           );
-          result.prompt = (response as any).prompt;
+          result.prompt = (response as { prompt?: string }).prompt;
           break;
         }
 
@@ -252,7 +253,7 @@ const ConceptListPageContainer: React.FC = () => {
               onChunk: onStream,
             }
           );
-          result.prompt = (response as any).prompt;
+          result.prompt = (response as { prompt?: string }).prompt;
           break;
         }
 

@@ -27,7 +27,7 @@ const queryService = new GraphQueryService();
 export async function convertGraphHandler(req: Request, res: Response): Promise<void> {
   try {
     const { graphId } = req.params;
-    const uid = (req as any).firebaseUser?.uid;
+    const uid = req.firebaseUser?.uid;
 
     if (!uid) {
       res.status(401).json({ error: 'Unauthorized' });
@@ -86,7 +86,7 @@ export async function convertGraphHandler(req: Request, res: Response): Promise<
 export async function getKnowledgeGraphHandler(req: Request, res: Response): Promise<void> {
   try {
     const { graphId } = req.params;
-    const uid = (req as any).firebaseUser?.uid;
+    const uid = req.firebaseUser?.uid;
 
     if (!uid) {
       res.status(401).json({ error: 'Unauthorized' });
@@ -140,7 +140,7 @@ export async function getKnowledgeGraphHandler(req: Request, res: Response): Pro
 export async function exportGraphMLHandler(req: Request, res: Response): Promise<void> {
   try {
     const { graphId } = req.params;
-    const uid = (req as any).firebaseUser?.uid;
+    const uid = req.firebaseUser?.uid;
 
     if (!uid) {
       res.status(401).json({ error: 'Unauthorized' });
@@ -207,7 +207,7 @@ export async function exportGraphMLHandler(req: Request, res: Response): Promise
 export async function updateLayerGoalHandler(req: Request, res: Response): Promise<void> {
   try {
     const { graphId, layerNumber } = req.params;
-    const uid = (req as any).firebaseUser?.uid;
+    const uid = req.firebaseUser?.uid;
 
     if (!uid) {
       res.status(401).json({ error: 'Unauthorized' });

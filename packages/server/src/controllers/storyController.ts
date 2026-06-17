@@ -31,7 +31,7 @@ const PUBLIC_STORIES_GRAPH_ID = 'stories-public';
 const SYSTEM_UID = 'system-public';
 
 function getUserId(req: Request): string {
-  const uid = (req as any).firebaseUser?.uid;
+  const uid = req.firebaseUser?.uid;
   if (!uid) throw new Error('Unauthorized');
   return uid;
 }

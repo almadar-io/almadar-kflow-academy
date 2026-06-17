@@ -36,7 +36,7 @@ import {
  */
 export async function saveUserProgressHandler(req: Request, res: Response): Promise<void> {
   try {
-    const uid = (req as any).firebaseUser?.uid;
+    const uid = req.firebaseUser?.uid;
     if (!uid) {
       res.status(401).json({ error: 'Unauthorized' });
       return;
@@ -62,7 +62,7 @@ export async function saveUserProgressHandler(req: Request, res: Response): Prom
  */
 export async function getUserProgressHandler(req: Request, res: Response): Promise<void> {
   try {
-    const uid = (req as any).firebaseUser?.uid;
+    const uid = req.firebaseUser?.uid;
     if (!uid) {
       res.status(401).json({ error: 'Unauthorized' });
       return;
@@ -107,7 +107,7 @@ export async function getUserProgressHandler(req: Request, res: Response): Promi
  */
 export async function trackConceptAccessHandler(req: Request, res: Response): Promise<void> {
   try {
-    const uid = (req as any).firebaseUser?.uid;
+    const uid = req.firebaseUser?.uid;
     if (!uid) {
       res.status(401).json({ error: 'Unauthorized' });
       return;
@@ -132,7 +132,7 @@ export async function trackConceptAccessHandler(req: Request, res: Response): Pr
  */
 export async function getAllUserProgressHandler(req: Request, res: Response): Promise<void> {
   try {
-    const uid = (req as any).firebaseUser?.uid;
+    const uid = req.firebaseUser?.uid;
     if (!uid) {
       res.status(401).json({ error: 'Unauthorized' });
       return;
@@ -152,7 +152,7 @@ export async function getAllUserProgressHandler(req: Request, res: Response): Pr
  */
 export async function getConceptsMasteredHandler(req: Request, res: Response): Promise<void> {
   try {
-    const uid = (req as any).firebaseUser?.uid;
+    const uid = req.firebaseUser?.uid;
     if (!uid) {
       res.status(401).json({ error: 'Unauthorized' });
       return;
@@ -172,7 +172,7 @@ export async function getConceptsMasteredHandler(req: Request, res: Response): P
  */
 export async function getLearningStreakHandler(req: Request, res: Response): Promise<void> {
   try {
-    const uid = (req as any).firebaseUser?.uid;
+    const uid = req.firebaseUser?.uid;
     if (!uid) {
       res.status(401).json({ error: 'Unauthorized' });
       return;
@@ -192,7 +192,7 @@ export async function getLearningStreakHandler(req: Request, res: Response): Pro
  */
 export async function getRecentActivityHandler(req: Request, res: Response): Promise<void> {
   try {
-    const uid = (req as any).firebaseUser?.uid;
+    const uid = req.firebaseUser?.uid;
     if (!uid) {
       res.status(401).json({ error: 'Unauthorized' });
       return;
@@ -213,7 +213,7 @@ export async function getRecentActivityHandler(req: Request, res: Response): Pro
  */
 export async function getStatisticsSummaryHandler(req: Request, res: Response): Promise<void> {
   try {
-    const uid = (req as any).firebaseUser?.uid;
+    const uid = req.firebaseUser?.uid;
     if (!uid) {
       res.status(401).json({ error: 'Unauthorized' });
       return;
@@ -234,7 +234,7 @@ export async function getStatisticsSummaryHandler(req: Request, res: Response): 
  */
 export async function getUserPreferencesHandler(req: Request, res: Response): Promise<void> {
   try {
-    const uid = (req as any).firebaseUser?.uid;
+    const uid = req.firebaseUser?.uid;
     if (!uid) {
       res.status(401).json({ error: 'Unauthorized' });
       return;
@@ -254,7 +254,7 @@ export async function getUserPreferencesHandler(req: Request, res: Response): Pr
  */
 export async function updateUserPreferencesHandler(req: Request, res: Response): Promise<void> {
   try {
-    const uid = (req as any).firebaseUser?.uid;
+    const uid = req.firebaseUser?.uid;
     if (!uid) {
       res.status(401).json({ error: 'Unauthorized' });
       return;
@@ -274,7 +274,7 @@ export async function updateUserPreferencesHandler(req: Request, res: Response):
  */
 export async function getDailyProgressHandler(req: Request, res: Response): Promise<void> {
   try {
-    const uid = (req as any).firebaseUser?.uid;
+    const uid = req.firebaseUser?.uid;
     if (!uid) {
       res.status(401).json({ error: 'Unauthorized' });
       return;
@@ -294,7 +294,7 @@ export async function getDailyProgressHandler(req: Request, res: Response): Prom
  */
 export async function getRecommendedCoursesHandler(req: Request, res: Response): Promise<void> {
   try {
-    const uid = (req as any).firebaseUser?.uid;
+    const uid = req.firebaseUser?.uid;
     if (!uid) {
       res.status(401).json({ error: 'Unauthorized' });
       return;
@@ -315,7 +315,7 @@ export async function getRecommendedCoursesHandler(req: Request, res: Response):
  */
 export async function getContinueLearningCoursesHandler(req: Request, res: Response): Promise<void> {
   try {
-    const uid = (req as any).firebaseUser?.uid;
+    const uid = req.firebaseUser?.uid;
     if (!uid) {
       res.status(401).json({ error: 'Unauthorized' });
       return;
@@ -336,7 +336,7 @@ export async function getContinueLearningCoursesHandler(req: Request, res: Respo
  */
 export async function getAchievementsHandler(req: Request, res: Response): Promise<void> {
   try {
-    const uid = (req as any).firebaseUser?.uid;
+    const uid = req.firebaseUser?.uid;
     if (!uid) {
       res.status(401).json({ error: 'Unauthorized' });
       return;
@@ -356,7 +356,7 @@ export async function getAchievementsHandler(req: Request, res: Response): Promi
  */
 export async function checkAchievementsHandler(req: Request, res: Response): Promise<void> {
   try {
-    const uid = (req as any).firebaseUser?.uid;
+    const uid = req.firebaseUser?.uid;
     if (!uid) {
       res.status(401).json({ error: 'Unauthorized' });
       return;
@@ -377,7 +377,7 @@ export async function checkAchievementsHandler(req: Request, res: Response): Pro
  */
 export async function getDetailedStatisticsHandler(req: Request, res: Response): Promise<void> {
   try {
-    const uid = (req as any).firebaseUser?.uid;
+    const uid = req.firebaseUser?.uid;
     if (!uid) {
       res.status(401).json({ error: 'Unauthorized' });
       return;
@@ -397,7 +397,7 @@ export async function getDetailedStatisticsHandler(req: Request, res: Response):
  */
 export async function getJumpBackInHandler(req: Request, res: Response): Promise<void> {
   try {
-    const uid = (req as any).firebaseUser?.uid;
+    const uid = req.firebaseUser?.uid;
     if (!uid) {
       res.status(401).json({ error: 'Unauthorized' });
       return;

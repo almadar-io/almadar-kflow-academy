@@ -20,7 +20,7 @@ import {
 } from 'lucide-react';
 import { Card } from '../../molecules/Card';
 import { Typography } from '../../atoms/Typography';
-import { ProgressBar } from '../../atoms/ProgressBar';
+import { ProgressBar, type ProgressBarColor } from '../../atoms/ProgressBar';
 import { Badge } from '../../atoms/Badge';
 import { Button } from '../../atoms/Button';
 import { Icon } from '../../atoms/Icon';
@@ -143,10 +143,10 @@ const getReadinessPercentage = (ready: number, total: number) => {
   return Math.round((ready / total) * 100);
 };
 
-const getReadinessColor = (percentage: number) => {
+const getReadinessColor = (percentage: number): ProgressBarColor => {
   if (percentage >= 100) return 'success';
   if (percentage >= 50) return 'warning';
-  return 'error';
+  return 'danger';
 };
 
 const visibilityConfig = {
@@ -215,7 +215,7 @@ export const PublishingSidebar: React.FC<PublishingSidebarProps> = ({
           </div>
           <ProgressBar
             value={overallReadiness}
-            color={getReadinessColor(overallReadiness) as any}
+            color={getReadinessColor(overallReadiness)}
           />
         </div>
         

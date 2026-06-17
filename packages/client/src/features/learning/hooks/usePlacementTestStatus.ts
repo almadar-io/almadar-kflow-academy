@@ -93,7 +93,6 @@ export function usePlacementTestStatus(
     } else {
       setIsLoading(false);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [graphId, goalId]);
 
   return {
