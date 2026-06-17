@@ -17,9 +17,6 @@ export * from './StreamingDisplay';
 
 // Concept components
 
-// Learning goal components
-export * from './LearningGoalDisplay';
-
 // Layer navigation
 export * from './LayerNavigator';
 

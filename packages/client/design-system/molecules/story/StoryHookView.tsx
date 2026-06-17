@@ -37,7 +37,7 @@ import {
   Handshake,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
-import { MarkdownContent } from '../markdown/MarkdownContent';
+import { MarkdownContent } from '@almadar/ui';
 import { DomainBadge } from '../../atoms/DomainBadge';
 import type { KnowledgeDomainType, StoryGameType } from '../../types/knowledge';
 

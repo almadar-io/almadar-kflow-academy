@@ -6,7 +6,7 @@
  */
 
 import React from 'react';
-import { MarkdownContent } from './MarkdownContent';
+import { MarkdownContent } from '@almadar/ui';
 import { CodeBlock } from './CodeBlock';
 import { QuizBlock } from './QuizBlock';
 import { ActivationBlock } from './ActivationBlock';

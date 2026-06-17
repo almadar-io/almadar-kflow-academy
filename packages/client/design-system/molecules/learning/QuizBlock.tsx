@@ -21,7 +21,7 @@ import {
   useTranslate,
 } from '@almadar/ui';
 import { CodeBlock } from "../markdown/CodeBlock";
-import { MarkdownContent } from "../markdown/MarkdownContent";
+import { MarkdownContent } from "@almadar/ui";
 import { parseMarkdownWithCodeBlocks } from "../../utils/parseLessonSegments";
 
 export interface QuizBlockProps {

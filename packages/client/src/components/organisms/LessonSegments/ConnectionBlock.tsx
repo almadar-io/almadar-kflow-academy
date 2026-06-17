@@ -7,7 +7,7 @@
 
 import React from 'react';
 import { Link2 } from 'lucide-react';
-import { MarkdownContent } from './MarkdownContent';
+import { MarkdownContent } from '@almadar/ui';
 
 export interface ConnectionBlockProps {
   content: string;

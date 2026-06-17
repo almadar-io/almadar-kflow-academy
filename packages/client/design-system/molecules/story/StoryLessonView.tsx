@@ -25,7 +25,7 @@ import {
   useTranslate,
 } from '@almadar/ui';
 import { BookOpen, Puzzle, CheckCircle, XCircle } from 'lucide-react';
-import { MarkdownContent } from '../markdown/MarkdownContent';
+import { MarkdownContent } from '@almadar/ui';
 
 // ---------------------------------------------------------------------------
 // Shared cinematic background helper

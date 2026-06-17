@@ -5,7 +5,7 @@ import { useConceptDetail } from '../../knowledge-graph/hooks/useConceptDetail';
 import { useGetGraph, useLessonAnnotations } from '../../knowledge-graph/hooks';
 import { setCurrentGraphId, selectGraphById } from '../../knowledge-graph/knowledgeGraphSlice';
 import { useExplainConcept } from '../../knowledge-graph/hooks/useExplainConcept';
-import { MarkdownContent } from '../components/MarkdownRenderer';
+import { MarkdownContent } from '@almadar/ui';
 import { useAnswerQuestion } from '../../knowledge-graph/hooks/useAnswerQuestion';
 import { useCustomOperation } from '../../knowledge-graph/hooks/useCustomOperation';
 import type { Concept } from '../types';

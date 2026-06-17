@@ -1,18 +1,10 @@
-// Learning content
-export * from './SegmentRenderer';
-
 // Graph visualization
 export * from './ForceDirectedGraph';
 
 // Mindmap
 export * from './MindMapCanvas';
 
-// Notes
-
-// Concept display
-
 // Flashcards
-export * from './FlashCard';
 export * from './FlashCardStack';
 
 // Extracted organisms for template flattener compliance

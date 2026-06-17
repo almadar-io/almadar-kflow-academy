@@ -21,7 +21,7 @@ import {
   Typography,
   useTranslate,
 } from '@almadar/ui';
-import { MarkdownContent } from '../markdown/MarkdownContent';
+import { MarkdownContent } from '@almadar/ui';
 
 export interface StoryScene {
   title: string;

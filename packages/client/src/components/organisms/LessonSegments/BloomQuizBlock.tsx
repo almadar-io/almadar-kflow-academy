@@ -7,7 +7,7 @@
 
 import React, { useState, useMemo } from 'react';
 import { CheckCircle } from 'lucide-react';
-import { MarkdownContent } from './MarkdownContent';
+import { MarkdownContent } from '@almadar/ui';
 import { CodeBlock } from './CodeBlock';
 import { parseMarkdownWithCodeBlocks } from './utils';
 import type { BloomLevel } from './types';
