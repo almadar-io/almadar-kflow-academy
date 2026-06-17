@@ -139,13 +139,18 @@ async function main() {
   if (userId) {
     // Convert graphs for specific user
     const stats = await convertUserGraphs(userId);
-    Object.keys(totalStats).forEach(key => {
-      if (key === 'errors') {
-        totalStats.errors.push(...stats.errors);
-      } else {
-        (totalStats as any)[key] += (stats as any)[key];
-      }
-    });
+    const numericKeys: Array<keyof Omit<ConversionStats, 'errors'>> = [
+      'totalGraphs',
+      'successfulConversions',
+      'failedConversions',
+      'totalNodes',
+      'totalRelationships',
+      'layersConverted',
+    ];
+    totalStats.errors.push(...stats.errors);
+    for (const key of numericKeys) {
+      totalStats[key] += stats[key];
+    }
   } else {
     // Convert graphs for all users
     const userIds = await getAllUserIds();
@@ -153,13 +158,18 @@ async function main() {
 
     for (const uid of userIds) {
       const stats = await convertUserGraphs(uid);
-      Object.keys(totalStats).forEach(key => {
-        if (key === 'errors') {
-          totalStats.errors.push(...stats.errors);
-        } else {
-          (totalStats as any)[key] += (stats as any)[key];
-        }
-      });
+      const numericKeys: Array<keyof Omit<ConversionStats, 'errors'>> = [
+        'totalGraphs',
+        'successfulConversions',
+        'failedConversions',
+        'totalNodes',
+        'totalRelationships',
+        'layersConverted',
+      ];
+      totalStats.errors.push(...stats.errors);
+      for (const key of numericKeys) {
+        totalStats[key] += stats[key];
+      }
     }
   }
 

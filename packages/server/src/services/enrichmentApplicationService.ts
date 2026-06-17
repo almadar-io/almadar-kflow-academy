@@ -315,7 +315,7 @@ function getTopLevelConceptForLayer(
 
   // Use the topLevelConceptId field if available (more reliable)
   // Note: topLevelConceptId stores the concept name, not the ID
-  const topLevelConceptId = (layer as any).topLevelConceptId;
+  const topLevelConceptId = layer.topLevelConceptId;
   if (topLevelConceptId) {
     const topLevelConcept = kg.concepts[topLevelConceptId] || Object.values(kg.concepts).find((c) => c.name === topLevelConceptId);
     if (topLevelConcept) {

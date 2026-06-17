@@ -55,10 +55,13 @@ export async function applyGraphQLMiddleware(
   apolloServer: ApolloServer
 ): Promise<void> {
   await apolloServer.start();
-  
+
   // Apply GraphQL endpoint
   // Authentication is handled in the context function which checks firebaseUser
-  // Type assertion needed due to Express type version mismatch between packages
-  apolloServer.applyMiddleware({ app, path: '/graphql' });
+  // Express type versions diverge between apollo-server-express and workspace, so cast the app.
+  apolloServer.applyMiddleware({
+    app: app as unknown as Parameters<ApolloServer['applyMiddleware']>[0]['app'],
+    path: '/graphql',
+  });
 }
 

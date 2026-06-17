@@ -15,6 +15,7 @@ import type {
   CourseCategory,
 } from '../../types/publicCourse';
 import { createPublicCourseEntry } from '../../types/publicCourse';
+import type { LanguageConfigNodeProperties } from '../../types/nodeBasedKnowledgeGraph';
 
 const PUBLIC_COURSES_COLLECTION = 'publicCourses';
 const FEATURED_COURSES_COLLECTION = 'featuredCourses';
@@ -59,8 +60,9 @@ export class PublicCourseIndexService {
     if (languageConfigs.length > 0) {
       const langConfig = graph.nodes[languageConfigs[0]];
       if (langConfig?.properties) {
-        primaryLanguage = (langConfig.properties as any).primaryLanguage || primaryLanguage;
-        availableLanguages = (langConfig.properties as any).supportedLanguages || availableLanguages;
+        const langProps = langConfig.properties as Partial<LanguageConfigNodeProperties>;
+        primaryLanguage = langProps.language || primaryLanguage;
+        availableLanguages = (langProps as { supportedLanguages?: string[] }).supportedLanguages || availableLanguages;
       }
     }
 
@@ -259,9 +261,9 @@ export class PublicCourseIndexService {
               if (languageConfigs.length > 0) {
                 const langConfig = graph.nodes[languageConfigs[0]];
                 if (langConfig?.properties) {
-                  const langProps = langConfig.properties as any;
-                  primaryLanguage = langProps.primaryLanguage || primaryLanguage;
-                  availableLanguages = langProps.supportedLanguages || availableLanguages;
+                  const langProps = langConfig.properties as Partial<LanguageConfigNodeProperties>;
+                  primaryLanguage = langProps.language || primaryLanguage;
+                  availableLanguages = (langProps as { supportedLanguages?: string[] }).supportedLanguages || availableLanguages;
                 }
               }
 
@@ -278,8 +280,8 @@ export class PublicCourseIndexService {
               try {
                 const userDoc = await db.collection('users').doc(uid).get();
                 if (userDoc.exists) {
-                  const userData = userDoc.data();
-                  mentorName = (userData as any)?.name || (userData as any)?.email || 'Unknown';
+                  const userData = userDoc.data() as { name?: string; email?: string } | undefined;
+                  mentorName = userData?.name || userData?.email || 'Unknown';
                 }
               } catch (err) {
                 console.warn(`Failed to get user info for ${uid}:`, err);
@@ -388,14 +390,24 @@ export class PublicCourseIndexService {
     // Sort
     const sortBy = filters.sortBy || 'publishedAt';
     const sortOrder = filters.sortOrder || 'desc';
+    const sortableFields: Array<keyof PublicCourseEntry> = [
+      'publishedAt',
+      'enrollmentCount',
+      'title',
+      'estimatedDuration',
+    ];
     courses.sort((a, b) => {
-      const aVal = (a as any)[sortBy] || 0;
-      const bVal = (b as any)[sortBy] || 0;
+      const field = sortableFields.includes(sortBy as keyof PublicCourseEntry)
+        ? (sortBy as keyof PublicCourseEntry)
+        : 'publishedAt';
+      const rawA = a[field] ?? 0;
+      const rawB = b[field] ?? 0;
+      const aVal = typeof rawA === 'string' ? rawA.toLowerCase() : rawA;
+      const bVal = typeof rawB === 'string' ? rawB.toLowerCase() : rawB;
       if (sortOrder === 'desc') {
-        return bVal > aVal ? 1 : bVal < aVal ? -1 : 0;
-      } else {
-        return aVal > bVal ? 1 : aVal < bVal ? -1 : 0;
+        return aVal > bVal ? -1 : aVal < bVal ? 1 : 0;
       }
+      return aVal > bVal ? 1 : aVal < bVal ? -1 : 0;
     });
 
     // Get total before pagination
@@ -461,9 +473,9 @@ export class PublicCourseIndexService {
     if (languageConfigs.length > 0) {
       const langConfig = graph.nodes[languageConfigs[0]];
       if (langConfig?.properties) {
-        const langProps = langConfig.properties as any;
-        primaryLanguage = langProps.primaryLanguage || primaryLanguage;
-        availableLanguages = langProps.supportedLanguages || availableLanguages;
+        const langProps = langConfig.properties as Partial<LanguageConfigNodeProperties>;
+        primaryLanguage = langProps.language || primaryLanguage;
+        availableLanguages = (langProps as { supportedLanguages?: string[] }).supportedLanguages || availableLanguages;
       }
     }
 
@@ -480,8 +492,8 @@ export class PublicCourseIndexService {
     try {
       const userDoc = await db.collection('users').doc(uid).get();
       if (userDoc.exists) {
-        const userData = userDoc.data();
-        mentorName = (userData as any)?.name || (userData as any)?.email || 'Unknown';
+        const userData = userDoc.data() as { name?: string; email?: string } | undefined;
+        mentorName = userData?.name || userData?.email || 'Unknown';
       }
     } catch (err) {
       console.warn(`Failed to get user info for ${uid}:`, err);
@@ -574,11 +586,11 @@ export class PublicCourseIndexService {
     const featuredCourses: FeaturedCourse[] = [];
     
     for (const doc of snapshot.docs) {
-      const featuredData = doc.data() as any;
+      const featuredData = doc.data() as Partial<FeaturedCourse> & { graphId?: string };
       const graphId = featuredData.graphId;
-      
+
       if (!graphId) continue;
-      
+
       // Get course from graph
       const course = await this.getCourseByGraphId(graphId);
       if (course) {

@@ -1,4 +1,4 @@
-import { encoding_for_model, get_encoding, type Tiktoken } from 'tiktoken';
+import { encoding_for_model, get_encoding, type Tiktoken, type TiktokenModel } from 'tiktoken';
 import { addCostToDailyTracking } from '../services/costService';
 import { getGemini } from '../config/gemini';
 
@@ -89,7 +89,7 @@ export async function countTokensTiktoken(
     // Try to get encoding for the specific model
     let encoding: Tiktoken;
     try {
-      encoding = encoding_for_model(model as any);
+      encoding = encoding_for_model(model as TiktokenModel);
     } catch {
       // Fallback to cl100k_base (used by GPT-4, GPT-3.5, and many models)
       encoding = get_encoding('cl100k_base');

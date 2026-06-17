@@ -85,8 +85,8 @@ export async function getEnrollment(courseId: string, enrollmentId: string): Pro
   const data = enrollmentDoc.data() as RawEnrollment;
 
   const enrollment: Enrollment = {
-    id: enrollmentDoc.id,
     ...data,
+    id: enrollmentDoc.id,
     assessmentStatus: data.assessmentStatus
       ? new Map<string, AssessmentStatus>(Object.entries(data.assessmentStatus))
       : new Map<string, AssessmentStatus>(),
@@ -258,8 +258,8 @@ export async function getCourseEnrollment(courseId: string, studentId: string): 
 
   const data = snapshot.docs[0].data() as RawEnrollment;
   return {
-    id: snapshot.docs[0].id,
     ...data,
+    id: snapshot.docs[0].id,
     assessmentStatus: data.assessmentStatus
       ? new Map<string, AssessmentStatus>(Object.entries(data.assessmentStatus))
       : new Map<string, AssessmentStatus>(),

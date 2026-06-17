@@ -326,16 +326,20 @@ async function main() {
     errors: [],
   };
 
+  const numericKeys: Array<keyof Omit<RegenerationStats, 'errors'>> = [
+    'totalGraphs',
+    'successfulRegenerations',
+    'failedRegenerations',
+    'totalLayers',
+  ];
+
   if (userId) {
     // Regenerate graphs for specific user
     const stats = await regenerateUserGraphs(userId);
-    Object.keys(totalStats).forEach(key => {
-      if (key === 'errors') {
-        totalStats.errors.push(...stats.errors);
-      } else {
-        (totalStats as any)[key] += (stats as any)[key];
-      }
-    });
+    totalStats.errors.push(...stats.errors);
+    for (const key of numericKeys) {
+      totalStats[key] += stats[key];
+    }
   } else {
     // Regenerate graphs for all users
     const userIds = await getAllUserIds();
@@ -343,13 +347,10 @@ async function main() {
 
     for (const uid of userIds) {
       const stats = await regenerateUserGraphs(uid);
-      Object.keys(totalStats).forEach(key => {
-        if (key === 'errors') {
-          totalStats.errors.push(...stats.errors);
-        } else {
-          (totalStats as any)[key] += (stats as any)[key];
-        }
-      });
+      totalStats.errors.push(...stats.errors);
+      for (const key of numericKeys) {
+        totalStats[key] += stats[key];
+      }
     }
   }
 

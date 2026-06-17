@@ -235,25 +235,25 @@ async function exportUserGraphs(
     errors: [],
   };
 
+  const numericKeys: Array<keyof Omit<ExportStats, 'errors' | 'outputDirectory'>> = [
+    'totalGraphs',
+    'successfulExports',
+    'failedExports',
+  ];
+
   // Export ConceptGraphs
   const conceptGraphStats = await exportUserConceptGraphs(uid, outputDir, exportOptions);
-  Object.keys(totalStats).forEach(key => {
-    if (key === 'errors') {
-      totalStats.errors.push(...conceptGraphStats.errors);
-    } else if (key !== 'outputDirectory') {
-      (totalStats as any)[key] += (conceptGraphStats as any)[key];
-    }
-  });
+  totalStats.errors.push(...conceptGraphStats.errors);
+  for (const key of numericKeys) {
+    totalStats[key] += conceptGraphStats[key];
+  }
 
   // Export KnowledgeGraphs
   const knowledgeGraphStats = await exportUserKnowledgeGraphs(uid, outputDir, exportOptions);
-  Object.keys(totalStats).forEach(key => {
-    if (key === 'errors') {
-      totalStats.errors.push(...knowledgeGraphStats.errors);
-    } else if (key !== 'outputDirectory') {
-      (totalStats as any)[key] += (knowledgeGraphStats as any)[key];
-    }
-  });
+  totalStats.errors.push(...knowledgeGraphStats.errors);
+  for (const key of numericKeys) {
+    totalStats[key] += knowledgeGraphStats[key];
+  }
 
   return totalStats;
 }
@@ -297,16 +297,19 @@ async function main() {
     simplified: false,
   };
 
+  const numericKeys: Array<keyof Omit<ExportStats, 'errors' | 'outputDirectory'>> = [
+    'totalGraphs',
+    'successfulExports',
+    'failedExports',
+  ];
+
   if (userId) {
     // Export graphs for specific user
     const stats = await exportUserGraphs(userId, outputDir, exportOptions);
-    Object.keys(totalStats).forEach(key => {
-      if (key === 'errors') {
-        totalStats.errors.push(...stats.errors);
-      } else if (key !== 'outputDirectory') {
-        (totalStats as any)[key] += (stats as any)[key];
-      }
-    });
+    totalStats.errors.push(...stats.errors);
+    for (const key of numericKeys) {
+      totalStats[key] += stats[key];
+    }
   } else {
     // Export graphs for all users
     const userIds = await getAllUserIds();
@@ -314,13 +317,10 @@ async function main() {
 
     for (const uid of userIds) {
       const stats = await exportUserGraphs(uid, outputDir, exportOptions);
-      Object.keys(totalStats).forEach(key => {
-        if (key === 'errors') {
-          totalStats.errors.push(...stats.errors);
-        } else if (key !== 'outputDirectory') {
-          (totalStats as any)[key] += (stats as any)[key];
-        }
-      });
+      totalStats.errors.push(...stats.errors);
+      for (const key of numericKeys) {
+        totalStats[key] += stats[key];
+      }
     }
   }
 

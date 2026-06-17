@@ -18,6 +18,7 @@ import type {
   GoalAwareRelationships,
   CrossLayerDiscovery,
 } from '../types/enrichment';
+import { singleParam } from '../utils/httpParams';
 
 /**
  * Enrich a knowledge graph
@@ -25,11 +26,11 @@ import type {
  */
 export async function enrichGraphHandler(req: Request, res: Response): Promise<void> {
   try {
-    const { graphId } = req.params;
+    const graphId = singleParam(req.params.graphId);
     const uid = req.firebaseUser?.uid;
 
-    if (!uid) {
-      res.status(401).json({ error: 'Unauthorized' });
+    if (!uid || !graphId) {
+      res.status(!uid ? 401 : 400).json({ error: !uid ? 'Unauthorized' : 'Graph ID is required' });
       return;
     }
 
@@ -119,15 +120,16 @@ export async function enrichGraphHandler(req: Request, res: Response): Promise<v
  */
 export async function enrichLayerHandler(req: Request, res: Response): Promise<void> {
   try {
-    const { graphId, layerNumber } = req.params;
+    const graphId = singleParam(req.params.graphId);
+    const layerNumber = singleParam(req.params.layerNumber);
     const uid = req.firebaseUser?.uid;
 
-    if (!uid) {
-      res.status(401).json({ error: 'Unauthorized' });
+    if (!uid || !graphId) {
+      res.status(!uid ? 401 : 400).json({ error: !uid ? 'Unauthorized' : 'Graph ID is required' });
       return;
     }
 
-    const layerNum = parseInt(layerNumber, 10);
+    const layerNum = layerNumber ? parseInt(layerNumber, 10) : NaN;
     if (isNaN(layerNum)) {
       res.status(400).json({ error: 'Invalid layer number' });
       return;
@@ -216,11 +218,11 @@ export async function enrichLayerHandler(req: Request, res: Response): Promise<v
  */
 export async function applyEnrichmentsHandler(req: Request, res: Response): Promise<void> {
   try {
-    const { graphId } = req.params;
+    const graphId = singleParam(req.params.graphId);
     const uid = req.firebaseUser?.uid;
 
-    if (!uid) {
-      res.status(401).json({ error: 'Unauthorized' });
+    if (!uid || !graphId) {
+      res.status(400).json({ error: 'User ID and graph ID are required' });
       return;
     }
 

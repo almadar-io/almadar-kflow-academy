@@ -53,13 +53,10 @@ function getFirestoreForDatabase(databaseId: string): admin.firestore.Firestore 
     );
   }
 
-  // Get Firestore instance for the specific database
-  // For named databases, we need to use the database URL format
-  // The databaseId parameter in firestore() is not in TypeScript types but works at runtime
-  const firestore = (app.firestore as any)(databaseId) as admin.firestore.Firestore;
+  const firestore = admin.firestore(app);
   firestore.settings({
     ignoreUndefinedProperties: true,
-    databaseId: databaseId
+    databaseId,
   });
 
   return firestore;

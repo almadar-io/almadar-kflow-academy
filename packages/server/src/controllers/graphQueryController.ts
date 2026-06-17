@@ -6,6 +6,7 @@
  */
 
 import type { Request, Response } from 'express';
+import { singleParam, singleQueryParam } from '../utils/httpParams';
 import { GraphQueryService } from '../services/graphQueryService';
 import type {
   LearningPathsSummaryResponse,
@@ -35,7 +36,7 @@ interface ErrorResponse {
   error: string;
   details?: string;
   code?: string;
-  graphId?: string;
+  graphId?: string | string[];
 }
 
 /**
@@ -66,11 +67,15 @@ export async function getGraphSummaryHandler(
 ): Promise<void> {
   try {
     const uid = getUserId(req);
-    const { graphId } = req.params;
-    
+    const graphId = singleParam(req.params.graphId);
+    if (!graphId) {
+      res.status(400).json({ error: 'Graph ID is required' });
+      return;
+    }
+
     // Verify graph ownership before read operations
     await verifyGraphAccess(uid, graphId, 'read');
-    
+
     const summary = await queryService.getGraphSummary(uid, graphId);
     res.json(summary);
   } catch (error: any) {
@@ -103,11 +108,15 @@ export async function getConceptsHandler(
 ): Promise<void> {
   try {
     const uid = getUserId(req);
-    const { graphId } = req.params;
-    
+    const graphId = singleParam(req.params.graphId);
+    if (!graphId) {
+      res.status(400).json({ error: 'Graph ID is required' });
+      return;
+    }
+
     // Verify graph ownership before read operations
     await verifyGraphAccess(uid, graphId, 'read');
-    
+
     const includeRelationships = req.query.includeRelationships !== 'false';
     const groupByLayer = req.query.groupByLayer !== 'false';
 
@@ -146,8 +155,8 @@ export async function getMindMapHandler(
 ): Promise<void> {
   try {
     const uid = getUserId(req);
-    const { graphId } = req.params;
-    const { expandAll } = req.query;
+    const graphId = singleParam(req.params.graphId);
+    const expandAll = singleQueryParam(req.query.expandAll);
 
     if (!graphId) {
       res.status(400).json({ error: 'Graph ID is required' });
@@ -197,11 +206,17 @@ export async function getConceptDetailHandler(
 ): Promise<void> {
   try {
     const uid = getUserId(req);
-    const { graphId, conceptId } = req.params;
-    
+    const graphId = singleParam(req.params.graphId);
+    const conceptId = singleParam(req.params.conceptId);
+
+    if (!graphId || !conceptId) {
+      res.status(400).json({ error: 'Graph ID and concept ID are required' });
+      return;
+    }
+
     // Verify graph ownership before read operations
     await verifyGraphAccess(uid, graphId, 'read');
-    
+
     const detail = await queryService.getConceptDetail(uid, graphId, conceptId);
     res.json(detail);
   } catch (error: any) {

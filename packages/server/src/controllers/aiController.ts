@@ -19,6 +19,7 @@ import { expand, progressiveExpandMultiple, advanceNextMultiple, deriveParents, 
 import { createGraph, addConceptsToGraph } from '../utils/graph';
 import { ConceptGraph, Concept, GraphDifficulty } from '../types/concept';
 import { ExplainConceptRequest, GenerateLayerPracticeRequest, GenerateLayerPracticeResponse, AnswerQuestionRequest, AnswerQuestionResponse, CustomOperationRequest, SynthesizeRequest, ExploreRequest, TracePathRequest, ProgressiveExploreRequest, GenerateFlashCardsRequest, RunCodeSimulationRequest, RunCodeSimulationResponse, GenerateInteractiveOrbitalRequest, GenerateInteractiveOrbitalResponse } from '../types';
+import { GenerateLayerPracticeResult, GenerateLayerPracticeStreamResult } from '../operations/generateLayerPractice';
 import { getUserGraphById } from '../services/graphService';
 import { upsertUser } from '../services/userService';
 import { saveLayer, getLayerByNumber } from '../services/layerService';
@@ -620,8 +621,9 @@ export async function generateLayerPracticeHandler(
 
     // Check if result is a stream
     if (result && typeof result === 'object' && 'stream' in result && result.stream) {
-      const stream = result.stream as AsyncIterable<unknown>;
-      const model = result.model || 'deepseek-chat';
+      const streamResult = result as GenerateLayerPracticeStreamResult;
+      const stream = streamResult.stream as AsyncIterable<unknown>;
+      const model = streamResult.model || 'deepseek-chat';
       
       // Use reusable stream handler with onComplete to save the review
       await handleStreamResponse(stream, req, res, {
@@ -670,14 +672,15 @@ export async function generateLayerPracticeHandler(
     }
 
     // Non-streaming response (fallback)
+    const practiceResult = result as GenerateLayerPracticeResult;
     // Save practice exercises to the layer if graphId is provided
-    if (graphId && result.items && result.items.length > 0) {
+    if (graphId && practiceResult.items && practiceResult.items.length > 0) {
       try {
         // Get existing layer or create new one
         const existingLayer = await getLayerByNumber(uid, graphId, layerNumber);
         
         console.log(`Saving practice exercises to layer ${layerNumber} for graph ${graphId}`, {
-          itemsCount: result.items.length,
+          itemsCount: practiceResult.items.length,
           hasExistingLayer: !!existingLayer,
         });
         
@@ -687,7 +690,7 @@ export async function generateLayerPracticeHandler(
           response: existingLayer?.response || '',
           goal: existingLayer?.goal || layerGoal,
           conceptIds: existingLayer?.conceptIds || concepts.map(c => c.id || c.name),
-          practiceExercises: result.items,
+          practiceExercises: practiceResult.items,
         });
         
         console.log(`Successfully saved practice exercises to layer ${layerNumber}`);
@@ -698,13 +701,13 @@ export async function generateLayerPracticeHandler(
     } else {
       console.log('Skipping save: graphId or items missing', {
         hasGraphId: !!graphId,
-        itemsCount: result.items?.length || 0,
+        itemsCount: practiceResult.items?.length || 0,
       });
     }
 
     res.json({
-      items: result.items,
-      model: result.model,
+      items: practiceResult.items,
+      model: practiceResult.model,
     });
   } catch (error) {
     console.error('Error generating layer practice:', error);

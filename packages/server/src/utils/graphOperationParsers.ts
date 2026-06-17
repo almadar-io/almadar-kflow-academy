@@ -80,8 +80,8 @@ export async function parseExplainContent(
   ) || [];
 
   // Convert prerequisites to string array
-  const prerequisiteNames = processedPrerequisites.map((p: any) => 
-    typeof p === 'string' ? p : (p as any).name || String(p)
+  const prerequisiteNames = processedPrerequisites.map((p: string) =>
+    typeof p === 'string' ? p : String(p)
   );
 
   // Generate mutations

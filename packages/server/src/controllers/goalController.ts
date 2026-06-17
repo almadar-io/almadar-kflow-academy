@@ -1,4 +1,5 @@
 import { Request, Response } from 'express';
+import { singleParam, singleQueryParam } from '../utils/httpParams';
 import { generateGoalQuestions } from '../operations/generateGoalQuestions';
 import { generateGoal as generateGoalOperation } from '../operations/generateGoal';
 import {
@@ -516,7 +517,11 @@ export async function updateGoalHandler(
       return;
     }
 
-    const { goalId } = req.params;
+    const goalId = singleParam(req.params.goalId);
+    if (!goalId) {
+      res.status(400).json({ error: 'Goal ID is required' });
+      return;
+    }
     const updates = req.body;
 
     // Remove fields that shouldn't be updated directly
@@ -556,7 +561,11 @@ export async function deleteGoalHandler(
       return;
     }
 
-    const { goalId } = req.params;
+    const goalId = singleParam(req.params.goalId);
+    if (!goalId) {
+      res.status(400).json({ error: 'Goal ID is required' });
+      return;
+    }
 
     await deleteGoal(uid, goalId);
 
@@ -592,9 +601,9 @@ export async function getUserGoalsHandler(
       return;
     }
 
-    const { graphId } = req.query;
+    const graphId = singleQueryParam(req.query.graphId);
 
-    if (graphId && typeof graphId === 'string') {
+    if (graphId) {
       // Get goals for a specific graph
       const goals = await getGoalsByGraphId(uid, graphId);
       res.json({ goals });
@@ -627,7 +636,11 @@ export async function getGoalByIdHandler(
       return;
     }
 
-    const { goalId } = req.params;
+    const goalId = singleParam(req.params.goalId);
+    if (!goalId) {
+      res.status(400).json({ error: 'Goal ID is required' });
+      return;
+    }
 
     const goal = await getGoalById(uid, goalId);
 

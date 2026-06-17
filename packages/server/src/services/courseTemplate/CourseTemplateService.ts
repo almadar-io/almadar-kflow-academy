@@ -63,7 +63,7 @@ const calculateEstimatedDuration = (modules: ModuleTemplate[]): number => {
 /**
  * Generate IDs for modules and lessons
  */
-const generateModuleIds = (modules: Omit<ModuleTemplate, 'id'>[]): ModuleTemplate[] => {
+const generateModuleIds = (modules: (ModuleTemplate | Omit<ModuleTemplate, 'id'>)[]): ModuleTemplate[] => {
   return modules.map((module, moduleIndex) => ({
     ...module,
     id: `module-${uuidv4().slice(0, 8)}`,
@@ -265,25 +265,25 @@ export class CourseTemplateService {
       throw new Error('Template not found');
     }
     
+    const { modules: modulesUpdate, ...otherUpdates } = updates;
+    const modulesWithIds = modulesUpdate ? generateModuleIds(modulesUpdate) : undefined;
+
     const updatedData: Partial<CourseTemplate> = {
-      ...updates,
+      ...otherUpdates,
       updatedAt: Date.now(),
+      ...(modulesWithIds && {
+        modules: modulesWithIds,
+        estimatedDuration: calculateEstimatedDuration(modulesWithIds),
+        lessonCount: calculateLessonCount(modulesWithIds),
+      }),
     };
-    
-    // If modules are updated, recalculate metrics and generate IDs
-    if (updates.modules) {
-      const modulesWithIds = generateModuleIds(updates.modules);
-      updatedData.modules = modulesWithIds;
-      updatedData.estimatedDuration = calculateEstimatedDuration(modulesWithIds);
-      updatedData.lessonCount = calculateLessonCount(modulesWithIds);
-    }
-    
+
     await userTemplatesCollection(userId).doc(templateId).update(updatedData);
-    
+
     return {
       ...existing,
       ...updatedData,
-    } as CourseTemplate;
+    };
   }
 
   /**
@@ -435,24 +435,25 @@ export class CourseTemplateService {
       throw new Error('System template not found');
     }
     
+    const { modules: modulesUpdate, ...otherUpdates } = updates;
+    const modulesWithIds = modulesUpdate ? generateModuleIds(modulesUpdate) : undefined;
+
     const updatedData: Partial<CourseTemplate> = {
-      ...updates,
+      ...otherUpdates,
       updatedAt: Date.now(),
+      ...(modulesWithIds && {
+        modules: modulesWithIds,
+        estimatedDuration: calculateEstimatedDuration(modulesWithIds),
+        lessonCount: calculateLessonCount(modulesWithIds),
+      }),
     };
-    
-    if (updates.modules) {
-      const modulesWithIds = generateModuleIds(updates.modules);
-      updatedData.modules = modulesWithIds;
-      updatedData.estimatedDuration = calculateEstimatedDuration(modulesWithIds);
-      updatedData.lessonCount = calculateLessonCount(modulesWithIds);
-    }
-    
+
     await systemTemplatesCollection().doc(templateId).update(updatedData);
-    
+
     return {
       ...existing,
       ...updatedData,
-    } as CourseTemplate;
+    };
   }
 
   /**

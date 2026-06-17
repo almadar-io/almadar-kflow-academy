@@ -146,8 +146,8 @@ export async function explain(
   ) || [];
 
   // Convert prerequisites to string array
-  const prerequisiteNames = processedPrerequisites.map(p => 
-    typeof p === 'string' ? p : (p as any).name || String(p)
+  const prerequisiteNames = processedPrerequisites.map(p =>
+    typeof p === 'string' ? p : String(p)
   );
 
   // Generate mutations

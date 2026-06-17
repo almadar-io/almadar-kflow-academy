@@ -16,6 +16,7 @@ import {
   createTranslationNode,
   createPublishingRelationship,
   type TranslationNodeProperties,
+  type NodeType,
 } from '../../types/nodeBasedKnowledgeGraph';
 import {
   type TranslationOptions,
@@ -375,7 +376,7 @@ export class TranslationService {
     // Create translation node
     const translationNode = createTranslationNode(
       sourceNodeId,
-      sourceNodeType as any,
+      sourceNodeType as NodeType,
       targetLanguage,
       translatedContent,
       {

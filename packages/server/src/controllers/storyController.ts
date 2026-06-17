@@ -9,6 +9,7 @@
  */
 
 import type { Request, Response } from 'express';
+import { singleParam } from '../utils/httpParams';
 import { KnowledgeGraphAccessLayer } from '../services/knowledgeGraphAccess/KnowledgeGraphAccessLayer';
 import {
   createGraphNode,
@@ -90,7 +91,11 @@ export async function listStoriesHandler(_req: Request, res: Response): Promise<
  */
 export async function getStoryHandler(req: Request, res: Response): Promise<void> {
   try {
-    const { storyId } = req.params;
+    const storyId = singleParam(req.params.storyId);
+    if (!storyId) {
+      res.status(400).json({ error: 'Story ID is required' });
+      return;
+    }
     const graph = await ensurePublicGraph();
     const node = graph.nodes[storyId];
 
@@ -171,7 +176,11 @@ export async function createStoryHandler(req: Request, res: Response): Promise<v
 export async function updateStoryHandler(req: Request, res: Response): Promise<void> {
   try {
     getUserId(req);
-    const { storyId } = req.params;
+    const storyId = singleParam(req.params.storyId);
+    if (!storyId) {
+      res.status(400).json({ error: 'Story ID is required' });
+      return;
+    }
     const updates = req.body as Partial<StoryNodeProperties>;
 
     const graph = await ensurePublicGraph();
@@ -202,7 +211,11 @@ export async function updateStoryHandler(req: Request, res: Response): Promise<v
 export async function deleteStoryHandler(req: Request, res: Response): Promise<void> {
   try {
     getUserId(req);
-    const { storyId } = req.params;
+    const storyId = singleParam(req.params.storyId);
+    if (!storyId) {
+      res.status(400).json({ error: 'Story ID is required' });
+      return;
+    }
 
     const graph = await ensurePublicGraph();
     if (!graph.nodes[storyId]) {
@@ -292,7 +305,11 @@ export async function listSeriesHandler(_req: Request, res: Response): Promise<v
  */
 export async function getSeriesHandler(req: Request, res: Response): Promise<void> {
   try {
-    const { seriesId } = req.params;
+    const seriesId = singleParam(req.params.seriesId);
+    if (!seriesId) {
+      res.status(400).json({ error: 'Series ID is required' });
+      return;
+    }
     const graph = await ensurePublicGraph();
     const node = graph.nodes[seriesId];
 
@@ -403,7 +420,11 @@ export async function createSeriesHandler(req: Request, res: Response): Promise<
 export async function updateSeriesHandler(req: Request, res: Response): Promise<void> {
   try {
     getUserId(req);
-    const { seriesId } = req.params;
+    const seriesId = singleParam(req.params.seriesId);
+    if (!seriesId) {
+      res.status(400).json({ error: 'Series ID is required' });
+      return;
+    }
     const updates = req.body as Partial<SeriesNodeProperties>;
 
     const graph = await ensurePublicGraph();
@@ -434,7 +455,11 @@ export async function updateSeriesHandler(req: Request, res: Response): Promise<
 export async function deleteSeriesHandler(req: Request, res: Response): Promise<void> {
   try {
     getUserId(req);
-    const { seriesId } = req.params;
+    const seriesId = singleParam(req.params.seriesId);
+    if (!seriesId) {
+      res.status(400).json({ error: 'Series ID is required' });
+      return;
+    }
 
     const graph = await ensurePublicGraph();
     if (!graph.nodes[seriesId]) {

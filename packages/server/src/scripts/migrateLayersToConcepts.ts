@@ -212,12 +212,11 @@ async function migrateGraph(uid: string, graphId: string): Promise<void> {
           const existingParents = concept.parents || [];
           const updatedParents = [levelName, ...existingParents.filter(p => p !== levelName)]; // Add level as first, remove duplicates
           
+          const { layer: _layer, ...rest } = concept;
           const updatedConcept: Concept = {
-            ...concept,
+            ...rest,
             parents: updatedParents, // Level concept as first parent, then existing parents
           };
-          // Remove layer property
-          delete (updatedConcept as any).layer;
           updatedConcepts.push(updatedConcept);
         });
       

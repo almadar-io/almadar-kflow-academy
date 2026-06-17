@@ -26,7 +26,7 @@ function getUserId(req: Request): string {
  * Get graph ID from request params
  */
 function getGraphId(req: Request): string {
-  const graphId = req.params.graphId;
+  const graphId = Array.isArray(req.params.graphId) ? req.params.graphId[0] : req.params.graphId;
   if (!graphId) {
     throw new AuthorizationError('Graph ID is required', 'UNAUTHORIZED');
   }

@@ -8,6 +8,7 @@
  */
 
 import type { Request, Response } from 'express';
+import { singleParam, singleQueryParam } from '../utils/httpParams';
 import { KnowledgeGraphAccessLayer } from '../services/knowledgeGraphAccess/KnowledgeGraphAccessLayer';
 import { GraphQueryService } from '../services/graphQueryService';
 import type {
@@ -38,8 +39,13 @@ function getUserId(req: Request): string {
  */
 export async function getGraphHandler(req: Request, res: Response): Promise<void> {
   try {
-    const { graphId } = req.params;
+    const graphId = singleParam(req.params.graphId);
     const uid = getUserId(req);
+
+    if (!graphId) {
+      res.status(400).json({ error: 'Graph ID is required' });
+      return;
+    }
 
     const graph = await accessLayer.getGraph(uid, graphId);
     res.json(graph);
@@ -66,11 +72,11 @@ export async function getGraphHandler(req: Request, res: Response): Promise<void
  */
 export async function saveGraphHandler(req: Request, res: Response): Promise<void> {
   try {
-    const { graphId } = req.params;
+    const graphId = singleParam(req.params.graphId);
     const uid = getUserId(req);
     const graph = req.body;
 
-    if (!graph || graph.id !== graphId) {
+    if (!graphId || !graph || graph.id !== graphId) {
       res.status(400).json({ error: 'Invalid graph data' });
       return;
     }
@@ -113,9 +119,14 @@ export async function saveGraphHandler(req: Request, res: Response): Promise<voi
  */
 export async function getNodesHandler(req: Request, res: Response): Promise<void> {
   try {
-    const { graphId } = req.params;
-    const { type } = req.query || {};
+    const graphId = singleParam(req.params.graphId);
+    const type = singleQueryParam(req.query.type);
     const uid = getUserId(req);
+
+    if (!graphId) {
+      res.status(400).json({ error: 'Graph ID is required' });
+      return;
+    }
 
     let nodes: GraphNode[];
     if (type) {
@@ -150,8 +161,14 @@ export async function getNodesHandler(req: Request, res: Response): Promise<void
  */
 export async function getNodeHandler(req: Request, res: Response): Promise<void> {
   try {
-    const { graphId, nodeId } = req.params;
+    const graphId = singleParam(req.params.graphId);
+    const nodeId = singleParam(req.params.nodeId);
     const uid = getUserId(req);
+
+    if (!graphId || !nodeId) {
+      res.status(400).json({ error: 'Graph ID and node ID are required' });
+      return;
+    }
 
     const node = await accessLayer.getNode(uid, graphId, nodeId);
     if (!node) {
@@ -183,9 +200,14 @@ export async function getNodeHandler(req: Request, res: Response): Promise<void>
  */
 export async function createNodeHandler(req: Request, res: Response): Promise<void> {
   try {
-    const { graphId } = req.params;
+    const graphId = singleParam(req.params.graphId);
     const uid = getUserId(req);
     const { type, properties } = req.body;
+
+    if (!graphId) {
+      res.status(400).json({ error: 'Graph ID is required' });
+      return;
+    }
 
     if (!type || !properties) {
       res.status(400).json({ error: 'type and properties are required' });
@@ -222,9 +244,15 @@ export async function createNodeHandler(req: Request, res: Response): Promise<vo
  */
 export async function updateNodeHandler(req: Request, res: Response): Promise<void> {
   try {
-    const { graphId, nodeId } = req.params;
+    const graphId = singleParam(req.params.graphId);
+    const nodeId = singleParam(req.params.nodeId);
     const uid = getUserId(req);
     const updates = req.body;
+
+    if (!graphId || !nodeId) {
+      res.status(400).json({ error: 'Graph ID and node ID are required' });
+      return;
+    }
 
     const updatedNode = await accessLayer.updateNode(uid, graphId, nodeId, updates);
     await queryService.invalidateCache(uid, graphId);
@@ -252,9 +280,15 @@ export async function updateNodeHandler(req: Request, res: Response): Promise<vo
  */
 export async function deleteNodeHandler(req: Request, res: Response): Promise<void> {
   try {
-    const { graphId, nodeId } = req.params;
+    const graphId = singleParam(req.params.graphId);
+    const nodeId = singleParam(req.params.nodeId);
     const uid = getUserId(req);
-    const { cascade } = req.query || {};
+    const cascade = singleQueryParam(req.query.cascade);
+
+    if (!graphId || !nodeId) {
+      res.status(400).json({ error: 'Graph ID and node ID are required' });
+      return;
+    }
 
     await accessLayer.deleteNode(uid, graphId, nodeId, {
       cascade: cascade === 'true',
@@ -284,9 +318,16 @@ export async function deleteNodeHandler(req: Request, res: Response): Promise<vo
  */
 export async function getRelationshipsHandler(req: Request, res: Response): Promise<void> {
   try {
-    const { graphId } = req.params;
-    const { nodeId, direction, type } = req.query || {};
+    const graphId = singleParam(req.params.graphId);
+    const nodeId = singleQueryParam(req.query.nodeId);
+    const direction = singleQueryParam(req.query.direction);
+    const type = singleQueryParam(req.query.type);
     const uid = getUserId(req);
+
+    if (!graphId) {
+      res.status(400).json({ error: 'Graph ID is required' });
+      return;
+    }
 
     let relationships: NodeBasedRelationship[];
     if (type) {
@@ -294,13 +335,13 @@ export async function getRelationshipsHandler(req: Request, res: Response): Prom
         uid,
         graphId,
         type as RelationshipType,
-        nodeId as string | undefined
+        nodeId
       );
     } else {
       relationships = await accessLayer.getRelationships(
         uid,
         graphId,
-        nodeId as string | undefined,
+        nodeId,
         direction as 'incoming' | 'outgoing' | 'both' | undefined
       );
     }
@@ -329,9 +370,16 @@ export async function getRelationshipsHandler(req: Request, res: Response): Prom
  */
 export async function getNodeRelationshipsHandler(req: Request, res: Response): Promise<void> {
   try {
-    const { graphId, nodeId } = req.params;
-    const { direction, type } = req.query || {};
+    const graphId = singleParam(req.params.graphId);
+    const nodeId = singleParam(req.params.nodeId);
+    const direction = singleQueryParam(req.query.direction);
+    const type = singleQueryParam(req.query.type);
     const uid = getUserId(req);
+
+    if (!graphId || !nodeId) {
+      res.status(400).json({ error: 'Graph ID and node ID are required' });
+      return;
+    }
 
     let relationships: NodeBasedRelationship[];
     if (type) {
@@ -374,9 +422,14 @@ export async function getNodeRelationshipsHandler(req: Request, res: Response): 
  */
 export async function createRelationshipHandler(req: Request, res: Response): Promise<void> {
   try {
-    const { graphId } = req.params;
+    const graphId = singleParam(req.params.graphId);
     const uid = getUserId(req);
     const { source, target, type, direction, strength, metadata } = req.body;
+
+    if (!graphId) {
+      res.status(400).json({ error: 'Graph ID is required' });
+      return;
+    }
 
     if (!source || !target || !type) {
       res.status(400).json({ error: 'source, target, and type are required' });
@@ -384,8 +437,8 @@ export async function createRelationshipHandler(req: Request, res: Response): Pr
     }
 
     const relationship = createRelationship(
-      source,
-      target,
+      source as string,
+      target as string,
       type as RelationshipType,
       direction || 'forward',
       strength,
@@ -418,8 +471,14 @@ export async function createRelationshipHandler(req: Request, res: Response): Pr
  */
 export async function deleteRelationshipHandler(req: Request, res: Response): Promise<void> {
   try {
-    const { graphId, relId } = req.params;
+    const graphId = singleParam(req.params.graphId);
+    const relId = singleParam(req.params.relId);
     const uid = getUserId(req);
+
+    if (!graphId || !relId) {
+      res.status(400).json({ error: 'Graph ID and relationship ID are required' });
+      return;
+    }
 
     await accessLayer.deleteRelationship(uid, graphId, relId);
     await queryService.invalidateCache(uid, graphId);
@@ -447,16 +506,23 @@ export async function deleteRelationshipHandler(req: Request, res: Response): Pr
  */
 export async function findPathHandler(req: Request, res: Response): Promise<void> {
   try {
-    const { graphId, from, to } = req.params;
-    const { maxDepth } = req.query || {};
+    const graphId = singleParam(req.params.graphId);
+    const from = singleParam(req.params.from);
+    const to = singleParam(req.params.to);
+    const maxDepth = singleQueryParam(req.query.maxDepth);
     const uid = getUserId(req);
+
+    if (!graphId || !from || !to) {
+      res.status(400).json({ error: 'Graph ID, from, and to are required' });
+      return;
+    }
 
     const path = await accessLayer.findPath(
       uid,
       graphId,
       from,
       to,
-      maxDepth ? parseInt(maxDepth as string, 10) : undefined
+      maxDepth ? parseInt(maxDepth, 10) : undefined
     );
 
     res.json({ path, length: path.length });
@@ -483,7 +549,8 @@ export async function findPathHandler(req: Request, res: Response): Promise<void
  */
 export async function traverseHandler(req: Request, res: Response): Promise<void> {
   try {
-    const { graphId, startNodeId } = req.params;
+    const graphId = singleParam(req.params.graphId);
+    const startNodeId = singleParam(req.params.startNodeId);
     const uid = getUserId(req);
     const {
       relationshipTypes,
@@ -491,6 +558,11 @@ export async function traverseHandler(req: Request, res: Response): Promise<void
       maxDepth,
       limit,
     } = req.body;
+
+    if (!graphId || !startNodeId) {
+      res.status(400).json({ error: 'Graph ID and start node ID are required' });
+      return;
+    }
 
     const result = await accessLayer.traverse(uid, graphId, startNodeId, {
       relationshipTypes,
@@ -523,9 +595,14 @@ export async function traverseHandler(req: Request, res: Response): Promise<void
  */
 export async function extractSubgraphHandler(req: Request, res: Response): Promise<void> {
   try {
-    const { graphId } = req.params;
+    const graphId = singleParam(req.params.graphId);
     const uid = getUserId(req);
     const { nodeIds, depth } = req.body;
+
+    if (!graphId) {
+      res.status(400).json({ error: 'Graph ID is required' });
+      return;
+    }
 
     if (!nodeIds || !Array.isArray(nodeIds) || nodeIds.length === 0) {
       res.status(400).json({ error: 'nodeIds array is required' });
@@ -557,9 +634,14 @@ export async function extractSubgraphHandler(req: Request, res: Response): Promi
  */
 export async function findNodesHandler(req: Request, res: Response): Promise<void> {
   try {
-    const { graphId } = req.params;
+    const graphId = singleParam(req.params.graphId);
     const uid = getUserId(req);
     const { filter } = req.body;
+
+    if (!graphId) {
+      res.status(400).json({ error: 'Graph ID is required' });
+      return;
+    }
 
     if (!filter || typeof filter !== 'object') {
       res.status(400).json({ error: 'filter object is required' });
@@ -577,7 +659,7 @@ export async function findNodesHandler(req: Request, res: Response): Promise<voi
           if (node.properties[propKey] !== value) return false;
         } else {
           // Direct property access
-          if ((node as Record<string, unknown>)[key] !== value) return false;
+          if ((node as unknown as Record<string, unknown>)[key] !== value) return false;
         }
       }
       return true;

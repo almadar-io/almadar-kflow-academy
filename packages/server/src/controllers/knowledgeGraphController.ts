@@ -6,10 +6,11 @@
  */
 
 import type { Request, Response } from 'express';
-import { 
-  convertStoredConceptGraphToNodeBased, 
-  saveNodeBasedKnowledgeGraph, 
-  getNodeBasedKnowledgeGraph 
+import { singleParam } from '../utils/httpParams';
+import {
+  convertStoredConceptGraphToNodeBased,
+  saveNodeBasedKnowledgeGraph,
+  getNodeBasedKnowledgeGraph
 } from '../services/knowledgeGraphService';
 import { exportToGraphML, type GraphMLExportOptions } from '../services/graphmlExportService';
 import { getUserGraphById } from '../services/graphService';
@@ -26,7 +27,7 @@ const queryService = new GraphQueryService();
  */
 export async function convertGraphHandler(req: Request, res: Response): Promise<void> {
   try {
-    const { graphId } = req.params;
+    const graphId = singleParam(req.params.graphId);
     const uid = req.firebaseUser?.uid;
 
     if (!uid) {
@@ -85,11 +86,16 @@ export async function convertGraphHandler(req: Request, res: Response): Promise<
  */
 export async function getKnowledgeGraphHandler(req: Request, res: Response): Promise<void> {
   try {
-    const { graphId } = req.params;
+    const graphId = singleParam(req.params.graphId);
     const uid = req.firebaseUser?.uid;
 
     if (!uid) {
       res.status(401).json({ error: 'Unauthorized' });
+      return;
+    }
+
+    if (!graphId) {
+      res.status(400).json({ error: 'graphId is required' });
       return;
     }
 
@@ -139,11 +145,16 @@ export async function getKnowledgeGraphHandler(req: Request, res: Response): Pro
  */
 export async function exportGraphMLHandler(req: Request, res: Response): Promise<void> {
   try {
-    const { graphId } = req.params;
+    const graphId = singleParam(req.params.graphId);
     const uid = req.firebaseUser?.uid;
 
     if (!uid) {
       res.status(401).json({ error: 'Unauthorized' });
+      return;
+    }
+
+    if (!graphId) {
+      res.status(400).json({ error: 'graphId is required' });
       return;
     }
 
@@ -206,7 +217,8 @@ export async function exportGraphMLHandler(req: Request, res: Response): Promise
  */
 export async function updateLayerGoalHandler(req: Request, res: Response): Promise<void> {
   try {
-    const { graphId, layerNumber } = req.params;
+    const graphId = singleParam(req.params.graphId);
+    const layerNumber = singleParam(req.params.layerNumber);
     const uid = req.firebaseUser?.uid;
 
     if (!uid) {

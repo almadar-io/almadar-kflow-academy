@@ -92,7 +92,7 @@ export interface KnowledgeGraph {
   id: string;
   seedConceptId: string;
   concepts: Record<string, EnhancedConcept>;
-  layers?: Record<number, any>;  // LayerData structure (preserved from ConceptGraph)
+  layers?: Record<number, LayerData>;  // LayerData structure (preserved from ConceptGraph)
   createdAt: number;
   updatedAt: number;
   model?: string;
@@ -103,6 +103,16 @@ export interface KnowledgeGraph {
   // Enhanced fields (NEW - Phase 2)
   relationships?: Record<string, Relationship[]>;  // Map of concept names to their relationships
   metadata?: GraphMetadata;                         // Graph-level metadata
+}
+
+/**
+ * Layer data structure preserved from ConceptGraph
+ */
+export interface LayerData {
+  layerNumber: number;
+  goal?: string;
+  conceptIds: string[];
+  topLevelConceptId?: string;
 }
 
 /**

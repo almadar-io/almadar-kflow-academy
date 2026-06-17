@@ -445,10 +445,10 @@ export async function getAssessmentSubmissions(
   studentId?: string,
   enrollmentId?: string
 ): Promise<AssessmentSubmission[]> {
-  let query = getFirestore()
+  let query: FirebaseFirestore.Query<FirebaseFirestore.DocumentData> = getFirestore()
     .collection('courses').doc(courseId)
     .collection('assessments').doc(assessmentId)
-    .collection('submissions') as any;
+    .collection('submissions');
 
   if (studentId) {
     query = query.where('studentId', '==', studentId);
@@ -460,7 +460,7 @@ export async function getAssessmentSubmissions(
 
   const snapshot = await query.orderBy('submittedAt', 'desc').get();
 
-  return snapshot.docs.map((doc: any) => {
+  return snapshot.docs.map((doc) => {
     const submission = doc.data() as AssessmentSubmission;
     submission.id = doc.id;
     return submission;

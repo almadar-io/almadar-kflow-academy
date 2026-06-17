@@ -3,6 +3,7 @@
  */
 
 import { Request, Response } from 'express';
+import { singleParam } from '../utils/httpParams';
 import {
   createPlacementTest,
   getPlacementTestById,
@@ -90,11 +91,15 @@ export async function getPlacementTestByIdHandler(
   res: Response
 ): Promise<void | Response> {
   try {
-    const { testId } = req.params;
+    const testId = singleParam(req.params.testId);
     const uid = req.firebaseUser?.uid;
 
     if (!uid) {
       return res.status(401).json({ error: 'Unauthorized' });
+    }
+
+    if (!testId) {
+      return res.status(400).json({ error: 'Test ID is required' });
     }
 
     const test = await getPlacementTestById(uid, testId);
@@ -119,12 +124,16 @@ export async function updatePlacementTestQuestionsHandler(
   res: Response
 ): Promise<void | Response> {
   try {
-    const { testId } = req.params;
+    const testId = singleParam(req.params.testId);
     const { questions } = req.body;
     const uid = req.firebaseUser?.uid;
 
     if (!uid) {
       return res.status(401).json({ error: 'Unauthorized' });
+    }
+
+    if (!testId) {
+      return res.status(400).json({ error: 'Test ID is required' });
     }
 
     if (!Array.isArray(questions)) {
@@ -149,12 +158,16 @@ export async function submitPlacementTestHandler(
   res: Response
 ): Promise<void | Response> {
   try {
-    const { testId } = req.params;
+    const testId = singleParam(req.params.testId);
     const { answers } = req.body;
     const uid = req.firebaseUser?.uid;
 
     if (!uid) {
       return res.status(401).json({ error: 'Unauthorized' });
+    }
+
+    if (!testId) {
+      return res.status(400).json({ error: 'Test ID is required' });
     }
 
     if (!Array.isArray(answers)) {
@@ -207,11 +220,15 @@ export async function getPlacementTestsByGoalIdHandler(
   res: Response
 ): Promise<void | Response> {
   try {
-    const { goalId } = req.params;
+    const goalId = singleParam(req.params.goalId);
     const uid = req.firebaseUser?.uid;
 
     if (!uid) {
       return res.status(401).json({ error: 'Unauthorized' });
+    }
+
+    if (!goalId) {
+      return res.status(400).json({ error: 'Goal ID is required' });
     }
 
     const tests = await getPlacementTestsByGoalId(uid, goalId);
@@ -232,11 +249,15 @@ export async function deletePlacementTestHandler(
   res: Response
 ): Promise<void | Response> {
   try {
-    const { testId } = req.params;
+    const testId = singleParam(req.params.testId);
     const uid = req.firebaseUser?.uid;
 
     if (!uid) {
       return res.status(401).json({ error: 'Unauthorized' });
+    }
+
+    if (!testId) {
+      return res.status(400).json({ error: 'Test ID is required' });
     }
 
     await deletePlacementTest(uid, testId);

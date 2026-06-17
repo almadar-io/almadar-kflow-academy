@@ -243,7 +243,7 @@ Return JSON array only, no text, no extra fields.`;
       : undefined;
     
     const normalized = normalizeConcept(item);
-    
+
     // Restore lesson and flash fields if they were provided by LLM
     if (lesson !== undefined) {
       normalized.lesson = lesson;
@@ -251,14 +251,14 @@ Return JSON array only, no text, no extra fields.`;
     if (flash !== undefined && flash.length > 0) {
       normalized.flash = flash;
     }
-    
+
     // Check if this is a deletion
     if (item.delete === true) {
       deletions.push(normalized);
     } else {
       // Validate concept structure
       if (!validateConcept(normalized)) {
-        const conceptName = normalized.name || 'unknown';
+        const conceptName = item.name || 'unknown';
         throw new Error(`Invalid concept in customOperation result: ${conceptName}`);
       }
       normalizedResults.push(normalized);

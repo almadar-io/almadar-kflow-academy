@@ -1,4 +1,5 @@
 import { Request, Response } from 'express';
+import { singleParam, singleQueryParam } from '../utils/httpParams';
 import {
   saveUserProgress,
   getUserProgress,
@@ -68,19 +69,26 @@ export async function getUserProgressHandler(req: Request, res: Response): Promi
       return;
     }
 
-    const { conceptId } = req.params;
-    const { trackAccess, conceptName, graphId } = req.query;
-    
+    const conceptId = singleParam(req.params.conceptId);
+    const trackAccess = singleQueryParam(req.query.trackAccess);
+    const conceptName = singleQueryParam(req.query.conceptName);
+    const graphId = singleQueryParam(req.query.graphId);
+
+    if (!conceptId) {
+      res.status(400).json({ error: 'Concept ID is required' });
+      return;
+    }
+
     // Decode conceptId in case it was URL-encoded (handles special characters like "/")
     const decodedConceptId = decodeURIComponent(conceptId);
-    
+
     // If trackAccess is true, track the access (fire and forget)
     if (trackAccess === 'true') {
       trackConceptAccess(
         uid,
         decodedConceptId,
-        (conceptName as string) || decodedConceptId,
-        graphId as string | undefined
+        conceptName || decodedConceptId,
+        graphId
       ).catch(error => {
         console.warn('Failed to track concept access:', error);
         // Don't fail the request if tracking fails
@@ -113,8 +121,13 @@ export async function trackConceptAccessHandler(req: Request, res: Response): Pr
       return;
     }
 
-    const { conceptId } = req.params;
+    const conceptId = singleParam(req.params.conceptId);
     const { conceptName, graphId } = req.body;
+
+    if (!conceptId) {
+      res.status(400).json({ error: 'Concept ID is required' });
+      return;
+    }
 
     // Decode conceptId in case it was URL-encoded (handles special characters like "/")
     const decodedConceptId = decodeURIComponent(conceptId);
