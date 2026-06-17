@@ -7,9 +7,7 @@
 import React from 'react';
 import { X, AlertCircle, CheckCircle, AlertTriangle, Info } from 'lucide-react';
 import { cn } from '../../../utils/theme';
-import { Button } from '../../atoms/Button';
-import { Icon } from '../../atoms/Icon';
-import { Typography } from '../../atoms/Typography';
+import { Button, Icon, Typography } from '@almadar/ui';
 
 export type AlertVariant = 'info' | 'success' | 'warning' | 'error';
 

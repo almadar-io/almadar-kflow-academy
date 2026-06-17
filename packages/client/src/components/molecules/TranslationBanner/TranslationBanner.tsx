@@ -16,9 +16,7 @@ import {
   X,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
-import { Button } from '../../atoms/Button';
-import { Icon } from '../../atoms/Icon';
-import { Typography } from '../../atoms/Typography';
+import { Button, Icon, Typography } from '@almadar/ui';
 import { cn } from '../../../utils/theme';
 
 export type TranslationStatus = 'translated' | 'stale' | 'translating' | 'error' | 'original';

@@ -13,7 +13,7 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import ReactDOM from 'react-dom';
 import { MessageCircleQuestion, StickyNote, X, Highlighter } from 'lucide-react';
-import { Button } from '../../atoms/Button';
+import { Button } from '@almadar/ui';
 import { cn } from '../../../utils/theme';
 
 export interface SelectionInfo {

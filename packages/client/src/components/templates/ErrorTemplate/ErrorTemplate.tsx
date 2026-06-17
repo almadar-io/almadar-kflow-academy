@@ -9,8 +9,7 @@ import React from 'react';
 import { Home, ArrowLeft, RefreshCw, Search, AlertTriangle, WifiOff, Settings } from 'lucide-react';
 import { Card } from '../../molecules/Card';
 import { SearchInput } from '../../molecules/SearchInput';
-import { Button } from '../../atoms/Button';
-import { Typography } from '../../atoms/Typography';
+import { Button, Typography } from '@almadar/ui';
 import { cn } from '../../../utils/theme';
 
 export type ErrorVariant = '404' | '500' | '403' | 'maintenance' | 'offline';

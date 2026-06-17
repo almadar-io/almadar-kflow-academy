@@ -13,12 +13,7 @@ import { SearchInput } from '../../molecules/SearchInput';
 import { ButtonGroup } from '../../molecules/ButtonGroup';
 import { Card } from '../../molecules/Card';
 import { Menu, MenuItem } from '../../molecules/Menu';
-import { Button } from '../../atoms/Button';
-import { Icon } from '../../atoms/Icon';
-import { Checkbox } from '../../atoms/Checkbox';
-import { Typography } from '../../atoms/Typography';
-import { Badge } from '../../atoms/Badge';
-import { Divider } from '../../atoms/Divider';
+import { Button, Icon, Checkbox, Typography, Badge, Divider } from '@almadar/ui';
 import { cn } from '../../../utils/theme';
 
 export type SortDirection = 'asc' | 'desc' | null;

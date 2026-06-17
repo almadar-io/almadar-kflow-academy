@@ -26,7 +26,7 @@ import type { LucideIcon } from 'lucide-react';
 import { Header } from '../../organisms/Header';
 import { Sidebar } from '../../organisms/Sidebar';
 import { ProfilePopup } from '../../molecules/ProfilePopup/ProfilePopup';
-import { Avatar } from '../../atoms/Avatar';
+import { Avatar } from '@almadar/ui';
 import ThemeToggle from '../../ThemeToggle';
 import { cn } from '../../../utils/theme';
 

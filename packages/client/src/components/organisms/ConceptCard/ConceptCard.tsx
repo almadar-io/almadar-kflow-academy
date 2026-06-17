@@ -11,12 +11,7 @@ import { ChevronDown, ChevronRight, Edit, Trash2, Plus, BookOpen, Check, Circle 
 import { Card } from '../../molecules/Card';
 import { ButtonGroup } from '../../molecules/ButtonGroup';
 import { Alert } from '../../molecules/Alert';
-import { Typography } from '../../atoms/Typography';
-import { Badge } from '../../atoms/Badge';
-import { Button } from '../../atoms/Button';
-import { Icon } from '../../atoms/Icon';
-import { ProgressBar } from '../../atoms/ProgressBar';
-import { Avatar } from '../../atoms/Avatar';
+import { Typography, Badge, Button, Icon, ProgressBar, Avatar } from '@almadar/ui';
 import { cn } from '../../../utils/theme';
 
 export interface ConceptCardProps {

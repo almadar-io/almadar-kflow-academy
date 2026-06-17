@@ -22,8 +22,7 @@
 
 import React, { useCallback, useRef, useState, useEffect, useMemo } from 'react';
 import { ZoomIn, ZoomOut, Maximize2, ChevronRight, ChevronDown } from 'lucide-react';
-import { Button } from '../../atoms/Button';
-import { Typography } from '../../atoms/Typography';
+import { Button, Typography } from '@almadar/ui';
 import { Card } from '../../molecules/Card';
 import { cn } from '../../../utils/theme';
 

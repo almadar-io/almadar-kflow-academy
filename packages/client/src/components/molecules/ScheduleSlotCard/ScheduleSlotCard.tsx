@@ -6,9 +6,7 @@
 
 import React from 'react';
 import { Card } from '../Card';
-import { Button } from '../../atoms/Button';
-import { Typography } from '../../atoms/Typography';
-import { Badge } from '../../atoms/Badge';
+import { Button, Typography, Badge } from '@almadar/ui';
 import { Edit2, Trash2, Clock, MapPin, Calendar, Repeat } from 'lucide-react';
 import { cn } from '../../../utils/theme';
 

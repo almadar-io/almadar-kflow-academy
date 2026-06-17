@@ -23,10 +23,7 @@ import { AppLayoutTemplate } from '../AppLayoutTemplate';
 import { Card } from '../../molecules/Card';
 import { Tabs, TabItem } from '../../molecules/Tabs';
 import { EmptyState } from '../../molecules/EmptyState';
-import { Button } from '../../atoms/Button';
-import { Typography } from '../../atoms/Typography';
-import { Badge } from '../../atoms/Badge';
-import { Avatar } from '../../atoms/Avatar';
+import { Button, Typography, Badge, Avatar } from '@almadar/ui';
 import { cn } from '../../../utils/theme';
 
 export type NotificationType = 'course' | 'achievement' | 'comment' | 'alert' | 'info';

@@ -8,9 +8,7 @@
 import React, { useState } from 'react';
 import type { LucideIcon } from 'lucide-react';
 import { ChevronLeft, ChevronRight, X } from 'lucide-react';
-import { Typography } from '../../atoms/Typography';
-import { Badge } from '../../atoms/Badge';
-import { Divider } from '../../atoms/Divider';
+import { Typography, Badge, Divider } from '@almadar/ui';
 import { cn } from '../../../utils/theme';
 import kflowLogo from '../../../assets/kflow-logo.svg';
 

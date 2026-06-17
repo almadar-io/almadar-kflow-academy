@@ -8,10 +8,7 @@
 import React, { useState } from 'react';
 import { Columns, RefreshCw } from 'lucide-react';
 import { Card } from '../../molecules/Card';
-import { Typography } from '../../atoms/Typography';
-import { Button } from '../../atoms/Button';
-import { Icon } from '../../atoms/Icon';
-import { Badge } from '../../atoms/Badge';
+import { Typography, Button, Icon, Badge } from '@almadar/ui';
 import { TranslationBanner } from '../../molecules/TranslationBanner';
 import { cn } from '../../../utils/theme';
 

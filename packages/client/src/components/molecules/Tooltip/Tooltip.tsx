@@ -7,8 +7,7 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { Typography } from '../../atoms/Typography';
-import { Icon } from '../../atoms/Icon';
+import { Typography, Icon } from '@almadar/ui';
 import { cn } from '../../../utils/theme';
 
 export type TooltipPosition = 'top' | 'bottom' | 'left' | 'right';

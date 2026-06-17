@@ -22,10 +22,7 @@ import { StatCard } from '../../molecules/StatCard';
 import { Card } from '../../molecules/Card';
 import { Tabs, TabItem } from '../../molecules/Tabs';
 import { SelectDropdown } from '../../molecules/SelectDropdown';
-import { Button } from '../../atoms/Button';
-import { Typography } from '../../atoms/Typography';
-import { ProgressBar } from '../../atoms/ProgressBar';
-import { Badge } from '../../atoms/Badge';
+import { Button, Typography, ProgressBar, Badge } from '@almadar/ui';
 import { cn } from '../../../utils/theme';
 
 export interface AnalyticsStat {

@@ -9,8 +9,7 @@
 import React, { useEffect, useState } from 'react';
 import { parseIncrementalJSON } from '../../../utils/jsonParser';
 import { Card } from '../Card';
-import { Typography } from '../../atoms/Typography';
-import { Spinner } from '../../atoms/Spinner';
+import { Typography, Spinner } from '@almadar/ui';
 import { cn } from '../../../utils/theme';
 
 interface Milestone {
@@ -159,7 +158,7 @@ export const StreamingJSONDisplay: React.FC<StreamingJSONDisplayProps> = ({
       {!hasData && (
         <Card variant="outlined">
           <div className="text-center py-8 text-gray-500 dark:text-gray-400">
-            <Spinner size="lg" color="primary" className="mx-auto mb-2" />
+            <Spinner size="lg" className="mx-auto mb-2" />
             <Typography variant="small">Waiting for goal data...</Typography>
           </div>
         </Card>

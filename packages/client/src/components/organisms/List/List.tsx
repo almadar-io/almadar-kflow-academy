@@ -9,13 +9,7 @@ import React from 'react';
 import type { LucideIcon } from 'lucide-react';
 import { Card } from '../../molecules/Card';
 import { Menu, MenuItem } from '../../molecules/Menu';
-import { Button } from '../../atoms/Button';
-import { Icon } from '../../atoms/Icon';
-import { Avatar } from '../../atoms/Avatar';
-import { Typography } from '../../atoms/Typography';
-import { Badge } from '../../atoms/Badge';
-import { Divider } from '../../atoms/Divider';
-import { Checkbox } from '../../atoms/Checkbox';
+import { Button, Icon, Avatar, Typography, Badge, Divider, Checkbox } from '@almadar/ui';
 import { cn } from '../../../utils/theme';
 
 export interface ListItem {

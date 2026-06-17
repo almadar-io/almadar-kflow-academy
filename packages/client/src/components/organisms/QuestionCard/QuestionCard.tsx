@@ -9,12 +9,7 @@ import React, { useState } from 'react';
 import { Card } from '../../molecules/Card';
 import { FormField } from '../../molecules/FormField';
 import { ButtonGroup } from '../../molecules/ButtonGroup';
-import { Typography } from '../../atoms/Typography';
-import { Radio } from '../../atoms/Radio';
-import { Checkbox } from '../../atoms/Checkbox';
-import { Button } from '../../atoms/Button';
-import { ProgressBar } from '../../atoms/ProgressBar';
-import { Icon } from '../../atoms/Icon';
+import { Typography, Radio, Checkbox, Button, ProgressBar, Icon } from '@almadar/ui';
 import { cn } from '../../../utils/theme';
 
 export type QuestionType = 'single-choice' | 'multiple-choice' | 'text';

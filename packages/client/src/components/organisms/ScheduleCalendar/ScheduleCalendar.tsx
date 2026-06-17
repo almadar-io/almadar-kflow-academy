@@ -5,8 +5,7 @@
  */
 
 import React, { useState, useMemo } from 'react';
-import { Button } from '../../atoms/Button';
-import { Typography } from '../../atoms/Typography';
+import { Button, Typography } from '@almadar/ui';
 import { ChevronLeft, ChevronRight, Calendar as CalendarIcon } from 'lucide-react';
 import { cn } from '../../../utils/theme';
 

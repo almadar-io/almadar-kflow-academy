@@ -46,16 +46,11 @@ import { EmptyState } from '../../molecules/EmptyState';
 import { FloatingActionButton, FloatingAction } from '../../molecules/FloatingActionButton';
 import { SidePanel } from '../../molecules/SidePanel';
 import { ChatBox, ChatMessage } from '../../molecules/ChatBox';
-import { Button } from '../../atoms/Button';
-import { Typography } from '../../atoms/Typography';
-import { Badge } from '../../atoms/Badge';
-import { Divider } from '../../atoms/Divider';
-import { Checkbox } from '../../atoms/Checkbox';
+import { Button, Typography, Badge, Divider, Checkbox, Avatar } from '@almadar/ui';
 import { JsonViewer } from '../../JsonViewer';
 import { Modal } from '../../molecules/Modal';
 import { ProfilePopup } from '../../molecules/ProfilePopup/ProfilePopup';
 import ThemeToggle from '../../ThemeToggle';
-import { Avatar } from '../../atoms/Avatar';
 import { cn } from '../../../utils/theme';
 
 export interface ConceptLayer {
@@ -1140,7 +1135,7 @@ export const KnowledgeGraphTemplate: React.FC<KnowledgeGraphTemplateProps> = ({
                                 <Typography
                                   variant="small"
                                   className="hidden md:block mt-1.5 sm:mt-2 text-center px-0.5 text-[10px] sm:text-xs leading-tight w-full"
-                                  color={isCompleted ? 'muted' : isInProgress ? 'default' : 'muted'}
+                                  color={isCompleted ? 'muted' : isInProgress ? undefined : 'muted'}
                                 >
                                   {isInProgress ? (
                                     <span className="line-clamp-2 break-words block">{milestoneTitle}</span>

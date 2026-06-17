@@ -11,12 +11,7 @@ import { Card } from '../../molecules/Card';
 import { Modal } from '../../molecules/Modal';
 import { Alert } from '../../molecules/Alert';
 import { ButtonGroup } from '../../molecules/ButtonGroup';
-import { Button } from '../../atoms/Button';
-import { Typography } from '../../atoms/Typography';
-import { ProgressBar } from '../../atoms/ProgressBar';
-import { Badge } from '../../atoms/Badge';
-import { Radio } from '../../atoms/Radio';
-import { Checkbox } from '../../atoms/Checkbox';
+import { Button, Typography, ProgressBar, Badge, Radio, Checkbox } from '@almadar/ui';
 import { cn } from '../../../utils/theme';
 
 export interface AssessmentQuestion {

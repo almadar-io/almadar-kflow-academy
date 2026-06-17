@@ -1,17 +1,17 @@
-// Atoms - Basic building blocks
-export * from './Button';
+// Re-exported from @almadar/ui
+export { Avatar, type AvatarProps } from '@almadar/ui';
+export { Badge, type BadgeProps } from '@almadar/ui';
+export { Button, type ButtonProps } from '@almadar/ui';
+export { Checkbox, type CheckboxProps } from '@almadar/ui';
+export { Divider, type DividerProps } from '@almadar/ui';
+export { Icon, type IconProps, type IconInput } from '@almadar/ui';
+export { ProgressBar, type ProgressBarProps, type ProgressBarColor } from '@almadar/ui';
+export { Radio, type RadioProps } from '@almadar/ui';
+export { Spinner, type SpinnerProps } from '@almadar/ui';
+export { Textarea, type TextareaProps } from '@almadar/ui';
+export { TextHighlight, type TextHighlightProps } from '@almadar/ui';
+export { Typography, type TypographyProps } from '@almadar/ui';
+// Kept local
 export * from './Input';
-export * from './Typography';
-export * from './Textarea';
-export * from './Checkbox';
-export * from './Radio';
-export * from './Badge';
-export * from './Icon';
-export * from './Avatar';
-export * from './Spinner';
-export * from './ProgressBar';
-export * from './Divider';
-export * from './TextHighlight';
-export * from './ScheduleTimeInput';
 export * from './DayOfWeekSelector';
-
+export * from './ScheduleTimeInput';

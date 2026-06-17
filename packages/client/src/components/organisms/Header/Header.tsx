@@ -9,9 +9,7 @@ import React from 'react';
 import type { LucideIcon } from 'lucide-react';
 import { Menu, X } from 'lucide-react';
 import { SearchInput } from '../../molecules/SearchInput';
-import { Avatar } from '../../atoms/Avatar';
-import { Typography } from '../../atoms/Typography';
-import { Badge } from '../../atoms/Badge';
+import { Avatar, Typography, Badge } from '@almadar/ui';
 import { cn } from '../../../utils/theme';
 
 export interface HeaderProps {

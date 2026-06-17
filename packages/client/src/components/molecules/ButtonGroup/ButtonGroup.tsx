@@ -6,7 +6,7 @@
  */
 
 import React from 'react';
-import { Button, ButtonProps } from '../../atoms/Button';
+import { Button, ButtonProps } from '@almadar/ui';
 import { cn } from '../../../utils/theme';
 
 export type ButtonGroupVariant = 'default' | 'segmented' | 'toggle';

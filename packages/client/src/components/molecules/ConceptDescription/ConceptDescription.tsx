@@ -7,8 +7,7 @@
 
 import React from 'react';
 import { Concept } from '../../../features/concepts/types';
-import { Textarea } from '../../atoms/Textarea';
-import { Typography } from '../../atoms/Typography';
+import { Textarea, Typography } from '@almadar/ui';
 
 export interface ConceptDescriptionProps {
   /**

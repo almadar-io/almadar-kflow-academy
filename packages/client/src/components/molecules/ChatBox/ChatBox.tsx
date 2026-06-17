@@ -7,9 +7,7 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { Send } from 'lucide-react';
-import { Button } from '../../atoms/Button';
-import { Textarea } from '../../atoms/Textarea';
-import { Typography } from '../../atoms/Typography';
+import { Button, Textarea, Typography } from '@almadar/ui';
 import { Card } from '../Card';
 import { cn } from '../../../utils/theme';
 
@@ -153,7 +151,6 @@ export const ChatBox: React.FC<ChatBoxProps> = ({
           disabled={loading}
           className="flex-1 min-h-[60px] max-h-[120px] resize-none"
           rows={1}
-          autoResize
         />
         <Button
           variant="primary"

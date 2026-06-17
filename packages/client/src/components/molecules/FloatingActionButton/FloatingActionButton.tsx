@@ -8,7 +8,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import type { LucideIcon } from 'lucide-react';
 import { Plus, X } from 'lucide-react';
-import { Button } from '../../atoms/Button';
+import { Button } from '@almadar/ui';
 import { cn } from '../../../utils/theme';
 
 export interface FloatingAction {

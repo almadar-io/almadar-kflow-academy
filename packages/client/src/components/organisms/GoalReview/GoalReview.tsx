@@ -10,12 +10,8 @@ import { Edit2, Check, X, Circle, CheckCircle2 } from 'lucide-react';
 import { Card } from '../../molecules/Card';
 import { FormField } from '../../molecules/FormField';
 import { Input } from '../../atoms/Input';
-import { Textarea } from '../../atoms/Textarea';
-import { Button } from '../../atoms/Button';
-import { Icon } from '../../atoms/Icon';
-import { Typography } from '../../atoms/Typography';
+import { Textarea, Button, Icon, Typography, Spinner } from '@almadar/ui';
 import { ButtonGroup } from '../../molecules/ButtonGroup';
-import { Spinner } from '../../atoms/Spinner';
 import { cn } from '../../../utils/theme';
 
 export interface Milestone {
@@ -172,7 +168,7 @@ export const GoalReview: React.FC<GoalReviewProps> = ({
                   icon={Check}
                   onClick={handleSave}
                   disabled={isSaving}
-                  loading={isSaving}
+                  isLoading={isSaving}
                 >
                   Save
                 </Button>

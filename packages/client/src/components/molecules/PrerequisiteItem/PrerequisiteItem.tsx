@@ -7,9 +7,7 @@
 
 import React from 'react';
 import { Check, Plus, X } from 'lucide-react';
-import { Badge } from '../../atoms/Badge';
-import { Button } from '../../atoms/Button';
-import { Typography } from '../../atoms/Typography';
+import { Badge, Button, Typography } from '@almadar/ui';
 
 export interface PrerequisiteItemProps {
   /**
@@ -95,7 +93,7 @@ export const PrerequisiteItem: React.FC<PrerequisiteItemProps> = ({
             </Badge>
             {onView ? (
               <Button
-                variant="link"
+                variant="ghost"
                 size="sm"
                 onClick={() => onView(name)}
                 className="text-sm font-semibold text-indigo-700 dark:text-indigo-300 hover:underline truncate p-0 h-auto"

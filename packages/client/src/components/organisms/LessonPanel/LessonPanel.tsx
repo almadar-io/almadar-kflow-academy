@@ -5,16 +5,12 @@
  * Uses Card, ButtonGroup molecules and Typography, Button, Icon, Textarea, Badge, Divider atoms.
  */
 
-import React, { useState, useRef, useEffect, useMemo, useCallback } from 'react';
+import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { Edit2, X, Check, Sparkles, FileText, Loader2, Play } from 'lucide-react';
 import { Card } from '../../molecules/Card';
-import { Typography } from '../../atoms/Typography';
-import { Button } from '../../atoms/Button';
+import { Typography, Button, Badge, Divider } from '@almadar/ui';
 import { FormField } from '../../molecules/FormField';
-import { Badge } from '../../atoms/Badge';
-import { Divider } from '../../atoms/Divider';
 import { SegmentRenderer, parseLessonSegments } from '../LessonSegments';
-import { useRunCodeSimulation } from '@features/learning/hooks/useRunCodeSimulation';
 import { cn } from '../../../utils/theme';
 
 export interface Prerequisite {
@@ -141,13 +137,7 @@ export const LessonPanel: React.FC<LessonPanelProps> = ({
 }) => {
   const [editValue, setEditValue] = useState(renderedLesson);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
-  const { run: runCodeSimulation } = useRunCodeSimulation();
-
-  const handleRunCodeSimulation = useCallback(
-    async (code: string, language: string) => runCodeSimulation(language, code),
-    [runCodeSimulation],
-  );
-
+  
   // Parse lesson segments if lessonContent is not provided
   const parsedSegments = useMemo(() => {
     if (lessonContent) return null; // Use provided lessonContent if available
@@ -273,7 +263,7 @@ export const LessonPanel: React.FC<LessonPanelProps> = ({
             {lessonContent ? (
               lessonContent
             ) : parsedSegments && parsedSegments.length > 0 ? (
-              <SegmentRenderer segments={parsedSegments} onRunCodeSimulation={handleRunCodeSimulation} />
+              <SegmentRenderer segments={parsedSegments} />
             ) : renderedLesson ? (
               <div
                 className="prose dark:prose-invert max-w-none prose-gray dark:prose-invert prose-headings:text-gray-900 dark:prose-headings:text-white prose-p:text-gray-700 dark:prose-p:text-gray-200 prose-a:text-indigo-600 dark:prose-a:text-indigo-400 prose-strong:text-gray-900 dark:prose-strong:text-white prose-li:text-gray-700 dark:prose-li:text-gray-200 prose-code:text-gray-900 dark:prose-code:text-gray-200 prose-pre:text-gray-900 dark:prose-pre:text-gray-200 prose-blockquote:text-gray-700 dark:prose-blockquote:text-gray-300"
@@ -328,7 +318,7 @@ export const LessonPanel: React.FC<LessonPanelProps> = ({
                     icon={isGenerating ? Loader2 : Sparkles}
                     onClick={() => onGenerateLesson(true)}
                     disabled={isGenerating}
-                    loading={isGenerating}
+                    isLoading={isGenerating}
                   >
                     Quick Lesson
                   </Button>
@@ -338,7 +328,7 @@ export const LessonPanel: React.FC<LessonPanelProps> = ({
                     icon={isGenerating ? Loader2 : Sparkles}
                     onClick={() => onGenerateLesson(false)}
                     disabled={isGenerating}
-                    loading={isGenerating}
+                    isLoading={isGenerating}
                   >
                     Detailed Lesson
                   </Button>
@@ -351,7 +341,7 @@ export const LessonPanel: React.FC<LessonPanelProps> = ({
                   icon={isGeneratingFlashCards ? Loader2 : FileText}
                   onClick={onGenerateFlashCards}
                   disabled={isGenerating || isGeneratingFlashCards}
-                  loading={isGeneratingFlashCards}
+                  isLoading={isGeneratingFlashCards}
                 >
                   Generate Flash Cards
                 </Button>

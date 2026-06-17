@@ -8,11 +8,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import type { LucideIcon } from 'lucide-react';
 import { ChevronRight } from 'lucide-react';
-import { Button } from '../../atoms/Button';
-import { Icon } from '../../atoms/Icon';
-import { Divider } from '../../atoms/Divider';
-import { Typography } from '../../atoms/Typography';
-import { Badge } from '../../atoms/Badge';
+import { Button, Icon, Divider, Typography, Badge } from '@almadar/ui';
 import { cn } from '../../../utils/theme';
 
 export interface MenuItem {

@@ -11,12 +11,7 @@ import { Card } from '../../molecules/Card';
 import { ButtonGroup } from '../../molecules/ButtonGroup';
 import { Alert } from '../../molecules/Alert';
 import { Modal } from '../../molecules/Modal';
-import { Button } from '../../atoms/Button';
-import { Icon } from '../../atoms/Icon';
-import { Spinner } from '../../atoms/Spinner';
-import { Typography } from '../../atoms/Typography';
-import { ProgressBar } from '../../atoms/ProgressBar';
-import { Badge } from '../../atoms/Badge';
+import { Button, Icon, Spinner, Typography, ProgressBar, Badge } from '@almadar/ui';
 import { cn } from '../../../utils/theme';
 
 export interface Operation {
@@ -134,7 +129,7 @@ export const OperationPanel: React.FC<OperationPanelProps> = ({
               icon={operation.icon}
               onClick={operation.onClick}
               disabled={isExecuting}
-              loading={executingOperation === operation.id}
+              isLoading={executingOperation === operation.id}
             >
               {operation.label}
             </Button>
@@ -159,7 +154,7 @@ export const OperationPanel: React.FC<OperationPanelProps> = ({
         {/* Loading State */}
         {isExecuting && streamingProgress === undefined && (
           <div className="flex items-center gap-3 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
-            <Spinner size="md" color="primary" />
+            <Spinner size="md" />
             <Typography variant="body" color="secondary">
               {executingOp?.label || 'Processing...'}
             </Typography>

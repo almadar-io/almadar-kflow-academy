@@ -9,9 +9,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { parseStreamingConcepts, ParsedConcept } from '../../../features/concepts/utils/streamParser';
 import { Card } from '../../molecules/Card';
-import { Typography } from '../../atoms/Typography';
-import { Badge } from '../../atoms/Badge';
-import { Spinner } from '../../atoms/Spinner';
+import { Typography, Badge, Spinner } from '@almadar/ui';
 import { Target } from 'lucide-react';
 import { cn } from '../../../utils/theme';
 
@@ -139,7 +137,7 @@ export const StreamingConceptsDisplay: React.FC<StreamingConceptsDisplayProps> =
               Generating Concepts
             </Typography>
             <div className="flex items-center gap-2">
-              {isLoading && <Spinner size="sm" color="primary" />}
+              {isLoading && <Spinner size="sm" />}
               {parsedConcepts.length > 0 && (
                 <Badge variant="default" size="sm">
                   {parsedConcepts.length}
@@ -204,7 +202,7 @@ export const StreamingConceptsDisplay: React.FC<StreamingConceptsDisplayProps> =
           <div className="text-center py-8 text-gray-500 dark:text-gray-400">
             {isLoading ? (
               <>
-                <Spinner size="lg" color="primary" className="mx-auto mb-2" />
+                <Spinner size="lg" className="mx-auto mb-2" />
                 <Typography variant="small">Generating concepts...</Typography>
               </>
             ) : (

@@ -9,9 +9,7 @@ import React, { useState } from 'react';
 import { AlertCircle, ChevronDown, ChevronRight } from 'lucide-react';
 import { Concept, ConceptGraph } from '../../../features/concepts/types';
 import { PrerequisiteList } from '../PrerequisiteList';
-import { Button } from '../../atoms/Button';
-import { Typography } from '../../atoms/Typography';
-import { Badge } from '../../atoms/Badge';
+import { Button, Typography, Badge } from '@almadar/ui';
 
 export interface PrerequisitesDisplayProps {
   /**

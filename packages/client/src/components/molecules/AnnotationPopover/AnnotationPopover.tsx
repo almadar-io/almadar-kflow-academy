@@ -8,8 +8,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { MessageCircleQuestion, StickyNote, Edit2, Trash2, X, ExternalLink } from 'lucide-react';
-import { Typography } from '../../atoms/Typography';
-import { Button } from '../../atoms/Button';
+import { Typography, Button } from '@almadar/ui';
 import { cn } from '../../../utils/theme';
 import type { QuestionAnswerItem, NoteItem, AnnotationType } from '../../../features/knowledge-graph/types';
 

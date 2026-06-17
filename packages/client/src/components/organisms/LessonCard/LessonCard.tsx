@@ -10,11 +10,7 @@ import type { LucideIcon } from 'lucide-react';
 import { Lock, Unlock, Play, CheckCircle } from 'lucide-react';
 import { Card } from '../../molecules/Card';
 import { ButtonGroup } from '../../molecules/ButtonGroup';
-import { Typography } from '../../atoms/Typography';
-import { Badge } from '../../atoms/Badge';
-import { ProgressBar } from '../../atoms/ProgressBar';
-import { Button } from '../../atoms/Button';
-import { Icon } from '../../atoms/Icon';
+import { Typography, Badge, ProgressBar, Button, Icon } from '@almadar/ui';
 import { cn } from '../../../utils/theme';
 
 export type LessonStatus = 'not-started' | 'in-progress' | 'completed' | 'locked';

@@ -8,8 +8,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { X } from 'lucide-react';
-import { Button } from '../../atoms/Button';
-import { Typography } from '../../atoms/Typography';
+import { Button, Typography } from '@almadar/ui';
 import { Modal } from '../Modal';
 import { cn } from '../../../utils/theme';
 

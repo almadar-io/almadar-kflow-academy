@@ -8,9 +8,7 @@
 import React, { useState } from 'react';
 import { Languages, RefreshCw } from 'lucide-react';
 import { Card } from '../../molecules/Card';
-import { Typography } from '../../atoms/Typography';
-import { Button } from '../../atoms/Button';
-import { Icon } from '../../atoms/Icon';
+import { Typography, Button, Icon } from '@almadar/ui';
 import { TranslationBanner } from '../../molecules/TranslationBanner';
 import { LanguageSelector, LanguageOption, DEFAULT_LANGUAGES } from '../../molecules/LanguageSelector';
 import { cn } from '../../../utils/theme';

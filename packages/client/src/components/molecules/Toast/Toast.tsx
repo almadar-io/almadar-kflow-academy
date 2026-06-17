@@ -7,10 +7,7 @@
 
 import React, { useEffect } from 'react';
 import { X, CheckCircle, AlertCircle, AlertTriangle, Info } from 'lucide-react';
-import { Icon } from '../../atoms/Icon';
-import { Typography } from '../../atoms/Typography';
-import { Button } from '../../atoms/Button';
-import { Badge } from '../../atoms/Badge';
+import { Icon, Typography, Button, Badge } from '@almadar/ui';
 import { cn } from '../../../utils/theme';
 
 export type ToastVariant = 'success' | 'error' | 'info' | 'warning';

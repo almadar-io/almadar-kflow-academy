@@ -9,11 +9,7 @@ import React from 'react';
 import type { LucideIcon } from 'lucide-react';
 import { Menu, MenuItem } from '../../molecules/Menu';
 import { ButtonGroup } from '../../molecules/ButtonGroup';
-import { Button } from '../../atoms/Button';
-import { Icon } from '../../atoms/Icon';
-import { Badge } from '../../atoms/Badge';
-import { Typography } from '../../atoms/Typography';
-import { Divider } from '../../atoms/Divider';
+import { Button, Icon, Badge, Typography, Divider } from '@almadar/ui';
 import { cn } from '../../../utils/theme';
 
 export interface NavigationItem {

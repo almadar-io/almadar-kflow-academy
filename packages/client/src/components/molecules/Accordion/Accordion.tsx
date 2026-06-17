@@ -7,10 +7,7 @@
 
 import React, { useState } from 'react';
 import { ChevronDown } from 'lucide-react';
-import { Button } from '../../atoms/Button';
-import { Icon } from '../../atoms/Icon';
-import { Typography } from '../../atoms/Typography';
-import { Divider } from '../../atoms/Divider';
+import { Button, Icon, Typography, Divider } from '@almadar/ui';
 import { cn } from '../../../utils/theme';
 
 export interface AccordionItem {

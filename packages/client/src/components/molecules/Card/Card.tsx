@@ -6,7 +6,7 @@
 
 import React from 'react';
 import { cn } from '../../../utils/theme';
-import { Spinner } from '../../atoms/Spinner';
+import { Spinner } from '@almadar/ui';
 
 export type CardVariant = 'default' | 'elevated' | 'outlined' | 'interactive';
 
@@ -92,7 +92,7 @@ export const Card: React.FC<CardProps> = ({
       <div className={cn('px-6 py-4', loading && 'opacity-50 pointer-events-none')}>
         {loading ? (
           <div className="flex items-center justify-center py-8">
-            <Spinner size="lg" color="primary" />
+            <Spinner size="lg" />
           </div>
         ) : (
           children

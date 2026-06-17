@@ -5,7 +5,7 @@ import { useConceptDetail } from '../../knowledge-graph/hooks/useConceptDetail';
 import { useGetGraph, useLessonAnnotations } from '../../knowledge-graph/hooks';
 import { setCurrentGraphId, selectGraphById } from '../../knowledge-graph/knowledgeGraphSlice';
 import { useExplainConcept } from '../../knowledge-graph/hooks/useExplainConcept';
-import { MarkdownContent } from '@almadar/ui';
+import { MarkdownContent } from '../components/MarkdownRenderer';
 import { useAnswerQuestion } from '../../knowledge-graph/hooks/useAnswerQuestion';
 import { useCustomOperation } from '../../knowledge-graph/hooks/useCustomOperation';
 import type { Concept } from '../types';
@@ -21,8 +21,7 @@ import { NotesWidget } from '../../../components/organisms/NotesWidget';
 import { ConceptDescription } from '../../../components/molecules/ConceptDescription';
 import { ConceptMetaTags } from '../../../components/molecules/ConceptMetaTags';
 import { Modal } from '../../../components/molecules/Modal';
-import { Typography } from '../../../components/atoms/Typography';
-import { Button } from '../../../components/atoms/Button';
+import { Typography, Button } from '@almadar/ui';
 
 // Mentor-specific panels removed in cleanup
 import { useConceptsByLayer } from '../../knowledge-graph/hooks/useConceptsByLayer';
@@ -568,7 +567,6 @@ const ConceptDetailPageContainer: React.FC = () => {
       onSelectForNote={handleSelectForNote}
       onAnnotationClick={handleAnnotationClick}
       disabled={localLessonLoading || isExplaining || isAnswering}
-      concept={concept ?? undefined}
     />
   ) : null;
 

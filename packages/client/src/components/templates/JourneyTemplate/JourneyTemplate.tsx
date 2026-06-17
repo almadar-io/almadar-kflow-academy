@@ -8,12 +8,9 @@
 import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { AppLayoutTemplate } from '../AppLayoutTemplate';
 import { Card } from '../../molecules/Card';
-import { Button } from '../../atoms/Button';
-import { Typography } from '../../atoms/Typography';
-import { Badge } from '../../atoms/Badge';
+import { Button, Typography, Badge, Divider } from '@almadar/ui';
 import { ConceptCard } from '../../organisms/ConceptCard';
 import { TreeMap, TreeMapNode } from '../../organisms/TreeMap';
-import { Divider } from '../../atoms/Divider';
 import { Check, Circle, ArrowRight, GitBranch, List, Target, ChevronDown, ChevronUp } from 'lucide-react';
 import { cn } from '../../../utils/theme';
 import type { LearnTemplateProps, LearnConcept } from '../LearnTemplates/types';

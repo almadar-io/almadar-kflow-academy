@@ -11,8 +11,7 @@ import { AppLayoutTemplate } from '../AppLayoutTemplate';
 import { ProgressTracker, Lesson as ProgressTrackerLesson } from '../../organisms/ProgressTracker';
 import { StatCard } from '../../molecules/StatCard';
 import { Card } from '../../molecules/Card';
-import { Button } from '../../atoms/Button';
-import { Typography } from '../../atoms/Typography';
+import { Button, Typography } from '@almadar/ui';
 import { cn } from '../../../utils/theme';
 
 export interface DashboardStat {
@@ -273,7 +272,7 @@ export const DashboardTemplate: React.FC<DashboardTemplateProps> = ({
                         variant={action.variant || 'secondary'}
                         icon={action.icon}
                         onClick={action.onClick}
-                        fullWidth
+                        className="w-full"
                       >
                         {action.label}
                       </Button>

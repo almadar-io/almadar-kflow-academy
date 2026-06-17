@@ -11,12 +11,7 @@ import { Card } from '../../molecules/Card';
 import { Tabs, TabItem } from '../../molecules/Tabs';
 import { Accordion, AccordionItem } from '../../molecules/Accordion';
 import { ButtonGroup } from '../../molecules/ButtonGroup';
-import { Typography } from '../../atoms/Typography';
-import { Icon } from '../../atoms/Icon';
-import { Badge } from '../../atoms/Badge';
-import { Button } from '../../atoms/Button';
-import { Divider } from '../../atoms/Divider';
-import { ProgressBar } from '../../atoms/ProgressBar';
+import { Typography, Icon, Badge, Button, Divider, ProgressBar } from '@almadar/ui';
 import { FlashCard } from '../FlashCard';
 import { cn } from '../../../utils/theme';
 

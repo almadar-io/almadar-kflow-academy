@@ -11,10 +11,7 @@ import { Eye, EyeOff, Mail, Lock, User, ArrowLeft } from 'lucide-react';
 import { Card } from '../../molecules/Card';
 import { FormField } from '../../molecules/FormField';
 import { Alert } from '../../molecules/Alert';
-import { Button } from '../../atoms/Button';
-import { Typography } from '../../atoms/Typography';
-import { Divider } from '../../atoms/Divider';
-import { Spinner } from '../../atoms/Spinner';
+import { Button, Typography, Divider, Spinner } from '@almadar/ui';
 import { cn } from '../../../utils/theme';
 
 export type AuthVariant = 'login' | 'signup' | 'forgot-password' | 'reset-password' | 'verify-email';
@@ -231,15 +228,15 @@ export const AuthTemplate: React.FC<AuthTemplateProps> = ({
             <Button
               variant="secondary"
               onClick={onResendVerification}
-              loading={loading}
-              fullWidth
+              isLoading={loading}
+              className="w-full"
             >
               Resend verification email
             </Button>
             <Button
               variant="ghost"
               onClick={onSignIn}
-              fullWidth
+              className="w-full"
             >
               Back to sign in
             </Button>
@@ -326,8 +323,8 @@ export const AuthTemplate: React.FC<AuthTemplateProps> = ({
             <Button
               type="submit"
               variant="primary"
-              fullWidth
-              loading={loading}
+              className="w-full"
+              isLoading={loading}
               disabled={loading}
             >
               {getSubmitText()}

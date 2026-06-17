@@ -6,9 +6,7 @@
 
 import React from 'react';
 import { Input, InputProps } from '../../atoms/Input';
-import { Textarea, TextareaProps } from '../../atoms/Textarea';
-import { Checkbox, CheckboxProps } from '../../atoms/Checkbox';
-import { Radio, RadioProps } from '../../atoms/Radio';
+import { Textarea, TextareaProps, Checkbox, CheckboxProps, Radio, RadioProps } from '@almadar/ui';
 import { cn } from '../../../utils/theme';
 
 export type FormFieldInputType = 'input' | 'textarea' | 'checkbox' | 'radio';
@@ -93,23 +91,31 @@ export const FormField: React.FC<FormFieldProps> = ({
         );
       case 'textarea':
         return (
-          <Textarea
-            {...(inputProps as TextareaProps)}
-            id={fieldId}
-            label={label}
-            helperText={helperText}
-            error={error}
-          />
+          <div>
+            {label && (
+              <label htmlFor={fieldId} className={cn('block text-sm font-medium mb-1.5', hasError ? 'text-red-600 dark:text-red-400' : 'text-gray-700 dark:text-gray-300')}>
+                {label}{required && <span className="text-red-500 ml-1" aria-label="required">*</span>}
+              </label>
+            )}
+            <Textarea
+              {...(inputProps as TextareaProps)}
+              id={fieldId}
+              error={error}
+            />
+            {helperText && !error && <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">{helperText}</p>}
+          </div>
         );
       case 'checkbox':
         return (
-          <Checkbox
-            {...(inputProps as CheckboxProps)}
-            id={fieldId}
-            label={label}
-            helperText={helperText}
-            error={error}
-          />
+          <div>
+            <Checkbox
+              {...(inputProps as CheckboxProps)}
+              id={fieldId}
+              label={label}
+            />
+            {helperText && !error && <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">{helperText}</p>}
+            {error && <p className="mt-1 text-sm text-red-600 dark:text-red-400">{error}</p>}
+          </div>
         );
       case 'radio':
         return (

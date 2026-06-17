@@ -8,11 +8,8 @@
 import React, { useMemo, useState, useEffect, useRef, useCallback } from 'react';
 import { AppLayoutTemplate } from '../AppLayoutTemplate';
 import { Card } from '../../molecules/Card';
-import { Button } from '../../atoms/Button';
-import { Typography } from '../../atoms/Typography';
-import { Badge } from '../../atoms/Badge';
+import { Button, Typography, Badge, Spinner } from '@almadar/ui';
 import { Modal } from '../../molecules/Modal';
-import { Spinner } from '../../atoms/Spinner';
 import { ConceptCard } from '../../organisms/ConceptCard';
 import { TreeMap, TreeMapNode } from '../../organisms/TreeMap';
 import { LessonPanel } from '../../organisms/LessonPanel';

@@ -8,11 +8,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Award, Lock, ChevronDown, ChevronUp } from 'lucide-react';
 import { Card } from '../../molecules/Card';
-import { Icon } from '../../atoms/Icon';
-import { Typography } from '../../atoms/Typography';
-import { ProgressBar } from '../../atoms/ProgressBar';
-import { Spinner } from '../../atoms/Spinner';
-import { Button } from '../../atoms/Button';
+import { Icon, Typography, ProgressBar, Spinner, Button } from '@almadar/ui';
 import { EmptyState } from '../../molecules/EmptyState';
 import { Alert } from '../../molecules/Alert';
 import { cn } from '../../../utils/theme';

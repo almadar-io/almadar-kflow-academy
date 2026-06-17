@@ -18,10 +18,7 @@ import { ButtonGroup } from '../../molecules/ButtonGroup';
 import { Alert } from '../../molecules/Alert';
 import { ProgressCard } from '../../molecules/ProgressCard';
 import { Card } from '../../molecules/Card';
-import { Button } from '../../atoms/Button';
-import { Typography } from '../../atoms/Typography';
-import { Divider } from '../../atoms/Divider';
-import { ProgressBar } from '../../atoms/ProgressBar';
+import { Button, Typography, Divider, ProgressBar } from '@almadar/ui';
 import { cn } from '../../../utils/theme';
 
 export interface FormStep {
@@ -167,7 +164,7 @@ export const Form: React.FC<FormProps> = ({
   ) => {
     const value = field.type === 'checkbox' ? (e.target as HTMLInputElement).checked : e.target.value;
     handleFieldChange(fieldId, value);
-    field.inputProps?.onChange?.(e as never);
+    if (typeof field.inputProps?.onChange === 'function') { field.inputProps.onChange(e as never); }
   };
 
   const renderFormField = (field: FormFieldProps, index: number) => {
@@ -361,7 +358,7 @@ export const Form: React.FC<FormProps> = ({
             <Button
               type="submit"
               variant="primary"
-              loading={loading}
+              isLoading={loading}
             >
               {submitLabel}
             </Button>

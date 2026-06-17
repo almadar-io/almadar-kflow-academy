@@ -7,10 +7,7 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import type { LucideIcon } from 'lucide-react';
-import { Button } from '../../atoms/Button';
-import { Icon } from '../../atoms/Icon';
-import { Badge } from '../../atoms/Badge';
-import { Typography } from '../../atoms/Typography';
+import { Button, Icon, Badge, Typography } from '@almadar/ui';
 import { cn } from '../../../utils/theme';
 
 export interface TabItem {

@@ -7,8 +7,7 @@
 
 import React from 'react';
 import { Globe, ChevronDown, Check } from 'lucide-react';
-import { Icon } from '../../atoms/Icon';
-import { Typography } from '../../atoms/Typography';
+import { Icon, Typography } from '@almadar/ui';
 import { cn } from '../../../utils/theme';
 
 export interface LanguageOption {

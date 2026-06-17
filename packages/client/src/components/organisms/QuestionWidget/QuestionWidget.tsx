@@ -11,9 +11,7 @@
 import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import { HelpCircle, Send, ChevronDown, ChevronUp, Loader2 } from 'lucide-react';
 import { Modal } from '../../molecules/Modal';
-import { Button } from '../../atoms/Button';
-import { Typography } from '../../atoms/Typography';
-import { Spinner } from '../../atoms/Spinner';
+import { Button, Typography, Spinner } from '@almadar/ui';
 import { SegmentRenderer, parseMarkdownWithCodeBlocks } from '../LessonSegments';
 
 /**
@@ -183,7 +181,7 @@ export const QuestionWidget: React.FC<QuestionWidgetProps> = ({
             variant="primary"
             onClick={handleSubmit}
             disabled={!question.trim() || isLoading}
-            loading={isLoading}
+            isLoading={isLoading}
             icon={Send}
           >
             Ask

@@ -7,9 +7,7 @@
 
 import React from 'react';
 import type { LucideIcon } from 'lucide-react';
-import { Icon } from '../../atoms/Icon';
-import { Typography } from '../../atoms/Typography';
-import { Button } from '../../atoms/Button';
+import { Icon, Typography, Button } from '@almadar/ui';
 import { cn } from '../../../utils/theme';
 
 export interface EmptyStateProps {

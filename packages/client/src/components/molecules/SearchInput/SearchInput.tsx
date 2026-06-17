@@ -8,9 +8,7 @@
 import React, { useState, useCallback } from 'react';
 import { Search, X } from 'lucide-react';
 import { Input } from '../../atoms/Input';
-import { Icon } from '../../atoms/Icon';
-import { Button } from '../../atoms/Button';
-import { Spinner } from '../../atoms/Spinner';
+import { Icon, Button, Spinner } from '@almadar/ui';
 import { cn } from '../../../utils/theme';
 
 export interface SearchInputProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'type'> {
@@ -120,7 +118,7 @@ export const SearchInput: React.FC<SearchInputProps> = ({
       />
       {loading && (
         <div className="absolute right-3 top-1/2 -translate-y-1/2">
-          <Spinner size="sm" color="primary" />
+          <Spinner size="sm" />
         </div>
       )}
     </div>

@@ -9,10 +9,7 @@ import React, { useState } from 'react';
 import { CheckCircle, GraduationCap, Trophy, Flame, BookOpen, ChevronDown, ChevronUp } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import { Card } from '../../molecules/Card';
-import { Icon } from '../../atoms/Icon';
-import { Typography } from '../../atoms/Typography';
-import { Spinner } from '../../atoms/Spinner';
-import { Button } from '../../atoms/Button';
+import { Icon, Typography, Spinner, Button } from '@almadar/ui';
 import { Alert } from '../../molecules/Alert';
 import { cn } from '../../../utils/theme';
 

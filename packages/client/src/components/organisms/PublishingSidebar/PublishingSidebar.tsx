@@ -19,13 +19,7 @@ import {
   ChevronRight,
 } from 'lucide-react';
 import { Card } from '../../molecules/Card';
-import { Typography } from '../../atoms/Typography';
-import { ProgressBar, type ProgressBarColor } from '../../atoms/ProgressBar';
-import { Badge } from '../../atoms/Badge';
-import { Button } from '../../atoms/Button';
-import { Icon } from '../../atoms/Icon';
-import { Divider } from '../../atoms/Divider';
-import { Checkbox } from '../../atoms/Checkbox';
+import { Typography, ProgressBar, type ProgressBarColor, Badge, Button, Icon, Divider, Checkbox } from '@almadar/ui';
 import { Tooltip } from '../../molecules/Tooltip';
 import { cn } from '../../../utils/theme';
 
@@ -146,7 +140,7 @@ const getReadinessPercentage = (ready: number, total: number) => {
 const getReadinessColor = (percentage: number): ProgressBarColor => {
   if (percentage >= 100) return 'success';
   if (percentage >= 50) return 'warning';
-  return 'danger';
+  return 'error';
 };
 
 const visibilityConfig = {

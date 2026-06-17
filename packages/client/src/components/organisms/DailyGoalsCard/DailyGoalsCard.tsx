@@ -8,13 +8,9 @@
 import React, { useState } from 'react';
 import { Target, CheckCircle, BookMarked } from 'lucide-react';
 import { Card } from '../../molecules/Card';
-import { Icon } from '../../atoms/Icon';
-import { Typography } from '../../atoms/Typography';
-import { ProgressBar } from '../../atoms/ProgressBar';
-import { Button } from '../../atoms/Button';
+import { Icon, Typography, ProgressBar, Button, Spinner } from '@almadar/ui';
 import { Input } from '../../atoms/Input';
 import { FormField } from '../../molecules/FormField';
-import { Spinner } from '../../atoms/Spinner';
 import { Alert } from '../../molecules/Alert';
 import { cn } from '../../../utils/theme';
 
@@ -188,7 +184,7 @@ export const DailyGoalsCard: React.FC<DailyGoalsCardProps> = ({
               size="sm"
               onClick={handleSaveGoal}
               disabled={isUpdating}
-              loading={isUpdating}
+              isLoading={isUpdating}
             >
               Save
             </Button>

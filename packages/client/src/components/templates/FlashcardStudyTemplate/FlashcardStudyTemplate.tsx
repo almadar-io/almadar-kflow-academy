@@ -10,10 +10,7 @@ import { X, RotateCcw, Shuffle, Trophy, ChevronLeft, ChevronRight } from 'lucide
 import { FlashCard } from '../../organisms/FlashCard';
 import { Card } from '../../molecules/Card';
 import { Modal } from '../../molecules/Modal';
-import { Button } from '../../atoms/Button';
-import { Typography } from '../../atoms/Typography';
-import { ProgressBar } from '../../atoms/ProgressBar';
-import { Badge } from '../../atoms/Badge';
+import { Button, Typography, ProgressBar, Badge } from '@almadar/ui';
 import { cn } from '../../../utils/theme';
 
 export type Difficulty = 'hard' | 'medium' | 'easy';

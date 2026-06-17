@@ -6,9 +6,7 @@
  */
 
 import React, { useState, useRef, useEffect } from 'react';
-import { Button } from '../../atoms/Button';
-import { Typography } from '../../atoms/Typography';
-import { Icon } from '../../atoms/Icon';
+import { Button, Typography, Icon } from '@almadar/ui';
 import { cn } from '../../../utils/theme';
 
 export type PopoverPosition = 'top' | 'bottom' | 'left' | 'right';

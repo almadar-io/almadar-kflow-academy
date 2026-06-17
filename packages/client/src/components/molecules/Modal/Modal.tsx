@@ -7,10 +7,7 @@
 
 import React, { useEffect, useRef } from 'react';
 import { X } from 'lucide-react';
-import { Button } from '../../atoms/Button';
-import { Icon } from '../../atoms/Icon';
-import { Typography } from '../../atoms/Typography';
-import { Divider } from '../../atoms/Divider';
+import { Button, Icon, Typography, Divider } from '@almadar/ui';
 import { cn } from '../../../utils/theme';
 
 export type ModalSize = 'sm' | 'md' | 'lg' | 'xl' | 'full';

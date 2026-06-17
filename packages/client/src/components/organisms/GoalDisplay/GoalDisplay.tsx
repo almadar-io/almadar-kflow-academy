@@ -11,11 +11,7 @@ import { Edit, Save, X } from 'lucide-react';
 import { Card } from '../../molecules/Card';
 import { ButtonGroup } from '../../molecules/ButtonGroup';
 import { FormField } from '../../molecules/FormField';
-import { Icon } from '../../atoms/Icon';
-import { Typography } from '../../atoms/Typography';
-import { Button } from '../../atoms/Button';
-import { Spinner } from '../../atoms/Spinner';
-import { Badge } from '../../atoms/Badge';
+import { Icon, Typography, Button, Spinner, Badge } from '@almadar/ui';
 import { cn } from '../../../utils/theme';
 
 export interface Milestone {
@@ -206,7 +202,7 @@ export const GoalDisplay: React.FC<GoalDisplayProps> = ({
         {editing && (
           <div className="flex justify-end gap-2 pt-2 border-t border-white/20">
             {loading ? (
-              <Spinner size="sm" color="white" />
+              <Spinner size="sm" className="text-white" />
             ) : (
               <ButtonGroup>
                 <Button

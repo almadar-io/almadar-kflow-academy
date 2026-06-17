@@ -7,9 +7,7 @@
 
 import React, { useState } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { Button } from '../../atoms/Button';
-import { Icon } from '../../atoms/Icon';
-import { Typography } from '../../atoms/Typography';
+import { Button, Icon, Typography } from '@almadar/ui';
 import { Input } from '../../atoms/Input';
 import { cn } from '../../../utils/theme';
 

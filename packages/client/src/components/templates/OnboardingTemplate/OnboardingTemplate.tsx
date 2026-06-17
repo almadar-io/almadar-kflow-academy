@@ -11,11 +11,7 @@ import { ChevronLeft, ChevronRight, Check, User, Target, BookOpen, Sparkles } fr
 import { Card } from '../../molecules/Card';
 import { FormField } from '../../molecules/FormField';
 import { ButtonGroup } from '../../molecules/ButtonGroup';
-import { Button } from '../../atoms/Button';
-import { Typography } from '../../atoms/Typography';
-import { ProgressBar } from '../../atoms/ProgressBar';
-import { Avatar } from '../../atoms/Avatar';
-import { Radio } from '../../atoms/Radio';
+import { Button, Typography, ProgressBar, Avatar, Radio } from '@almadar/ui';
 import { cn } from '../../../utils/theme';
 
 export interface OnboardingStep {
@@ -432,7 +428,7 @@ export const OnboardingTemplate: React.FC<OnboardingTemplateProps> = ({
             variant="primary"
             iconRight={isLastStep ? Check : ChevronRight}
             onClick={handleNext}
-            loading={loading}
+            isLoading={loading}
             size="sm"
             className="text-xs sm:text-sm"
           >

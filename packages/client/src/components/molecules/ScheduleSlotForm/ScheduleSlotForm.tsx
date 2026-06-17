@@ -5,13 +5,11 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { Button } from '../../atoms/Button';
+import { Button, Checkbox, Typography } from '@almadar/ui';
 import { SelectDropdown, SelectOption } from '../SelectDropdown';
 import { DayOfWeekSelector, type DayOfWeek } from '../../atoms/DayOfWeekSelector';
 import { ScheduleTimeInput } from '../../atoms/ScheduleTimeInput';
 import { Input } from '../../atoms/Input';
-import { Checkbox } from '../../atoms/Checkbox';
-import { Typography } from '../../atoms/Typography';
 import { cn } from '../../../utils/theme';
 
 export interface ScheduleSlotFormData {
@@ -248,7 +246,7 @@ export const ScheduleSlotForm: React.FC<ScheduleSlotFormProps> = ({
         <Button
           type="submit"
           variant="primary"
-          loading={isLoading}
+          isLoading={isLoading}
           disabled={!formData.studentUserId || !formData.courseSettingsId || !formData.dayOfWeek || !formData.startTime || !formData.endTime}
         >
           {isEditMode ? 'Update Schedule' : 'Add Schedule'}

@@ -15,10 +15,7 @@ import { Pagination } from '../../molecules/Pagination';
 import { EmptyState } from '../../molecules/EmptyState';
 import { Card } from '../../molecules/Card';
 import { SelectDropdown } from '../../molecules/SelectDropdown';
-import { Button } from '../../atoms/Button';
-import { Typography } from '../../atoms/Typography';
-import { Badge } from '../../atoms/Badge';
-import { Spinner } from '../../atoms/Spinner';
+import { Button, Typography, Badge, Spinner } from '@almadar/ui';
 import { cn } from '../../../utils/theme';
 
 export type ResultType = 'all' | 'courses' | 'lessons' | 'concepts';

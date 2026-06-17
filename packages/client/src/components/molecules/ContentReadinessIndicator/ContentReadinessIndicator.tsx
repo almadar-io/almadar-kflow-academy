@@ -17,8 +17,7 @@ import {
   BookOpen,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
-import { Badge } from '../../atoms/Badge';
-import { Icon } from '../../atoms/Icon';
+import { Badge, Icon } from '@almadar/ui';
 import { Tooltip } from '../Tooltip';
 import { cn } from '../../../utils/theme';
 

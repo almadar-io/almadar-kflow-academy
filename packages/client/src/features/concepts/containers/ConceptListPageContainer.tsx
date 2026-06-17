@@ -23,7 +23,7 @@ import { useAppSelector } from '../../../app/hooks';
 import { Sparkles, BookOpen } from 'lucide-react';
 import { FocusModeTemplate } from '../../../components/templates/FocusModeTemplate';
 import type { LearnTemplateProps, LearnLevel, LearnConcept, LearnGoal } from '../../../components/templates/LearnTemplates/types';
-import { Button } from '../../../components/atoms/Button';
+import { Button } from '@almadar/ui';
 
 // Operation types (matching mentor pattern)
 type OperationType =

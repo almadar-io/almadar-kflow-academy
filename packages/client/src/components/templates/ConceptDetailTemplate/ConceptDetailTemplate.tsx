@@ -7,10 +7,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { ArrowLeft, Sparkles } from 'lucide-react';
-import { Button } from '../../atoms/Button';
-import { Typography } from '../../atoms/Typography';
-import { Badge } from '../../atoms/Badge';
-import { Spinner } from '../../atoms/Spinner';
+import { Button, Typography, Badge, Spinner } from '@almadar/ui';
 import { Tabs } from '../../molecules/Tabs';
 import { Card } from '../../molecules/Card';
 import { SidePanel } from '../../molecules/SidePanel';

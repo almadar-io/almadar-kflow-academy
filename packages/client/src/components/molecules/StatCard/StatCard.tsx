@@ -8,9 +8,7 @@
 import React from 'react';
 import type { LucideIcon } from 'lucide-react';
 import { Card } from '../Card';
-import { Icon } from '../../atoms/Icon';
-import { Typography } from '../../atoms/Typography';
-import { Badge } from '../../atoms/Badge';
+import { Icon, Typography, Badge } from '@almadar/ui';
 import { cn } from '../../../utils/theme';
 
 export interface StatCardProps {

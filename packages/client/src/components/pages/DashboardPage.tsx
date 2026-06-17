@@ -11,10 +11,8 @@ import { EnhancedStatsCards } from '../organisms/EnhancedStatsCards';
 
 import { RecommendationsCard } from '../organisms/RecommendationsCard';
 import { AchievementsCard } from '../organisms/AchievementsCard';
-import { Button } from '../atoms/Button';
-import { Typography } from '../atoms/Typography';
+import { Button, Typography, Spinner } from '@almadar/ui';
 import { Card } from '../molecules/Card';
-import { Spinner } from '../atoms/Spinner';
 import {
   ArrowRight,
   Plus,
@@ -218,7 +216,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
                           handleJumpBackInClick(item);
                         }}
                         iconRight={ArrowRight}
-                        fullWidth
+                        className="w-full"
                       >
                         {item.type === 'course' ? 'Continue Course' : 'Resume Learning'}
                       </Button>

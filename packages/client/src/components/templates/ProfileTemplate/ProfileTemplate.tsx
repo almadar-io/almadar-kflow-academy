@@ -13,11 +13,7 @@ import { Card } from '../../molecules/Card';
 import { Tabs, TabItem } from '../../molecules/Tabs';
 import { FormField } from '../../molecules/FormField';
 import { Alert } from '../../molecules/Alert';
-import { Button } from '../../atoms/Button';
-import { Typography } from '../../atoms/Typography';
-import { Avatar } from '../../atoms/Avatar';
-import { Badge } from '../../atoms/Badge';
-import { Divider } from '../../atoms/Divider';
+import { Button, Typography, Avatar, Badge, Divider } from '@almadar/ui';
 import { cn } from '../../../utils/theme';
 
 export interface ProfileData {
@@ -273,7 +269,7 @@ export const ProfileTemplate: React.FC<ProfileTemplateProps> = ({
                     <Button variant="ghost" onClick={() => setEditMode(false)}>
                       Cancel
                     </Button>
-                    <Button variant="primary" icon={Save} onClick={handleProfileSave} loading={loading}>
+                    <Button variant="primary" icon={Save} onClick={handleProfileSave} isLoading={loading}>
                       Save
                     </Button>
                   </div>
@@ -400,7 +396,7 @@ export const ProfileTemplate: React.FC<ProfileTemplateProps> = ({
                   variant="primary"
                   icon={Key}
                   onClick={handlePasswordSave}
-                  loading={loading}
+                  isLoading={loading}
                   disabled={!passwordData.currentPassword || !passwordData.newPassword || passwordData.newPassword !== passwordData.confirmPassword}
                 >
                   Update Password

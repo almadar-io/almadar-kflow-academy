@@ -8,15 +8,8 @@
 import React, { useState } from 'react';
 import { CheckCircle2 } from 'lucide-react';
 import { Card } from '../../molecules/Card';
-import { ProgressBar } from '../../atoms/ProgressBar';
-import { Button } from '../../atoms/Button';
-import { Badge } from '../../atoms/Badge';
-import { Typography } from '../../atoms/Typography';
-import { Textarea } from '../../atoms/Textarea';
-import { Radio } from '../../atoms/Radio';
-import { Spinner } from '../../atoms/Spinner';
+import { ProgressBar, Button, Badge, Typography, Textarea, Radio, Spinner, Icon } from '@almadar/ui';
 import { Alert } from '../../molecules/Alert';
-import { Icon } from '../../atoms/Icon';
 import { cn } from '../../../utils/theme';
 
 export interface PlacementQuestion {
@@ -458,7 +451,7 @@ export const PlacementTest: React.FC<PlacementTestProps> = ({
           variant="primary"
           onClick={handleNext}
           disabled={!currentAnswer?.answer || isLoading}
-          loading={isLoading}
+          isLoading={isLoading}
         >
           {isLoading
             ? 'Submitting...'

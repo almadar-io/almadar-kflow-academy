@@ -6,12 +6,9 @@
  * Uses Checkbox, Badge, Typography atoms and Card, EmptyState molecules.
  */
 
-import React from 'react';
+import React, { useRef, useEffect } from 'react';
 import type { LucideIcon } from 'lucide-react';
-import { Checkbox } from '../../atoms/Checkbox';
-import { Badge } from '../../atoms/Badge';
-import { Typography } from '../../atoms/Typography';
-import { Spinner } from '../../atoms/Spinner';
+import { Checkbox, Badge, Typography, Spinner } from '@almadar/ui';
 import { Card } from '../../molecules/Card';
 import { EmptyState } from '../../molecules/EmptyState';
 import { cn } from '../../../utils/theme';
@@ -129,6 +126,12 @@ export const ContentSelector: React.FC<ContentSelectorProps> = ({
   const selectedIds = items.filter(item => item.checked).map(item => item.id);
   const allSelected = items.length > 0 && items.every(item => item.checked || item.disabled);
   const someSelected = items.some(item => item.checked) && !allSelected;
+  const selectAllRef = useRef<HTMLInputElement>(null);
+  useEffect(() => {
+    if (selectAllRef.current) {
+      selectAllRef.current.indeterminate = someSelected;
+    }
+  }, [someSelected]);
   const selectableItems = items.filter(item => !item.disabled);
   
   const handleSelectAll = () => {
@@ -180,8 +183,8 @@ export const ContentSelector: React.FC<ContentSelectorProps> = ({
       {items.length > 0 && (
         <div className="flex items-center justify-between pb-3 border-b border-gray-200 dark:border-gray-700">
           <Checkbox
+            ref={selectAllRef}
             checked={allSelected}
-            indeterminate={someSelected}
             onChange={handleSelectAll}
             label={selectAllLabel}
           />

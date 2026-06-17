@@ -11,11 +11,7 @@ import { CheckCircle, Play, Trophy } from 'lucide-react';
 import { Card } from '../../molecules/Card';
 import { ProgressCard } from '../../molecules/ProgressCard';
 import { StatCard } from '../../molecules/StatCard';
-import { ProgressBar } from '../../atoms/ProgressBar';
-import { Typography } from '../../atoms/Typography';
-import { Icon } from '../../atoms/Icon';
-import { Badge } from '../../atoms/Badge';
-import { Button } from '../../atoms/Button';
+import { ProgressBar, Typography, Icon, Badge, Button } from '@almadar/ui';
 import { cn } from '../../../utils/theme';
 
 export interface Lesson {

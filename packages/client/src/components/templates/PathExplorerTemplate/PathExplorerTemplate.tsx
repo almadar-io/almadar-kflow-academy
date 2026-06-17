@@ -9,9 +9,7 @@
 import React, { useState, useMemo } from 'react';
 import { AppLayoutTemplate } from '../AppLayoutTemplate';
 import { Card } from '../../molecules/Card';
-import { Button } from '../../atoms/Button';
-import { Typography } from '../../atoms/Typography';
-import { Badge } from '../../atoms/Badge';
+import { Button, Typography, Badge } from '@almadar/ui';
 import { ConceptCard } from '../../organisms/ConceptCard';
 import { TreeMap, TreeMapNode } from '../../organisms/TreeMap';
 import { Check, Circle, ArrowRight, GitBranch, List, Target } from 'lucide-react';

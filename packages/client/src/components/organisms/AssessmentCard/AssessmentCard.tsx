@@ -11,10 +11,7 @@ import { FormField } from '../../molecules/FormField';
 import { ButtonGroup } from '../../molecules/ButtonGroup';
 import { Alert } from '../../molecules/Alert';
 import { ProgressCard } from '../../molecules/ProgressCard';
-import { Typography } from '../../atoms/Typography';
-import { Button } from '../../atoms/Button';
-import { ProgressBar } from '../../atoms/ProgressBar';
-import { Badge } from '../../atoms/Badge';
+import { Typography, Button, ProgressBar, Badge } from '@almadar/ui';
 import { QuestionCard, QuestionOption } from '../QuestionCard';
 import { cn } from '../../../utils/theme';
 
@@ -318,9 +315,9 @@ export const AssessmentCard: React.FC<AssessmentCardProps> = ({
           <div className="pt-4 border-t border-gray-200 dark:border-gray-700">
             <Button
               variant="primary"
-              fullWidth
+              className="w-full"
               onClick={handleSubmit}
-              loading={loading}
+              isLoading={loading}
             >
               Submit Assessment
             </Button>

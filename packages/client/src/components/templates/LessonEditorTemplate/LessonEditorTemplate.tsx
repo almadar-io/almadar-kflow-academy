@@ -16,10 +16,7 @@ import { Modal } from '../../molecules/Modal';
 import { Alert } from '../../molecules/Alert';
 import { FormField } from '../../molecules/FormField';
 import { ButtonGroup } from '../../molecules/ButtonGroup';
-import { Button } from '../../atoms/Button';
-import { Typography } from '../../atoms/Typography';
-import { Badge } from '../../atoms/Badge';
-import { Spinner } from '../../atoms/Spinner';
+import { Button, Typography, Badge, Spinner } from '@almadar/ui';
 import { cn } from '../../../utils/theme';
 
 export interface LessonEditorTemplateProps {
@@ -258,7 +255,7 @@ export const LessonEditorTemplate: React.FC<LessonEditorTemplateProps> = ({
                 size="sm"
                 icon={Save}
                 onClick={onSave}
-                loading={isSaving}
+                isLoading={isSaving}
                 disabled={isSaving}
                 className="text-xs sm:text-sm"
               >
@@ -331,7 +328,7 @@ export const LessonEditorTemplate: React.FC<LessonEditorTemplateProps> = ({
                       size="sm"
                       icon={Sparkles}
                       onClick={() => onGenerateLesson?.(true)}
-                      loading={isGenerating}
+                      isLoading={isGenerating}
                       disabled={isGenerating}
                       className="text-xs sm:text-sm"
                     >
@@ -343,7 +340,7 @@ export const LessonEditorTemplate: React.FC<LessonEditorTemplateProps> = ({
                       size="sm"
                       icon={Sparkles}
                       onClick={() => onGenerateLesson?.(false)}
-                      loading={isGenerating}
+                      isLoading={isGenerating}
                       disabled={isGenerating}
                       className="text-xs sm:text-sm"
                     >
@@ -356,7 +353,7 @@ export const LessonEditorTemplate: React.FC<LessonEditorTemplateProps> = ({
                         size="sm"
                         icon={FileText}
                         onClick={onGenerateFlashCards}
-                        loading={isGeneratingFlashCards}
+                        isLoading={isGeneratingFlashCards}
                         disabled={isGeneratingFlashCards}
                         className="text-xs sm:text-sm"
                       >
@@ -479,8 +476,7 @@ export const LessonEditorTemplate: React.FC<LessonEditorTemplateProps> = ({
                 <Badge
                   key={prereq.id}
                   variant="default"
-                  dismissible
-                  onDismiss={() => {
+                  onRemove={() => {
                     onPrerequisiteChange?.(prerequisites.filter(p => p.id !== prereq.id));
                   }}
                 >

@@ -8,8 +8,7 @@
 import React from 'react';
 import { LogOut, User } from 'lucide-react';
 import { Menu, MenuOption } from '../../../components/Menu';
-import { Typography } from '../../atoms/Typography';
-import { Avatar } from '../../atoms/Avatar';
+import { Typography, Avatar } from '@almadar/ui';
 
 export interface ProfilePopupProps {
   /**

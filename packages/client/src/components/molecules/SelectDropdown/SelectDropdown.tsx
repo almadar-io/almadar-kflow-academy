@@ -7,11 +7,8 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { ChevronDown, X, Check } from 'lucide-react';
-import { Button } from '../../atoms/Button';
+import { Button, Icon, Divider, Typography } from '@almadar/ui';
 import { Input } from '../../atoms/Input';
-import { Icon } from '../../atoms/Icon';
-import { Divider } from '../../atoms/Divider';
-import { Typography } from '../../atoms/Typography';
 import { Menu } from '../Menu';
 import { cn } from '../../../utils/theme';
 

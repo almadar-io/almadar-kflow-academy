@@ -7,10 +7,8 @@
 import React, { useState, useMemo } from 'react';
 import { ScheduleSlotCard } from '../../molecules/ScheduleSlotCard';
 import { SearchInput } from '../../molecules/SearchInput';
-import { Button } from '../../atoms/Button';
-import { Typography } from '../../atoms/Typography';
+import { Button, Typography, Spinner } from '@almadar/ui';
 import { EmptyState } from '../../molecules/EmptyState';
-import { Spinner } from '../../atoms/Spinner';
 import { SelectDropdown, SelectOption } from '../../molecules/SelectDropdown';
 import { Calendar, Filter } from 'lucide-react';
 import { cn } from '../../../utils/theme';

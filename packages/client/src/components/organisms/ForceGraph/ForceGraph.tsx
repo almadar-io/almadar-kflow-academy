@@ -30,8 +30,7 @@
 import React, { useMemo, useCallback, useRef, useEffect, useState } from 'react';
 import ForceGraph2D from 'react-force-graph-2d';
 import { ZoomIn, ZoomOut, Maximize2, Pause, Play, Lock } from 'lucide-react';
-import { Button } from '../../atoms/Button';
-import { Typography } from '../../atoms/Typography';
+import { Button, Typography } from '@almadar/ui';
 import { cn } from '../../../utils/theme';
 
 // ============================================================================
