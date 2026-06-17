@@ -1,4 +1,3 @@
-import type { ReadableStream } from 'node:stream/web';
 import { Concept, OperationResult, ConceptGraph } from '../types/concept';
 import { customOperationSystemPrompt } from '../prompts';
 import { callLLM, extractJSONArray } from '../services/llm';
@@ -13,7 +12,7 @@ interface LLMConceptItem {
 }
 
 interface CustomOperationStreamResult {
-  stream: ReadableStream;
+  stream: AsyncIterable<unknown>;
   model?: string;
   prompt: string;
 }
@@ -213,7 +212,7 @@ Return JSON array only, no text, no extra fields.`;
   // If streaming, return the stream with prompt
   if (stream && response.stream && response.raw) {
     return {
-      stream: response.raw as ReadableStream,
+      stream: response.raw,
       model: response.model,
       prompt: fullPrompt,
     };

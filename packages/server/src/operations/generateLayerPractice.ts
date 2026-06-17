@@ -1,4 +1,3 @@
-import type { ReadableStream } from 'node:stream/web';
 import { Concept, GraphDifficulty } from '../types/concept';
 import { callLLM } from '../services/llm';
 import { validateConceptArray, validateConcept } from '../utils/validation';
@@ -22,7 +21,7 @@ export interface GenerateLayerPracticeResult {
 }
 
 export interface GenerateLayerPracticeStreamResult {
-  stream: ReadableStream;
+  stream: AsyncIterable<unknown>;
   model?: string;
 }
 
@@ -146,7 +145,7 @@ Return only the Markdown text, no additional formatting or JSON.`;
   // If streaming, return the stream
   if (response.stream && response.raw) {
     return {
-      stream: response.raw as ReadableStream,
+      stream: response.raw,
       model: response.model,
     };
   }
