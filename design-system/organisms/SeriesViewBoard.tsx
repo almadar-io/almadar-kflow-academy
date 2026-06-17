@@ -11,7 +11,6 @@
  */
 
 import React, { useState, useMemo, useCallback, useEffect } from 'react';
-import type { EntityRow } from '@almadar/core';
 import {
   Box,
   VStack,
@@ -39,7 +38,7 @@ import type {
   Episode,
 } from '../types/knowledge';
 
-export interface SeriesViewEntity extends EntityRow {
+export interface SeriesViewEntity {
   series: Series;
   storyMap: Record<string, StorySummary>;
   isSubscribed: boolean;
@@ -61,8 +60,12 @@ export function SeriesViewBoard({
   const { t } = useTranslate();
 
   const resolved = Array.isArray(entity) ? entity[0] : (entity as SeriesViewEntity | undefined);
-  const seriesSeasons = resolved?.series?.seasons ?? [];
-  const currentEpisodeId = resolved?.progress?.currentEpisodeId;
+  const series = resolved?.series;
+  const storyMap = resolved?.storyMap;
+  const progress = resolved?.progress;
+  const creatorOtherSeries = resolved?.creatorOtherSeries;
+  const seriesSeasons = series?.seasons ?? [];
+  const currentEpisodeId = progress?.currentEpisodeId;
 
   // Determine initial season: the one containing the current episode, or the first
   const initialSeasonId = useMemo(() => {
@@ -96,7 +99,6 @@ export function SeriesViewBoard({
     const allEpisodes = seriesSeasons.flatMap((s: Season) => s.episodes);
     const totalStories = allEpisodes.reduce((sum: number, ep: Episode) => sum + ep.stories.length, 0);
     const totalDuration = allEpisodes.reduce((sum: number, ep: Episode) => sum + ep.duration, 0);
-    const progress = resolved?.progress;
     const completionPercent = progress
       ? Math.round((progress.seasonsCompleted / progress.seasonsTotal) * 100)
       : undefined;
@@ -105,18 +107,18 @@ export function SeriesViewBoard({
       totalEpisodes: allEpisodes.length,
       totalStories,
       totalDurationMinutes: totalDuration,
-      averageRating: resolved?.series?.rating,
+      averageRating: series?.rating,
       completionPercent,
     };
-  }, [seriesSeasons, resolved?.progress, resolved?.series?.rating]);
+  }, [seriesSeasons, progress, series?.rating]);
 
   // Resolve story titles for episode cards
   const getStoryTitles = useCallback(
     (storyIds: string[]): string[] =>
       storyIds
-        .map((id) => resolved?.storyMap[id]?.title)
+        .map((id) => storyMap[id]?.title)
         .filter((title): title is string => Boolean(title)),
-    [resolved?.storyMap],
+    [storyMap],
   );
 
   if (isLoading || !resolved) {
@@ -126,7 +128,7 @@ export function SeriesViewBoard({
   return (
     <Box className={`min-h-screen bg-[var(--color-background)] ${className}`}>
       {/* Series header with banner */}
-      <SeriesHeader series={resolved.series} isSubscribed={resolved.isSubscribed} />
+      <SeriesHeader series={series} isSubscribed={resolved.isSubscribed} />
 
       <Container size="lg" padding="sm" className="py-6">
         <VStack gap="lg">
@@ -140,11 +142,11 @@ export function SeriesViewBoard({
           />
 
           {/* Season selector */}
-          {resolved.series.seasons.length > 1 && (
+          {series.seasons.length > 1 && (
             <SeasonSelector
-              seasons={resolved.series.seasons}
+              seasons={series.seasons}
               activeSeasonId={activeSeasonId}
-              seasonProgress={resolved.progress?.seasonProgress}
+              seasonProgress={progress?.seasonProgress}
             />
           )}
 
@@ -159,9 +161,9 @@ export function SeriesViewBoard({
               </Typography>
               <VStack gap="sm">
                 {activeSeason.episodes.map((episode: Episode) => {
-                  const seasonProg = resolved.progress?.seasonProgress[activeSeasonId];
+                  const seasonProg = progress?.seasonProgress[activeSeasonId];
                   const epProgress = seasonProg?.episodeProgress[episode.id];
-                  const isCurrent = resolved.progress?.currentEpisodeId === episode.id;
+                  const isCurrent = progress?.currentEpisodeId === episode.id;
 
                   return (
                     <Box key={episode.id} data-entity-row={episode.id}>
@@ -179,22 +181,22 @@ export function SeriesViewBoard({
           )}
 
           {/* Creator section */}
-          {resolved.creatorOtherSeries && resolved.creatorOtherSeries.length > 0 && (
+          {creatorOtherSeries && creatorOtherSeries.length > 0 && (
             <VStack gap="md">
               <Typography variant="small" weight="bold" className="uppercase tracking-wider text-[var(--color-muted-foreground)]">
-                {t('series.moreByCreator', { name: resolved.series.creator.displayName })}
+                {t('series.moreByCreator', { name: series.creator.displayName })}
               </Typography>
 
               <CreatorCard
                 creator={{
-                  ...resolved.series.creator,
-                  seriesCount: (resolved.creatorOtherSeries.length + 1),
+                  ...series.creator,
+                  seriesCount: (creatorOtherSeries.length + 1),
                 }}
               />
 
               <HStack gap="md" className="overflow-x-auto pb-2">
                 <SimpleGrid minChildWidth="260px" gap="md">
-                  {resolved.creatorOtherSeries.map((s: SeriesSummary) => (
+                  {creatorOtherSeries.map((s: SeriesSummary) => (
                     <Box key={s.id} data-entity-row={s.id}>
                       <SeriesCard series={s} />
                     </Box>

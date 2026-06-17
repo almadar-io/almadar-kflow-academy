@@ -15,7 +15,6 @@
 
 import React, { useCallback } from 'react';
 import type { LucideIcon } from 'lucide-react';
-import type { EntityRow } from '@almadar/core';
 import {
   TrendingUp,
   TrendingDown,
@@ -75,7 +74,7 @@ export interface DashboardQuickAction {
   description?: string;
 }
 
-export interface DashboardEntity extends EntityRow {
+export interface DashboardEntity {
   welcomeName: string;
   stats: DashboardStat[];
   jumpBackInStories: JumpBackInStory[];

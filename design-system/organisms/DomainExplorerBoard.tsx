@@ -22,14 +22,11 @@ import {
   PageHeader,
   LoadingState,
   useEventBus,
-  useTranslate,
-  type EntityDisplayProps,
-} from "@almadar/ui";
+  useTranslate, DisplayStateProps } from "@almadar/ui";
 import { BookOpen, Sparkles } from "lucide-react";
 import type { KnowledgeDomain, KnowledgeSubject, KnowledgeDomainType, UserStoryProgress } from "../types/knowledge";
 import { DomainSummaryCard } from "../molecules/DomainSummaryCard";
 import { SubjectListItem } from "../molecules/SubjectListItem";
-
 const DOMAIN_ORDER: KnowledgeDomainType[] = ["formal", "natural", "social"];
 
 export interface DomainExplorerEntity {
@@ -38,8 +35,9 @@ export interface DomainExplorerEntity {
   userProgress?: UserStoryProgress;
 }
 
-export interface DomainExplorerBoardProps extends EntityDisplayProps<DomainExplorerEntity> {
+export interface DomainExplorerBoardProps extends DisplayStateProps {
   selectSubjectEvent?: string;
+    entity?: DomainExplorerEntity;
 }
 
 export function DomainExplorerBoard({

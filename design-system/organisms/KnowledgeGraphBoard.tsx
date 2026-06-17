@@ -7,7 +7,6 @@
 
 import React, { useState, useEffect, useCallback } from "react";
 import { Grid, Network, List as ListIcon } from "lucide-react";
-import type { EntityRow } from '@almadar/core';
 import {
   Box,
   VStack,
@@ -38,7 +37,7 @@ import { LearningGoalDisplay } from "../molecules/LearningGoalDisplay";
 
 export type { GraphNode, GraphRelationship, ConceptEntity, LayerInfo };
 
-export interface KnowledgeGraphEntity extends EntityRow {
+export interface KnowledgeGraphEntity {
   id: string;
   title: string;
   description?: string;

@@ -29,7 +29,6 @@ import {
   type DisplayStateProps,
 } from "@almadar/ui";
 import { TreePine, ExternalLink, BookOpen } from "lucide-react";
-import type { EntityRow } from '@almadar/core';
 import type { KnowledgeNode, KnowledgeSubject, KnowledgeDomainType } from "../types/knowledge";
 import { BreadcrumbTrail } from "../molecules/BreadcrumbTrail";
 import type { BreadcrumbSegment } from "../molecules/BreadcrumbTrail";
@@ -39,7 +38,7 @@ import { DepthLegend } from "../molecules/DepthLegend";
 import { DepthIndicator } from "../atoms/DepthIndicator";
 import { DOMAIN_LABELS } from "../utils/knowledgeConstants";
 
-export interface SubjectOverviewEntity extends EntityRow {
+export interface SubjectOverviewEntity {
   subject: KnowledgeSubject;
   nodes: KnowledgeNode[];
   rootNode: KnowledgeNode;

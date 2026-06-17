@@ -7,7 +7,6 @@
 
 import React, { useState, useCallback } from 'react';
 import { ChevronLeft, ChevronRight, Menu, CheckCircle, Languages, RefreshCw } from 'lucide-react';
-import type { EntityRow } from '@almadar/core';
 import {
   Box,
   VStack,
@@ -30,7 +29,7 @@ import type { FlashCard } from '../types';
 import type { Segment } from '../utils/parseLessonSegments';
 import type { CodeSimulationOutput } from './CodeRunnerPanel';
 
-export interface LessonEntity extends EntityRow {
+export interface LessonEntity {
   id: string;
   title: string;
   content: string;

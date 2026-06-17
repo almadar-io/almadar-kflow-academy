@@ -6,7 +6,6 @@
  */
 
 import React, { useState, useCallback } from 'react';
-import type { EntityRow } from '@almadar/core';
 import {
   BookOpen,
   Brain,
@@ -36,7 +35,7 @@ import type { StorySummary } from '../types/knowledge';
 import type { Segment } from '../utils/parseLessonSegments';
 import type { FlashCardEntity } from '../organisms/FlashCard';
 
-export interface ConceptEntity extends EntityRow {
+export interface ConceptEntity {
   id: string;
   name: string;
   description?: string;

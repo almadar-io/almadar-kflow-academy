@@ -16,7 +16,6 @@
 
 import React, { useState } from 'react';
 import { RotateCcw, Check } from 'lucide-react';
-import type { EntityRow } from '@almadar/core';
 import {
   Box,
   VStack,
@@ -28,7 +27,7 @@ import {
   type DisplayStateProps,
 } from '@almadar/ui';
 
-export interface FlashCardEntity extends EntityRow {
+export interface FlashCardEntity {
   id: string;
   front: string;
   back: string;

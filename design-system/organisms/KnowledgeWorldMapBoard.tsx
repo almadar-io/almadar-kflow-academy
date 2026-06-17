@@ -31,12 +31,11 @@ import {
   type DisplayStateProps,
 } from '@almadar/ui';
 import { MapPin, Lock, Unlock, Sword, Star, Compass } from 'lucide-react';
-import type { EntityRow } from '@almadar/core';
 import type { KnowledgeRegion, KnowledgePlayer, KnowledgeChallenge } from '../types/knowledge';
 import { DomainBadge } from '../atoms/DomainBadge';
 import { XpCounter } from '../atoms/XpCounter';
 
-export interface KnowledgeWorldMapEntity extends EntityRow {
+export interface KnowledgeWorldMapEntity {
   regions: KnowledgeRegion[];
   player: KnowledgePlayer;
   currentRegion: string;

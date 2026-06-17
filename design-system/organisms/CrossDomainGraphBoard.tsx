@@ -32,7 +32,6 @@ import {
   CANVAS_LINK_SELECTED_COLOR,
 } from "../utils/knowledgeConstants";
 import { Network } from "lucide-react";
-import type { EntityRow } from '@almadar/core';
 
 export interface CrossDomainLink {
   sourceId: string;
@@ -40,7 +39,7 @@ export interface CrossDomainLink {
   sharedTerm: string;
 }
 
-export interface CrossDomainGraphEntity extends EntityRow {
+export interface CrossDomainGraphEntity {
   nodes: KnowledgeNode[];
   links: CrossDomainLink[];
   domains: KnowledgeDomain[];

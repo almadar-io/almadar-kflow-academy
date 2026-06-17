@@ -31,9 +31,8 @@ import {
   type DisplayStateProps,
 } from '@almadar/ui';
 import type { LucideIcon } from "lucide-react";
-import type { EntityRow } from '@almadar/core';
 
-export interface ConceptEntity extends EntityRow {
+export interface ConceptEntity {
   id: string;
   name: string;
   description?: string;

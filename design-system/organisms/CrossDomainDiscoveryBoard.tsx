@@ -24,7 +24,6 @@ import {
   type DisplayStateProps,
 } from "@almadar/ui";
 import { Sparkles } from "lucide-react";
-import type { EntityRow } from '@almadar/core';
 import type { KnowledgeNode } from "../types/knowledge";
 import { CrossDomainLink } from "../molecules/CrossDomainLink";
 import { XpCounter } from "../atoms/XpCounter";
@@ -35,7 +34,7 @@ export interface Discovery {
   isNew: boolean;
 }
 
-export interface CrossDomainDiscoveryEntity extends EntityRow {
+export interface CrossDomainDiscoveryEntity {
   discoveries: Discovery[];
   bonusesUnlocked: number;
 }

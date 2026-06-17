@@ -10,7 +10,6 @@
  */
 
 import React, { useState, useCallback, useMemo } from 'react';
-import type { EntityRow } from '@almadar/core';
 import {
   Box,
   VStack,
@@ -28,7 +27,7 @@ import { SeriesCard } from '../molecules/story/SeriesCard';
 import type { StorySummary } from '../molecules/story/StoryCard';
 import type { SeriesSummary } from '../types/knowledge';
 
-export interface StoryCatalogEntity extends EntityRow {
+export interface StoryCatalogEntity {
   stories: StorySummary[];
   featuredStory?: StorySummary;
   selectedDomain?: string;
@@ -53,6 +52,9 @@ export function StoryCatalogBoard({
   // Resolve entity — runtime may pass an array or undefined while loading
   // ---------------------------------------------------------------------------
   const resolved = Array.isArray(entity) ? entity[0] : (entity as StoryCatalogEntity | undefined);
+  const stories = resolved?.stories;
+  const featuredStory = resolved?.featuredStory;
+  const series = resolved?.series;
   const selectedDomain = resolved?.selectedDomain;
 
   // ---------------------------------------------------------------------------
@@ -70,12 +72,12 @@ export function StoryCatalogBoard({
   }, [emit]);
 
   const filteredStories = useMemo(() => {
-    const stories = resolved?.stories ?? [];
-    if (activeDomain === 'all') return stories;
-    return stories.filter((s: StorySummary) => s.domain === activeDomain);
-  }, [resolved?.stories, activeDomain]);
+    const storyList = stories ?? [];
+    if (activeDomain === 'all') return storyList;
+    return storyList.filter((s: StorySummary) => s.domain === activeDomain);
+  }, [stories, activeDomain]);
 
-  const hasSeries = (resolved?.series?.length ?? 0) > 0;
+  const hasSeries = (series?.length ?? 0) > 0;
   const isSeriesTab = activeDomain === 'series';
 
   const domainTabs = useMemo(() => [
@@ -108,13 +110,13 @@ export function StoryCatalogBoard({
       <VStack gap="lg">
         <VStack gap="lg">
           {/* Featured story */}
-          {resolved.featuredStory && (
+          {featuredStory && (
             <VStack gap="sm">
               <Typography variant="small" weight="bold" className="uppercase tracking-wider text-[var(--color-muted-foreground)]">
                 {t('catalog.featured')}
               </Typography>
               <StoryCard
-                story={resolved.featuredStory}
+                story={featuredStory}
                 onClick={handleStoryClick}
               />
             </VStack>
@@ -130,7 +132,7 @@ export function StoryCatalogBoard({
           {/* Content grid */}
           {isSeriesTab ? (
             <SimpleGrid minChildWidth="280px" gap="md">
-              {resolved.series?.map((s: SeriesSummary) => (
+              {series?.map((s: SeriesSummary) => (
                 <Box key={s.id} data-entity-row={s.id}>
                   <SeriesCard series={s} />
                 </Box>

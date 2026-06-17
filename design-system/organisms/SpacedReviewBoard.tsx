@@ -27,11 +27,10 @@ import {
   type DisplayStateProps,
 } from "@almadar/ui";
 import { CheckCircle } from "lucide-react";
-import type { EntityRow } from '@almadar/core';
 import type { ReviewItem } from "../types/knowledge";
 import { ReviewCard } from "../molecules/ReviewCard";
 
-export interface SpacedReviewEntity extends EntityRow {
+export interface SpacedReviewEntity {
   items: ReviewItem[];
   currentIndex: number;
   sessionStats: {

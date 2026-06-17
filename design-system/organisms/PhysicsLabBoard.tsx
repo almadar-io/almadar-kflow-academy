@@ -28,9 +28,7 @@ import {
   PageHeader,
   Section,
   useEventBus,
-  useTranslate,
-  type EntityDisplayProps,
-} from '@almadar/ui';
+  useTranslate, DisplayStateProps } from '@almadar/ui';
 import {
   SimulationCanvas,
   SimulationControls,
@@ -48,7 +46,8 @@ export interface PhysicsLabEntity {
   measurements: PhysicsMeasurement[];
 }
 
-export interface PhysicsLabBoardProps extends EntityDisplayProps<PhysicsLabEntity> {
+export interface PhysicsLabBoardProps extends DisplayStateProps {
+    entity?: PhysicsLabEntity;
 }
 
 export function PhysicsLabBoard({

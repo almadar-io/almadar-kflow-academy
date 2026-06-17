@@ -46,7 +46,7 @@ import {
 } from '@almadar/ui';
 import type { AudioManifest } from '@almadar/ui';
 import { RotateCcw } from 'lucide-react';
-import type { EntityRow } from '@almadar/core';
+import type { EventPayload } from '@almadar/core';
 import { StoryHookView } from '../molecules/story/StoryHookView';
 import { StorySceneCard } from '../molecules/story/StoryNarrativeView';
 import type { StoryScene } from '../molecules/story/StoryNarrativeView';
@@ -61,7 +61,7 @@ import { StoryRewardView } from '../molecules/story/StoryRewardView';
 import type { GameResult } from '../molecules/story/StoryRewardView';
 import type { StoryGameType, StoryAssetConfig } from '../types/knowledge';
 
-export interface KnowledgeStoryEntity extends EntityRow {
+export interface KnowledgeStoryEntity {
   id: string;
   title: string;
   teaser: string;
@@ -144,12 +144,13 @@ export function KnowledgeStoryBoard({
   // Audio manifest — built from entity.assets.audio
   // ---------------------------------------------------------------------------
   const audioManifest: AudioManifest = useMemo(() => {
-    if (!resolved?.assets?.audio) return {};
+    const assets = resolved?.assets;
+    if (!assets?.audio) return {};
     const manifest: AudioManifest = {};
-    if (resolved.assets.audio.music) {
-      manifest['music'] = { path: resolved.assets.audio.music, volume: 0.3 };
+    if (assets.audio.music) {
+      manifest['music'] = { path: assets.audio.music, volume: 0.3 };
     }
-    for (const [key, url] of Object.entries(resolved.assets.audio.sfx) as [string, string][]) {
+    for (const [key, url] of Object.entries(assets.audio.sfx) as [string, string][]) {
       manifest[key] = { path: url, volume: 0.5 };
     }
     return manifest;
@@ -205,7 +206,7 @@ export function KnowledgeStoryBoard({
     setGameResult(result);
     setBattleDefeated(false);
     playSfx('gameComplete');
-    emit('UI:STORY_GAME_COMPLETE', { storyId: resolved?.id, result });
+    emit('UI:STORY_GAME_COMPLETE', { storyId: resolved?.id, result: result as unknown as EventPayload });
     // Scroll to reward section
     const rewardIdx = sectionCount - 1;
     const rewardEl = sectionRefs.current.get(rewardIdx);
@@ -454,7 +455,7 @@ export function KnowledgeStoryBoard({
             <StoryGameView
               gameType={resolved.gameType}
               gameConfig={resolved.gameConfig}
-              assets={resolved.assets}
+              assets={resolved.assets as StoryAssetConfig}
               backgroundImage={resolved.coverImage}
             />
             {battleDefeated && (

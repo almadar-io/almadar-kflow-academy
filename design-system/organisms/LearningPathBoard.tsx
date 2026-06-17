@@ -27,7 +27,6 @@ import {
 } from "@almadar/ui";
 import type { TimelineItem } from "@almadar/ui";
 import { Route } from "lucide-react";
-import type { EntityRow } from '@almadar/core';
 import type { KnowledgeNode, KnowledgeDomainType } from "../types/knowledge";
 import { DomainBadge } from "../atoms/DomainBadge";
 import { DOMAIN_LABELS } from "../utils/knowledgeConstants";
@@ -38,7 +37,7 @@ export interface PathConnection {
   reason: string;
 }
 
-export interface LearningPathEntity extends EntityRow {
+export interface LearningPathEntity {
   path: KnowledgeNode[];
   connections: PathConnection[];
   startDomain: KnowledgeDomainType;

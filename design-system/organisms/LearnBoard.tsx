@@ -12,7 +12,6 @@
 
 import React, { useCallback } from 'react';
 import { BookOpen, Plus, Trash2 } from 'lucide-react';
-import type { EntityRow } from '@almadar/core';
 import {
   Box,
   VStack,
@@ -41,7 +40,7 @@ export interface LearnPathItem {
   description?: string;
 }
 
-export interface LearnEntity extends EntityRow {
+export interface LearnEntity {
   learningPaths: LearnPathItem[];
   loading: boolean;
   error?: string;

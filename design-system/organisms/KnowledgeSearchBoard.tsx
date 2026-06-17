@@ -21,7 +21,6 @@ import {
   type DisplayStateProps,
 } from "@almadar/ui";
 import { Search } from "lucide-react";
-import type { EntityRow } from '@almadar/core';
 import type { KnowledgeNode, KnowledgeDomainType } from "../types/knowledge";
 import { KnowledgeNodeCard } from "../molecules/KnowledgeNodeCard";
 import { DomainBadge } from "../atoms/DomainBadge";
@@ -29,7 +28,7 @@ import { DOMAIN_LABELS } from "../utils/knowledgeConstants";
 
 type DomainFilter = "all" | KnowledgeDomainType;
 
-export interface KnowledgeSearchEntity extends EntityRow {
+export interface KnowledgeSearchEntity {
   nodes: KnowledgeNode[];
 }
 

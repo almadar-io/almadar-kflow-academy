@@ -15,7 +15,6 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import type { LucideIcon } from 'lucide-react';
 import { LogOut } from 'lucide-react';
-import type { EntityRow } from '@almadar/core';
 import {
   Box,
   HStack,
@@ -49,7 +48,7 @@ export interface AppShellUser {
   avatar?: string;
 }
 
-export interface AppShellEntity extends EntityRow {
+export interface AppShellEntity {
   navigationItems: AppShellNavItem[];
   user?: AppShellUser;
   logo?: React.ReactNode;

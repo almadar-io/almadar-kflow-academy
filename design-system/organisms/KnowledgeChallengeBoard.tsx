@@ -36,12 +36,11 @@ import { SequencerBoard } from '@almadar/ui';
 import { EventHandlerBoard } from '@almadar/ui';
 import { StateArchitectBoard } from '@almadar/ui';
 import { Clock, Lightbulb } from 'lucide-react';
-import type { EntityRow } from '@almadar/core';
 import type { KnowledgeChallenge, KnowledgePlayer, ChallengeTier } from '../types/knowledge';
 import { DomainBadge } from '../atoms/DomainBadge';
 import { XpCounter } from '../atoms/XpCounter';
 
-export interface KnowledgeChallengeEntity extends EntityRow {
+export interface KnowledgeChallengeEntity {
   challenge: KnowledgeChallenge;
   player: KnowledgePlayer;
   progress: number;
