@@ -17,6 +17,8 @@ import {
   createGraphNode,
   type CourseSettingsNodeProperties,
   type CourseVisibility,
+  type ModuleSettingsNodeProperties,
+  type LessonSettingsNodeProperties,
 } from '../../../types/nodeBasedKnowledgeGraph';
 
 /**
@@ -229,7 +231,7 @@ export class CoursePublishingService {
       if (rel.source === courseSettingsId && rel.type === 'hasModuleSettings') {
         const moduleSettingsNode = graph.nodes[rel.target];
         if (moduleSettingsNode && moduleSettingsNode.type === 'ModuleSettings') {
-          const settings = moduleSettingsNode.properties as any;
+          const settings = moduleSettingsNode.properties as ModuleSettingsNodeProperties;
           if (settings.isPublished) {
             publishedModuleSettings.push(rel.target);
           }
@@ -259,7 +261,7 @@ export class CoursePublishingService {
         if (rel.source === moduleSettingsId && rel.type === 'hasLessonSettings') {
           const lessonSettingsNode = graph.nodes[rel.target];
           if (lessonSettingsNode && lessonSettingsNode.type === 'LessonSettings') {
-            const settings = lessonSettingsNode.properties as any;
+            const settings = lessonSettingsNode.properties as LessonSettingsNodeProperties;
             if (settings.isPublished) {
               publishedLessonCount++;
             }

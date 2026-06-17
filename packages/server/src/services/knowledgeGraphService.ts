@@ -108,12 +108,8 @@ export function convertStoredConceptGraphToNodeBased(
     // Update seedConcept with learning goal if missing
     let conceptGoal = concept.goal;
     if (learningGoal && (concept.isSeed || conceptName === conceptGraph.seedConceptId || concept.id === conceptGraph.seedConceptId) && !conceptGoal) {
-      const goalTitle = typeof learningGoal === 'object' && 'title' in learningGoal 
-        ? learningGoal.title 
-        : (learningGoal as any).title || '';
-      const goalDescription = typeof learningGoal === 'object' && 'description' in learningGoal
-        ? learningGoal.description
-        : (learningGoal as any).description || '';
+      const goalTitle = learningGoal.title || '';
+      const goalDescription = learningGoal.description || '';
       conceptGoal = `${goalTitle}: ${goalDescription}`;
     }
     

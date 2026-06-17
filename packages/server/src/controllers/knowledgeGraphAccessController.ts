@@ -577,7 +577,7 @@ export async function findNodesHandler(req: Request, res: Response): Promise<voi
           if (node.properties[propKey] !== value) return false;
         } else {
           // Direct property access
-          if ((node as any)[key] !== value) return false;
+          if ((node as Record<string, unknown>)[key] !== value) return false;
         }
       }
       return true;

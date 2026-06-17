@@ -10,6 +10,7 @@ import { Request, Response } from 'express';
 import { KnowledgeGraphAccessLayer } from '../services/knowledgeGraphAccess';
 import { getUserGraphs } from '../services/graphService';
 import type { CoursePublishSettings, ModulePublishSettings, LessonPublishSettings } from '../services/knowledgeGraphAccess';
+import type { ModuleSettingsNodeProperties, LessonSettingsNodeProperties } from '../types/nodeBasedKnowledgeGraph';
 
 type ErrorResponse = { error: string };
 
@@ -209,7 +210,7 @@ export const getGraphModulesHandler = async (
     for (const settingsId of moduleSettingsIds) {
       const settingsNode = graph.nodes[settingsId];
       if (settingsNode && settingsNode.type === 'ModuleSettings') {
-        const settings = settingsNode.properties as any;
+        const settings = settingsNode.properties as ModuleSettingsNodeProperties;
         const layerId = settings.layerId;
         publishedStatusMap.set(layerId, settings.isPublished || false);
       }
@@ -361,7 +362,7 @@ export const getModuleLessonsFromGraphHandler = async (
     for (const settingsId of lessonSettingsIds) {
       const settingsNode = graph.nodes[settingsId];
       if (settingsNode && settingsNode.type === 'LessonSettings') {
-        const settings = settingsNode.properties as any;
+        const settings = settingsNode.properties as LessonSettingsNodeProperties;
         const conceptId = settings.conceptId;
         publishedStatusMap.set(conceptId, settings.isPublished || false);
       }

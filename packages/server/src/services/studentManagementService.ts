@@ -14,6 +14,7 @@ import {
   createStudentNode,
   createRelationship,
   type StudentNodeProperties,
+  type CourseSettingsNodeProperties,
 } from '../types/nodeBasedKnowledgeGraph';
 
 export interface CreateStudentInput {
@@ -167,7 +168,7 @@ export class StudentManagementService {
     const courseSettingsId = `course-settings-${graphId}`;
     const courseSettingsNode = graph.nodes[courseSettingsId];
     if (courseSettingsNode) {
-      const props = courseSettingsNode.properties as any;
+      const props = courseSettingsNode.properties as CourseSettingsNodeProperties;
       if (props.enrolledStudentIds && props.enrolledStudentIds.includes(studentUserId)) {
         const updatedProps = {
           ...props,
@@ -264,7 +265,7 @@ export class StudentManagementService {
       throw new Error('Course settings not found. Course must be published first.');
     }
 
-    const props = courseSettingsNode.properties as any;
+    const props = courseSettingsNode.properties as CourseSettingsNodeProperties;
     const enrolledStudentIds = props.enrolledStudentIds || [];
 
     // Check if already enrolled
@@ -329,7 +330,7 @@ export class StudentManagementService {
       throw new Error('Course settings not found');
     }
 
-    const props = courseSettingsNode.properties as any;
+    const props = courseSettingsNode.properties as CourseSettingsNodeProperties;
     const enrolledStudentIds = props.enrolledStudentIds || [];
 
     // Check if enrolled
@@ -378,7 +379,7 @@ export class StudentManagementService {
       return [];
     }
 
-    const props = courseSettingsNode.properties as any;
+    const props = courseSettingsNode.properties as CourseSettingsNodeProperties;
     const enrolledStudentIds = props.enrolledStudentIds || [];
 
     if (enrolledStudentIds.length === 0) {

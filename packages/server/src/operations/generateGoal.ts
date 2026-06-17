@@ -1,3 +1,4 @@
+import type { ReadableStream } from 'node:stream/web';
 import { callLLM } from '../services/llm';
 import type {
   GenerateGoalOptions,
@@ -15,7 +16,7 @@ import { generateConceptId } from '../utils/uuid';
  */
 export async function generateGoal(
   options: GenerateGoalOptions
-): Promise<GenerateGoalResult | { stream: any; model: string }> {
+): Promise<GenerateGoalResult | { stream: ReadableStream; model: string }> {
   const { anchorAnswer, questionAnswers, graphId, uid, manualGoal, stream } = options;
 
   if (!anchorAnswer || anchorAnswer.trim().length === 0) {
@@ -113,9 +114,9 @@ Return the JSON object with the goal structure.`;
   // If streaming, return the stream
   if (stream && response.stream && response.raw) {
     return {
-      stream: response.raw,
+      stream: response.raw as ReadableStream,
       model: response.model || 'deepseek-chat',
-    } as any;
+    };
   }
 
   const content = response.content ?? '';

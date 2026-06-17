@@ -1,7 +1,8 @@
 import { getFirestore } from "../config/firebaseAdmin";
 import { hybridCache, CACHE_TTL } from "./cacheService";
 import { CACHE_KEYS, invalidateEnrollments } from "./cacheInvalidation";
-import type { Enrollment, AssessmentStatus, PublishedCourse } from "../types/publishing";
+import type { PublishedCourse } from "../types/publishing";
+import type { Enrollment, AssessmentStatus, RawEnrollment } from "@kflow-academy/shared";
 
 export async function enrollStudent(courseId: string, studentId: string): Promise<Enrollment> {
   throw new Error(
@@ -39,7 +40,7 @@ export async function getEnrollmentById(
       return null;
     }
 
-    const data = enrollmentDoc.data() as any;
+    const data = enrollmentDoc.data() as RawEnrollment;
 
     return {
       id: enrollmentDoc.id,
@@ -81,7 +82,7 @@ export async function getEnrollment(courseId: string, enrollmentId: string): Pro
     return null;
   }
 
-  const data = enrollmentDoc.data() as any;
+  const data = enrollmentDoc.data() as RawEnrollment;
 
   const enrollment: Enrollment = {
     id: enrollmentDoc.id,
@@ -109,7 +110,7 @@ export async function getStudentEnrollments(studentId: string): Promise<Enrollme
       .get();
 
     const result = snapshot.docs.map((doc) => {
-      const data = doc.data() as any;
+      const data = doc.data() as RawEnrollment;
       const enrollment: Enrollment = {
         id: doc.id,
         studentId: data.studentId,
@@ -153,7 +154,7 @@ export async function getStudentEnrollments(studentId: string): Promise<Enrollme
           return data.studentId === studentId;
         })
         .map((doc) => {
-          const data = doc.data() as any;
+          const data = doc.data() as RawEnrollment;
           const enrollment: Enrollment = {
             id: doc.id,
             studentId: data.studentId,
@@ -255,7 +256,7 @@ export async function getCourseEnrollment(courseId: string, studentId: string): 
     return null;
   }
 
-  const data = snapshot.docs[0].data() as any;
+  const data = snapshot.docs[0].data() as RawEnrollment;
   return {
     id: snapshot.docs[0].id,
     ...data,

@@ -1,3 +1,4 @@
+import type { ReadableStream } from 'node:stream/web';
 import { Concept, GraphDifficulty } from '../types/concept';
 import { callLLM } from '../services/llm';
 import { validateConceptArray, validateConcept } from '../utils/validation';
@@ -18,6 +19,11 @@ export interface GenerateLayerPracticeResult {
   items: PracticeItem[];
   model?: string;
   review?: string; // Markdown review content when streaming
+}
+
+export interface GenerateLayerPracticeStreamResult {
+  stream: ReadableStream;
+  model?: string;
 }
 
 /**
@@ -46,7 +52,7 @@ export async function generateLayerPractice(
   layerGoal: string,
   layerNumber: number,
   options: GenerateLayerPracticeOptions = {}
-): Promise<GenerateLayerPracticeResult> {
+): Promise<GenerateLayerPracticeResult | GenerateLayerPracticeStreamResult> {
   if (!validateConceptArray(concepts)) {
     throw new Error('Invalid concepts input for generateLayerPractice operation');
   }
@@ -140,9 +146,9 @@ Return only the Markdown text, no additional formatting or JSON.`;
   // If streaming, return the stream
   if (response.stream && response.raw) {
     return {
-      stream: response.raw,
+      stream: response.raw as ReadableStream,
       model: response.model,
-    } as any;
+    };
   }
 
   const content = response.content ?? '';

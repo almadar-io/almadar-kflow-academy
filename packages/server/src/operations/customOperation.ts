@@ -1,7 +1,24 @@
+import type { ReadableStream } from 'node:stream/web';
 import { Concept, OperationResult, ConceptGraph } from '../types/concept';
 import { customOperationSystemPrompt } from '../prompts';
 import { callLLM, extractJSONArray } from '../services/llm';
 import { validateConcept, normalizeConcept, validateConceptArray } from '../utils/validation';
+
+interface LLMConceptItem {
+  name?: string;
+  description?: string;
+  lesson?: string;
+  flash?: Array<{ front: string; back: string }>;
+  delete?: boolean;
+}
+
+interface CustomOperationStreamResult {
+  stream: ReadableStream;
+  model?: string;
+  prompt: string;
+}
+
+type DeletionConcept = Concept & { delete: true };
 
 export interface CustomOperationOptions {
   seedConcept?: Concept;
@@ -25,7 +42,7 @@ export async function customOperation(
   concepts: Concept[],
   prompt: string,
   options: CustomOperationOptions = {}
-): Promise<OperationResult> {
+): Promise<OperationResult | CustomOperationStreamResult> {
   // Validate input
   if (!validateConceptArray(concepts) || concepts.length === 0) {
     throw new Error('Invalid concepts input for customOperation');
@@ -196,16 +213,16 @@ Return JSON array only, no text, no extra fields.`;
   // If streaming, return the stream with prompt
   if (stream && response.stream && response.raw) {
     return {
-      stream: response.raw,
+      stream: response.raw as ReadableStream,
       model: response.model,
       prompt: fullPrompt,
-    } as any;
+    };
   }
 
   // Extract and parse JSON array
-  let results: any[];
+  let results: LLMConceptItem[];
   try {
-    results = extractJSONArray(response.content);
+    results = extractJSONArray(response.content) as LLMConceptItem[];
   } catch (error) {
     throw new Error(`Failed to parse LLM response: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
@@ -217,21 +234,22 @@ Return JSON array only, no text, no extra fields.`;
   for (const item of results) {
     // Preserve lesson and flash fields from LLM response before normalization
     const lesson = typeof item.lesson === 'string' ? item.lesson : undefined;
-    const flash = Array.isArray(item.flash) ? item.flash.filter((card: any) => 
-      card && typeof card === 'object' && typeof card.front === 'string' && typeof card.back === 'string'
-    ).map((card: any) => ({
-      front: card.front.trim(),
-      back: card.back.trim(),
-    })) : undefined;
+    const flash = Array.isArray(item.flash)
+      ? item.flash
+          .filter((card): card is { front: string; back: string } =>
+            card && typeof card === 'object' && typeof card.front === 'string' && typeof card.back === 'string'
+          )
+          .map((card) => ({ front: card.front.trim(), back: card.back.trim() }))
+      : undefined;
     
     const normalized = normalizeConcept(item);
     
     // Restore lesson and flash fields if they were provided by LLM
     if (lesson !== undefined) {
-      (normalized as any).lesson = lesson;
+      normalized.lesson = lesson;
     }
     if (flash !== undefined && flash.length > 0) {
-      (normalized as any).flash = flash;
+      normalized.flash = flash;
     }
     
     // Check if this is a deletion
@@ -240,7 +258,7 @@ Return JSON array only, no text, no extra fields.`;
     } else {
       // Validate concept structure
       if (!validateConcept(normalized)) {
-        const conceptName = (normalized as any).name || 'unknown';
+        const conceptName = normalized.name || 'unknown';
         throw new Error(`Invalid concept in customOperation result: ${conceptName}`);
       }
       normalizedResults.push(normalized);
@@ -360,19 +378,19 @@ Return JSON array only, no text, no extra fields.`;
     });
         
     // Return all concepts (existing + new/updated) sorted by sequence
-    const result = [...allConcepts, ...deletions.map(c => ({ ...c, delete: true } as any))] as OperationResult & { prompt?: string };
+    const result = [...allConcepts, ...deletions.map(c => ({ ...c, delete: true } as DeletionConcept))] as OperationResult & { prompt?: string };
     result.prompt = fullPrompt;
     return result;
   } else if (normalizedResults.length > 0) {
     // Fallback: if no graph provided, concepts already have sequence numbers from array order
     // Return only new concepts if no graph provided
-    const result = [...normalizedResults, ...deletions.map(c => ({ ...c, delete: true } as any))] as OperationResult & { prompt?: string };
+    const result = [...normalizedResults, ...deletions.map(c => ({ ...c, delete: true } as DeletionConcept))] as OperationResult & { prompt?: string };
     result.prompt = fullPrompt;
     return result;
   }
 
   // Return only deletions if no new/updated concepts
-  const result = [...deletions.map(c => ({ ...c, delete: true } as any))] as OperationResult & { prompt?: string };
+  const result = [...deletions.map(c => ({ ...c, delete: true } as DeletionConcept))] as OperationResult & { prompt?: string };
   result.prompt = fullPrompt;
   return result;
 }

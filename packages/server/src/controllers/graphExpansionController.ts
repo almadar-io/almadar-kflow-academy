@@ -18,6 +18,7 @@ import { handleGraphOperationStream } from '../utils/graphOperationStreamHandler
 import { parseProgressiveExpandContent } from '../utils/graphOperationParsers';
 import { GraphAuthorizationService } from '../services/graphAuthorizationService';
 import type { ProgressiveExpandRequest, ProgressiveExpandResponse } from '../types/graphOperations';
+import { AuthorizationError } from '../types/graphAuthorization';
 
 const mutationService = new GraphMutationService();
 const accessLayer = new KnowledgeGraphAccessLayer();
