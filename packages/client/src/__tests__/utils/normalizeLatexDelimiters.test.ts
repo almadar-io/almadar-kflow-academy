@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { normalizeLatexDelimiters } from '../../../../../design-system/utils/normalizeLatexDelimiters';
+import { normalizeLatexDelimiters } from '../../../design-system/utils/normalizeLatexDelimiters';
 
 describe('normalizeLatexDelimiters', () => {
   it('converts inline LaTeX delimiters to $...$', () => {
