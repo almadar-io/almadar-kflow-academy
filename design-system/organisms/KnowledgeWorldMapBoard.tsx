@@ -28,21 +28,23 @@ import {
   Section,
   useEventBus,
   useTranslate,
-  type EntityDisplayProps,
+  type DisplayStateProps,
 } from '@almadar/ui';
 import { MapPin, Lock, Unlock, Sword, Star, Compass } from 'lucide-react';
+import type { EntityRow } from '@almadar/core';
 import type { KnowledgeRegion, KnowledgePlayer, KnowledgeChallenge } from '../types/knowledge';
 import { DomainBadge } from '../atoms/DomainBadge';
 import { XpCounter } from '../atoms/XpCounter';
 
-export interface KnowledgeWorldMapEntity {
+export interface KnowledgeWorldMapEntity extends EntityRow {
   regions: KnowledgeRegion[];
   player: KnowledgePlayer;
   currentRegion: string;
   availableChallenges: KnowledgeChallenge[];
 }
 
-export interface KnowledgeWorldMapBoardProps extends EntityDisplayProps<KnowledgeWorldMapEntity> {
+export interface KnowledgeWorldMapBoardProps extends DisplayStateProps {
+  entity?: KnowledgeWorldMapEntity;
 }
 
 export function KnowledgeWorldMapBoard({

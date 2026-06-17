@@ -11,7 +11,7 @@
  */
 
 import React, { useCallback } from "react";
-import { Box, VStack, EmptyState, useEventBus, type EntityDisplayProps } from '@almadar/ui';
+import { Box, VStack, EmptyState, useEventBus, type DisplayStateProps } from '@almadar/ui';
 import { CodeBlock } from "../molecules/markdown/CodeBlock";
 import { MarkdownContent } from "../molecules/markdown/MarkdownContent";
 import { ActivationBlock } from "../molecules/learning/ActivationBlock";
@@ -19,6 +19,11 @@ import { ConnectionBlock } from "../molecules/learning/ConnectionBlock";
 import { ReflectionBlock } from "../molecules/learning/ReflectionBlock";
 import { BloomQuizBlock } from "../molecules/learning/BloomQuizBlock";
 import { QuizBlock } from "../molecules/learning/QuizBlock";
+import { CodeRunnerPanel, type CodeSimulationOutput } from "./CodeRunnerPanel";
+import {
+  InteractiveOrbitalPanel,
+  type InteractiveOrbitalPanelProps,
+} from "./InteractiveOrbitalPanel";
 import { Segment, BloomLevel } from "../utils/parseLessonSegments";
 
 export interface UserProgress {
@@ -30,7 +35,7 @@ export interface UserProgress {
   bloomAnswered?: Record<number, boolean>;
 }
 
-export interface SegmentRendererProps extends EntityDisplayProps {
+export interface SegmentRendererProps extends DisplayStateProps {
   /** Array of segments to render */
   segments?: Segment[];
   /** Concept ID for event payloads */
@@ -64,6 +69,14 @@ export interface SegmentRendererProps extends EntityDisplayProps {
   actions?: Array<{ label: string; event: string }>;
   /** Show modules flag */
   showModules?: boolean;
+  /** Callback that simulates executing runnable code blocks */
+  onRunCodeSimulation?: (code: string, language: string) => Promise<CodeSimulationOutput>;
+  /** Concept context used by interactive visualization generators */
+  concept?: InteractiveOrbitalPanelProps["concept"];
+  /** Callback that generates an interactive orbital schema for a visualization marker */
+  onGenerateInteractiveOrbital?: InteractiveOrbitalPanelProps["onGenerate"];
+  /** Whether to auto-generate visualizations as soon as the segment is rendered */
+  autoGenerateVisualizations?: boolean;
 }
 
 export const SegmentRenderer = ({
@@ -75,6 +88,10 @@ export const SegmentRenderer = ({
   answerBloomEvent,
   className,
   containerClassName = "border border-gray-200 dark:border-gray-700 rounded-lg p-4 md:p-6 overflow-x-auto",
+  onRunCodeSimulation,
+  concept,
+  onGenerateInteractiveOrbital,
+  autoGenerateVisualizations,
 }: SegmentRendererProps) => {
   const { emit } = useEventBus();
 
@@ -112,6 +129,17 @@ export const SegmentRenderer = ({
             }
 
             if (segment.type === "code") {
+              if (segment.runnable && onRunCodeSimulation) {
+                return (
+                  <CodeRunnerPanel
+                    key={`code-${index}`}
+                    language={segment.language}
+                    code={segment.content}
+                    runnable
+                    onRun={(code) => onRunCodeSimulation(code, segment.language)}
+                  />
+                );
+              }
               return (
                 <CodeBlock
                   key={`code-${index}`}
@@ -185,6 +213,22 @@ export const SegmentRenderer = ({
                   onAnswer={() =>
                     handleAnswerBloom(currentBloomIndex, segment.level)
                   }
+                />
+              );
+            }
+
+            if (segment.type === "visualization") {
+              if (!concept || !onGenerateInteractiveOrbital) {
+                return null;
+              }
+              return (
+                <InteractiveOrbitalPanel
+                  key={`visualize-${index}`}
+                  type={segment.visualizationType}
+                  description={segment.description}
+                  concept={concept}
+                  onGenerate={onGenerateInteractiveOrbital}
+                  autoGenerate={autoGenerateVisualizations ?? false}
                 />
               );
             }

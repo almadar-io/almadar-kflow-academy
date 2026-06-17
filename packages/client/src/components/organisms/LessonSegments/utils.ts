@@ -7,15 +7,15 @@ export const parseMarkdownWithCodeBlocks = (
   content: string
 ): Array<
   | { type: 'markdown'; content: string }
-  | { type: 'code'; language: string; content: string }
+  | { type: 'code'; language: string; content: string; runnable?: boolean }
 > => {
   const segments: Array<
     | { type: 'markdown'; content: string }
-    | { type: 'code'; language: string; content: string }
+    | { type: 'code'; language: string; content: string; runnable?: boolean }
   > = [];
 
-  // Regex to match fenced code blocks: ```language\ncode\n``` or ```\ncode\n```
-  const codeBlockRegex = /```(\w+)?\n([\s\S]*?)```/g;
+  // Regex to match fenced code blocks with optional -runnable suffix or `run` modifier
+  const codeBlockRegex = /```([\w-]+)?(?:\s+(run))?\n([\s\S]*?)```/g;
   let lastIndex = 0;
   let match: RegExpExecArray | null;
 
@@ -27,11 +27,18 @@ export const parseMarkdownWithCodeBlocks = (
     }
 
     // Add the code block (ensure language is always a string)
-    const language = match[1] || 'text';
+    const rawLanguage = match[1] || 'text';
+    const runModifier = !!match[2];
+    const suffixRunnable = rawLanguage.endsWith('-runnable');
+    const runnable = runModifier || suffixRunnable;
+    const baseLanguage = suffixRunnable
+      ? rawLanguage.slice(0, -'-runnable'.length) || 'text'
+      : rawLanguage;
     segments.push({
       type: 'code' as const,
-      language,
-      content: match[2].trim(),
+      language: baseLanguage,
+      content: match[3].trim(),
+      runnable,
     });
 
     lastIndex = codeBlockRegex.lastIndex;

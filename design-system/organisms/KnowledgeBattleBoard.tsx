@@ -26,16 +26,17 @@ import {
   Section,
   useEventBus,
   useTranslate,
-  type EntityDisplayProps,
+  type DisplayStateProps,
 } from '@almadar/ui';
 import { CombatLog } from '@almadar/ui';
 import type { CombatEvent } from '@almadar/ui';
 import { Sword, Shield, Zap } from 'lucide-react';
+import type { EntityRow } from '@almadar/core';
 import type { KnowledgeChallenge, KnowledgePlayer } from '../types/knowledge';
 import { DomainBadge } from '../atoms/DomainBadge';
 import { XpCounter } from '../atoms/XpCounter';
 
-export interface KnowledgeBattleEntity {
+export interface KnowledgeBattleEntity extends EntityRow {
   player: KnowledgePlayer;
   opponent: { name: string; level: number; maxHP: number };
   challenge: KnowledgeChallenge;
@@ -46,7 +47,8 @@ export interface KnowledgeBattleEntity {
   phase: 'question' | 'result' | 'victory' | 'defeat';
 }
 
-export interface KnowledgeBattleBoardProps extends EntityDisplayProps<KnowledgeBattleEntity> {
+export interface KnowledgeBattleBoardProps extends DisplayStateProps {
+  entity?: KnowledgeBattleEntity;
 }
 
 export function KnowledgeBattleBoard({

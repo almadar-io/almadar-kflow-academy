@@ -1,4 +1,5 @@
 import { Request, Response } from 'express';
+import type { OrbitalSchema } from '@almadar/core';
 import { Concept } from './concept';
 
 // Concept graph types (Phase 1)
@@ -120,6 +121,36 @@ export interface AnswerQuestionRequest {
 
 export interface AnswerQuestionResponse {
   answer: string;
+}
+
+export interface RunCodeSimulationRequest {
+  language: string;
+  code: string;
+  testCases?: Array<{ input: string; expectedOutput: string }>;
+}
+
+export interface RunCodeSimulationTestResult {
+  input: string;
+  expectedOutput: string;
+  actualOutput: string;
+  passed: boolean;
+}
+
+export interface RunCodeSimulationResponse {
+  stdout: string;
+  stderr: string;
+  exitCode: number;
+  testResults: RunCodeSimulationTestResult[];
+}
+
+export interface GenerateInteractiveOrbitalRequest {
+  type: 'chart' | 'simulation';
+  concept: Concept;
+  markerDescription: string;
+}
+
+export interface GenerateInteractiveOrbitalResponse {
+  schema: OrbitalSchema;
 }
 
 export interface CustomOperationRequest {

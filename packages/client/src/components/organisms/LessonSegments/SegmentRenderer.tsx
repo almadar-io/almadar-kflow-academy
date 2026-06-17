@@ -13,6 +13,11 @@ import { ActivationBlock } from './ActivationBlock';
 import { ConnectionBlock } from './ConnectionBlock';
 import { ReflectionBlock } from './ReflectionBlock';
 import { BloomQuizBlock } from './BloomQuizBlock';
+import { CodeRunnerPanel, type CodeSimulationOutput } from '@design-system/organisms/CodeRunnerPanel';
+import {
+  InteractiveOrbitalPanel,
+  type InteractiveOrbitalPanelProps,
+} from '@design-system/organisms/InteractiveOrbitalPanel';
 import type { Segment, BloomLevel, UserProgress } from './types';
 
 export interface SegmentRendererProps {
@@ -24,6 +29,14 @@ export interface SegmentRendererProps {
   onSaveActivation?: (response: string) => void;
   onSaveReflection?: (index: number, note: string) => void;
   onAnswerBloom?: (index: number, level: BloomLevel) => void;
+  /** Callback that simulates executing runnable code blocks */
+  onRunCodeSimulation?: (code: string, language: string) => Promise<CodeSimulationOutput>;
+  /** Concept context used by interactive visualization generators */
+  concept?: InteractiveOrbitalPanelProps['concept'];
+  /** Callback that generates an interactive orbital schema for a visualization marker */
+  onGenerateInteractiveOrbital?: InteractiveOrbitalPanelProps['onGenerate'];
+  /** Whether to auto-generate visualizations as soon as the segment is rendered */
+  autoGenerateVisualizations?: boolean;
 }
 
 export const SegmentRenderer: React.FC<SegmentRendererProps> = ({
@@ -33,7 +46,11 @@ export const SegmentRenderer: React.FC<SegmentRendererProps> = ({
   userProgress,
   onSaveActivation,
   onSaveReflection,
-  onAnswerBloom
+  onAnswerBloom,
+  onRunCodeSimulation,
+  concept,
+  onGenerateInteractiveOrbital,
+  autoGenerateVisualizations,
 }) => {
   if (segments.length === 0) {
     return null;
@@ -49,6 +66,17 @@ export const SegmentRenderer: React.FC<SegmentRendererProps> = ({
         if (segment.type === 'markdown') {
           return <MarkdownContent key={`md-${index}`} content={segment.content} />;
         } else if (segment.type === 'code') {
+          if (segment.runnable && onRunCodeSimulation) {
+            return (
+              <CodeRunnerPanel
+                key={`code-${index}`}
+                language={segment.language}
+                code={segment.content}
+                runnable
+                onRun={(code) => onRunCodeSimulation(code, segment.language)}
+              />
+            );
+          }
           return (
             <CodeBlock
               key={`code-${index}`}
@@ -102,6 +130,20 @@ export const SegmentRenderer: React.FC<SegmentRendererProps> = ({
               index={currentBloomIndex}
               isAnswered={userProgress?.bloomAnswered?.[currentBloomIndex]}
               onAnswer={() => onAnswerBloom?.(currentBloomIndex, segment.level)}
+            />
+          );
+        } else if (segment.type === 'visualization') {
+          if (!concept || !onGenerateInteractiveOrbital) {
+            return null;
+          }
+          return (
+            <InteractiveOrbitalPanel
+              key={`visualize-${index}`}
+              type={segment.visualizationType}
+              description={segment.description}
+              concept={concept}
+              onGenerate={onGenerateInteractiveOrbital}
+              autoGenerate={autoGenerateVisualizations ?? false}
             />
           );
         }

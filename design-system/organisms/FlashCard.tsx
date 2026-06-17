@@ -16,6 +16,7 @@
 
 import React, { useState } from 'react';
 import { RotateCcw, Check } from 'lucide-react';
+import type { EntityRow } from '@almadar/core';
 import {
   Box,
   VStack,
@@ -24,17 +25,18 @@ import {
   Typography,
   useEventBus,
   useTranslate,
-  type EntityDisplayProps,
+  type DisplayStateProps,
 } from '@almadar/ui';
 
-export interface FlashCardEntity {
+export interface FlashCardEntity extends EntityRow {
   id: string;
   front: string;
   back: string;
   studied?: boolean;
 }
 
-export interface FlashCardProps extends EntityDisplayProps<FlashCardEntity> {
+export interface FlashCardProps extends DisplayStateProps {
+  entity?: FlashCardEntity;
   /** Is flipped (controlled) */
   flipped?: boolean;
   /** Current card number (for progress) */

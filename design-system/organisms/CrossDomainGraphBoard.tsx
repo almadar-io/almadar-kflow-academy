@@ -19,7 +19,7 @@ import {
   EmptyState,
   LoadingState,
   useEventBus,
-  type EntityDisplayProps,
+  type DisplayStateProps,
 } from "@almadar/ui";
 import ForceGraph2D from "react-force-graph-2d";
 import type { KnowledgeNode, KnowledgeDomain, KnowledgeDomainType } from "../types/knowledge";
@@ -32,6 +32,7 @@ import {
   CANVAS_LINK_SELECTED_COLOR,
 } from "../utils/knowledgeConstants";
 import { Network } from "lucide-react";
+import type { EntityRow } from '@almadar/core';
 
 export interface CrossDomainLink {
   sourceId: string;
@@ -39,13 +40,14 @@ export interface CrossDomainLink {
   sharedTerm: string;
 }
 
-export interface CrossDomainGraphEntity {
+export interface CrossDomainGraphEntity extends EntityRow {
   nodes: KnowledgeNode[];
   links: CrossDomainLink[];
   domains: KnowledgeDomain[];
 }
 
-export interface CrossDomainGraphBoardProps extends EntityDisplayProps<CrossDomainGraphEntity> {
+export interface CrossDomainGraphBoardProps extends DisplayStateProps {
+  entity?: CrossDomainGraphEntity;
   width?: number;
   height?: number;
   selectNodeEvent?: string;

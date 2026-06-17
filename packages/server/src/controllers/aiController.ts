@@ -15,10 +15,10 @@ import {
   ConceptOperationResponse,
   ErrorResponse,
 } from '../types';
-import { expand, progressiveExpandMultiple, advanceNextMultiple, deriveParents, deriveSummary, explain, generateLayerPractice, PracticeItem, answerQuestion, customOperation, synthesize, explore, tracePath, progressiveExplore, generateFlashCards } from '../operations';
+import { expand, progressiveExpandMultiple, advanceNextMultiple, deriveParents, deriveSummary, explain, generateLayerPractice, PracticeItem, answerQuestion, customOperation, synthesize, explore, tracePath, progressiveExplore, generateFlashCards, runCodeSimulation, generateInteractiveOrbital } from '../operations';
 import { createGraph, addConceptsToGraph } from '../utils/graph';
 import { ConceptGraph, Concept, GraphDifficulty } from '../types/concept';
-import { ExplainConceptRequest, GenerateLayerPracticeRequest, GenerateLayerPracticeResponse, AnswerQuestionRequest, AnswerQuestionResponse, CustomOperationRequest, SynthesizeRequest, ExploreRequest, TracePathRequest, ProgressiveExploreRequest, GenerateFlashCardsRequest } from '../types';
+import { ExplainConceptRequest, GenerateLayerPracticeRequest, GenerateLayerPracticeResponse, AnswerQuestionRequest, AnswerQuestionResponse, CustomOperationRequest, SynthesizeRequest, ExploreRequest, TracePathRequest, ProgressiveExploreRequest, GenerateFlashCardsRequest, RunCodeSimulationRequest, RunCodeSimulationResponse, GenerateInteractiveOrbitalRequest, GenerateInteractiveOrbitalResponse } from '../types';
 import { getUserGraphById } from '../services/graphService';
 import { upsertUser } from '../services/userService';
 import { saveLayer, getLayerByNumber } from '../services/layerService';
@@ -434,7 +434,7 @@ export async function explainConcept(
 
     // Check if result is a stream
     if (result && typeof result === 'object' && 'stream' in result && result.stream) {
-      const stream = result.stream as any;
+      const stream = result.stream as AsyncIterable<unknown>;
       
       // Use reusable stream handler with prerequisite processing callback
       await handleStreamResponse(stream, req, res, {
@@ -520,6 +520,45 @@ export async function generateFlashCardsHandler(
 }
 
 
+export async function runCodeSimulationHandler(
+  req: Request<{}, RunCodeSimulationResponse | ErrorResponse, RunCodeSimulationRequest>,
+  res: Response<RunCodeSimulationResponse | ErrorResponse>
+): Promise<void> {
+  try {
+    const { language, code, testCases } = req.body;
+
+    if (!language || typeof language !== 'string') {
+      res.status(400).json({ error: 'language is required and must be a string' });
+      return;
+    }
+
+    if (!code || typeof code !== 'string') {
+      res.status(400).json({ error: 'code is required and must be a string' });
+      return;
+    }
+
+    const uid = req.firebaseUser?.uid;
+    const email = req.firebaseUser?.email;
+
+    if (uid && email) {
+      await upsertUser(uid, email).catch((error) => {
+        console.error('Error upserting user:', error);
+      });
+    }
+
+    const result = await runCodeSimulation(
+      { language, code, testCases },
+      { uid },
+    );
+
+    res.json(result);
+  } catch (error) {
+    console.error('Error running code simulation:', error);
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    res.status(500).json({ error: 'Failed to run code simulation', details: errorMessage });
+  }
+}
+
 export async function generateLayerPracticeHandler(
   req: Request<{}, GenerateLayerPracticeResponse | ErrorResponse, GenerateLayerPracticeRequest>,
   res: Response<GenerateLayerPracticeResponse | ErrorResponse>
@@ -581,7 +620,7 @@ export async function generateLayerPracticeHandler(
 
     // Check if result is a stream
     if (result && typeof result === 'object' && 'stream' in result && result.stream) {
-      const stream = result.stream as any;
+      const stream = result.stream as AsyncIterable<unknown>;
       const model = result.model || 'deepseek-chat';
       
       // Use reusable stream handler with onComplete to save the review
@@ -737,7 +776,7 @@ export async function answerQuestionHandler(
 
     // Check if result is a stream
     if (result && typeof result === 'object' && 'stream' in result && result.stream) {
-      const stream = result.stream as any;
+      const stream = result.stream as AsyncIterable<unknown>;
       
       // Use reusable stream handler
       await handleStreamResponse(stream, req, res, {
@@ -808,8 +847,8 @@ export async function customOperationHandler(
 
     // Check if result is a stream
     if (result && typeof result === 'object' && 'stream' in result && result.stream) {
-      const stream = result.stream as any;
-      const model = (result as any).model || 'deepseek-chat';
+      const stream = result.stream as AsyncIterable<unknown>;
+      const model = (result as { model?: string }).model || 'deepseek-chat';
       
       await handleStreamResponse(stream, req, res, {
         onComplete: (fullContent: string) => {
@@ -980,6 +1019,47 @@ export async function progressiveExploreHandler(
     console.error('Error in progressive explore:', error);
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     res.status(500).json({ error: 'Failed to progressive explore', details: errorMessage });
+  }
+}
+
+export async function generateInteractiveOrbitalHandler(
+  req: Request<{}, GenerateInteractiveOrbitalResponse | ErrorResponse, GenerateInteractiveOrbitalRequest>,
+  res: Response<GenerateInteractiveOrbitalResponse | ErrorResponse>
+): Promise<void> {
+  try {
+    const { type, concept, markerDescription } = req.body;
+
+    if (!type || (type !== 'chart' && type !== 'simulation')) {
+      res.status(400).json({ error: 'type is required and must be "chart" or "simulation"' });
+      return;
+    }
+
+    if (!concept || !concept.name) {
+      res.status(400).json({ error: 'concept with a name is required' });
+      return;
+    }
+
+    if (!markerDescription || typeof markerDescription !== 'string') {
+      res.status(400).json({ error: 'markerDescription is required and must be a string' });
+      return;
+    }
+
+    const uid = req.firebaseUser?.uid;
+    const email = req.firebaseUser?.email;
+
+    if (uid && email) {
+      await upsertUser(uid, email).catch((error) => {
+        console.error('Error upserting user:', error);
+      });
+    }
+
+    const schema = await generateInteractiveOrbital({ type, concept, markerDescription });
+
+    res.json({ schema });
+  } catch (error) {
+    console.error('Error generating interactive orbital:', error);
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    res.status(500).json({ error: 'Failed to generate interactive orbital', details: errorMessage });
   }
 }
 

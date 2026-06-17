@@ -6,6 +6,7 @@
  */
 
 import React, { useState, useCallback } from 'react';
+import type { EntityRow } from '@almadar/core';
 import {
   BookOpen,
   Brain,
@@ -24,7 +25,7 @@ import {
   LoadingState,
   useEventBus,
   useTranslate,
-  type EntityDisplayProps,
+  type DisplayStateProps,
 } from '@almadar/ui';
 import { SegmentRenderer } from '../organisms/SegmentRenderer';
 import { FlashCardStack } from '../organisms/FlashCardStack';
@@ -35,7 +36,7 @@ import type { StorySummary } from '../types/knowledge';
 import type { Segment } from '../utils/parseLessonSegments';
 import type { FlashCardEntity } from '../organisms/FlashCard';
 
-export interface ConceptEntity {
+export interface ConceptEntity extends EntityRow {
   id: string;
   name: string;
   description?: string;
@@ -51,7 +52,8 @@ export interface ConceptEntity {
   relatedStories?: StorySummary[];
 }
 
-export interface ConceptDetailBoardProps extends EntityDisplayProps<ConceptEntity> {
+export interface ConceptDetailBoardProps extends DisplayStateProps {
+  entity?: ConceptEntity;
   graphId?: string;
   showBack?: boolean;
   backEvent?: string;

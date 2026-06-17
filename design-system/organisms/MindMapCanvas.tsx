@@ -12,9 +12,9 @@
  */
 
 import React, { useRef, useState, useCallback, useEffect } from "react";
-import { Box, useEventBus, type EntityDisplayProps } from '@almadar/ui';
+import { Box, useEventBus, type DisplayStateProps } from '@almadar/ui';
 
-export interface MindMapCanvasProps extends EntityDisplayProps {
+export interface MindMapCanvasProps extends DisplayStateProps {
   /** Width of the canvas */
   width?: number;
   /** Height of the canvas */

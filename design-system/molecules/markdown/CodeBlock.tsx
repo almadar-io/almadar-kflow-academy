@@ -33,6 +33,10 @@ export interface CodeBlockProps {
   maxHeight?: string;
   /** Additional CSS classes */
   className?: string;
+  /** Whether the code block is editable */
+  editable?: boolean;
+  /** Callback when code changes (only called when editable is true) */
+  onChange?: (code: string) => void;
 }
 
 export const CodeBlock = React.memo<CodeBlockProps>(
@@ -43,6 +47,8 @@ export const CodeBlock = React.memo<CodeBlockProps>(
     showLanguageBadge = true,
     maxHeight = "60vh",
     className,
+    editable = false,
+    onChange,
   }) => {
     const eventBus = useEventBus();
     const scrollRef = useRef<HTMLDivElement | null>(null);
@@ -138,21 +144,31 @@ export const CodeBlock = React.memo<CodeBlockProps>(
             padding: "1rem",
           }}
         >
-          <SyntaxHighlighter
-            PreTag="div"
-            language={language}
-            style={dark}
-            customStyle={{
-              backgroundColor: "transparent",
-              borderRadius: 0,
-              padding: 0,
-              margin: 0,
-              whiteSpace: "pre",
-              minWidth: "100%",
-            }}
-          >
-            {code}
-          </SyntaxHighlighter>
+          {editable ? (
+            <textarea
+              value={code}
+              onChange={(e) => onChange?.(e.target.value)}
+              spellCheck={false}
+              className="w-full min-h-[8rem] resize-y font-mono text-sm leading-relaxed bg-transparent text-gray-100 outline-none whitespace-pre"
+              aria-label={`${language} code editor`}
+            />
+          ) : (
+            <SyntaxHighlighter
+              PreTag="div"
+              language={language}
+              style={dark}
+              customStyle={{
+                backgroundColor: "transparent",
+                borderRadius: 0,
+                padding: 0,
+                margin: 0,
+                whiteSpace: "pre",
+                minWidth: "100%",
+              }}
+            >
+              {code}
+            </SyntaxHighlighter>
+          )}
         </div>
       </Box>
     );
@@ -161,7 +177,8 @@ export const CodeBlock = React.memo<CodeBlockProps>(
     prev.language === next.language &&
     prev.code === next.code &&
     prev.showCopyButton === next.showCopyButton &&
-    prev.maxHeight === next.maxHeight,
+    prev.maxHeight === next.maxHeight &&
+    prev.editable === next.editable,
 );
 
 CodeBlock.displayName = "CodeBlock";

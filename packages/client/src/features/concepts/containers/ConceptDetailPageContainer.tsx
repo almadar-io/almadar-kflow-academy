@@ -568,6 +568,7 @@ const ConceptDetailPageContainer: React.FC = () => {
       onSelectForNote={handleSelectForNote}
       onAnnotationClick={handleAnnotationClick}
       disabled={localLessonLoading || isExplaining || isAnswering}
+      concept={concept ?? undefined}
     />
   ) : null;
 

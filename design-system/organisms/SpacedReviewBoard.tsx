@@ -24,13 +24,14 @@ import {
   LoadingState,
   useEventBus,
   useTranslate,
-  type EntityDisplayProps,
+  type DisplayStateProps,
 } from "@almadar/ui";
 import { CheckCircle } from "lucide-react";
+import type { EntityRow } from '@almadar/core';
 import type { ReviewItem } from "../types/knowledge";
 import { ReviewCard } from "../molecules/ReviewCard";
 
-export interface SpacedReviewEntity {
+export interface SpacedReviewEntity extends EntityRow {
   items: ReviewItem[];
   currentIndex: number;
   sessionStats: {
@@ -40,7 +41,8 @@ export interface SpacedReviewEntity {
   };
 }
 
-export interface SpacedReviewBoardProps extends EntityDisplayProps<SpacedReviewEntity> {
+export interface SpacedReviewBoardProps extends DisplayStateProps {
+  entity?: SpacedReviewEntity;
   className?: string;
 }
 

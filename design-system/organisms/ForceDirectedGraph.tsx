@@ -19,7 +19,7 @@ import {
   Card,
   Spinner,
   useEventBus,
-  type EntityDisplayProps,
+  type DisplayStateProps,
 } from '@almadar/ui';
 import ForceGraph2D from "react-force-graph-2d";
 
@@ -188,7 +188,7 @@ function getLinkColor(link: D3Link): string {
   }
 }
 
-export interface ForceDirectedGraphProps extends EntityDisplayProps {
+export interface ForceDirectedGraphProps extends DisplayStateProps {
   /** The knowledge graph data */
   graph?: KnowledgeGraph | null;
   /** Width of the graph container */

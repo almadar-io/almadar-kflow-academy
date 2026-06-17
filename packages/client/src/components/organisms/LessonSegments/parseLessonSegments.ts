@@ -1,6 +1,6 @@
 /**
  * Parse lesson content to extract all segments including learning science tags
- * 
+ *
  * Handles both properly closed tags and unclosed tags (fallback behavior)
  */
 
@@ -12,7 +12,7 @@ import { parseMarkdownWithCodeBlocks } from './utils';
  * For unclosed tags, extracts content until the next tag or end of a logical section
  */
 function extractTagContent(
-  content: string, 
+  content: string,
   tagName: string
 ): { content: string; fullMatch: string } | null {
   // First try properly closed tag
@@ -21,20 +21,21 @@ function extractTagContent(
   if (closedMatch) {
     return { content: closedMatch[1].trim(), fullMatch: closedMatch[0] };
   }
-  
+
   // Fallback: try unclosed tag - extract until next tag or double newline + heading
-  const unclosedTagRegex = new RegExp(`<${tagName}>([\\s\\S]*?)(?=<(?:activate|connect|reflect|bloom|prq|question|answer)|\\n\\n#|$)`, 'i');
+  const unclosedTagRegex = new RegExp(
+    `<${tagName}>([\\s\\S]*?)(?=<(?:activate|connect|reflect|bloom|prq|question|answer|visualize)|\\n\\n#|$)`,
+    'i'
+  );
   const unclosedMatch = content.match(unclosedTagRegex);
   if (unclosedMatch) {
     return { content: unclosedMatch[1].trim(), fullMatch: unclosedMatch[0] };
   }
-  
+
   return null;
 }
 
-export const parseLessonSegments = (
-  lesson: string | undefined
-): Segment[] => {
+export const parseLessonSegments = (lesson: string | undefined): Segment[] => {
   if (!lesson) {
     return [];
   }
@@ -44,42 +45,35 @@ export const parseLessonSegments = (
 
   const segments: Segment[] = [];
 
-  // 1. Extract <activate> tag (should be first) - handle both closed and unclosed
+  // Extract <activate> tag (should be first) - handle both closed and unclosed
   const activateResult = extractTagContent(content, 'activate');
   if (activateResult) {
     segments.push({
       type: 'activate',
-      question: activateResult.content
+      question: activateResult.content,
     });
     content = content.replace(activateResult.fullMatch, '').trim();
   }
 
-  // 2. Extract <connect> tag (should be after activate) - handle both closed and unclosed
+  // Extract <connect> tag (should be after activate) - handle both closed and unclosed
   const connectResult = extractTagContent(content, 'connect');
   if (connectResult) {
     segments.push({
       type: 'connect',
-      content: connectResult.content
+      content: connectResult.content,
     });
     content = content.replace(connectResult.fullMatch, '').trim();
   }
 
-  // 3. Parse the rest: markdown, code, reflect, bloom, and regular quiz tags
-  // Build a comprehensive regex to match all special tags
-  // Support both properly closed tags and unclosed tags
+  // Match reflect, bloom, quiz, and visualize tags using named capture groups so
+  // order does not depend on positional indices.
   const tagRegex = new RegExp(
-    '(' +
-    // Reflect tags (closed)
-    '<reflect>([\\s\\S]*?)<\\/reflect>|' +
-    // Reflect tags (unclosed - fallback)
-    '<reflect>([\\s\\S]*?)(?=<(?:activate|connect|reflect|bloom|prq|question)|\\n\\n#|$)|' +
-    // Bloom tags (closed with nested question/answer)
-    '<bloom\\s+level="(remember|understand|apply|analyze|evaluate|create)">([\\s\\S]*?)<\\/bloom>|' +
-    // Bloom tags (unclosed - fallback)
-    '<bloom\\s+level="(remember|understand|apply|analyze|evaluate|create)">([\\s\\S]*?)(?=<(?:activate|connect|reflect|bloom|prq)|\\n\\n#|$)|' +
-    // Regular quiz tags (backward compatibility)
-    '<question>([\\s\\S]*?)<\\/question>\\s*<answer>([\\s\\S]*?)<\\/answer>' +
-    ')',
+    '(?<reflect><reflect>(?<reflectClosed>[\\s\\S]*?)<\\/reflect>)|' +
+      '(?<reflectUnclosed><reflect>(?<reflectOpen>[\\s\\S]*?)(?=<(?:activate|connect|reflect|bloom|prq|question|answer|visualize)|\\n\\n#|$))|' +
+      '(?<bloom><bloom\\s+level="(?<bloomLevel>remember|understand|apply|analyze|evaluate|create)">(?<bloomClosed>[\\s\\S]*?)<\\/bloom>)|' +
+      '(?<bloomUnclosed><bloom\\s+level="(?<bloomLevelUn>remember|understand|apply|analyze|evaluate|create)">(?<bloomOpen>[\\s\\S]*?)(?=<(?:activate|connect|reflect|bloom|prq|question|answer|visualize)|\\n\\n#|$))|' +
+      '(?<quiz><question>(?<quizQuestion>[\\s\\S]*?)<\\/question>\\s*<answer>(?<quizAnswer>[\\s\\S]*?)<\\/answer>)|' +
+      '(?<visualize><visualize\\s+type="(?<vizType>chart|simulation)"\\s+description="(?<vizDesc>[^"]*?)"\\s*\\/?>)',
     'gi'
   );
 
@@ -94,66 +88,60 @@ export const parseLessonSegments = (
       segments.push(...parsedSegments);
     }
 
-    // Determine which tag was matched
-    if (match[0].startsWith('<reflect>')) {
-      // Reflect tag (closed or unclosed)
-      const promptContent = match[2] || match[3]; // match[2] for closed, match[3] for unclosed
-      if (promptContent) {
-        segments.push({
-          type: 'reflect',
-          prompt: promptContent.trim()
-        });
+    if (match.groups?.reflect || match.groups?.reflectUnclosed) {
+      const prompt = (match.groups.reflectClosed ?? match.groups.reflectOpen ?? '').trim();
+      if (prompt) {
+        segments.push({ type: 'reflect', prompt });
       }
-    } else if (match[0].startsWith('<bloom')) {
-      // Bloom tag - extract level and nested question/answer
-      // match[4]/match[5] for closed bloom, match[6]/match[7] for unclosed bloom
-      const level = (match[4] || match[6]) as BloomLevel;
-      const bloomContent = match[5] || match[7];
+    } else if (match.groups?.bloom || match.groups?.bloomUnclosed) {
+      const level = (match.groups.bloomLevel ?? match.groups.bloomLevelUn) as BloomLevel;
+      const bloomContent = match.groups.bloomClosed ?? match.groups.bloomOpen ?? '';
 
       if (level && bloomContent) {
         const questionMatch = bloomContent.match(/<question>([\s\S]*?)<\/question>/i);
         const answerMatch = bloomContent.match(/<answer>([\s\S]*?)<\/answer>/i);
 
         if (questionMatch && answerMatch) {
-          // Properly structured bloom tag with nested question/answer
           segments.push({
             type: 'bloom',
             level,
             question: questionMatch[1].trim(),
-            answer: answerMatch[1].trim()
+            answer: answerMatch[1].trim(),
           });
         } else if (questionMatch) {
-          // Has question but no answer - still render it
           segments.push({
             type: 'bloom',
             level,
             question: questionMatch[1].trim(),
-            answer: '(Answer not provided)'
+            answer: '(Answer not provided)',
           });
         } else {
-          // Malformed bloom tag - treat content as question text
-          // Clean up any markdown formatting like **Question X:**
           const cleanedContent = bloomContent
             .replace(/^\*\*Question\s*\d*:?\*\*\s*/i, '')
             .replace(/^\*\*Q\d*:?\*\*\s*/i, '')
             .trim();
-          
+
           if (cleanedContent) {
             segments.push({
               type: 'bloom',
               level,
               question: cleanedContent,
-              answer: '(See answers section below)'
+              answer: '(See answers section below)',
             });
           }
         }
       }
-    } else if (match[8] && match[9]) {
-      // Regular quiz tag (backward compatibility)
+    } else if (match.groups?.quiz) {
       segments.push({
         type: 'quiz',
-        question: match[8].trim(),
-        answer: match[9].trim()
+        question: match.groups.quizQuestion.trim(),
+        answer: match.groups.quizAnswer.trim(),
+      });
+    } else if (match.groups?.visualize) {
+      segments.push({
+        type: 'visualization',
+        visualizationType: match.groups.vizType as 'chart' | 'simulation',
+        description: match.groups.vizDesc ?? '',
       });
     }
 

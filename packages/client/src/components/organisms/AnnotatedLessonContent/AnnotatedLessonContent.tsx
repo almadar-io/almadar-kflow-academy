@@ -9,6 +9,9 @@
 import React, { useRef, useCallback, useEffect, useMemo } from 'react';
 import { SelectionToolbar, SelectionInfo } from '../../molecules/SelectionToolbar';
 import { SegmentRenderer, parseLessonSegments } from '../LessonSegments';
+import { useRunCodeSimulation } from '@features/learning/hooks/useRunCodeSimulation';
+import { useGenerateInteractiveOrbital } from '@features/learning/hooks/useGenerateInteractiveOrbital';
+import type { GenerateInteractiveOrbitalRequest } from '@features/learning/api/interactiveOrbitalAPI';
 import { cn } from '../../../utils/theme';
 import type { QuestionAnswerItem, NoteItem, AnnotationType } from '../../../features/knowledge-graph/types';
 
@@ -56,6 +59,15 @@ export interface AnnotatedLessonContentProps {
    * Additional CSS classes
    */
   className?: string;
+
+  /**
+   * Concept context used to generate interactive visualizations.
+   */
+  concept?: {
+    id?: string;
+    name: string;
+    description?: string;
+  };
 }
 
 // Re-export SelectionInfo for container use
@@ -73,8 +85,21 @@ export const AnnotatedLessonContent: React.FC<AnnotatedLessonContentProps> = ({
   onAnnotationClick,
   disabled = false,
   className,
+  concept,
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
+  const { run: runCodeSimulation } = useRunCodeSimulation();
+  const { generate: generateInteractiveOrbital } = useGenerateInteractiveOrbital();
+
+  const handleRunCodeSimulation = useCallback(
+    async (code: string, language: string) => runCodeSimulation(language, code),
+    [runCodeSimulation],
+  );
+
+  const handleGenerateInteractiveOrbital = useCallback(
+    async (request: GenerateInteractiveOrbitalRequest) => generateInteractiveOrbital(request),
+    [generateInteractiveOrbital],
+  );
 
   // Parse lesson segments
   const segments = useMemo(() => {
@@ -193,7 +218,12 @@ export const AnnotatedLessonContent: React.FC<AnnotatedLessonContentProps> = ({
         ref={containerRef}
         className="prose dark:prose-invert max-w-none"
       >
-        <SegmentRenderer segments={segments} />
+        <SegmentRenderer
+          segments={segments}
+          onRunCodeSimulation={handleRunCodeSimulation}
+          concept={concept}
+          onGenerateInteractiveOrbital={handleGenerateInteractiveOrbital}
+        />
       </div>
 
       {/* Selection Toolbar - appears when text is selected, triggers callbacks */}

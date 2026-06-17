@@ -30,17 +30,18 @@ import {
   LoadingState,
   useEventBus,
   useTranslate,
-  type EntityDisplayProps,
+  type DisplayStateProps,
 } from '@almadar/ui';
 import { SequencerBoard } from '@almadar/ui';
 import { EventHandlerBoard } from '@almadar/ui';
 import { StateArchitectBoard } from '@almadar/ui';
 import { Clock, Lightbulb } from 'lucide-react';
+import type { EntityRow } from '@almadar/core';
 import type { KnowledgeChallenge, KnowledgePlayer, ChallengeTier } from '../types/knowledge';
 import { DomainBadge } from '../atoms/DomainBadge';
 import { XpCounter } from '../atoms/XpCounter';
 
-export interface KnowledgeChallengeEntity {
+export interface KnowledgeChallengeEntity extends EntityRow {
   challenge: KnowledgeChallenge;
   player: KnowledgePlayer;
   progress: number;
@@ -51,7 +52,8 @@ export interface KnowledgeChallengeEntity {
   puzzleEntity?: Record<string, unknown>;
 }
 
-export interface KnowledgeChallengeBoardProps extends EntityDisplayProps<KnowledgeChallengeEntity> {
+export interface KnowledgeChallengeBoardProps extends DisplayStateProps {
+  entity?: KnowledgeChallengeEntity;
   className?: string;
 }
 

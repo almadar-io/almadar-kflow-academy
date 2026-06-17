@@ -8,12 +8,13 @@ export type BloomLevel = 'remember' | 'understand' | 'apply' | 'analyze' | 'eval
 // Type for segment (markdown, code, quiz, or learning science tags)
 export type Segment =
   | { type: 'markdown'; content: string }
-  | { type: 'code'; language: string; content: string }
+  | { type: 'code'; language: string; content: string; runnable?: boolean }
   | { type: 'quiz'; question: string; answer: string }
   | { type: 'activate'; question: string }
   | { type: 'connect'; content: string }
   | { type: 'reflect'; prompt: string }
-  | { type: 'bloom'; level: BloomLevel; question: string; answer: string };
+  | { type: 'bloom'; level: BloomLevel; question: string; answer: string }
+  | { type: 'visualization'; visualizationType: 'chart' | 'simulation'; description: string };
 
 // User progress tracking for learning science features
 export interface UserProgress {

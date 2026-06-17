@@ -15,6 +15,7 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import type { LucideIcon } from 'lucide-react';
 import { LogOut } from 'lucide-react';
+import type { EntityRow } from '@almadar/core';
 import {
   Box,
   HStack,
@@ -30,7 +31,7 @@ import {
   useTranslate,
   cn,
   type SidebarItem,
-  type EntityDisplayProps,
+  type DisplayStateProps,
 } from '@almadar/ui';
 
 export interface AppShellNavItem {
@@ -48,7 +49,7 @@ export interface AppShellUser {
   avatar?: string;
 }
 
-export interface AppShellEntity {
+export interface AppShellEntity extends EntityRow {
   navigationItems: AppShellNavItem[];
   user?: AppShellUser;
   logo?: React.ReactNode;
@@ -59,7 +60,8 @@ export interface AppShellEntity {
   sidebarCollapsed?: boolean;
 }
 
-export interface AppShellBoardProps extends EntityDisplayProps<AppShellEntity> {
+export interface AppShellBoardProps extends DisplayStateProps {
+  entity?: AppShellEntity;
   children: React.ReactNode;
 }
 

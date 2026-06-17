@@ -32,9 +32,10 @@ import {
   Section,
   useEventBus,
   useTranslate,
-  type EntityDisplayProps,
+  type DisplayStateProps,
 } from "@almadar/ui";
 import { BookOpen, Map, GitBranch, RefreshCw, Compass } from "lucide-react";
+import type { EntityRow } from '@almadar/core';
 import type {
   KnowledgeSession,
   DailyProgress,
@@ -49,7 +50,7 @@ import { XpCounter } from "../atoms/XpCounter";
 import { NextSuggestionCard } from "../molecules/NextSuggestionCard";
 import { KnowledgeNodeCard } from "../molecules/KnowledgeNodeCard";
 
-export interface DailyMenuEntity {
+export interface DailyMenuEntity extends EntityRow {
   session: KnowledgeSession | null;
   dailyProgress: DailyProgress;
   suggestions: NextSuggestion[];
@@ -59,7 +60,8 @@ export interface DailyMenuEntity {
   subjects: KnowledgeSubject[];
 }
 
-export interface DailyMenuBoardProps extends EntityDisplayProps<DailyMenuEntity> {
+export interface DailyMenuBoardProps extends DisplayStateProps {
+  entity?: DailyMenuEntity;
 }
 
 export function DailyMenuBoard({

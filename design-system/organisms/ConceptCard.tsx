@@ -28,11 +28,12 @@ import {
   Typography,
   useEventBus,
   useTranslate,
-  type EntityDisplayProps,
+  type DisplayStateProps,
 } from '@almadar/ui';
 import type { LucideIcon } from "lucide-react";
+import type { EntityRow } from '@almadar/core';
 
-export interface ConceptEntity {
+export interface ConceptEntity extends EntityRow {
   id: string;
   name: string;
   description?: string;

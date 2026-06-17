@@ -10,7 +10,7 @@ import {
   Textarea,
   useTranslate,
   useEventBus,
-  type EntityDisplayProps,
+  type DisplayStateProps,
 } from '@almadar/ui';
 
 interface FlashCardsDisplayProps extends EntityDisplayProps<FlashCard> {

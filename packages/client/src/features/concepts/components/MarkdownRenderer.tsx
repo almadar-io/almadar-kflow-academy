@@ -9,6 +9,7 @@ import { vscDarkPlus as dark } from 'react-syntax-highlighter/dist/esm/styles/pr
 import { Copy, Check } from 'lucide-react';
 import 'katex/dist/katex.min.css';
 import { normalizeLatexDelimiters } from '@design-system/utils/normalizeLatexDelimiters';
+import { CodeRunnerPanel, type CodeSimulationOutput } from '@design-system/organisms/CodeRunnerPanel';
 import { Concept } from '../types';
 
 // Import learning science components
@@ -116,15 +117,15 @@ export const parseMarkdownWithCodeBlocks = (
   content: string
 ): Array<
   | { type: 'markdown'; content: string }
-  | { type: 'code'; language: string; content: string }
+  | { type: 'code'; language: string; content: string; runnable?: boolean }
 > => {
   const segments: Array<
     | { type: 'markdown'; content: string }
-    | { type: 'code'; language: string; content: string }
+    | { type: 'code'; language: string; content: string; runnable?: boolean }
   > = [];
 
-  // Regex to match fenced code blocks: ```language\ncode\n``` or ```\ncode\n```
-  const codeBlockRegex = /```(\w+)?\n([\s\S]*?)```/g;
+  // Regex to match fenced code blocks including optional -runnable suffix
+  const codeBlockRegex = /```([\w-]+)?\n([\s\S]*?)```/g;
   let lastIndex = 0;
   let match: RegExpExecArray | null;
 
@@ -136,11 +137,16 @@ export const parseMarkdownWithCodeBlocks = (
     }
 
     // Add the code block (ensure language is always a string)
-    const language = match[1] || 'text';
+    const rawLanguage = match[1] || 'text';
+    const runnable = rawLanguage.endsWith('-runnable');
+    const language = runnable
+      ? rawLanguage.slice(0, -'-runnable'.length) || 'text'
+      : rawLanguage;
     segments.push({
       type: 'code' as const,
       language,
       content: match[2].trim(),
+      runnable,
     });
 
     lastIndex = codeBlockRegex.lastIndex;
@@ -351,7 +357,7 @@ export type BloomLevel = 'remember' | 'understand' | 'apply' | 'analyze' | 'eval
 // Type for segment (markdown, code, quiz, or learning science tags)
 export type Segment =
   | { type: 'markdown'; content: string }
-  | { type: 'code'; language: string; content: string }
+  | { type: 'code'; language: string; content: string; runnable?: boolean }
   | { type: 'quiz'; question: string; answer: string }
   | { type: 'activate'; question: string }
   | { type: 'connect'; content: string }
@@ -374,6 +380,8 @@ export interface SegmentRendererProps {
   onSaveActivation?: (response: string) => void;
   onSaveReflection?: (index: number, note: string) => void;
   onAnswerBloom?: (index: number, level: BloomLevel) => void;
+  /** Callback that simulates executing runnable code blocks */
+  onRunCodeSimulation?: (code: string, language: string) => Promise<CodeSimulationOutput>;
 }
 
 export const SegmentRenderer: React.FC<SegmentRendererProps> = ({
@@ -384,7 +392,8 @@ export const SegmentRenderer: React.FC<SegmentRendererProps> = ({
   userProgress,
   onSaveActivation,
   onSaveReflection,
-  onAnswerBloom
+  onAnswerBloom,
+  onRunCodeSimulation,
 }) => {
   if (segments.length === 0) {
     return null;
@@ -400,6 +409,17 @@ export const SegmentRenderer: React.FC<SegmentRendererProps> = ({
         if (segment.type === 'markdown') {
           return <MarkdownContent key={`md-${index}`} content={segment.content} />;
         } else if (segment.type === 'code') {
+          if (segment.runnable && onRunCodeSimulation) {
+            return (
+              <CodeRunnerPanel
+                key={`code-${index}`}
+                language={segment.language}
+                code={segment.content}
+                runnable
+                onRun={(code) => onRunCodeSimulation(code, segment.language)}
+              />
+            );
+          }
           return (
             <CodeBlock
               key={`code-${index}`}

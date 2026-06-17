@@ -42,10 +42,11 @@ import {
   LoadingState,
   useEventBus,
   useTranslate,
-  type EntityDisplayProps,
+  type DisplayStateProps,
 } from '@almadar/ui';
 import type { AudioManifest } from '@almadar/ui';
 import { RotateCcw } from 'lucide-react';
+import type { EntityRow } from '@almadar/core';
 import { StoryHookView } from '../molecules/story/StoryHookView';
 import { StorySceneCard } from '../molecules/story/StoryNarrativeView';
 import type { StoryScene } from '../molecules/story/StoryNarrativeView';
@@ -60,7 +61,7 @@ import { StoryRewardView } from '../molecules/story/StoryRewardView';
 import type { GameResult } from '../molecules/story/StoryRewardView';
 import type { StoryGameType, StoryAssetConfig } from '../types/knowledge';
 
-export interface KnowledgeStoryEntity {
+export interface KnowledgeStoryEntity extends EntityRow {
   id: string;
   title: string;
   teaser: string;
@@ -95,7 +96,8 @@ export interface KnowledgeStoryEntity {
   isComplete?: boolean;
 }
 
-export interface KnowledgeStoryBoardProps extends EntityDisplayProps<KnowledgeStoryEntity> {
+export interface KnowledgeStoryBoardProps extends DisplayStateProps {
+  entity?: KnowledgeStoryEntity;
   // no additional props beyond EntityDisplayProps
 }
 

@@ -7,6 +7,7 @@
 
 import React, { useState, useCallback } from 'react';
 import { ChevronLeft, ChevronRight, Menu, CheckCircle, Languages, RefreshCw } from 'lucide-react';
+import type { EntityRow } from '@almadar/core';
 import {
   Box,
   VStack,
@@ -21,14 +22,15 @@ import {
   LoadingState,
   useEventBus,
   useTranslate,
-  type EntityDisplayProps,
+  type DisplayStateProps,
 } from '@almadar/ui';
 import { SegmentRenderer } from '../organisms/SegmentRenderer';
 import FlashCardsDisplay from '../organisms/FlashCardsDisplay';
 import type { FlashCard } from '../types';
 import type { Segment } from '../utils/parseLessonSegments';
+import type { CodeSimulationOutput } from './CodeRunnerPanel';
 
-export interface LessonEntity {
+export interface LessonEntity extends EntityRow {
   id: string;
   title: string;
   content: string;
@@ -56,7 +58,8 @@ export interface SidebarItem {
   isCurrent?: boolean;
 }
 
-export interface LessonBoardProps extends EntityDisplayProps<LessonEntity> {
+export interface LessonBoardProps extends DisplayStateProps {
+  entity?: LessonEntity;
   sidebarItems?: SidebarItem[];
   hasPrevious?: boolean;
   hasNext?: boolean;
@@ -69,6 +72,8 @@ export interface LessonBoardProps extends EntityDisplayProps<LessonEntity> {
   languageChangeEvent?: string;
   regenerateTranslationEvent?: string;
   bilingualToggleEvent?: string;
+  /** Callback that simulates executing runnable code blocks in lesson segments */
+  onRunCodeSimulation?: (code: string, language: string) => Promise<CodeSimulationOutput>;
 }
 
 export function LessonBoard({
@@ -86,6 +91,7 @@ export function LessonBoard({
   languageChangeEvent,
   regenerateTranslationEvent,
   bilingualToggleEvent,
+  onRunCodeSimulation,
   className = '',
 }: LessonBoardProps): React.JSX.Element | null {
   const resolved = Array.isArray(entity) ? entity[0] : (entity as LessonEntity | undefined);
@@ -265,7 +271,7 @@ export function LessonBoard({
 
             {/* Primary content */}
             {resolved.segments && resolved.segments.length > 0 ? (
-              <SegmentRenderer segments={resolved.segments} />
+              <SegmentRenderer segments={resolved.segments} onRunCodeSimulation={onRunCodeSimulation} />
             ) : (
               <Card>
                 <Box
@@ -280,7 +286,7 @@ export function LessonBoard({
               <Card className="border-l-4 border-[var(--color-accent)]">
                 {resolved.translatedSegments && resolved.translatedSegments.length > 0 ? (
                   <Box className="p-4">
-                    <SegmentRenderer segments={resolved.translatedSegments} />
+                    <SegmentRenderer segments={resolved.translatedSegments} onRunCodeSimulation={onRunCodeSimulation} />
                   </Box>
                 ) : (
                   <Box

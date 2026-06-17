@@ -15,6 +15,7 @@
 
 import React, { useCallback } from 'react';
 import type { LucideIcon } from 'lucide-react';
+import type { EntityRow } from '@almadar/core';
 import {
   TrendingUp,
   TrendingDown,
@@ -37,7 +38,7 @@ import {
   EmptyState,
   useEventBus,
   useTranslate,
-  type EntityDisplayProps,
+  type DisplayStateProps,
 } from '@almadar/ui';
 import { JumpBackInRow } from '../molecules/story/JumpBackInRow';
 import type { JumpBackInStory } from '../molecules/story/JumpBackInCard';
@@ -74,7 +75,7 @@ export interface DashboardQuickAction {
   description?: string;
 }
 
-export interface DashboardEntity {
+export interface DashboardEntity extends EntityRow {
   welcomeName: string;
   stats: DashboardStat[];
   jumpBackInStories: JumpBackInStory[];
@@ -85,7 +86,8 @@ export interface DashboardEntity {
   achievements?: Array<{ id: string; title: string; earnedAt: string }>;
 }
 
-export interface DashboardBoardProps extends EntityDisplayProps<DashboardEntity> {
+export interface DashboardBoardProps extends DisplayStateProps {
+  entity?: DashboardEntity;
 }
 
 const TrendIcon: React.FC<{ trend?: 'up' | 'down' | 'flat' }> = ({ trend }) => {

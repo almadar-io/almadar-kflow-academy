@@ -30,6 +30,7 @@
     "type-graphql": "^2.0.0-rc.2"
   },
   "devDependencies": {
+    "@almadar/eslint-plugin": "^2.8.2",
     "@types/cors": "^2.8.17",
     "@types/express": "^5.0.0",
     "@types/jest": "^29.5.11",

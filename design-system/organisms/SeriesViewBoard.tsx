@@ -11,6 +11,7 @@
  */
 
 import React, { useState, useMemo, useCallback, useEffect } from 'react';
+import type { EntityRow } from '@almadar/core';
 import {
   Box,
   VStack,
@@ -21,7 +22,7 @@ import {
   LoadingState,
   useEventBus,
   useTranslate,
-  type EntityDisplayProps,
+  type DisplayStateProps,
 } from '@almadar/ui';
 import { SeriesHeader } from '../molecules/story/SeriesHeader';
 import { SeriesStatsBar } from '../molecules/story/SeriesStatsBar';
@@ -38,7 +39,7 @@ import type {
   Episode,
 } from '../types/knowledge';
 
-export interface SeriesViewEntity {
+export interface SeriesViewEntity extends EntityRow {
   series: Series;
   storyMap: Record<string, StorySummary>;
   isSubscribed: boolean;
@@ -46,7 +47,8 @@ export interface SeriesViewEntity {
   creatorOtherSeries?: SeriesSummary[];
 }
 
-export interface SeriesViewBoardProps extends EntityDisplayProps<SeriesViewEntity> {
+export interface SeriesViewBoardProps extends DisplayStateProps {
+  entity?: SeriesViewEntity;
   className?: string;
 }
 

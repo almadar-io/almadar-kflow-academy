@@ -203,6 +203,19 @@ Tag Placement Rules:
 - <reflect> tags inline within lesson content (1-2 total)
 - <bloom> wraps existing <question>/<answer> pairs
 - Do NOT nest tags incorrectly or place them in wrong order
+
+RUNNABLE CODE BLOCKS:
+- When the lesson includes a programming or executable example that the learner should edit and run, use a fenced code block with the language identifier followed by "run" (e.g., \`\`\`python run).
+- Only mark code blocks as runnable when interactive execution adds learning value.
+- Keep runnable blocks self-contained and deterministic.
+
+INTERACTIVE VISUALIZATIONS:
+- When a concrete example would be clearer than prose alone, insert an inline visualization marker.
+- Use EXACTLY this self-closing tag format: <visualize type="chart|simulation" description="short, specific description of what to show" />
+- Allowed types: "chart" (data visualization) and "simulation" (interactive simulation).
+- Keep the description specific (1-2 sentences) so the generator knows what data, axes, or controls to include.
+- Place visualizations right after the explanatory paragraph that motivates them.
+- Only include 1-2 visualizations per lesson, and only when they genuinely aid understanding.
 `;
 
   // Determine if we should include learning science tags and practice questions
@@ -223,6 +236,7 @@ Guidelines:
 ${!skipPrerequisites ? `- START with prerequisites: Begin the lesson by listing any prerequisite concepts or foundational knowledge needed, wrapped in <prq>...</prq> block listing separated by commas if multiple. Use simple, single-concept names only. Avoid long descriptive names, parentheses, or special characters. If there are no prerequisites, you may omit this section.` : ''}
 - Provide a very brief, simple explanatory paragraph (1-2 sentences maximum; no analogies; be direct and concise).${focus ? ` Relate the explanation to the learning focus: "${focus}".` : ''}${currentGoal ? ` Connect the explanation to how it helps achieve the current goal: "${currentGoal}".` : ''}
 - Include exactly one illustrative example (code or math if relevant) under a level-2 heading.${focus ? ` The example should demonstrate concepts relevant to "${focus}".` : ''}${currentGoal ? ` The example should be relevant to the current goal: "${currentGoal}".` : ''}
+- For programming examples that the learner should run interactively, use a fenced code block with the language identifier followed by "run" (e.g., \`\`\`python run).
 ${includePracticeQuestions ? `- Add a quick practice section with 2-3 questions, each wrapped in <bloom> tags with appropriate cognitive level.
 ${focus ? `- All practice questions must be relevant to the learning focus: "${focus}".` : ''}${currentGoal ? ` All practice questions must be relevant to the current goal: "${currentGoal}".` : ''}
 - Do NOT generate matching questions. Only use multiple choice questions.
@@ -248,6 +262,7 @@ ${!skipPrerequisites ? `- Start with prerequisites: Begin the lesson by listing 
 - Provide a concise introductory section (2-3 sentences) outlining goals, context, and why the concept matters. Keep it brief and focused.${focus ? ` Emphasize how this concept relates to the learning focus: "${focus}".` : ''}${currentGoal ? ` Explain how this concept helps achieve the current goal: "${currentGoal}".` : ''}
 - Organize the explanation into clear sections (level-2+ headings) that progressively deepen understanding.${focus ? ` Ensure all sections align with and support the learning focus: "${focus}".` : ''}${currentGoal ? ` Ensure all sections support progress toward the current goal: "${currentGoal}".` : ''}
 - Include illustrative examples; when helpful, embed fenced code blocks with language identifiers or LaTeX formulas between $$ fences.${focus ? ` Examples should demonstrate concepts relevant to "${focus}".` : ''}${currentGoal ? ` Examples should be relevant to the current goal: "${currentGoal}".` : ''}
+- For programming or executable examples that the learner should edit and run, use a fenced code block with the language identifier followed by "run" (e.g., \`\`\`python run). Keep runnable blocks self-contained.
 - Share real-world applications or case studies when appropriate.${focus ? ` Applications should relate to the learning focus: "${focus}".` : ''}${currentGoal ? ` Applications should demonstrate how this concept applies to the current goal: "${currentGoal}".` : ''}
 ${includeLearningScienceTags ? `- Insert 2-3 <reflect> tags at natural breakpoints throughout the lesson.` : ''}
 ${includePracticeQuestions ? `- Include a practice section with concrete exercises, reflection prompts, or small projects, each wrapped in <bloom> tags with appropriate cognitive level (use at least 3 different levels).
@@ -288,7 +303,7 @@ Again, return ONLY the Markdown lesson text.`;
       stream: response.raw,
       model: response.model,
       prompt: fullPrompt,
-    } as any;
+    } as unknown as OperationResult & { prompt?: string };
   }
 
   // Trim only removes leading/trailing whitespace, preserving all internal newlines

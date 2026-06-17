@@ -12,6 +12,7 @@
 
 import React, { useCallback } from 'react';
 import { BookOpen, Plus, Trash2 } from 'lucide-react';
+import type { EntityRow } from '@almadar/core';
 import {
   Box,
   VStack,
@@ -27,7 +28,7 @@ import {
   ErrorState,
   useEventBus,
   useTranslate,
-  type EntityDisplayProps,
+  type DisplayStateProps,
 } from '@almadar/ui';
 
 export interface LearnPathItem {
@@ -40,13 +41,14 @@ export interface LearnPathItem {
   description?: string;
 }
 
-export interface LearnEntity {
+export interface LearnEntity extends EntityRow {
   learningPaths: LearnPathItem[];
   loading: boolean;
   error?: string;
 }
 
-export interface LearnBoardProps extends EntityDisplayProps<LearnEntity> {
+export interface LearnBoardProps extends DisplayStateProps {
+  entity?: LearnEntity;
 }
 
 export function LearnBoard({

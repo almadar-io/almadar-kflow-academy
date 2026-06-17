@@ -14,7 +14,9 @@ import {
   exploreHandler,
   tracePathHandler,
   progressiveExploreHandler,
-  generateFlashCardsHandler
+  generateFlashCardsHandler,
+  runCodeSimulationHandler,
+  generateInteractiveOrbitalHandler
 } from '../controllers/aiController';
 import authenticateFirebase from '../middlewares/authenticateFirebase';
 import graphRoutes from './graphs';
@@ -73,5 +75,7 @@ router.post('/custom-operation', authenticateFirebase, customOperationHandler);
 router.post('/generate-layer-practice', authenticateFirebase, generateLayerPracticeHandler);
 router.post('/answer-question', authenticateFirebase, answerQuestionHandler);
 router.post('/generate-flash-cards', authenticateFirebase, generateFlashCardsHandler);
+router.post('/run-code-simulation', authenticateFirebase, runCodeSimulationHandler);
+router.post('/generate-interactive-orbital', authenticateFirebase, generateInteractiveOrbitalHandler);
 
 export default router;

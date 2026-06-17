@@ -18,9 +18,10 @@ import {
   Button,
   EmptyState,
   useEventBus,
-  type EntityDisplayProps,
+  type DisplayStateProps,
 } from "@almadar/ui";
 import { Search } from "lucide-react";
+import type { EntityRow } from '@almadar/core';
 import type { KnowledgeNode, KnowledgeDomainType } from "../types/knowledge";
 import { KnowledgeNodeCard } from "../molecules/KnowledgeNodeCard";
 import { DomainBadge } from "../atoms/DomainBadge";
@@ -28,11 +29,12 @@ import { DOMAIN_LABELS } from "../utils/knowledgeConstants";
 
 type DomainFilter = "all" | KnowledgeDomainType;
 
-export interface KnowledgeSearchEntity {
+export interface KnowledgeSearchEntity extends EntityRow {
   nodes: KnowledgeNode[];
 }
 
-export interface KnowledgeSearchBoardProps extends EntityDisplayProps<KnowledgeSearchEntity> {
+export interface KnowledgeSearchBoardProps extends DisplayStateProps {
+  entity?: KnowledgeSearchEntity;
   selectNodeEvent?: string;
   query?: string;
 }

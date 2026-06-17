@@ -22,6 +22,7 @@
 import React from 'react';
 import { LessonBoard } from '../organisms/LessonBoard';
 import type { LessonEntity, SidebarItem } from '../organisms/LessonBoard';
+import type { CodeSimulationOutput } from '../organisms/CodeRunnerPanel';
 
 export type { LessonEntity, SidebarItem } from '../organisms/LessonBoard';
 
@@ -32,6 +33,8 @@ export interface LessonTemplateProps {
   hasNext?: boolean;
   readingProgress?: number;
   className?: string;
+  /** Callback that simulates executing runnable code blocks in lesson segments */
+  onRunCodeSimulation?: (code: string, language: string) => Promise<CodeSimulationOutput>;
 }
 
 export const LessonTemplate = ({
@@ -41,6 +44,7 @@ export const LessonTemplate = ({
   hasNext,
   readingProgress,
   className,
+  onRunCodeSimulation,
 }: LessonTemplateProps) => {
   const entity = (Array.isArray(entityProp) ? entityProp[0] : entityProp) as LessonEntity | undefined;
   if (!entity) return null;
@@ -59,6 +63,7 @@ export const LessonTemplate = ({
       languageChangeEvent="LANGUAGE_CHANGE"
       regenerateTranslationEvent="REGENERATE_TRANSLATION"
       bilingualToggleEvent="BILINGUAL_TOGGLE"
+      onRunCodeSimulation={onRunCodeSimulation}
       className={className}
     />
   );

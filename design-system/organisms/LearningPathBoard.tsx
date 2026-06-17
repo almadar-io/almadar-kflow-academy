@@ -23,10 +23,11 @@ import {
   LoadingState,
   useEventBus,
   useTranslate,
-  type EntityDisplayProps,
+  type DisplayStateProps,
 } from "@almadar/ui";
 import type { TimelineItem } from "@almadar/ui";
 import { Route } from "lucide-react";
+import type { EntityRow } from '@almadar/core';
 import type { KnowledgeNode, KnowledgeDomainType } from "../types/knowledge";
 import { DomainBadge } from "../atoms/DomainBadge";
 import { DOMAIN_LABELS } from "../utils/knowledgeConstants";
@@ -37,14 +38,15 @@ export interface PathConnection {
   reason: string;
 }
 
-export interface LearningPathEntity {
+export interface LearningPathEntity extends EntityRow {
   path: KnowledgeNode[];
   connections: PathConnection[];
   startDomain: KnowledgeDomainType;
   endDomain: KnowledgeDomainType;
 }
 
-export interface LearningPathBoardProps extends EntityDisplayProps<LearningPathEntity> {
+export interface LearningPathBoardProps extends DisplayStateProps {
+  entity?: LearningPathEntity;
   selectNodeEvent?: string;
 }
 

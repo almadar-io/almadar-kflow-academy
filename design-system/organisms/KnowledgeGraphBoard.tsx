@@ -7,6 +7,7 @@
 
 import React, { useState, useEffect, useCallback } from "react";
 import { Grid, Network, List as ListIcon } from "lucide-react";
+import type { EntityRow } from '@almadar/core';
 import {
   Box,
   VStack,
@@ -19,7 +20,7 @@ import {
   LoadingState,
   useEventBus,
   useTranslate,
-  type EntityDisplayProps,
+  type DisplayStateProps,
 } from '@almadar/ui';
 import {
   ForceDirectedGraph,
@@ -37,7 +38,7 @@ import { LearningGoalDisplay } from "../molecules/LearningGoalDisplay";
 
 export type { GraphNode, GraphRelationship, ConceptEntity, LayerInfo };
 
-export interface KnowledgeGraphEntity {
+export interface KnowledgeGraphEntity extends EntityRow {
   id: string;
   title: string;
   description?: string;
@@ -49,7 +50,8 @@ export interface KnowledgeGraphEntity {
   learningGoal?: string;
 }
 
-export interface KnowledgeGraphBoardProps extends EntityDisplayProps<KnowledgeGraphEntity> {
+export interface KnowledgeGraphBoardProps extends DisplayStateProps {
+  entity?: KnowledgeGraphEntity;
   defaultView?: "graph" | "list";
   showLayerNav?: boolean;
   showLegend?: boolean;

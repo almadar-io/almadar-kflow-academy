@@ -17,12 +17,13 @@ export type BloomLevel =
 // Segment types for lesson content
 export type Segment =
   | { type: "markdown"; content: string }
-  | { type: "code"; language: string; content: string }
+  | { type: "code"; language: string; content: string; runnable?: boolean }
   | { type: "quiz"; question: string; answer: string }
   | { type: "activate"; question: string }
   | { type: "connect"; content: string }
   | { type: "reflect"; prompt: string }
-  | { type: "bloom"; level: BloomLevel; question: string; answer: string };
+  | { type: "bloom"; level: BloomLevel; question: string; answer: string }
+  | { type: "visualization"; visualizationType: "chart" | "simulation"; description: string };
 
 /**
  * Parse markdown content to extract code blocks
@@ -33,7 +34,7 @@ export const parseMarkdownWithCodeBlocks = (
   content: string | undefined | null,
 ): Array<
   | { type: "markdown"; content: string }
-  | { type: "code"; language: string; content: string }
+  | { type: "code"; language: string; content: string; runnable?: boolean }
 > => {
   // Guard against undefined/null content
   if (!content) {
@@ -42,11 +43,11 @@ export const parseMarkdownWithCodeBlocks = (
 
   const segments: Array<
     | { type: "markdown"; content: string }
-    | { type: "code"; language: string; content: string }
+    | { type: "code"; language: string; content: string; runnable?: boolean }
   > = [];
 
-  // Regex to match fenced code blocks: ```language\ncode\n``` or ```\ncode\n```
-  const codeBlockRegex = /```(\w+)?\n([\s\S]*?)```/g;
+  // Regex to match fenced code blocks with optional -runnable suffix or `run` modifier
+  const codeBlockRegex = /```([\w-]+)?(?:\s+(run))?\n([\s\S]*?)```/g;
   let lastIndex = 0;
   let match: RegExpExecArray | null;
 
@@ -58,11 +59,18 @@ export const parseMarkdownWithCodeBlocks = (
     }
 
     // Add the code block (ensure language is always a string)
-    const language = match[1] || "text";
+    const rawLanguage = match[1] || "text";
+    const runModifier = !!match[2];
+    const suffixRunnable = rawLanguage.endsWith("-runnable");
+    const runnable = runModifier || suffixRunnable;
+    const language = suffixRunnable
+      ? rawLanguage.slice(0, -"-runnable".length) || "text"
+      : rawLanguage;
     segments.push({
       type: "code" as const,
       language,
-      content: match[2].trim(),
+      content: match[3].trim(),
+      runnable,
     });
 
     lastIndex = codeBlockRegex.lastIndex;
@@ -86,6 +94,7 @@ export const parseMarkdownWithCodeBlocks = (
  * - <reflect>prompt</reflect> - Reflection prompts
  * - <bloom level="level"><question>q</question><answer>a</answer></bloom> - Bloom's taxonomy questions
  * - <question>q</question><answer>a</answer> - Regular quiz questions
+ * - <visualize type="chart|simulation" description="..." /> - Interactive visualizations
  *
  * Also handles fenced code blocks (```language...```)
  */
@@ -119,16 +128,12 @@ export const parseLessonSegments = (lesson: string | undefined): Segment[] => {
     content = content.replace(connectMatch[0], "").trim();
   }
 
-  // 3. Parse the rest: markdown, code, reflect, bloom, and regular quiz tags
+  // 3. Parse the rest: markdown, code, reflect, bloom, quiz, and visualize tags
   const tagRegex = new RegExp(
-    "(" +
-      // Reflect tags
-      "<reflect>([\\s\\S]*?)<\\/reflect>|" +
-      // Bloom tags (with nested question/answer)
-      '<bloom\\s+level="(remember|understand|apply|analyze|evaluate|create)">([\\s\\S]*?)<\\/bloom>|' +
-      // Regular quiz tags (backward compatibility)
-      "<question>([\\s\\S]*?)<\\/question>\\s*<answer>([\\s\\S]*?)<\\/answer>" +
-      ")",
+    "(?<reflect><reflect>(?<reflectContent>[\\s\\S]*?)<\\/reflect>)|" +
+      "(?<bloom><bloom\\s+level=\"(?<bloomLevel>remember|understand|apply|analyze|evaluate|create)\">(?<bloomBody>[\\s\\S]*?)<\\/bloom>)|" +
+      "(?<quiz><question>(?<quizQuestion>[\\s\\S]*?)<\\/question>\\s*<answer>(?<quizAnswer>[\\s\\S]*?)<\\/answer>)|" +
+      "(?<visualize><visualize\\s+type=\"(?<vizType>chart|simulation)\"\\s+description=\"(?<vizDesc>[^\"]*?)\"\\s*\\/?>)",
     "gi",
   );
 
@@ -143,17 +148,14 @@ export const parseLessonSegments = (lesson: string | undefined): Segment[] => {
       segments.push(...parsedSegments);
     }
 
-    // Determine which tag was matched
-    if (match[0].startsWith("<reflect>")) {
-      // Reflect tag
+    if (match.groups?.reflect) {
       segments.push({
         type: "reflect",
-        prompt: match[2].trim(),
+        prompt: match.groups.reflectContent.trim(),
       });
-    } else if (match[0].startsWith("<bloom")) {
-      // Bloom tag - extract level and nested question/answer
-      const level = match[3] as BloomLevel;
-      const bloomContent = match[4];
+    } else if (match.groups?.bloom) {
+      const level = match.groups.bloomLevel as BloomLevel;
+      const bloomContent = match.groups.bloomBody;
 
       const questionMatch = bloomContent.match(
         /<question>([\s\S]*?)<\/question>/i,
@@ -168,12 +170,17 @@ export const parseLessonSegments = (lesson: string | undefined): Segment[] => {
           answer: answerMatch[1].trim(),
         });
       }
-    } else {
-      // Regular quiz tag (backward compatibility)
+    } else if (match.groups?.quiz) {
       segments.push({
         type: "quiz",
-        question: match[5].trim(),
-        answer: match[6].trim(),
+        question: match.groups.quizQuestion.trim(),
+        answer: match.groups.quizAnswer.trim(),
+      });
+    } else if (match.groups?.visualize) {
+      segments.push({
+        type: "visualization",
+        visualizationType: match.groups.vizType as "chart" | "simulation",
+        description: match.groups.vizDesc ?? "",
       });
     }
 

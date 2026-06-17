@@ -10,6 +10,7 @@
  */
 
 import React, { useState, useCallback, useMemo } from 'react';
+import type { EntityRow } from '@almadar/core';
 import {
   Box,
   VStack,
@@ -20,14 +21,14 @@ import {
   LoadingState,
   useEventBus,
   useTranslate,
-  type EntityDisplayProps,
+  type DisplayStateProps,
 } from '@almadar/ui';
 import { StoryCard } from '../molecules/story/StoryCard';
 import { SeriesCard } from '../molecules/story/SeriesCard';
 import type { StorySummary } from '../molecules/story/StoryCard';
 import type { SeriesSummary } from '../types/knowledge';
 
-export interface StoryCatalogEntity {
+export interface StoryCatalogEntity extends EntityRow {
   stories: StorySummary[];
   featuredStory?: StorySummary;
   selectedDomain?: string;
@@ -35,7 +36,8 @@ export interface StoryCatalogEntity {
   series?: SeriesSummary[];
 }
 
-export interface StoryCatalogBoardProps extends EntityDisplayProps<StoryCatalogEntity> {
+export interface StoryCatalogBoardProps extends DisplayStateProps {
+  entity?: StoryCatalogEntity;
   // no additional props beyond EntityDisplayProps
 }
 

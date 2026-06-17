@@ -23,11 +23,12 @@ import {
   Typography,
   useEventBus,
   useTranslate,
-  type EntityDisplayProps,
+  type DisplayStateProps,
 } from '@almadar/ui';
 import { FlashCard, FlashCardEntity } from "./FlashCard";
 
-export interface FlashCardStackProps extends EntityDisplayProps<FlashCardEntity> {
+export interface FlashCardStackProps extends DisplayStateProps {
+  entity?: FlashCardEntity;
   /** Array of flashcard entities */
   cards: FlashCardEntity[];
   /** Current card index (controlled) */

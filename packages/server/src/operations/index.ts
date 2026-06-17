@@ -27,6 +27,8 @@ export type { PracticeItem } from './generateLayerPractice';
 export { answerQuestion } from './answerQuestion';
 export { customOperation } from './customOperation';
 export { generateFlashCards } from './generateFlashCards';
+export { runCodeSimulation } from './runCodeSimulation';
+export { generateInteractiveOrbital } from './generateInteractiveOrbital';
 export { generateAssessmentQuestions } from './generateAssessmentQuestions';
 export type { GenerateAssessmentQuestionsOptions, GenerateAssessmentQuestionsResult } from './generateAssessmentQuestions';
 export { evaluateFreeTextAnswer } from './evaluateFreeTextAnswer';
