@@ -4,7 +4,7 @@ import {
   buildRelatedConcepts,
   convertConceptToNote,
 } from '../utils/graphHelpers';
-import { Note } from '../../notes/types';
+import { Note } from '../utils/graphHelpers';
 
 interface UseConceptGraphRelationsParams {
   seedConcept: Concept | null;

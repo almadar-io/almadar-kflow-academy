@@ -1,5 +1,5 @@
 import { useCallback, useEffect } from 'react';
-import { Note } from '../../notes/types';
+import { Note } from '../../concepts/utils/graphHelpers';
 import { TreeNode, EditingState } from '../types/mindMapTypes';
 
 interface UseMindMapKeyboardProps {

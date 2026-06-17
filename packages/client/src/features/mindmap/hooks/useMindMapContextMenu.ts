@@ -1,5 +1,5 @@
 import { useCallback, useState } from 'react';
-import { Note } from '../../notes/types';
+import { Note } from '../../concepts/utils/graphHelpers';
 import { TreeNode } from '../types/mindMapTypes';
 
 interface UseMindMapContextMenuProps {

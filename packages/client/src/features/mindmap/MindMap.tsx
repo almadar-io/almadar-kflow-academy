@@ -1,5 +1,5 @@
 import React, { useCallback, useRef, useState, useEffect } from 'react';
-import { Note } from '../notes/types';
+import { Note } from '../concepts/utils/graphHelpers';
 import { MindMapProps } from './types/mindMapTypes';
 import { Loader } from '../../components';
 import { useMindMapLayout } from './hooks/useMindMapLayout';

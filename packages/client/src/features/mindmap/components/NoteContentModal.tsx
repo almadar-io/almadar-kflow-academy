@@ -1,6 +1,5 @@
 import React from 'react';
 import Modal from '../../../components/Modal';
-import NoteForm from '../../notes/components/NoteForm';
 import { NoteContentModalProps } from '../types/mindMapTypes';
 
 const NoteContentModal: React.FC<NoteContentModalProps> = ({
@@ -18,22 +17,13 @@ const NoteContentModal: React.FC<NoteContentModalProps> = ({
       title="Edit Note Content"
       size="extra-large"
     >
-      <NoteForm
-        note={note}
-        onSave={(noteData) => {
-          const updatedNote = {
-            ...note,
-            title: noteData.title || note.title,
-            content: noteData.content || note.content,
-            tags: noteData.tags || note.tags,
-            updatedAt: new Date()
-          };
-          onSave(updatedNote);
-          onClose(); // Close the modal after saving
-        }}
-        onCancel={onClose}
-        isCreating={false}
-      />
+      <div>
+        <input
+          defaultValue={note.title}
+          onChange={(e) => onSave({ ...note, title: e.target.value, updatedAt: new Date() })}
+        />
+        <button onClick={onClose}>Close</button>
+      </div>
     </Modal>
   );
 };

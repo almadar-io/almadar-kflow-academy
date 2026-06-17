@@ -1,5 +1,17 @@
 import { Concept, ConceptGraph } from '../types';
-import { Note } from '../../notes/types';
+
+export interface Note {
+  id: string;
+  title: string;
+  content: string;
+  createdAt: Date;
+  updatedAt: Date;
+  tags: string[];
+  parentId?: string;
+  children?: string[];
+  level: number;
+  isExpanded: boolean;
+}
 
 /**
  * Helper function to get all concepts from a graph as an array

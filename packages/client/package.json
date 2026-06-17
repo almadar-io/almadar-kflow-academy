@@ -12,6 +12,7 @@
     "lint": "eslint src/"
   },
   "dependencies": {
+    "@kflow-academy/shared": "*",
     "@almadar/syntax": "^1.4.0",
     "@almadar/ui": "^5.28.5",
     "@apollo/client": "^3.14.0",

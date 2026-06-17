@@ -1,8 +1,4 @@
-import { useCallback } from 'react';
-import { Note } from '../../notes/types';
-import { useAppDispatch } from '../../../app/hooks';
-import { aiGenerateChildren } from '../../notes/noteSlice';
-import { useGenerateChildren } from '../../notes/queries';
+import { Note } from '../../concepts/utils/graphHelpers';
 
 interface UseMindMapAIProps {
   onEditNote: (note: Note) => void;
@@ -13,35 +9,9 @@ interface UseMindMapAIReturn {
   handleAIGenerateChildren: (parentNote: Note) => Promise<void>;
 }
 
-export const useMindMapAI = ({ onEditNote }: UseMindMapAIProps): UseMindMapAIReturn => {
-  const dispatch = useAppDispatch();
-  const { mutateAsync: generateChildren, isPending: isGeneratingChildren } = useGenerateChildren();
-
-  const handleAIGenerateChildren = useCallback(async (parentNote: Note) => {
-    try {
-      // Use the React Query hook to generate children
-      const data = await generateChildren({
-        parentTitle: parentNote.title,
-        parentContent: parentNote.content || '',
-        parentTags: parentNote.tags || []
-      });
-      
-      // Dispatch the aiGenerateChildren action with the generated children
-      dispatch(aiGenerateChildren({
-        parentId: parentNote.id,
-        children: data.children
-      }));
-
-    } catch (error) {
-      console.error('Error generating children:', error);
-      
-      // Show error message (you could add a toast notification here)
-      alert('Failed to generate children. Please try again.');
-    }
-  }, [dispatch, generateChildren]);
-
+export const useMindMapAI = (_props: UseMindMapAIProps): UseMindMapAIReturn => {
   return {
-    isGeneratingChildren,
-    handleAIGenerateChildren
+    isGeneratingChildren: false,
+    handleAIGenerateChildren: async () => {},
   };
 };

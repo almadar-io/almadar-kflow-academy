@@ -1,4 +1,4 @@
-import { Note } from '../../notes/types';
+import { Note } from '../../concepts/utils/graphHelpers';
 import { TreeNode, LayoutResult, Bounds } from '../types/mindMapTypes';
 import { MINDMAP_CONSTANTS } from './mindMapConstants';
 

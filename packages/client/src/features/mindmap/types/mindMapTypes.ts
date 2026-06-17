@@ -1,4 +1,4 @@
-import { Note } from '../../notes/types';
+import { Note } from '../../concepts/utils/graphHelpers';
 
 export interface TreeNode {
   id: string;
