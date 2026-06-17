@@ -1,52 +1,43 @@
-/**
- * Hook for Explain Concept Operation
- * 
- * Provides a hook for explaining a concept and generating a lesson.
- * Supports both streaming and non-streaming modes.
- * 
- * Automatically invalidates React Query cache after successful explanation.
- */
-
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
-import { useAppDispatch, useAppSelector } from '../../../app/hooks';
-import { store } from '../../../app/store';
+import { useAppDispatch } from '../../../app/hooks';
 import { graphOperationsApi, graphOperationsStreamingApi } from '../api';
-import {
-  explainConceptStart,
-  explainConceptSuccess,
-  explainConceptFailure,
-  streamingStart,
-  streamingChunk,
-  streamingMutations,
-  streamingDone,
-  streamingError,
-} from '../redux/graphOperationSlice';
 import { updateGraph } from '../knowledgeGraphSlice';
-import { applyMutationsToGraph } from '../redux/mutationUtils';
+import { applyMutationsToGraph } from '../graphMutationUtils';
+import { store } from '../../../app/store';
 import { knowledgeGraphKeys } from './queryKeys';
 import type { ExplainConceptRequest, ExplainConceptResponse } from '../api/types';
+import type { GraphMutation } from '../types';
+
+interface StreamingState {
+  isStreaming: boolean;
+  operation: string | null;
+  graphId: string | null;
+  content: string;
+  mutations: GraphMutation[];
+}
 
 export function useExplainConcept(graphId: string) {
   const dispatch = useAppDispatch();
   const queryClient = useQueryClient();
-  const { isLoading, error } = useAppSelector(
-    (state) => state.graphOperations.explainConcept
-  );
-  const streaming = useAppSelector((state) => state.graphOperations.streaming);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [streaming, setStreaming] = useState<StreamingState | null>(null);
 
-  // Invalidate React Query cache for the concept
-  const invalidateConceptQueries = useCallback(async (conceptId: string) => {
-    await queryClient.invalidateQueries({ 
-      queryKey: knowledgeGraphKeys.conceptDetail(graphId, conceptId) 
-    });
-  }, [queryClient, graphId]);
+  const invalidateConceptQueries = useCallback(
+    async (conceptId: string) => {
+      await queryClient.invalidateQueries({
+        queryKey: knowledgeGraphKeys.conceptDetail(graphId, conceptId),
+      });
+    },
+    [queryClient, graphId]
+  );
 
   const explain = useCallback(
     async (
       request: ExplainConceptRequest,
-      options?: { 
-        stream?: boolean; 
+      options?: {
+        stream?: boolean;
         onChunk?: (chunk: string) => void;
         onDone?: (finalResult: ExplainConceptResponse) => void;
       }
@@ -54,86 +45,71 @@ export function useExplainConcept(graphId: string) {
       if (!graphId || graphId.trim() === '') {
         throw new Error('Graph ID is required for explain concept operation');
       }
-      
-      dispatch(explainConceptStart());
+
+      setIsLoading(true);
+      setError(null);
 
       try {
         if (options?.stream) {
-          // Streaming mode
-          dispatch(streamingStart({ operation: 'explainConcept', graphId }));
+          setStreaming({ isStreaming: true, operation: 'explainConcept', graphId, content: '', mutations: [] });
 
           const response = await graphOperationsStreamingApi.explainConcept(
             graphId,
             request,
             {
               onChunk: (chunk) => {
-                dispatch(streamingChunk(chunk));
+                setStreaming((prev) => prev ? { ...prev, content: prev.content + chunk } : prev);
                 options.onChunk?.(chunk);
               },
-              onMutations: (mutations) => {
-                // Apply mutations as they arrive
+              onMutations: (batch) => {
                 const state = store.getState();
                 const graph = state.knowledgeGraphs.graphs[graphId];
                 if (graph) {
-                  const updatedGraph = applyMutationsToGraph(
-                    graph,
-                    mutations.mutations
-                  );
+                  const updatedGraph = applyMutationsToGraph(graph, batch.mutations);
                   dispatch(updateGraph({ graphId, updates: updatedGraph }));
                 }
-                dispatch(streamingMutations(mutations.mutations));
+                setStreaming((prev) =>
+                  prev ? { ...prev, mutations: [...prev.mutations, ...batch.mutations] } : prev
+                );
               },
               onDone: async (finalResult) => {
-                dispatch(streamingDone({ mutations: [], graph: finalResult.graph }));
-                dispatch(explainConceptSuccess({ graphId, response: finalResult }));
-                // Invalidate React Query cache for the concept
+                setStreaming((prev) => prev ? { ...prev, isStreaming: false } : prev);
+                setIsLoading(false);
                 await invalidateConceptQueries(request.targetNodeId);
-                // Call user-provided onDone callback
                 options.onDone?.(finalResult);
               },
-              onError: (error) => {
-                dispatch(streamingError(error));
-                dispatch(explainConceptFailure(error));
+              onError: (err) => {
+                setError(err);
+                setStreaming((prev) => prev ? { ...prev, isStreaming: false } : prev);
+                setIsLoading(false);
               },
             }
           );
 
           return response;
         } else {
-          // Non-streaming mode
           const response = await graphOperationsApi.explainConcept(graphId, request);
 
-          // Apply mutations to Redux
           const state = store.getState();
           const graph = state.knowledgeGraphs.graphs[graphId];
           if (graph && response.mutations.mutations.length > 0) {
-            const updatedGraph = applyMutationsToGraph(
-              graph,
-              response.mutations.mutations
-            );
+            const updatedGraph = applyMutationsToGraph(graph, response.mutations.mutations);
             dispatch(updateGraph({ graphId, updates: updatedGraph }));
           }
 
-          dispatch(explainConceptSuccess({ graphId, response }));
-          // Invalidate React Query cache for the concept
+          setIsLoading(false);
           await invalidateConceptQueries(request.targetNodeId);
           return response;
         }
       } catch (err) {
         const errorMessage = err instanceof Error ? err.message : 'Unknown error';
-        dispatch(explainConceptFailure(errorMessage));
+        setError(errorMessage);
+        setIsLoading(false);
         throw err;
       }
     },
     [graphId, dispatch, invalidateConceptQueries]
   );
 
-  return {
-    explain,
-    isLoading,
-    error,
-    streaming,
-  };
+  return { explain, isLoading, error, streaming };
 }
-
-

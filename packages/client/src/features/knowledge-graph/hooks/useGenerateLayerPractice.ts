@@ -1,40 +1,31 @@
-/**
- * Hook for Generate Layer Practice Operation
- * 
- * Provides a hook for generating practice exercises/reviews for a layer.
- * Supports both streaming and non-streaming modes.
- */
-
-import { useCallback } from 'react';
-import { useAppDispatch, useAppSelector } from '../../../app/hooks';
-import { store } from '../../../app/store';
+import { useCallback, useState } from 'react';
+import { useAppDispatch } from '../../../app/hooks';
 import { graphOperationsApi, graphOperationsStreamingApi } from '../api';
-import {
-  generateLayerPracticeStart,
-  generateLayerPracticeSuccess,
-  generateLayerPracticeFailure,
-  streamingStart,
-  streamingChunk,
-  streamingMutations,
-  streamingDone,
-  streamingError,
-} from '../redux/graphOperationSlice';
 import { updateGraph } from '../knowledgeGraphSlice';
-import { applyMutationsToGraph } from '../redux/mutationUtils';
+import { applyMutationsToGraph } from '../graphMutationUtils';
+import { store } from '../../../app/store';
 import type { GenerateLayerPracticeRequest, GenerateLayerPracticeResponse } from '../api/types';
+import type { GraphMutation } from '../types';
+
+interface StreamingState {
+  isStreaming: boolean;
+  operation: string | null;
+  graphId: string | null;
+  content: string;
+  mutations: GraphMutation[];
+}
 
 export function useGenerateLayerPractice(graphId: string) {
   const dispatch = useAppDispatch();
-  const { isLoading, error } = useAppSelector(
-    (state) => state.graphOperations.generateLayerPractice
-  );
-  const streaming = useAppSelector((state) => state.graphOperations.streaming);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [streaming, setStreaming] = useState<StreamingState | null>(null);
 
   const generate = useCallback(
     async (
       request: GenerateLayerPracticeRequest,
-      options?: { 
-        stream?: boolean; 
+      options?: {
+        stream?: boolean;
         onChunk?: (chunk: string) => void;
         onDone?: (finalResult: GenerateLayerPracticeResponse) => void;
       }
@@ -42,81 +33,69 @@ export function useGenerateLayerPractice(graphId: string) {
       if (!graphId || graphId.trim() === '') {
         throw new Error('Graph ID is required for generate layer practice operation');
       }
-      
-      dispatch(generateLayerPracticeStart());
+
+      setIsLoading(true);
+      setError(null);
 
       try {
         if (options?.stream) {
-          // Streaming mode
-          dispatch(streamingStart({ operation: 'generateLayerPractice', graphId }));
+          setStreaming({ isStreaming: true, operation: 'generateLayerPractice', graphId, content: '', mutations: [] });
 
           const response = await graphOperationsStreamingApi.generateLayerPractice(
             graphId,
             request,
             {
               onChunk: (chunk) => {
-                dispatch(streamingChunk(chunk));
+                setStreaming((prev) => prev ? { ...prev, content: prev.content + chunk } : prev);
                 options.onChunk?.(chunk);
               },
-              onMutations: (mutations) => {
-                // Apply mutations as they arrive
+              onMutations: (batch) => {
                 const state = store.getState();
                 const graph = state.knowledgeGraphs.graphs[graphId];
                 if (graph) {
-                  const updatedGraph = applyMutationsToGraph(
-                    graph,
-                    mutations.mutations
-                  );
+                  const updatedGraph = applyMutationsToGraph(graph, batch.mutations);
                   dispatch(updateGraph({ graphId, updates: updatedGraph }));
                 }
-                dispatch(streamingMutations(mutations.mutations));
+                setStreaming((prev) =>
+                  prev ? { ...prev, mutations: [...prev.mutations, ...batch.mutations] } : prev
+                );
               },
               onDone: (finalResult) => {
-                dispatch(streamingDone({ mutations: [], graph: finalResult.graph }));
-                dispatch(generateLayerPracticeSuccess({ graphId, response: finalResult }));
-                // Call user-provided onDone callback
+                setStreaming((prev) => prev ? { ...prev, isStreaming: false } : prev);
+                setIsLoading(false);
                 options.onDone?.(finalResult);
               },
-              onError: (error) => {
-                dispatch(streamingError(error));
-                dispatch(generateLayerPracticeFailure(error));
+              onError: (err) => {
+                setError(err);
+                setStreaming((prev) => prev ? { ...prev, isStreaming: false } : prev);
+                setIsLoading(false);
               },
             }
           );
 
           return response;
         } else {
-          // Non-streaming mode
           const response = await graphOperationsApi.generateLayerPractice(graphId, request);
 
-          // Apply mutations to Redux
           const state = store.getState();
           const graph = state.knowledgeGraphs.graphs[graphId];
           if (graph && response.mutations.mutations.length > 0) {
-            const updatedGraph = applyMutationsToGraph(
-              graph,
-              response.mutations.mutations
-            );
+            const updatedGraph = applyMutationsToGraph(graph, response.mutations.mutations);
             dispatch(updateGraph({ graphId, updates: updatedGraph }));
           }
 
-          dispatch(generateLayerPracticeSuccess({ graphId, response }));
+          setIsLoading(false);
           return response;
         }
       } catch (err) {
         const errorMessage = err instanceof Error ? err.message : 'Unknown error';
-        dispatch(generateLayerPracticeFailure(errorMessage));
+        setError(errorMessage);
+        setIsLoading(false);
         throw err;
       }
     },
     [graphId, dispatch]
   );
 
-  return {
-    generate,
-    isLoading,
-    error,
-    streaming,
-  };
+  return { generate, isLoading, error, streaming };
 }
-

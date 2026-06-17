@@ -1,2 +1,0 @@
-export { PathExplorerTemplate } from './PathExplorerTemplate';
-
