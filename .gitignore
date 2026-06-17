@@ -58,3 +58,4 @@ temp/
 # Lock files (keep package-lock.json for npm workspaces)
 yarn.lock
 pnpm-lock.yaml
+.claude/

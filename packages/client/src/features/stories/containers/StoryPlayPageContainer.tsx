@@ -1,17 +1,17 @@
 import React, { useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router';
+import { useParams } from 'react-router';
 import { useEventBus } from '@almadar/ui';
 import type { BusEvent } from '@almadar/core';
 import { KnowledgeStoryTemplate } from '@design-system/templates/KnowledgeStoryTemplate';
 import { useStory } from '../hooks/useStory';
 import { useStoryProgress } from '../hooks/useStoryProgress';
+import { useNavigateEvent } from '../../../hooks/useNavigateEvent';
 
 export const StoryPlayPageContainer: React.FC = () => {
   const { storyId } = useParams<{ storyId: string }>();
   const { story, isLoading } = useStory(storyId);
   const { saveProgress } = useStoryProgress();
-  // eslint-disable-next-line almadar/no-use-navigate
-  const navigate = useNavigate();
+  const navigate = useNavigateEvent();
   const { on } = useEventBus();
 
   useEffect(() => {

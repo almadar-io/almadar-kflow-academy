@@ -6,18 +6,18 @@
  */
 
 import React from 'react';
-import { useNavigate, useLocation } from 'react-router';
+import { useLocation } from 'react-router';
 import { useAuthContext } from '../features/auth/AuthContext';
 import { AppLayoutTemplate } from './templates/AppLayoutTemplate';
 import { getNavigationItems, getUserForTemplate, mainNavItems } from '../config/navigation';
+import { useNavigateEvent } from '../hooks/useNavigateEvent';
 
 interface AppLayoutProps {
   children: React.ReactNode;
 }
 
 export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
-  // eslint-disable-next-line almadar/no-use-navigate
-  const navigate = useNavigate();
+  const navigate = useNavigateEvent();
   const location = useLocation();
   const { user, signOut } = useAuthContext();
 

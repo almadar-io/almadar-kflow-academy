@@ -1,15 +1,15 @@
 import React, { useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router';
+import { useParams } from 'react-router';
 import { useEventBus } from '@almadar/ui';
 import type { BusEvent } from '@almadar/core';
 import { SeriesViewTemplate } from '@design-system/templates/SeriesViewTemplate';
 import { useSeriesDetail } from '../hooks/useSeriesDetail';
+import { useNavigateEvent } from '../../../hooks/useNavigateEvent';
 
 export const SeriesViewPageContainer: React.FC = () => {
   const { seriesId } = useParams<{ seriesId: string }>();
   const { seriesView, isLoading } = useSeriesDetail(seriesId);
-  // eslint-disable-next-line almadar/no-use-navigate
-  const navigate = useNavigate();
+  const navigate = useNavigateEvent();
   const { on } = useEventBus();
 
   useEffect(() => {

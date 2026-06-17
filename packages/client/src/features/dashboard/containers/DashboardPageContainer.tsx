@@ -4,18 +4,18 @@
  */
 
 import React, { useCallback } from 'react';
-import { useNavigate, useLocation } from 'react-router';
+import { useLocation } from 'react-router';
 import { useAuthContext } from '../../auth/AuthContext';
 import { DashboardPage } from '../../../components/pages/DashboardPage';
 import { getNavigationItems, getUserForTemplate, mainNavItems } from '../../../config/navigation';
 import { useRecentActivity } from '../hooks';
 import { useJumpBackIn } from '../hooks/useJumpBackIn';
+import { useNavigateEvent } from '../../../hooks/useNavigateEvent';
 import type { JumpBackInItem } from '../preferencesApi';
 import type { RecentActivity } from '../statisticsApi';
 
 const DashboardPageContainer: React.FC = () => {
-  // eslint-disable-next-line almadar/no-use-navigate
-  const navigate = useNavigate();
+  const navigate = useNavigateEvent();
   const location = useLocation();
   const { user, signOut } = useAuthContext();
 

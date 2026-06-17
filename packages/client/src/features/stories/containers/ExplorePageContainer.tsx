@@ -1,21 +1,16 @@
 import React, { useEffect } from 'react';
-import { useNavigate } from 'react-router';
 import { useEventBus } from '@almadar/ui';
 import type { BusEvent } from '@almadar/core';
 import { StoryCatalogTemplate } from '@design-system/templates/StoryCatalogTemplate';
 import { useStories } from '../hooks/useStories';
 import { useSeriesList } from '../hooks/useSeries';
+import { useNavigateEvent } from '../../../hooks/useNavigateEvent';
 import type { StoryCatalogEntity } from '@design-system/organisms/StoryCatalogBoard';
 
-/**
- * Explore page: shows all stories and series with domain-based browsing.
- * Reuses StoryCatalogTemplate with explore-focused layout.
- */
 export const ExplorePageContainer: React.FC = () => {
   const { stories } = useStories();
   const { series } = useSeriesList();
-  // eslint-disable-next-line almadar/no-use-navigate
-  const navigate = useNavigate();
+  const navigate = useNavigateEvent();
   const { on } = useEventBus();
 
   useEffect(() => {

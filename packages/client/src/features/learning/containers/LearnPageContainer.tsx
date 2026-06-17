@@ -4,7 +4,7 @@
  */
 
 import React, { useState, useCallback, useMemo, useRef } from 'react';
-import { useNavigate, useLocation } from 'react-router';
+import { useLocation } from 'react-router';
 import { useAppDispatch } from '../../../app/hooks';
 import { useAuthContext } from '../../auth/AuthContext';
 import { LearnPage } from '../../../components/pages/LearnPage';
@@ -17,11 +17,11 @@ import { auth } from '../../../config/firebase';
 import { apiClient } from '../../../services/apiClient';
 import { graphOperationsStreamingApi } from '../../knowledge-graph/api/streaming';
 import { GoalForm } from '../components/GoalForm';
+import { useNavigateEvent } from '../../../hooks/useNavigateEvent';
 import type { SeedConceptDisplay, GraphDisplay } from '../../../components/pages/LearnPage';
 
 const LearnPageContainer: React.FC = () => {
-  // eslint-disable-next-line almadar/no-use-navigate
-  const navigate = useNavigate();
+  const navigate = useNavigateEvent();
   const location = useLocation();
   const { user, signOut } = useAuthContext();
   const dispatch = useAppDispatch();

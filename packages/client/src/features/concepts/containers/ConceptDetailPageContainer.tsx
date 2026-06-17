@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useCallback, useState } from 'react';
-import { useParams, useNavigate, useLocation } from 'react-router';
+import { useParams, useLocation } from 'react-router';
 import { useAppDispatch, useAppSelector } from '../../../app/hooks';
 import { useConceptDetail } from '../../knowledge-graph/hooks/useConceptDetail';
 import { useGetGraph, useLessonAnnotations } from '../../knowledge-graph/hooks';
@@ -22,7 +22,7 @@ import { ConceptDescription } from '../../../components/molecules/ConceptDescrip
 import { ConceptMetaTags } from '../../../components/molecules/ConceptMetaTags';
 
 import { Button, Modal, Typography } from '@almadar/ui';
-// Mentor-specific panels removed in cleanup
+import { useNavigateEvent } from '../../../hooks/useNavigateEvent';
 import { useConceptsByLayer } from '../../knowledge-graph/hooks/useConceptsByLayer';
 import { useAuthContext } from '../../auth/AuthContext';
 import { getNavigationItems, getUserForTemplate, mainNavItems } from '../../../config/navigation';
@@ -61,8 +61,7 @@ const noop = () => {};
  */
 const ConceptDetailPageContainer: React.FC = () => {
   const { graphId, conceptId } = useParams<{ graphId: string; conceptId: string }>();
-  // eslint-disable-next-line almadar/no-use-navigate
-  const navigate = useNavigate();
+  const navigate = useNavigateEvent();
   const location = useLocation();
   const dispatch = useAppDispatch();
   const { user, signOut } = useAuthContext();
