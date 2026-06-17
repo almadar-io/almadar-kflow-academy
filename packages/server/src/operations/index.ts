@@ -29,26 +29,12 @@ export { customOperation } from './customOperation';
 export { generateFlashCards } from './generateFlashCards';
 export { runCodeSimulation } from './runCodeSimulation';
 export { generateInteractiveOrbital } from './generateInteractiveOrbital';
-export { generateAssessmentQuestions } from './generateAssessmentQuestions';
-export type { GenerateAssessmentQuestionsOptions, GenerateAssessmentQuestionsResult } from './generateAssessmentQuestions';
-export { evaluateFreeTextAnswer } from './evaluateFreeTextAnswer';
-export type { EvaluateFreeTextAnswerOptions, EvaluateFreeTextAnswerResult } from './evaluateFreeTextAnswer';
 export { generateGoalQuestions } from './generateGoalQuestions';
 export { generateGoal } from './generateGoal';
 export type { GenerateGoalQuestionsOptions, GenerateGoalQuestionsResult } from '../types/goal';
 export type { GenerateGoalOptions, GenerateGoalResult } from '../types/goal';
 export { generatePlacementQuestions } from './generatePlacementQuestions';
 export type { GeneratePlacementQuestionsOptions, GeneratePlacementQuestionsResult } from '../types/placementTest';
-
-// Enrichment operations
-export { analyzeLayerCompleteness } from './analyzeLayerCompleteness';
-export { findMissingConceptsForLayer } from './findMissingConceptsForLayer';
-export { identifyLayerRelationships } from './identifyLayerRelationships';
-export { discoverMissingConceptsForMilestone } from './discoverMissingConceptsForMilestone';
-export { analyzePrerequisiteChain } from './analyzePrerequisiteChain';
-export { discoverGoalAwareRelationships } from './discoverGoalAwareRelationships';
-export { discoverCrossLayerConcepts } from './discoverCrossLayerConcepts';
-export type * from '../types/enrichment';
 
 export * from '../types/concept';
 
