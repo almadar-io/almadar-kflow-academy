@@ -8,8 +8,8 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { StickyNote, X, Plus, Check, Trash2, Edit2 } from 'lucide-react';
 import { NoteItem } from '../../../features/concepts/types';
-import { Modal } from '../../molecules/Modal';
-import { Button, Typography } from '@almadar/ui';
+
+import { Button, Modal, Typography } from '@almadar/ui';
 import ConfirmationDialog from '../../ConfirmationDialog';
 
 export interface NotesWidgetProps {

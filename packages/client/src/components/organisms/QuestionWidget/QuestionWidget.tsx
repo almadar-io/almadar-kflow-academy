@@ -10,8 +10,8 @@
 
 import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import { HelpCircle, Send, ChevronDown, ChevronUp, Loader2 } from 'lucide-react';
-import { Modal } from '../../molecules/Modal';
-import { Button, Typography, Spinner } from '@almadar/ui';
+
+import { Button, Modal, Spinner, Typography } from '@almadar/ui';
 import { SegmentRenderer, parseMarkdownWithCodeBlocks } from '../LessonSegments';
 
 /**

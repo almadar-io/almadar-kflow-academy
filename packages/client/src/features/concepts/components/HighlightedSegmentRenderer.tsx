@@ -2,8 +2,8 @@ import React, { useEffect, useRef, useState } from 'react';
 import { SegmentRenderer, SegmentRendererProps, Segment, parseMarkdownWithCodeBlocks } from './MarkdownRenderer';
 import { extractHighlightChunks } from '../utils/textHighlighter';
 import { applyHighlightingToDOM } from '../utils/domHighlighter';
+import { Modal } from '@almadar/ui';
 import { Concept, QuestionAnswer } from '../types';
-import { Modal } from '../../../components/molecules/Modal';
 
 interface HighlightedSegmentRendererProps extends Omit<SegmentRendererProps, 'concept'> {
   concept?: Concept | null;

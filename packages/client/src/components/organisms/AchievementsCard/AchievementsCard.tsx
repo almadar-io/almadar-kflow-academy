@@ -8,9 +8,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Award, Lock, ChevronDown, ChevronUp } from 'lucide-react';
 import { Card } from '../../molecules/Card';
-import { Icon, Typography, ProgressBar, Spinner, Button } from '@almadar/ui';
-import { EmptyState } from '../../molecules/EmptyState';
-import { Alert } from '../../molecules/Alert';
+import { Alert, Button, EmptyState, Icon, ProgressBar, Spinner, Typography } from '@almadar/ui';
 import { cn } from '../../../utils/theme';
 
 export interface Achievement {
@@ -214,9 +212,7 @@ export const AchievementsCard: React.FC<AchievementsCardProps> = ({
         <EmptyState
           title="No achievements yet"
           description="Complete lessons and courses to unlock achievements!"
-        >
-          <div className="text-4xl mb-2">🎯</div>
-        </EmptyState>
+        />
       )}
     </Card>
   );

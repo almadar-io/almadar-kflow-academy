@@ -3,12 +3,12 @@
  * Displays the learning goal details in a read-only modal
  */
 
+import { Modal } from '@almadar/ui';
 import React from 'react';
-import { Modal } from '../../../components/molecules/Modal';
+
 import type { LearningGoal, Milestone } from '../goalApi';
 import { Target } from 'lucide-react';
 import { GoalOverview } from './GoalOverview';
-
 
 interface GoalDetailsModalProps {
   isOpen: boolean;

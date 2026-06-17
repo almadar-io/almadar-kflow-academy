@@ -18,8 +18,7 @@ import {
   ExternalLink,
 } from 'lucide-react';
 import { Card } from '../../molecules/Card';
-import { Typography, Badge, Button, Icon, Checkbox } from '@almadar/ui';
-import { Menu } from '../../molecules/Menu';
+import { Badge, Button, Checkbox, Icon, Menu, Typography } from '@almadar/ui';
 import { ContentReadinessIndicator, ContentStatus } from '../../molecules/ContentReadinessIndicator';
 import { cn } from '../../../utils/theme';
 

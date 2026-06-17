@@ -7,9 +7,8 @@
 
 import React from 'react';
 import type { LucideIcon } from 'lucide-react';
-import { Menu, MenuItem } from '../../molecules/Menu';
-import { ButtonGroup } from '../../molecules/ButtonGroup';
-import { Button, Icon, Badge, Typography, Divider } from '@almadar/ui';
+
+import { Badge, Button, ButtonGroup, Divider, Icon, Menu, MenuItem, Typography } from '@almadar/ui';
 import { cn } from '../../../utils/theme';
 
 export interface NavigationItem {

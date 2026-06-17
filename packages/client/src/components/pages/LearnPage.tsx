@@ -10,8 +10,7 @@
 import React from 'react';
 import { DashboardTemplate } from '../templates/DashboardTemplate';
 import { Card } from '../molecules/Card';
-import { Button, Typography, Badge, Spinner } from '@almadar/ui';
-import { Alert } from '../molecules/Alert';
+import { Alert, Badge, Button, Spinner, Typography } from '@almadar/ui';
 import { ConceptCard } from '../../features/concepts/components';
 import { Lightbulb, Plus } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';

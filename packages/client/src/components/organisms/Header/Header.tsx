@@ -8,8 +8,8 @@
 import React from 'react';
 import type { LucideIcon } from 'lucide-react';
 import { Menu, X } from 'lucide-react';
-import { SearchInput } from '../../molecules/SearchInput';
-import { Avatar, Typography, Badge } from '@almadar/ui';
+
+import { Avatar, Badge, SearchInput, Typography } from '@almadar/ui';
 import { cn } from '../../../utils/theme';
 
 export interface HeaderProps {

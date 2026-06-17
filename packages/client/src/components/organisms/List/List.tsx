@@ -8,8 +8,8 @@
 import React from 'react';
 import type { LucideIcon } from 'lucide-react';
 import { Card } from '../../molecules/Card';
-import { Menu, MenuItem } from '../../molecules/Menu';
-import { Button, Icon, Avatar, Typography, Badge, Divider, Checkbox } from '@almadar/ui';
+
+import { Avatar, Badge, Button, Checkbox, Divider, Icon, Menu, MenuItem, Typography } from '@almadar/ui';
 import { cn } from '../../../utils/theme';
 
 export interface ListItem {

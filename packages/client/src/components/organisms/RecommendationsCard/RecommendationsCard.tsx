@@ -8,8 +8,7 @@
 import React from 'react';
 import { Sparkles, BookOpen, ArrowRight } from 'lucide-react';
 import { Card } from '../../molecules/Card';
-import { Icon, Typography, Spinner } from '@almadar/ui';
-import { Alert } from '../../molecules/Alert';
+import { Alert, Icon, Spinner, Typography } from '@almadar/ui';
 import { cn } from '../../../utils/theme';
 
 export interface RecommendedCourse {

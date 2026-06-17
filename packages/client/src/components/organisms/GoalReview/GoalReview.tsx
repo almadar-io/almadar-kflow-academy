@@ -10,8 +10,7 @@ import { Edit2, Check, X, Circle, CheckCircle2 } from 'lucide-react';
 import { Card } from '../../molecules/Card';
 import { FormField } from '../../molecules/FormField';
 import { Input } from '../../atoms/Input';
-import { Textarea, Button, Icon, Typography, Spinner } from '@almadar/ui';
-import { ButtonGroup } from '../../molecules/ButtonGroup';
+import { Button, ButtonGroup, Icon, Spinner, Textarea, Typography } from '@almadar/ui';
 import { cn } from '../../../utils/theme';
 
 export interface Milestone {

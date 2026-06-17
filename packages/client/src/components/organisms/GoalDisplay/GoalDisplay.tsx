@@ -9,9 +9,9 @@ import React, { useState } from 'react';
 import type { LucideIcon } from 'lucide-react';
 import { Edit, Save, X } from 'lucide-react';
 import { Card } from '../../molecules/Card';
-import { ButtonGroup } from '../../molecules/ButtonGroup';
+
 import { FormField } from '../../molecules/FormField';
-import { Icon, Typography, Button, Spinner, Badge } from '@almadar/ui';
+import { Badge, Button, ButtonGroup, Icon, Spinner, Typography } from '@almadar/ui';
 import { cn } from '../../../utils/theme';
 
 export interface Milestone {

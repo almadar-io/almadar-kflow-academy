@@ -10,8 +10,8 @@ import type { LucideIcon } from 'lucide-react';
 import { Eye, EyeOff, Mail, Lock, User, ArrowLeft } from 'lucide-react';
 import { Card } from '../../molecules/Card';
 import { FormField } from '../../molecules/FormField';
-import { Alert } from '../../molecules/Alert';
-import { Button, Typography, Divider, Spinner } from '@almadar/ui';
+
+import { Alert, Button, Divider, Spinner, Typography } from '@almadar/ui';
 import { cn } from '../../../utils/theme';
 
 export type AuthVariant = 'login' | 'signup' | 'forgot-password' | 'reset-password' | 'verify-email';

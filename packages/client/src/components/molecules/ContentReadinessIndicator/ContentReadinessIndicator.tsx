@@ -18,7 +18,7 @@ import {
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import { Badge, Icon } from '@almadar/ui';
-import { Tooltip } from '../Tooltip';
+import { Tooltip } from '@almadar/ui';
 import { cn } from '../../../utils/theme';
 
 export type ContentStatus = 'ready' | 'draft' | 'missing' | 'error';

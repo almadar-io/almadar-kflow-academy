@@ -1,5 +1,6 @@
+import { Modal } from '@almadar/ui';
 import React from 'react';
-import { Modal } from '../../../components/molecules/Modal';
+
 import { NoteContentModalProps } from '../types/mindMapTypes';
 
 const NoteContentModal: React.FC<NoteContentModalProps> = ({

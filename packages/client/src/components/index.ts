@@ -1,5 +1,5 @@
 // Export all global, reusable UI components
-export { Modal } from './molecules/Modal';
+export { Modal } from '@almadar/ui';
 export { Menu } from './Menu';
 export { default as Loader } from './Loader';
 export { default as PageHeader } from './PageHeader';

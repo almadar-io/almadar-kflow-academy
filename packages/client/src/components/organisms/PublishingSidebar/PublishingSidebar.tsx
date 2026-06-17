@@ -19,8 +19,7 @@ import {
   ChevronRight,
 } from 'lucide-react';
 import { Card } from '../../molecules/Card';
-import { Typography, ProgressBar, type ProgressBarColor, Badge, Button, Icon, Divider, Checkbox } from '@almadar/ui';
-import { Tooltip } from '../../molecules/Tooltip';
+import { Badge, Button, Checkbox, Divider, Icon, ProgressBar, Tooltip, Typography, type ProgressBarColor } from '@almadar/ui';
 import { cn } from '../../../utils/theme';
 
 export interface PublishingStats {

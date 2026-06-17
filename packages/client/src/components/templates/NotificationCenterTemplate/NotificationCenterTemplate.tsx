@@ -21,9 +21,8 @@ import {
 } from 'lucide-react';
 import { AppLayoutTemplate } from '../AppLayoutTemplate';
 import { Card } from '../../molecules/Card';
-import { Tabs, TabItem } from '../../molecules/Tabs';
-import { EmptyState } from '../../molecules/EmptyState';
-import { Button, Typography, Badge, Avatar } from '@almadar/ui';
+
+import { Avatar, Badge, Button, EmptyState, TabItem, Tabs, Typography } from '@almadar/ui';
 import { cn } from '../../../utils/theme';
 
 export type NotificationType = 'course' | 'achievement' | 'comment' | 'alert' | 'info';

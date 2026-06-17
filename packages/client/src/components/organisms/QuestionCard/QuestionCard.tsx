@@ -8,8 +8,8 @@
 import React, { useState } from 'react';
 import { Card } from '../../molecules/Card';
 import { FormField } from '../../molecules/FormField';
-import { ButtonGroup } from '../../molecules/ButtonGroup';
-import { Typography, Radio, Checkbox, Button, ProgressBar, Icon } from '@almadar/ui';
+
+import { Button, ButtonGroup, Checkbox, Icon, ProgressBar, Radio, Typography } from '@almadar/ui';
 import { cn } from '../../../utils/theme';
 
 export type QuestionType = 'single-choice' | 'multiple-choice' | 'text';

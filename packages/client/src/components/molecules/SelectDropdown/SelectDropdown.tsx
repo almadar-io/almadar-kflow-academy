@@ -9,7 +9,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { ChevronDown, X, Check } from 'lucide-react';
 import { Button, Icon, Divider, Typography } from '@almadar/ui';
 import { Input } from '../../atoms/Input';
-import { Menu } from '../Menu';
+import { Menu } from '@almadar/ui';
 import { cn } from '../../../utils/theme';
 
 export interface SelectOption {

@@ -8,10 +8,10 @@
 import React, { useState } from 'react';
 import { Target, CheckCircle, BookMarked } from 'lucide-react';
 import { Card } from '../../molecules/Card';
-import { Icon, Typography, ProgressBar, Button, Spinner } from '@almadar/ui';
+import { Alert, Button, Icon, ProgressBar, Spinner, Typography } from '@almadar/ui';
 import { Input } from '../../atoms/Input';
 import { FormField } from '../../molecules/FormField';
-import { Alert } from '../../molecules/Alert';
+
 import { cn } from '../../../utils/theme';
 
 export interface DailyActivity {

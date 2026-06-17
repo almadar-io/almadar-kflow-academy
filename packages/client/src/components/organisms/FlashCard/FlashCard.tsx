@@ -7,8 +7,8 @@
 
 import React, { useState } from 'react';
 import { RotateCcw, Check } from 'lucide-react';
-import { ButtonGroup } from '../../molecules/ButtonGroup';
-import { Typography, Button, Icon, ProgressBar, Badge } from '@almadar/ui';
+
+import { Badge, Button, ButtonGroup, Icon, ProgressBar, Typography } from '@almadar/ui';
 import { cn } from '../../../utils/theme';
 
 export interface FlashCardProps {

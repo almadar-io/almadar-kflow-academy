@@ -9,8 +9,8 @@ import React, { useState } from 'react';
 import { X, RotateCcw, Shuffle, Trophy, ChevronLeft, ChevronRight } from 'lucide-react';
 import { FlashCard } from '../../organisms/FlashCard';
 import { Card } from '../../molecules/Card';
-import { Modal } from '../../molecules/Modal';
-import { Button, Typography, ProgressBar, Badge } from '@almadar/ui';
+
+import { Badge, Button, Modal, ProgressBar, Typography } from '@almadar/ui';
 import { cn } from '../../../utils/theme';
 
 export type Difficulty = 'hard' | 'medium' | 'easy';

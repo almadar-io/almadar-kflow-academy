@@ -4,8 +4,9 @@
  * Displays enrichment suggestions in a nice visual format with the ability to apply them.
  */
 
+import { Modal } from '@almadar/ui';
 import React, { useState, useMemo } from 'react';
-import { Modal } from '../../../components/molecules/Modal';
+
 import {
   Sparkles,
   CheckCircle2,

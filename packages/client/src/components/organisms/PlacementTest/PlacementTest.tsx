@@ -8,8 +8,7 @@
 import React, { useState } from 'react';
 import { CheckCircle2 } from 'lucide-react';
 import { Card } from '../../molecules/Card';
-import { ProgressBar, Button, Badge, Typography, Textarea, Radio, Spinner, Icon } from '@almadar/ui';
-import { Alert } from '../../molecules/Alert';
+import { Alert, Badge, Button, Icon, ProgressBar, Radio, Spinner, Textarea, Typography } from '@almadar/ui';
 import { cn } from '../../../utils/theme';
 
 export interface PlacementQuestion {

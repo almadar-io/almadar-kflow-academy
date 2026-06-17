@@ -20,9 +20,8 @@ import { QuestionWidget, QuestionAnswerDisplay } from '../../../components/organ
 import { NotesWidget } from '../../../components/organisms/NotesWidget';
 import { ConceptDescription } from '../../../components/molecules/ConceptDescription';
 import { ConceptMetaTags } from '../../../components/molecules/ConceptMetaTags';
-import { Modal } from '../../../components/molecules/Modal';
-import { Typography, Button } from '@almadar/ui';
 
+import { Button, Modal, Typography } from '@almadar/ui';
 // Mentor-specific panels removed in cleanup
 import { useConceptsByLayer } from '../../knowledge-graph/hooks/useConceptsByLayer';
 import { useAuthContext } from '../../auth/AuthContext';

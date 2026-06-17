@@ -14,11 +14,10 @@ import {
   type FormFieldCheckboxProps,
   type FormFieldRadioProps,
 } from '../../molecules/FormField';
-import { ButtonGroup } from '../../molecules/ButtonGroup';
-import { Alert } from '../../molecules/Alert';
+
 import { ProgressCard } from '../../molecules/ProgressCard';
 import { Card } from '../../molecules/Card';
-import { Button, Typography, Divider, ProgressBar } from '@almadar/ui';
+import { Alert, Button, ButtonGroup, Divider, ProgressBar, Typography } from '@almadar/ui';
 import { cn } from '../../../utils/theme';
 
 export interface FormStep {

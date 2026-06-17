@@ -9,8 +9,8 @@ import React from 'react';
 import type { LucideIcon } from 'lucide-react';
 import { Lock, Unlock, Play, CheckCircle } from 'lucide-react';
 import { Card } from '../../molecules/Card';
-import { ButtonGroup } from '../../molecules/ButtonGroup';
-import { Typography, Badge, ProgressBar, Button, Icon } from '@almadar/ui';
+
+import { Badge, Button, ButtonGroup, Icon, ProgressBar, Typography } from '@almadar/ui';
 import { cn } from '../../../utils/theme';
 
 export type LessonStatus = 'not-started' | 'in-progress' | 'completed' | 'locked';

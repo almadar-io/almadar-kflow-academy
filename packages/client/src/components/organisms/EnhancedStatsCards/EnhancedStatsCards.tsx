@@ -9,9 +9,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Flame, Trophy, BookOpen, CheckCircle, GraduationCap, Info, ChevronDown, ChevronUp } from 'lucide-react';
 import { Card } from '../../molecules/Card';
 import { StatCard } from '../../molecules/StatCard';
-import { Icon, Typography, Spinner, Button } from '@almadar/ui';
-import { Tooltip } from '../../molecules/Tooltip';
-import { Alert } from '../../molecules/Alert';
+import { Alert, Button, Icon, Spinner, Tooltip, Typography } from '@almadar/ui';
 import { cn } from '../../../utils/theme';
 
 export interface DetailedStatistics {

@@ -9,13 +9,10 @@ import React, { useState } from 'react';
 import type { LucideIcon } from 'lucide-react';
 import { Search, BookOpen, FileText, Layers, Filter, X } from 'lucide-react';
 import { AppLayoutTemplate } from '../AppLayoutTemplate';
-import { SearchInput } from '../../molecules/SearchInput';
-import { Tabs, TabItem } from '../../molecules/Tabs';
-import { Pagination } from '../../molecules/Pagination';
-import { EmptyState } from '../../molecules/EmptyState';
+
 import { Card } from '../../molecules/Card';
 import { SelectDropdown } from '../../molecules/SelectDropdown';
-import { Button, Typography, Badge, Spinner } from '@almadar/ui';
+import { Badge, Button, EmptyState, Pagination, SearchInput, Spinner, TabItem, Tabs, Typography } from '@almadar/ui';
 import { cn } from '../../../utils/theme';
 
 export type ResultType = 'all' | 'courses' | 'lessons' | 'concepts';

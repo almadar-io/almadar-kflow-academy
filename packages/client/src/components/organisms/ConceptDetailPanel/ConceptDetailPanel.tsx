@@ -8,10 +8,8 @@
 import React from 'react';
 import type { LucideIcon } from 'lucide-react';
 import { Card } from '../../molecules/Card';
-import { Tabs, TabItem } from '../../molecules/Tabs';
-import { Accordion, AccordionItem } from '../../molecules/Accordion';
-import { ButtonGroup } from '../../molecules/ButtonGroup';
-import { Typography, Icon, Badge, Button, Divider, ProgressBar } from '@almadar/ui';
+
+import { Accordion, AccordionItem, Badge, Button, ButtonGroup, Divider, Icon, ProgressBar, TabItem, Tabs, Typography } from '@almadar/ui';
 import { FlashCard } from '../FlashCard';
 import { cn } from '../../../utils/theme';
 

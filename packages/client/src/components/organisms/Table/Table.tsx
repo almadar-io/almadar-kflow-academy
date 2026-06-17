@@ -8,12 +8,10 @@
 import React, { useState } from 'react';
 import type { LucideIcon } from 'lucide-react';
 import { ArrowUp, ArrowDown, MoreVertical } from 'lucide-react';
-import { Pagination } from '../../molecules/Pagination';
-import { SearchInput } from '../../molecules/SearchInput';
-import { ButtonGroup } from '../../molecules/ButtonGroup';
+
 import { Card } from '../../molecules/Card';
-import { Menu, MenuItem } from '../../molecules/Menu';
-import { Button, Icon, Checkbox, Typography, Badge, Divider } from '@almadar/ui';
+
+import { Badge, Button, ButtonGroup, Checkbox, Divider, Icon, Menu, MenuItem, Pagination, SearchInput, Typography } from '@almadar/ui';
 import { cn } from '../../../utils/theme';
 
 export type SortDirection = 'asc' | 'desc' | null;

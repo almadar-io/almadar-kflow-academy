@@ -20,9 +20,9 @@ import {
 import { AppLayoutTemplate } from '../AppLayoutTemplate';
 import { StatCard } from '../../molecules/StatCard';
 import { Card } from '../../molecules/Card';
-import { Tabs, TabItem } from '../../molecules/Tabs';
+
 import { SelectDropdown } from '../../molecules/SelectDropdown';
-import { Button, Typography, ProgressBar, Badge } from '@almadar/ui';
+import { Badge, Button, ProgressBar, TabItem, Tabs, Typography } from '@almadar/ui';
 import { cn } from '../../../utils/theme';
 
 export interface AnalyticsStat {

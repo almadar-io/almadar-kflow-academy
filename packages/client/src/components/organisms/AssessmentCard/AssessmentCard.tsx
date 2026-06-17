@@ -8,10 +8,9 @@
 import React, { useState } from 'react';
 import { Card } from '../../molecules/Card';
 import { FormField } from '../../molecules/FormField';
-import { ButtonGroup } from '../../molecules/ButtonGroup';
-import { Alert } from '../../molecules/Alert';
+
 import { ProgressCard } from '../../molecules/ProgressCard';
-import { Typography, Button, ProgressBar, Badge } from '@almadar/ui';
+import { Alert, Badge, Button, ButtonGroup, ProgressBar, Typography } from '@almadar/ui';
 import { QuestionCard, QuestionOption } from '../QuestionCard';
 import { cn } from '../../../utils/theme';
 

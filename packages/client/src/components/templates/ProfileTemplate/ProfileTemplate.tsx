@@ -10,10 +10,10 @@ import type { LucideIcon } from 'lucide-react';
 import { User, Settings, Bell, Shield, Key, Camera, Save, X } from 'lucide-react';
 import { AppLayoutTemplate } from '../AppLayoutTemplate';
 import { Card } from '../../molecules/Card';
-import { Tabs, TabItem } from '../../molecules/Tabs';
+
 import { FormField } from '../../molecules/FormField';
-import { Alert } from '../../molecules/Alert';
-import { Button, Typography, Avatar, Badge, Divider } from '@almadar/ui';
+
+import { Alert, Avatar, Badge, Button, Divider, TabItem, Tabs, Typography } from '@almadar/ui';
 import { cn } from '../../../utils/theme';
 
 export interface ProfileData {

@@ -8,9 +8,9 @@
 
 import React, { useRef, useEffect } from 'react';
 import type { LucideIcon } from 'lucide-react';
-import { Checkbox, Badge, Typography, Spinner } from '@almadar/ui';
+import { Badge, Checkbox, EmptyState, Spinner, Typography } from '@almadar/ui';
 import { Card } from '../../molecules/Card';
-import { EmptyState } from '../../molecules/EmptyState';
+
 import { cn } from '../../../utils/theme';
 
 export interface ContentSelectorItem {

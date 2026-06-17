@@ -33,22 +33,20 @@ import { AppLayoutTemplate } from '../AppLayoutTemplate';
 import { GoalDisplay, Milestone } from '../../organisms/GoalDisplay';
 import { ConceptCard, ConceptCardProps } from '../../organisms/ConceptCard';
 import { Operation } from '../../organisms/OperationPanel';
-import { Tooltip } from '../../molecules/Tooltip';
+
 import { ForceGraph, ForceGraphNode, ForceGraphEdge } from '../../organisms/ForceGraph';
 import { TreeMap, TreeMapNode } from '../../organisms/TreeMap';
 import { LearningGoalDisplay } from '../../organisms/LearningGoalDisplay';
 import { ConceptNavigation } from '../../molecules/ConceptNavigation';
-import { Tabs, TabItem } from '../../molecules/Tabs';
+
 import { Card } from '../../molecules/Card';
-import { ButtonGroup } from '../../molecules/ButtonGroup';
+
 import { SelectDropdown } from '../../molecules/SelectDropdown';
-import { EmptyState } from '../../molecules/EmptyState';
-import { FloatingActionButton, FloatingAction } from '../../molecules/FloatingActionButton';
-import { SidePanel } from '../../molecules/SidePanel';
+
 import { ChatBox, ChatMessage } from '../../molecules/ChatBox';
-import { Button, Typography, Badge, Divider, Checkbox, Avatar } from '@almadar/ui';
+import { Avatar, Badge, Button, ButtonGroup, Checkbox, Divider, EmptyState, FloatingActionButton, Modal, SidePanel, TabItem, Tabs, Tooltip, Typography } from '@almadar/ui';
 import { JsonViewer } from '../../JsonViewer';
-import { Modal } from '../../molecules/Modal';
+
 import { ProfilePopup } from '../../molecules/ProfilePopup/ProfilePopup';
 import ThemeToggle from '../../ThemeToggle';
 import { cn } from '../../../utils/theme';
@@ -682,7 +680,6 @@ export const KnowledgeGraphTemplate: React.FC<KnowledgeGraphTemplateProps> = ({
   const handleNodeDeselect = useCallback(() => {
     setSelectedNode(null);
   }, []);
-
 
   const viewTabs: TabItem[] = [
     { id: 'list', label: 'List', icon: List, content: null },
@@ -1650,12 +1647,10 @@ export const KnowledgeGraphTemplate: React.FC<KnowledgeGraphTemplateProps> = ({
 
       {/* Floating Action Button */}
       <FloatingActionButton
-        action={{
-          icon: Sparkles,
-          onClick: () => setLlmPanelOpen(true),
-          label: 'Open AI Assistant',
-          variant: 'primary',
-        }}
+        icon={Sparkles}
+        onClick={() => setLlmPanelOpen(true)}
+        label="Open AI Assistant"
+        variant="primary"
         position="bottom-right"
       />
     </AppLayoutTemplate>

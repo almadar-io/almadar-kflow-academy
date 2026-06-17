@@ -10,13 +10,12 @@ import type { LucideIcon } from 'lucide-react';
 import { Save, Eye, Send, Sparkles, FileText, Settings, ArrowLeft, X } from 'lucide-react';
 import { Header } from '../../organisms/Header';
 import { LessonPanel, Prerequisite } from '../../organisms/LessonPanel';
-import { Tabs, TabItem } from '../../molecules/Tabs';
+
 import { Card } from '../../molecules/Card';
-import { Modal } from '../../molecules/Modal';
-import { Alert } from '../../molecules/Alert';
+
 import { FormField } from '../../molecules/FormField';
-import { ButtonGroup } from '../../molecules/ButtonGroup';
-import { Button, Typography, Badge, Spinner } from '@almadar/ui';
+
+import { Alert, Badge, Button, ButtonGroup, Modal, Spinner, TabItem, Tabs, Typography } from '@almadar/ui';
 import { cn } from '../../../utils/theme';
 
 export interface LessonEditorTemplateProps {

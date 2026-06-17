@@ -9,9 +9,8 @@ import React, { useState } from 'react';
 import type { LucideIcon } from 'lucide-react';
 import { ChevronDown, ChevronRight, Edit, Trash2, Plus, BookOpen, Check, Circle } from 'lucide-react';
 import { Card } from '../../molecules/Card';
-import { ButtonGroup } from '../../molecules/ButtonGroup';
-import { Alert } from '../../molecules/Alert';
-import { Typography, Badge, Button, Icon, ProgressBar, Avatar } from '@almadar/ui';
+
+import { Alert, Avatar, Badge, Button, ButtonGroup, Icon, ProgressBar, Typography } from '@almadar/ui';
 import { cn } from '../../../utils/theme';
 
 export interface ConceptCardProps {

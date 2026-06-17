@@ -10,8 +10,8 @@ import type { LucideIcon } from 'lucide-react';
 import { ChevronLeft, ChevronRight, Check, User, Target, BookOpen, Sparkles } from 'lucide-react';
 import { Card } from '../../molecules/Card';
 import { FormField } from '../../molecules/FormField';
-import { ButtonGroup } from '../../molecules/ButtonGroup';
-import { Button, Typography, ProgressBar, Avatar, Radio } from '@almadar/ui';
+
+import { Avatar, Button, ButtonGroup, ProgressBar, Radio, Typography } from '@almadar/ui';
 import { cn } from '../../../utils/theme';
 
 export interface OnboardingStep {

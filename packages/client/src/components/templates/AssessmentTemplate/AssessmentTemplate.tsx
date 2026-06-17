@@ -8,10 +8,8 @@
 import React, { useState, useEffect } from 'react';
 import { Clock, ChevronLeft, ChevronRight, AlertTriangle, CheckCircle, X } from 'lucide-react';
 import { Card } from '../../molecules/Card';
-import { Modal } from '../../molecules/Modal';
-import { Alert } from '../../molecules/Alert';
-import { ButtonGroup } from '../../molecules/ButtonGroup';
-import { Button, Typography, ProgressBar, Badge, Radio, Checkbox } from '@almadar/ui';
+
+import { Alert, Badge, Button, ButtonGroup, Checkbox, Modal, ProgressBar, Radio, Typography } from '@almadar/ui';
 import { cn } from '../../../utils/theme';
 
 export interface AssessmentQuestion {

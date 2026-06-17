@@ -6,9 +6,8 @@
 
 import React, { useState, useMemo } from 'react';
 import { ScheduleSlotCard } from '../../molecules/ScheduleSlotCard';
-import { SearchInput } from '../../molecules/SearchInput';
-import { Button, Typography, Spinner } from '@almadar/ui';
-import { EmptyState } from '../../molecules/EmptyState';
+
+import { Button, EmptyState, SearchInput, Spinner, Typography } from '@almadar/ui';
 import { SelectDropdown, SelectOption } from '../../molecules/SelectDropdown';
 import { Calendar, Filter } from 'lucide-react';
 import { cn } from '../../../utils/theme';
