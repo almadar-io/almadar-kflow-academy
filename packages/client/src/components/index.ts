@@ -1,5 +1,5 @@
 // Export all global, reusable UI components
-export { default as Modal } from './Modal';
+export { Modal } from './molecules/Modal';
 export { Menu } from './Menu';
 export { default as Loader } from './Loader';
 export { default as PageHeader } from './PageHeader';
@@ -9,4 +9,4 @@ export { default as AlertContainer } from './AlertContainer';
 export { default as ConfirmationDialog } from './ConfirmationDialog';
 export { default as ThemeToggle } from './ThemeToggle';
 export { JsonViewer } from './JsonViewer';
-export type { AlertType } from './Alert';
+export type { AlertType } from '../contexts/AlertContext';

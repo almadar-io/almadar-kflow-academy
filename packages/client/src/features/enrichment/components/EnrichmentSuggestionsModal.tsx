@@ -5,7 +5,7 @@
  */
 
 import React, { useState, useMemo } from 'react';
-import Modal from '../../../components/Modal';
+import { Modal } from '../../../components/molecules/Modal';
 import {
   Sparkles,
   CheckCircle2,
@@ -239,7 +239,7 @@ export function EnrichmentSuggestionsModal({
       isOpen={isOpen}
       onClose={onClose}
       title="Enrichment Suggestions"
-      size="extra-large"
+      size="xl"
     >
       <div className="space-y-6">
         {/* Summary */}

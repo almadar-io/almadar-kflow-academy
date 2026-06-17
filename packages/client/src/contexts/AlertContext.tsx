@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useCallback, ReactNode } from 'react';
-import { AlertType } from '../components/Alert';
+
+export type AlertType = 'success' | 'warning' | 'error' | 'info';
 
 export interface Alert {
   id: string;

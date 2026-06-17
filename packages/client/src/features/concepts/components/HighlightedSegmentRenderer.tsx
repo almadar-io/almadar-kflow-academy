@@ -3,7 +3,7 @@ import { SegmentRenderer, SegmentRendererProps, Segment, parseMarkdownWithCodeBl
 import { extractHighlightChunks } from '../utils/textHighlighter';
 import { applyHighlightingToDOM } from '../utils/domHighlighter';
 import { Concept, QuestionAnswer } from '../types';
-import Modal from '../../../components/Modal';
+import { Modal } from '../../../components/molecules/Modal';
 
 interface HighlightedSegmentRendererProps extends Omit<SegmentRendererProps, 'concept'> {
   concept?: Concept | null;
@@ -91,7 +91,7 @@ export const HighlightedSegmentRenderer: React.FC<HighlightedSegmentRendererProp
         isOpen={selectedQuestion !== null}
         onClose={() => setSelectedQuestion(null)}
         title={selectedQuestion?.question || 'Question'}
-        size="large"
+        size="lg"
       >
         {selectedQuestion && (
           <div className="space-y-4">

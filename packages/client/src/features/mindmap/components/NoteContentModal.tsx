@@ -1,5 +1,5 @@
 import React from 'react';
-import Modal from '../../../components/Modal';
+import { Modal } from '../../../components/molecules/Modal';
 import { NoteContentModalProps } from '../types/mindMapTypes';
 
 const NoteContentModal: React.FC<NoteContentModalProps> = ({
@@ -15,7 +15,7 @@ const NoteContentModal: React.FC<NoteContentModalProps> = ({
       isOpen={isOpen}
       onClose={onClose}
       title="Edit Note Content"
-      size="extra-large"
+      size="xl"
     >
       <div>
         <input

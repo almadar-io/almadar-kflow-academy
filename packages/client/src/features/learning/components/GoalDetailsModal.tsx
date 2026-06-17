@@ -4,7 +4,7 @@
  */
 
 import React from 'react';
-import Modal from '../../../components/Modal';
+import { Modal } from '../../../components/molecules/Modal';
 import type { LearningGoal, Milestone } from '../goalApi';
 import { Target } from 'lucide-react';
 import { GoalOverview } from './GoalOverview';
@@ -30,7 +30,7 @@ export const GoalDetailsModal: React.FC<GoalDetailsModalProps> = ({
       isOpen={isOpen}
       onClose={onClose}
       title="Learning Goal Details"
-      size="large"
+      size="lg"
     >
       {isLoading ? (
         <div className="flex items-center justify-center py-12">
