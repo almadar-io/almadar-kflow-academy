@@ -24,6 +24,7 @@ import userRoutes from './userRoutes';
 import goalRoutes from './goalRoutes';
 import placementTestRoutes from './placementTestRoutes';
 import graphQueryRoutes from './graphQueryRoutes';
+import knowledgeGraphAccessRoutes from './knowledgeGraphAccessRoutes';
 import storyRoutes from './storyRoutes';
 
 const router = Router();
@@ -45,6 +46,7 @@ router.use('/user', userRoutes);
 router.use('/learning', authenticateFirebase, goalRoutes);
 router.use('/learning/placement', authenticateFirebase, placementTestRoutes);
 router.use('/graph-queries', graphQueryRoutes);
+router.use('/knowledge-graphs-access', knowledgeGraphAccessRoutes);
 router.use('/content', storyRoutes);
 
 router.post('/explain-concept', authenticateFirebase, explainConcept);

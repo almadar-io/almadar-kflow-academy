@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useCallback, useState } from 'react';
+import React, { useEffect, useMemo, useCallback, useState, useRef } from 'react';
 import { useParams, useLocation } from 'react-router';
 import { useNavigateEvent } from '../../../hooks/useNavigateEvent';
 import { useAppDispatch } from '../../../app/hooks';
@@ -117,9 +117,12 @@ const ConceptListPageContainer: React.FC = () => {
   const graph = useAppSelector((state) => selectGraphById(state, graphId || ''));
   const { getGraph, loading: isLoadingGraph } = useGetGraph();
 
-  // Load graph if not in Redux
+  // Load graph if not in Redux — attempt once per graphId so a persistent
+  // failure (e.g. missing/forbidden graph) does not retry in an infinite loop.
+  const attemptedGraphIdRef = useRef<string | null>(null);
   useEffect(() => {
-    if (graphId && !graph && !isLoadingGraph) {
+    if (graphId && !graph && !isLoadingGraph && attemptedGraphIdRef.current !== graphId) {
+      attemptedGraphIdRef.current = graphId;
       getGraph(graphId, { storeInRedux: true }).catch((error) => {
         console.error('Failed to load graph:', error);
       });

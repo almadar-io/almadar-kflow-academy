@@ -10,8 +10,8 @@ export const store = configureStore({
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       serializableCheck: {
-        ignoredActions: ['persist/PERSIST'],
-        ignoredPaths: ['concepts.graphs'],
+        ignoredActions: ['persist/PERSIST', 'auth/setUser'],
+        ignoredPaths: ['concepts.graphs', 'auth.user'],
       },
     })
       .concat(createConceptsPersistenceMiddleware()),
