@@ -47,7 +47,8 @@ export interface ConceptEntity extends EntityRow {
   isCurrent?: boolean;
 }
 
-export interface ConceptCardProps extends EntityDisplayProps<ConceptEntity | Record<string, unknown>> {
+export interface ConceptCardProps extends DisplayStateProps {
+  entity?: ConceptEntity | Record<string, unknown>;
   /** Whether this concept is highlighted (lesson ready) */
   highlighted?: boolean;
   /** Hide the lesson status badges */

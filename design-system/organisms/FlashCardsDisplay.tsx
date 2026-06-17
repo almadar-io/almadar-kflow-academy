@@ -13,7 +13,8 @@ import {
   type DisplayStateProps,
 } from '@almadar/ui';
 
-interface FlashCardsDisplayProps extends EntityDisplayProps<FlashCard> {
+interface FlashCardsDisplayProps extends DisplayStateProps {
+  entity?: FlashCard;
   flashCards: FlashCard[];
   isEditing?: boolean;
   editEvent?: string;
