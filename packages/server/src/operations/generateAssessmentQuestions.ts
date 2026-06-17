@@ -1,7 +1,21 @@
+import { isJsonObject } from '@almadar/core';
 import { Concept } from '../types/concept';
 import { callLLM, extractJSONArray } from '../services/llm';
 import { validateConcept } from '../utils/validation';
 import { AssessmentQuestion } from '../types/publishing';
+
+interface RawAssessmentQuestion {
+  id?: string;
+  type?: AssessmentQuestion['type'];
+  question?: string;
+  options?: string[];
+  correctAnswer?: string;
+  correctAnswers?: string[];
+  points?: number;
+  explanation?: string;
+  keyPoints?: string;
+  expectedPoints?: string;
+}
 
 export interface GenerateAssessmentQuestionsOptions {
   numQuestions?: number;
@@ -165,12 +179,13 @@ Return a JSON array of exactly ${numQuestions} questions, ALL of which must be o
   });
 
   try {
-    const questionsData = extractJSONArray(response.content) as any[];
+    const questionsData = extractJSONArray(response.content);
 
     // Validate and transform questions
-    const questions: AssessmentQuestion[] = questionsData.map((q, index) => {
+    const questions: AssessmentQuestion[] = questionsData.map((raw, index) => {
+      const q: RawAssessmentQuestion = isJsonObject(raw) ? (raw as RawAssessmentQuestion) : {};
       // Validate question type matches requested types
-      if (!questionTypes.includes(q.type)) {
+      if (!q.type || !questionTypes.includes(q.type)) {
         throw new Error(`Question at index ${index} has type "${q.type}" but only these types are allowed: ${questionTypes.join(', ')}`);
       }
 

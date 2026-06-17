@@ -1,3 +1,4 @@
+import type { JsonValue } from '@almadar/core';
 import {
   LLMClient,
   type LLMProvider as AlmadarLLMProvider,
@@ -70,11 +71,11 @@ export async function trackLLMCost(
   }
 }
 
-export function extractJSONArray(response: string): unknown[] {
+export function extractJSONArray(response: string): JsonValue[] {
   const jsonBlockMatch = response.match(/```(?:json)?\s*(\[[\s\S]*?\])\s*```/);
   if (jsonBlockMatch) {
     try {
-      return JSON.parse(jsonBlockMatch[1]) as unknown[];
+      return JSON.parse(jsonBlockMatch[1]) as JsonValue[];
     } catch {
       // fall through
     }
@@ -83,14 +84,14 @@ export function extractJSONArray(response: string): unknown[] {
   const arrayMatch = response.match(/(\[[\s\S]*\])/);
   if (arrayMatch) {
     try {
-      return JSON.parse(arrayMatch[1]) as unknown[];
+      return JSON.parse(arrayMatch[1]) as JsonValue[];
     } catch {
       // fall through
     }
   }
 
   try {
-    const parsed: unknown = JSON.parse(response);
+    const parsed = JSON.parse(response) as JsonValue;
     if (Array.isArray(parsed)) return parsed;
   } catch {
     // fall through
@@ -99,7 +100,7 @@ export function extractJSONArray(response: string): unknown[] {
   const objectMatches = response.match(/\{[^{}]*\}/g);
   if (objectMatches && objectMatches.length > 0) {
     try {
-      return objectMatches.map(match => JSON.parse(match) as unknown);
+      return objectMatches.map(match => JSON.parse(match) as JsonValue);
     } catch {
       // fall through
     }
