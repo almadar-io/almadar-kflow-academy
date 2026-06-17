@@ -9,7 +9,8 @@
     "build:clean": "rm -rf dist && tsc && vite build",
     "preview": "vite preview",
     "clean": "rm -rf dist",
-    "lint": "eslint src/"
+    "lint": "eslint src/",
+    "test": "jest --config jest.config.cjs"
   },
   "dependencies": {
     "@kflow-academy/shared": "*",
@@ -54,6 +55,13 @@
     "postcss": "^8.5.6",
     "tailwindcss": "^3.4.17",
     "typescript": "^5.7.2",
-    "vite": "^6.0.5"
+    "vite": "^6.0.5",
+    "@testing-library/react": "^16.3.0",
+    "@testing-library/jest-dom": "^6.6.3",
+    "@testing-library/user-event": "^14.5.2",
+    "@types/jest": "^29.5.14",
+    "jest": "^29.7.0",
+    "jest-environment-jsdom": "^29.7.0",
+    "ts-jest": "^29.3.4"
   }
 }
