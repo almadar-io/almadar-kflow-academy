@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Concept } from '../types';
 import { Menu } from '../../../components';
 import { MoreVertical, Trash2, GraduationCap, Upload } from 'lucide-react';
-import ConfirmationDialog from '../../../components/ConfirmationDialog';
+import { ConfirmDialog } from '@almadar/ui';
 import { PlacementTest } from '../../learning/components/PlacementTest';
 
 interface ConceptCardProps {
@@ -144,15 +144,16 @@ const ConceptCard: React.FC<ConceptCardProps> = ({
 
       {/* Delete Confirmation Dialog */}
       {graphId && (
-        <ConfirmationDialog
+        <ConfirmDialog
           isOpen={showDeleteDialog}
           onClose={() => setShowDeleteDialog(false)}
           onConfirm={handleConfirmDelete}
           title="Delete Learning Path"
           message={`Are you sure you want to delete "${concept.name}"? This action cannot be undone.`}
-          confirmText="Delete"
-          cancelText="Cancel"
+          confirmLabel="Delete"
+          cancelLabel="Cancel"
           isLoading={isDeleting}
+          variant="danger"
         />
       )}
 

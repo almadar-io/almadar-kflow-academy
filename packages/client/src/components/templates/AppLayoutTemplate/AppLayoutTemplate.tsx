@@ -23,7 +23,7 @@
 
 import React, { useState, useEffect } from 'react';
 import type { LucideIcon } from 'lucide-react';
-import { Header } from '../../organisms/Header';
+import { Header } from '@almadar/ui';
 import { Sidebar } from '../../organisms/Sidebar';
 import { ProfilePopup } from '../../molecules/ProfilePopup/ProfilePopup';
 import { Avatar } from '@almadar/ui';

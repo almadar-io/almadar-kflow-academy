@@ -8,9 +8,7 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { StickyNote, X, Plus, Check, Trash2, Edit2 } from 'lucide-react';
 import { NoteItem } from '../../../features/concepts/types';
-
-import { Button, Modal, Typography } from '@almadar/ui';
-import ConfirmationDialog from '../../ConfirmationDialog';
+import { Button, ConfirmDialog, Modal, Typography } from '@almadar/ui';
 
 export interface NotesWidgetProps {
   /**
@@ -377,15 +375,15 @@ export const NotesWidget: React.FC<NotesWidgetProps> = ({
       </Modal>
 
       {/* Delete Confirmation Dialog */}
-      <ConfirmationDialog
+      <ConfirmDialog
         isOpen={noteToDelete !== null}
         onClose={() => setNoteToDelete(null)}
         onConfirm={handleConfirmDelete}
         title="Delete Note"
         message="Are you sure you want to delete this note? This action cannot be undone."
-        confirmText="Delete"
-        cancelText="Cancel"
-        confirmButtonClassName="bg-red-600 hover:bg-red-700"
+        confirmLabel="Delete"
+        cancelLabel="Cancel"
+        variant="danger"
       />
     </>
   );

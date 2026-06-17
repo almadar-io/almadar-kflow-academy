@@ -21,11 +21,11 @@ export { GoalReview } from './GoalReview';
 export type { GoalReviewProps, LearningGoal, Milestone as GoalReviewMilestone } from './GoalReview';
 
 export * from './PlacementTest';
-export * from './Header';
+export { Header, type HeaderProps } from '@almadar/ui';
 export * from './LessonCard';
 export * from './LessonPanel';
 export * from './List';
-export * from './Navigation';
+export { Navigation, type NavigationProps, type NavigationItem } from '@almadar/ui';
 export * from './OperationPanel';
 export * from './QuestionCard';
 export * from './Sidebar';

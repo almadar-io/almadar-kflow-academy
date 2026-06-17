@@ -6,7 +6,7 @@ export { default as PageHeader } from './PageHeader';
 export { default as Slider } from './Slider';
 export { default as Alert } from './Alert';
 export { default as AlertContainer } from './AlertContainer';
-export { default as ConfirmationDialog } from './ConfirmationDialog';
+export { ConfirmDialog } from '@almadar/ui';
 export { default as ThemeToggle } from './ThemeToggle';
 export { JsonViewer } from './JsonViewer';
 export type { AlertType } from '../contexts/AlertContext';

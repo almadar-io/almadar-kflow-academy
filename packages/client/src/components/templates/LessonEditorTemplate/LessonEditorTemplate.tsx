@@ -8,7 +8,6 @@
 import React, { useState } from 'react';
 import type { LucideIcon } from 'lucide-react';
 import { Save, Eye, Send, Sparkles, FileText, Settings, ArrowLeft, X } from 'lucide-react';
-import { Header } from '../../organisms/Header';
 import { LessonPanel, Prerequisite } from '../../organisms/LessonPanel';
 
 import { Card } from '../../molecules/Card';
