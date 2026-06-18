@@ -3,8 +3,6 @@ export * from './AppShellTemplate';
 export * from './LearnTemplate';
 
 // Learning
-export * from './LessonTemplate';
-export * from './LearningPathTemplate';
 
 // Stories
 export * from './KnowledgeStoryTemplate';

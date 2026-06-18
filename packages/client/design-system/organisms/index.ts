@@ -5,19 +5,14 @@ export * from './ForceDirectedGraph';
 export * from './MindMapCanvas';
 
 // Flashcards
-export * from './FlashCardStack';
 
 // Extracted organisms for template flattener compliance
-export { ConceptDetailBoard, type ConceptDetailBoardProps, type ConceptEntity } from './ConceptDetailBoard';
-export { KnowledgeGraphBoard, type KnowledgeGraphBoardProps, type KnowledgeGraphEntity } from './KnowledgeGraphBoard';
-export { LessonBoard, type LessonBoardProps, type LessonEntity, type SidebarItem } from './LessonBoard';
 
 // Knowledge organisms
 export { SubjectOverviewBoard, type SubjectOverviewBoardProps, type SubjectOverviewEntity } from './SubjectOverviewBoard';
 export { DomainExplorerBoard, type DomainExplorerBoardProps, type DomainExplorerEntity } from './DomainExplorerBoard';
 export { KnowledgeSearchBoard, type KnowledgeSearchBoardProps, type KnowledgeSearchEntity } from './KnowledgeSearchBoard';
 export { CrossDomainGraphBoard, type CrossDomainGraphBoardProps, type CrossDomainGraphEntity } from './CrossDomainGraphBoard';
-export { LearningPathBoard, type LearningPathBoardProps, type LearningPathEntity } from './LearningPathBoard';
 
 // Session organisms
 export { DailyMenuBoard, type DailyMenuBoardProps, type DailyMenuEntity } from './DailyMenuBoard';
