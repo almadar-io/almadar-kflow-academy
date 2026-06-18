@@ -8,9 +8,7 @@ const meta: Meta<typeof ActivationBlock> = {
     layout: 'padded',
   },
   tags: ['autodocs'],
-  argTypes: {
-    onSave: { action: 'saved' },
-  },
+  argTypes: {},
 };
 
 export default meta;

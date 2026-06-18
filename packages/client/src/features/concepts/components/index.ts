@@ -11,8 +11,8 @@ export { default as FirstLayerLoader } from './FirstLayerLoader';
 export { default as RelatedConceptList } from './RelatedConceptList';
 
 // Learning science components
-export { ActivationBlock } from './ActivationBlock';
+export { ActivationBlock } from '../../../components/organisms/LessonSegments/ActivationBlock';
 export { ConnectionBlock } from './ConnectionBlock';
-export { ReflectionBlock } from './ReflectionBlock';
-export { BloomQuizBlock } from './BloomQuizBlock';
+export { ReflectionBlock } from '../../../components/organisms/LessonSegments/ReflectionBlock';
+export { BloomQuizBlock } from '../../../components/organisms/LessonSegments/BloomQuizBlock';
 

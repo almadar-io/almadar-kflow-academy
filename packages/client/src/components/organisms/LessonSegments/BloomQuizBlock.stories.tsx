@@ -8,9 +8,7 @@ const meta: Meta<typeof BloomQuizBlock> = {
     layout: 'padded',
   },
   tags: ['autodocs'],
-  argTypes: {
-    onAnswer: { action: 'answered' },
-  },
+  argTypes: {},
 };
 
 export default meta;

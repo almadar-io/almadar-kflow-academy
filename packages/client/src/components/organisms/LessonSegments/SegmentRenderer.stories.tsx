@@ -9,11 +9,7 @@ const meta: Meta<typeof SegmentRenderer> = {
     layout: 'padded',
   },
   tags: ['autodocs'],
-  argTypes: {
-    onSaveActivation: { action: 'activation saved' },
-    onSaveReflection: { action: 'reflection saved' },
-    onAnswerBloom: { action: 'bloom answered' },
-  },
+  argTypes: {},
 };
 
 export default meta;

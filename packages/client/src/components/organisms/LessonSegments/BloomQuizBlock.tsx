@@ -7,7 +7,8 @@
 
 import React, { useState, useMemo } from 'react';
 import { CheckCircle } from 'lucide-react';
-import { MarkdownContent } from '@almadar/ui';
+import { MarkdownContent, useEventBus } from '@almadar/ui';
+import { UI_EVENTS } from '../../../app/uiEvents';
 import { CodeBlock } from './CodeBlock';
 import { parseMarkdownWithCodeBlocks } from './utils';
 import type { BloomLevel } from './types';
@@ -58,7 +59,6 @@ export interface BloomQuizBlockProps {
   answer: string;
   index?: number;
   isAnswered?: boolean;
-  onAnswer?: () => void;
 }
 
 export const BloomQuizBlock: React.FC<BloomQuizBlockProps> = ({
@@ -67,17 +67,17 @@ export const BloomQuizBlock: React.FC<BloomQuizBlockProps> = ({
   answer,
   index,
   isAnswered,
-  onAnswer
 }) => {
   const [revealed, setRevealed] = useState(false);
   const config = BLOOM_CONFIG[level];
+  const { emit } = useEventBus();
 
   const questionSegments = useMemo(() => parseMarkdownWithCodeBlocks(question), [question]);
   const answerSegments = useMemo(() => parseMarkdownWithCodeBlocks(answer), [answer]);
 
   const handleReveal = () => {
-    if (!revealed && onAnswer) {
-      onAnswer();
+    if (!revealed) {
+      emit(UI_EVENTS.ANSWER_BLOOM, { index: index ?? 0, level });
     }
     setRevealed(!revealed);
   };

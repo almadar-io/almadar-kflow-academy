@@ -625,9 +625,6 @@ describe('HighlightedSegmentRenderer', () => {
         <HighlightedSegmentRenderer
           segments={segments}
           userProgress={userProgress}
-          onSaveActivation={jest.fn()}
-          onSaveReflection={jest.fn()}
-          onAnswerBloom={jest.fn()}
         />
       );
 

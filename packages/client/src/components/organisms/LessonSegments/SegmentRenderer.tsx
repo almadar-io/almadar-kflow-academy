@@ -26,9 +26,6 @@ export interface SegmentRendererProps {
   containerClassName?: string;
   // User progress tracking props
   userProgress?: UserProgress;
-  onSaveActivation?: (response: string) => void;
-  onSaveReflection?: (index: number, note: string) => void;
-  onAnswerBloom?: (index: number, level: BloomLevel) => void;
   /** Callback that simulates executing runnable code blocks */
   onRunCodeSimulation?: (code: string, language: string) => Promise<CodeSimulationOutput>;
   /** Concept context used by interactive visualization generators */
@@ -44,9 +41,6 @@ export const SegmentRenderer: React.FC<SegmentRendererProps> = ({
   className = '',
   containerClassName = 'border border-gray-200 dark:border-gray-700 rounded-lg p-2 md:p-4 overflow-x-auto lesson-markdown space-y-6 touch-auto',
   userProgress,
-  onSaveActivation,
-  onSaveReflection,
-  onAnswerBloom,
   onRunCodeSimulation,
   concept,
   onGenerateInteractiveOrbital,
@@ -98,7 +92,6 @@ export const SegmentRenderer: React.FC<SegmentRendererProps> = ({
               key={`activate-${index}`}
               question={segment.question}
               savedResponse={userProgress?.activationResponse}
-              onSave={onSaveActivation || (() => { })}
             />
           );
         } else if (segment.type === 'connect') {
@@ -116,7 +109,6 @@ export const SegmentRenderer: React.FC<SegmentRendererProps> = ({
               prompt={segment.prompt}
               index={currentReflectIndex}
               savedNote={userProgress?.reflectionNotes?.[currentReflectIndex]}
-              onSave={(note: string) => onSaveReflection?.(currentReflectIndex, note)}
             />
           );
         } else if (segment.type === 'bloom') {
@@ -129,7 +121,6 @@ export const SegmentRenderer: React.FC<SegmentRendererProps> = ({
               answer={segment.answer}
               index={currentBloomIndex}
               isAnswered={userProgress?.bloomAnswered?.[currentBloomIndex]}
-              onAnswer={() => onAnswerBloom?.(currentBloomIndex, segment.level)}
             />
           );
         } else if (segment.type === 'visualization') {

@@ -7,25 +7,26 @@
 
 import React, { useState } from 'react';
 import { PauseCircle } from 'lucide-react';
+import { useEventBus } from '@almadar/ui';
+import { UI_EVENTS } from '../../../app/uiEvents';
 
 export interface ReflectionBlockProps {
   prompt: string;
   index: number;
   savedNote?: string;
-  onSave: (note: string) => void;
 }
 
 export const ReflectionBlock: React.FC<ReflectionBlockProps> = ({
   prompt,
   index,
   savedNote,
-  onSave
 }) => {
   const [note, setNote] = useState(savedNote || '');
   const [isExpanded, setIsExpanded] = useState(false);
+  const { emit } = useEventBus();
 
   const handleSave = () => {
-    onSave(note);
+    emit(UI_EVENTS.SAVE_REFLECTION, { index, note });
     setIsExpanded(false);
   };
 

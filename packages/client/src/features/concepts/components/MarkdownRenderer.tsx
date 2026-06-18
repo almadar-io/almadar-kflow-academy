@@ -13,10 +13,10 @@ import { CodeRunnerPanel, type CodeSimulationOutput } from '@design-system/organ
 import { Concept } from '../types';
 
 // Import learning science components
-import { ActivationBlock } from './ActivationBlock';
+import { ActivationBlock } from '../../../components/organisms/LessonSegments/ActivationBlock';
 import { ConnectionBlock } from './ConnectionBlock';
-import { ReflectionBlock } from './ReflectionBlock';
-import { BloomQuizBlock } from './BloomQuizBlock';
+import { ReflectionBlock } from '../../../components/organisms/LessonSegments/ReflectionBlock';
+import { BloomQuizBlock } from '../../../components/organisms/LessonSegments/BloomQuizBlock';
 
 // Isolated code block component with scroll preservation
 export const CodeBlock = React.memo(
@@ -377,9 +377,6 @@ export interface SegmentRendererProps {
     reflectionNotes?: string[];
     bloomAnswered?: Record<number, boolean>;
   };
-  onSaveActivation?: (response: string) => void;
-  onSaveReflection?: (index: number, note: string) => void;
-  onAnswerBloom?: (index: number, level: BloomLevel) => void;
   /** Callback that simulates executing runnable code blocks */
   onRunCodeSimulation?: (code: string, language: string) => Promise<CodeSimulationOutput>;
 }
@@ -390,9 +387,6 @@ export const SegmentRenderer: React.FC<SegmentRendererProps> = ({
   containerClassName = 'border border-gray-200 dark:border-gray-700 rounded-lg p-2 md:p-4 overflow-x-auto lesson-markdown space-y-6 touch-auto',
   concept,
   userProgress,
-  onSaveActivation,
-  onSaveReflection,
-  onAnswerBloom,
   onRunCodeSimulation,
 }) => {
   if (segments.length === 0) {
@@ -441,7 +435,6 @@ export const SegmentRenderer: React.FC<SegmentRendererProps> = ({
               key={`activate-${index}`}
               question={segment.question}
               savedResponse={userProgress?.activationResponse}
-              onSave={onSaveActivation || (() => { })}
             />
           );
         } else if (segment.type === 'connect') {
@@ -459,7 +452,6 @@ export const SegmentRenderer: React.FC<SegmentRendererProps> = ({
               prompt={segment.prompt}
               index={currentReflectIndex}
               savedNote={userProgress?.reflectionNotes?.[currentReflectIndex]}
-              onSave={(note: string) => onSaveReflection?.(currentReflectIndex, note)}
             />
           );
         } else if (segment.type === 'bloom') {
@@ -472,7 +464,6 @@ export const SegmentRenderer: React.FC<SegmentRendererProps> = ({
               answer={segment.answer}
               index={currentBloomIndex}
               isAnswered={userProgress?.bloomAnswered?.[currentBloomIndex]}
-              onAnswer={() => onAnswerBloom?.(currentBloomIndex, segment.level)}
             />
           );
         }

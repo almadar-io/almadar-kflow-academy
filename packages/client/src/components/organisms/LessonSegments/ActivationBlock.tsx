@@ -7,23 +7,24 @@
 
 import React, { useState } from 'react';
 import { Lightbulb } from 'lucide-react';
+import { useEventBus } from '@almadar/ui';
+import { UI_EVENTS } from '../../../app/uiEvents';
 
 export interface ActivationBlockProps {
   question: string;
   savedResponse?: string;
-  onSave: (response: string) => void;
 }
 
 export const ActivationBlock: React.FC<ActivationBlockProps> = ({
   question,
   savedResponse,
-  onSave
 }) => {
   const [response, setResponse] = useState(savedResponse || '');
   const [isExpanded, setIsExpanded] = useState(!savedResponse);
+  const { emit } = useEventBus();
 
   const handleSubmit = () => {
-    onSave(response);
+    emit(UI_EVENTS.SAVE_ACTIVATION, { response });
     setIsExpanded(false);
   };
 
@@ -57,7 +58,7 @@ export const ActivationBlock: React.FC<ActivationBlockProps> = ({
                 </button>
                 <button
                   onClick={() => {
-                    onSave('');
+                    emit(UI_EVENTS.SAVE_ACTIVATION, { response: '' });
                     setIsExpanded(false);
                   }}
                   className="px-4 py-2 text-indigo-600 dark:text-indigo-400 hover:underline text-sm"

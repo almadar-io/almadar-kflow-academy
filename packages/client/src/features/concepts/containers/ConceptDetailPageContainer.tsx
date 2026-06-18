@@ -8,7 +8,8 @@ import { useExplainConcept } from '../../knowledge-graph/hooks/useExplainConcept
 import { MarkdownContent } from '../components/MarkdownRenderer';
 import { useAnswerQuestion } from '../../knowledge-graph/hooks/useAnswerQuestion';
 import { useCustomOperation } from '../../knowledge-graph/hooks/useCustomOperation';
-import type { Concept } from '../types';
+import { useUserProgress } from '../hooks/useUserProgress';
+import type { Concept, BloomLevel } from '../types';
 import type { ConceptDisplay } from '../../knowledge-graph/api/types';
 import type { QuestionAnswerItem, NoteItem, AnnotationType } from '../../knowledge-graph/types';
 import { LearnConceptDetailTemplate } from '../../../components/templates/LearnConceptDetailTemplate';
@@ -166,6 +167,13 @@ const ConceptDetailPageContainer: React.FC = () => {
   const { explain, isLoading: isExplaining } = useExplainConcept(graphId || '');
   const { answer, isLoading: isAnswering } = useAnswerQuestion(graphId || '');
   const { execute: customOp, isLoading: isCustomOp } = useCustomOperation(graphId || '');
+
+  // User progress hook — wires save* methods called by bus listeners below
+  const { saveActivationResponse, saveReflectionNote, markBloomQuestionAnswered } = useUserProgress({
+    dispatch,
+    concept: concept ?? undefined,
+    graphId,
+  });
 
   // Local UI state
   const [streamingLessonContent, setStreamingLessonContent] = useState('');
@@ -605,6 +613,18 @@ const ConceptDetailPageContainer: React.FC = () => {
       // open question widget if not already open
       if (!showQuestionWidget) setShowQuestionWidget(true);
     });
+    const unsubSaveActivation = on('UI:SAVE_ACTIVATION', (event) => {
+      const payload = event.payload as { response?: string } | undefined;
+      if (payload?.response !== undefined) saveActivationResponse(payload.response);
+    });
+    const unsubSaveReflection = on('UI:SAVE_REFLECTION', (event) => {
+      const payload = event.payload as { index?: number; note?: string } | undefined;
+      if (payload?.index !== undefined && payload?.note !== undefined) saveReflectionNote(payload.index, payload.note);
+    });
+    const unsubAnswerBloom = on('UI:ANSWER_BLOOM', (event) => {
+      const payload = event.payload as { index?: number; level?: BloomLevel } | undefined;
+      if (payload?.index !== undefined && payload?.level) markBloomQuestionAnswered(payload.index, payload.level);
+    });
     return () => {
       unsubGenerate();
       unsubEdit();
@@ -620,6 +640,9 @@ const ConceptDetailPageContainer: React.FC = () => {
       unsubDeleteNote();
       unsubSubmitQ();
       unsubDeleteQ();
+      unsubSaveActivation();
+      unsubSaveReflection();
+      unsubAnswerBloom();
     };
   }, [
     on,
@@ -637,6 +660,9 @@ const ConceptDetailPageContainer: React.FC = () => {
     lessonQuestions,
     lessonNotes,
     showQuestionWidget,
+    saveActivationResponse,
+    saveReflectionNote,
+    markBloomQuestionAnswered,
   ]);
 
   // Prerequisites for the lesson panel (from relationships)
