@@ -41,6 +41,11 @@
     "src/**/*.stories.tsx",
     "src/features/assessment/**",
     "src/features/public/**",
-    "src/features/templates/**"
+    "src/features/templates/**",
+    "design-system/**/*.stories.ts",
+    "design-system/**/*.stories.tsx",
+    "design-system/**/__tests__/**",
+    "design-system/**/*.test.ts",
+    "design-system/**/*.test.tsx"
   ]
 }
