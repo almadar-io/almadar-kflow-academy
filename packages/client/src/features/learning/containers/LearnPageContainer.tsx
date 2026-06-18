@@ -3,10 +3,11 @@
  * Handles data fetching, state management, and passes data to library LearnPage
  */
 
-import React, { useState, useCallback, useMemo, useRef } from 'react';
+import React, { useState, useCallback, useMemo, useRef, useEffect } from 'react';
 import { useLocation } from 'react-router';
 import { useAppDispatch } from '../../../app/hooks';
 import { useAuthContext } from '../../auth/AuthContext';
+import { useEventBus } from '@almadar/ui';
 import { LearnPage } from '../../../components/pages/LearnPage';
 import { getNavigationItems, getUserForTemplate, mainNavItems } from '../../../config/navigation';
 import { useLearningPaths } from '../../knowledge-graph/hooks/useLearningPaths';
@@ -23,8 +24,9 @@ import type { SeedConceptDisplay, GraphDisplay } from '../../../components/pages
 const LearnPageContainer: React.FC = () => {
   const navigate = useNavigateEvent();
   const location = useLocation();
-  const { user, signOut } = useAuthContext();
+  const { user } = useAuthContext();
   const dispatch = useAppDispatch();
+  const { on, emit } = useEventBus();
 
   // Data fetching hooks
   const { learningPaths, loading: isLoadingPaths, error: pathsError, refetch: refetchLearningPaths } = useLearningPaths();
@@ -37,11 +39,6 @@ const LearnPageContainer: React.FC = () => {
   const [parsedConcepts, setParsedConcepts] = useState<Array<{ name: string; description: string }>>([]);
   const [parsedLevelName, setParsedLevelName] = useState('');
   const contentAccRef = useRef('');
-
-  // Logout handler
-  const handleLogout = useCallback(async () => {
-    await signOut();
-  }, [signOut]);
 
   // Navigation configuration
   const navigationItems = getNavigationItems(location.pathname, mainNavItems).map(item => ({
@@ -170,10 +167,19 @@ const LearnPageContainer: React.FC = () => {
     }
   }, [refetchLearningPaths, showError, showSuccess]);
 
-  // Handle navigate to graph detail
+  // Handle navigate to mentor — emit bus event; UIEventBridge handles navigation
   const handleNavigateToMentor = useCallback((graphId: string) => {
-    navigate(`/concepts/${graphId}`);
-  }, [navigate]);
+    emit('UI:NAVIGATE_TO_MENTOR', { graphId });
+  }, [emit]);
+
+  // Wire UI:NAVIGATE_TO_MENTOR to actual navigation
+  useEffect(() => {
+    const unsub = on('UI:NAVIGATE_TO_MENTOR', (event) => {
+      const payload = event.payload as { graphId?: string } | undefined;
+      if (payload?.graphId) navigate(`/concepts/${payload.graphId}`);
+    });
+    return unsub;
+  }, [on, navigate]);
 
   return (
     <LearnPage
@@ -188,8 +194,6 @@ const LearnPageContainer: React.FC = () => {
       onNavigateToMentor={handleNavigateToMentor}
       user={templateUser}
       navigationItems={navigationItems}
-      onLogoClick={() => navigate('/home')}
-      onLogout={handleLogout}
       goalFormDialog={(showGoalForm || isExpanding) ? (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
           <div className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto p-6">

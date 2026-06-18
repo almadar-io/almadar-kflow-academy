@@ -715,12 +715,11 @@ export const KnowledgeGraphTemplate: React.FC<KnowledgeGraphTemplateProps> = ({
         </Button>
       )}
       <ThemeToggle />
-      {user && onLogout && (
+      {user && (
         <ProfilePopup
           userName={user.name}
           userEmail={user.email}
           userAvatar={user.avatar}
-          onLogout={onLogout}
           trigger={
             <button
               className={cn(
@@ -745,10 +744,8 @@ export const KnowledgeGraphTemplate: React.FC<KnowledgeGraphTemplateProps> = ({
     <AppLayoutTemplate
       navigationItems={navigationItems}
       user={user}
-      onLogout={onLogout}
       logo={logo}
       brandName="KFlow"
-      onLogoClick={onLogoClick}
       mobileHeaderActions={customMobileHeaderActions}
       pageHeader={detailPageHeader && customMainContent ? detailPageHeader : undefined}
       className={className}

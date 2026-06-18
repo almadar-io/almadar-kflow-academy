@@ -2,6 +2,7 @@
  * Shared types for Learn templates
  */
 
+import type React from 'react';
 import type { LucideIcon } from 'lucide-react';
 
 export interface LearnLevel {
@@ -100,8 +101,10 @@ export interface LearnTemplateProps {
     badge?: string | number;
     active?: boolean;
   }>;
+  /** @deprecated Handled by UIEventBridge */
   onLogout?: () => void;
   logo?: React.ReactNode;
+  /** @deprecated Handled by UIEventBridge */
   onLogoClick?: () => void;
   
   // Graph data for mindmap view

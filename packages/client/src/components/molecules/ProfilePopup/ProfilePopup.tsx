@@ -1,50 +1,17 @@
-/**
- * ProfilePopup Molecule Component
- * 
- * A popup card that displays user profile information and logout button.
- * Used in templates when clicking on user avatar.
- */
-
 import React from 'react';
-import { LogOut, User } from 'lucide-react';
+import { LogOut } from 'lucide-react';
+import { useEventBus } from '@almadar/ui';
 import { Menu, MenuOption } from '../../../components/Menu';
 import { Typography, Avatar } from '@almadar/ui';
 
 export interface ProfilePopupProps {
-  /**
-   * User name
-   */
   userName: string;
-  
-  /**
-   * User email (optional)
-   */
   userEmail?: string;
-  
-  /**
-   * User avatar URL (optional)
-   */
   userAvatar?: string;
-  
-  /**
-   * Logout handler
-   */
-  onLogout: () => void;
-  
-  /**
-   * Whether logout is in progress
-   */
+  /** @deprecated Use the bus — ProfilePopup emits UI:LOGOUT automatically */
+  onLogout?: () => void;
   isLoggingOut?: boolean;
-  
-  /**
-   * Trigger element (usually the avatar button)
-   */
   trigger: React.ReactNode;
-  
-  /**
-   * Menu position
-   * @default 'top-right'
-   */
   position?: 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right';
 }
 
@@ -52,16 +19,17 @@ export const ProfilePopup: React.FC<ProfilePopupProps> = ({
   userName,
   userEmail,
   userAvatar,
-  onLogout,
   isLoggingOut = false,
   trigger,
   position = 'top-right',
 }) => {
+  const { emit } = useEventBus();
+
   const menuOptions: MenuOption[] = [
     {
       id: 'logout',
       label: 'Log Out',
-      onClick: onLogout,
+      onClick: () => emit('UI:LOGOUT', {}),
       icon: <LogOut className="h-4 w-4" />,
       disabled: isLoggingOut,
     },

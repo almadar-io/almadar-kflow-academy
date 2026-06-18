@@ -64,19 +64,14 @@ const ConceptDetailPageContainer: React.FC = () => {
   const navigate = useNavigateEvent();
   const location = useLocation();
   const dispatch = useAppDispatch();
-  const { user, signOut } = useAuthContext();
-  
+  const { user } = useAuthContext();
+
   // Navigation configuration
   const navigationItems = getNavigationItems(location.pathname, mainNavItems).map(item => ({
     ...item,
     onClick: () => navigate(item.href),
   }));
   const templateUser = getUserForTemplate(user);
-  
-  // Logout handler
-  const handleLogout = useCallback(async () => {
-    await signOut();
-  }, [signOut]);
 
   // Single useEffect for initialization
   useEffect(() => {
@@ -732,8 +727,6 @@ const ConceptDetailPageContainer: React.FC = () => {
         seedConceptAction={seedConceptAction}
         user={templateUser}
         navigationItems={navigationItems}
-        onLogout={handleLogout}
-        onLogoClick={() => navigate('/home')}
       />
     </>
   );

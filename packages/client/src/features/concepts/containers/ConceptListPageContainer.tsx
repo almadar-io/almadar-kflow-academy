@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useCallback, useState, useRef } from 'react';
 import { useParams, useLocation } from 'react-router';
+import { useEventBus } from '@almadar/ui';
 import { useNavigateEvent } from '../../../hooks/useNavigateEvent';
 import { useAppDispatch } from '../../../app/hooks';
 import { useGraphSummary, useConceptsByLayer, useGetGraph, useMindMapStructure } from '../../knowledge-graph/hooks';
@@ -85,7 +86,8 @@ const ConceptListPageContainer: React.FC = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigateEvent();
   const location = useLocation();
-  const { user, signOut } = useAuthContext();
+  const { user } = useAuthContext();
+  const { on, emit } = useEventBus();
 
   // Template toggle state
   const [templateType, setTemplateType] = useState<TemplateType>('journey');
@@ -474,14 +476,11 @@ const ConceptListPageContainer: React.FC = () => {
   const isLoading = graphSummary.loading || conceptsData.loading || mindMapData.loading || isLoadingGraph;
   const error = graphSummary.error || conceptsData.error || mindMapData.error;
 
-  // Handle logout
-  const handleLogout = useCallback(async () => {
-    try {
-      await signOut();
-    } catch (error) {
-      console.error('Logout error:', error);
-    }
-  }, [signOut]);
+  // Handle view mode change — emit bus event
+  const handleViewModeChange = useCallback((mode: 'list' | 'mindmap') => {
+    emit('UI:VIEW_MODE_CHANGE', { mode });
+    setViewMode(mode);
+  }, [emit]);
 
   // Get assessedLevel from the LearningGoal node in the graph
   const assessedLevel = useMemo(() => {
@@ -733,13 +732,9 @@ const ConceptListPageContainer: React.FC = () => {
   // Common template props
   const commonTemplateProps: Omit<LearnTemplateProps, 'goal' | 'levels' | 'seedConcept'> = {
     viewMode,
-    onViewModeChange: setViewMode,
+    onViewModeChange: handleViewModeChange,
     onConceptClick: handleConceptClick,
-    onLevelClick: (levelId) => {
-      // Level switching is now handled by the template itself
-      // This callback is kept for potential future use (e.g., analytics)
-      // The template will update its displayed level when clicked
-    },
+    onLevelClick: (_levelId) => {},
     onLoadNextLevel: handleLoadNextLevel,
     isLoadingNextLevel: isExpanding || showNextLevelLoader,
     nextLevelStreamContent: showNextLevelLoader ? nextLevelStreamContent : undefined,
@@ -751,8 +746,6 @@ const ConceptListPageContainer: React.FC = () => {
     graphId: graphId || undefined,
     user: templateUser,
     navigationItems,
-    onLogout: handleLogout,
-    onLogoClick: () => navigate('/home'),
     graphNodes: learnGraphNodes,
     graphEdges: learnGraphEdges,
   };

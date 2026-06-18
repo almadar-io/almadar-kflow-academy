@@ -8,7 +8,7 @@
 import React, { useState } from 'react';
 import type { LucideIcon } from 'lucide-react';
 import { ChevronLeft, ChevronRight, X } from 'lucide-react';
-import { Typography, Badge, Divider } from '@almadar/ui';
+import { Typography, Badge, Divider, useEventBus } from '@almadar/ui';
 import { cn } from '../../../utils/theme';
 import kflowLogo from '../../../assets/kflow-logo.svg';
 
@@ -199,6 +199,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   onLogoClick,
   className,
 }) => {
+  const { emit } = useEventBus();
   const [internalCollapsed, setInternalCollapsed] = useState(defaultCollapsed);
   const collapsed = controlledCollapsed !== undefined ? controlledCollapsed : internalCollapsed;
 
@@ -226,7 +227,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
             'flex items-center gap-3 cursor-pointer',
             collapsed && 'justify-center w-full'
           )}
-          onClick={onLogoClick}
+          onClick={() => { onLogoClick?.(); emit('UI:LOGO_CLICK', {}); }}
         >
           {/* Logo image or custom logo */}
           {logo ? (

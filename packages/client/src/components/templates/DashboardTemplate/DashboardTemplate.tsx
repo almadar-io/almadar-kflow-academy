@@ -201,11 +201,9 @@ export const DashboardTemplate: React.FC<DashboardTemplateProps> = ({
     <AppLayoutTemplate
       navigationItems={navigationItems}
       user={user}
-      onLogout={onLogout}
       logo={logo}
       logoSrc={logoSrc}
       brandName={brandName}
-      onLogoClick={onLogoClick}
       sidebarFooterContent={sidebarFooterContent}
       sidebarUserSection={sidebarUserSection}
       className={className}

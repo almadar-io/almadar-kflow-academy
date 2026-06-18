@@ -94,7 +94,9 @@ export interface ConceptListPageProps {
     active?: boolean;
   }>;
   logo?: React.ReactNode;
+  /** @deprecated Handled by UIEventBridge */
   onLogoClick?: () => void;
+  /** @deprecated Handled by UIEventBridge */
   onLogout?: () => void;
   
   /**

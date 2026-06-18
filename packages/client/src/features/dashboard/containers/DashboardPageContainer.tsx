@@ -1,10 +1,6 @@
-/**
- * Container component for DashboardPage
- * Handles data fetching, state management, and passes data to library DashboardPage
- */
-
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { useLocation } from 'react-router';
+import { useEventBus } from '@almadar/ui';
 import { useAuthContext } from '../../auth/AuthContext';
 import { DashboardPage } from '../../../components/pages/DashboardPage';
 import { getNavigationItems, getUserForTemplate, mainNavItems } from '../../../config/navigation';
@@ -17,43 +13,66 @@ import type { RecentActivity } from '../statisticsApi';
 const DashboardPageContainer: React.FC = () => {
   const navigate = useNavigateEvent();
   const location = useLocation();
-  const { user, signOut } = useAuthContext();
+  const { user } = useAuthContext();
+  const { on, emit } = useEventBus();
 
-  // Logout handler
-  const handleLogout = useCallback(async () => {
-    await signOut();
-  }, [signOut]);
-
-  // Data fetching hooks
   const { activity, isLoading: isLoadingActivity, formatTimestamp } = useRecentActivity(5);
   const { items: jumpBackInItems, isLoading: isLoadingJumpBackIn } = useJumpBackIn();
 
-  // Navigation configuration
   const navigationItems = getNavigationItems(location.pathname, mainNavItems).map(item => ({
     ...item,
     onClick: () => navigate(item.href),
   }));
   const templateUser = getUserForTemplate(user);
 
-  // Handle jump back in click
-  const handleJumpBackInClick = (item: JumpBackInItem) => {
-    if (item.type === 'learningPath' && item.metadata.graphId) {
-      navigate(`/concepts/${item.metadata.graphId}`);
-    }
-    // Courses not yet implemented for jump back in navigation
-  };
-
-  // Handle activity click
-  const handleActivityClick = (activity: RecentActivity) => {
-    if (activity.type === 'concept_studied' && activity.metadata?.conceptId) {
-      if (activity.metadata.graphId) {
-        const conceptId = encodeURIComponent(activity.metadata.conceptId);
-        navigate(`/concepts/${activity.metadata.graphId}/concept/${conceptId}`);
+  useEffect(() => {
+    const unsubCreate = on('UI:CREATE_LEARNING_PATH', () => {
+      navigate('/learn');
+    });
+    const unsubBrowse = on('UI:BROWSE_STORIES', () => {
+      navigate('/stories');
+    });
+    const unsubJump = on('UI:JUMP_BACK_IN_CLICK', (event) => {
+      const payload = event.payload as { itemId: string; type: string; graphId?: string } | undefined;
+      if (payload?.type === 'learningPath' && payload.graphId) {
+        navigate(`/concepts/${payload.graphId}`);
       }
-    } else if (activity.type === 'story_completed' && activity.metadata?.storyId) {
-      navigate(`/stories/${activity.metadata.storyId}`);
-    }
-  };
+    });
+    const unsubActivity = on('UI:ACTIVITY_CLICK', (event) => {
+      const payload = event.payload as { type: string; conceptId?: string; graphId?: string; storyId?: string } | undefined;
+      if (!payload) return;
+      if (payload.type === 'concept_studied' && payload.conceptId) {
+        if (payload.graphId) {
+          navigate(`/concepts/${payload.graphId}/concept/${encodeURIComponent(payload.conceptId)}`);
+        }
+      } else if (payload.type === 'story_completed' && payload.storyId) {
+        navigate(`/stories/${payload.storyId}`);
+      }
+    });
+    return () => {
+      unsubCreate();
+      unsubBrowse();
+      unsubJump();
+      unsubActivity();
+    };
+  }, [on, navigate]);
+
+  const handleJumpBackInClick = useCallback((item: JumpBackInItem) => {
+    emit('UI:JUMP_BACK_IN_CLICK', {
+      itemId: item.metadata.graphId || '',
+      type: item.type,
+      graphId: item.metadata.graphId,
+    });
+  }, [emit]);
+
+  const handleActivityClick = useCallback((activity: RecentActivity) => {
+    emit('UI:ACTIVITY_CLICK', {
+      type: activity.type,
+      conceptId: activity.metadata?.conceptId,
+      graphId: activity.metadata?.graphId,
+      storyId: activity.metadata?.storyId,
+    });
+  }, [emit]);
 
   return (
     <DashboardPage
@@ -64,13 +83,11 @@ const DashboardPageContainer: React.FC = () => {
       isLoadingActivity={isLoadingActivity}
       formatTimestamp={formatTimestamp}
       onJumpBackInClick={handleJumpBackInClick}
-      onCreateLearningPath={() => navigate('/learn')}
-      onBrowseStories={() => navigate('/stories')}
+      onCreateLearningPath={() => emit('UI:CREATE_LEARNING_PATH', {})}
+      onBrowseStories={() => emit('UI:BROWSE_STORIES', {})}
       onActivityClick={handleActivityClick}
       user={templateUser}
       navigationItems={navigationItems}
-      onLogoClick={() => navigate('/home')}
-      onLogout={handleLogout}
     />
   );
 };

@@ -271,9 +271,7 @@ export const FocusModeTemplate: React.FC<LearnTemplateProps> = ({
       <AppLayoutTemplate
         navigationItems={navigationItems}
         user={user}
-        onLogout={onLogout}
         logo={logo}
-        onLogoClick={onLogoClick}
         contentClassName="w-full md:max-w-4xl md:mx-auto"
         contentPadding={false}
       >

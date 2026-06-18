@@ -23,7 +23,7 @@
 
 import React, { useState, useEffect } from 'react';
 import type { LucideIcon } from 'lucide-react';
-import { Header } from '@almadar/ui';
+import { Header, useEventBus } from '@almadar/ui';
 import { Sidebar } from '../../organisms/Sidebar';
 import { ProfilePopup } from '../../molecules/ProfilePopup/ProfilePopup';
 import { Avatar } from '@almadar/ui';
@@ -159,6 +159,7 @@ export const AppLayoutTemplate: React.FC<AppLayoutTemplateProps> = ({
   contentClassName,
   className,
 }) => {
+  const { emit } = useEventBus();
   const [sidebarOpen, setSidebarOpen] = useState(!defaultSidebarCollapsed);
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
@@ -184,14 +185,13 @@ export const AppLayoutTemplate: React.FC<AppLayoutTemplateProps> = ({
   // Default sidebar footer (ThemeToggle)
   const defaultFooterContent = sidebarFooterContent ?? <ThemeToggle />;
 
-  // Default sidebar user section (ProfilePopup if onLogout provided)
+  // Default sidebar user section (ProfilePopup if user present — emits UI:LOGOUT via bus)
   const defaultUserSection = sidebarUserSection ?? (
-    user && onLogout ? (
+    user ? (
       <ProfilePopup
         userName={user.name}
         userEmail={user.email}
         userAvatar={user.avatar}
-        onLogout={onLogout}
         trigger={
           <button
             type="button"
@@ -214,25 +214,6 @@ export const AppLayoutTemplate: React.FC<AppLayoutTemplateProps> = ({
         }
         position="top-right"
       />
-    ) : user ? (
-      sidebarOpen ? (
-        <div className="flex items-center gap-2">
-          <Avatar
-            src={user.avatar}
-            initials={userInitials}
-            size="sm"
-          />
-          <span className="text-sm text-gray-600 dark:text-gray-400 truncate max-w-[120px]">
-            {user.name}
-          </span>
-        </div>
-      ) : (
-        <Avatar
-          src={user.avatar}
-          initials={userInitials}
-          size="sm"
-        />
-      )
     ) : null
   );
 
@@ -240,12 +221,11 @@ export const AppLayoutTemplate: React.FC<AppLayoutTemplateProps> = ({
   const defaultMobileHeaderActions = mobileHeaderActions ?? (
     <div className="flex items-center gap-2">
       <ThemeToggle />
-      {user && onLogout && (
+      {user && (
         <ProfilePopup
           userName={user.name}
           userEmail={user.email}
           userAvatar={user.avatar}
-          onLogout={onLogout}
           trigger={
             <button
               type="button"
@@ -325,7 +305,7 @@ export const AppLayoutTemplate: React.FC<AppLayoutTemplateProps> = ({
             variant="mobile"
             sticky={true}
             actions={defaultMobileHeaderActions}
-            onLogoClick={onLogoClick}
+            onLogoClick={() => { onLogoClick?.(); emit('UI:LOGO_CLICK', {}); }}
           />
         )}
 

@@ -98,8 +98,10 @@ export interface LearnConceptDetailTemplateProps {
     badge?: string | number;
     active?: boolean;
   }>;
+  /** @deprecated Handled by UIEventBridge */
   onLogout?: () => void;
   logo?: React.ReactNode;
+  /** @deprecated Handled by UIEventBridge */
   onLogoClick?: () => void;
 
   /**
@@ -132,9 +134,7 @@ export const LearnConceptDetailTemplate: React.FC<LearnConceptDetailTemplateProp
       <AppLayoutTemplate
         navigationItems={navigationItems}
         user={user}
-        onLogout={onLogout}
         logo={logo}
-        onLogoClick={onLogoClick}
         contentClassName="w-full md:max-w-4xl md:mx-auto"
       >
         <div className="min-h-screen flex items-center justify-center">
@@ -152,9 +152,7 @@ export const LearnConceptDetailTemplate: React.FC<LearnConceptDetailTemplateProp
       <AppLayoutTemplate
         navigationItems={navigationItems}
         user={user}
-        onLogout={onLogout}
         logo={logo}
-        onLogoClick={onLogoClick}
         contentClassName="w-full md:max-w-4xl md:mx-auto"
       >
         <div className="min-h-screen flex items-center justify-center">
@@ -180,9 +178,7 @@ export const LearnConceptDetailTemplate: React.FC<LearnConceptDetailTemplateProp
     <AppLayoutTemplate
       navigationItems={navigationItems}
       user={user}
-      onLogout={onLogout}
       logo={logo}
-      onLogoClick={onLogoClick}
       contentClassName="w-full md:max-w-4xl md:mx-auto"
       contentPadding={false}
     >

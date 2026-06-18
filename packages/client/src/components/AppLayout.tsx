@@ -1,10 +1,3 @@
-/**
- * AppLayout - shared sidebar layout wrapper for all pages.
- *
- * Provides the KFlow sidebar, navigation, user profile, and logout
- * so every page gets a consistent chrome.
- */
-
 import React from 'react';
 import { useLocation } from 'react-router';
 import { useAuthContext } from '../features/auth/AuthContext';
@@ -19,7 +12,7 @@ interface AppLayoutProps {
 export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
   const navigate = useNavigateEvent();
   const location = useLocation();
-  const { user, signOut } = useAuthContext();
+  const { user } = useAuthContext();
 
   const navigationItems = getNavigationItems(location.pathname, mainNavItems).map(item => ({
     ...item,
@@ -32,8 +25,6 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
     <AppLayoutTemplate
       navigationItems={navigationItems}
       user={templateUser}
-      onLogout={user ? () => signOut() : undefined}
-      onLogoClick={() => navigate('/home')}
       brandName="KFlow"
       contentPadding={true}
     >
