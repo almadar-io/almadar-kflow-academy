@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import { getOpenAI } from '../config/openai';
+import { extractJSONArray } from '../services/llm';
 import { extractTags, parseStructuredResponse, generateFallbackChildren } from '../utils/text';
 import {
   GenerateNoteRequest,
@@ -857,7 +858,6 @@ export async function customOperationHandler(
         onComplete: (fullContent: string) => {
           try {
             // Parse the JSON array from the streamed content
-            const { extractJSONArray } = require('../services/llm');
             const results = extractJSONArray(fullContent);
             
             // Separate deletions from additions/updates

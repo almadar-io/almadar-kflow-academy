@@ -11,6 +11,7 @@ import type { GraphMutation, MutationBatch, MutationContext } from '../types/mut
 import type { LearningGoal, Milestone } from '../types/goal';
 import { extractJSONArray } from '../services/llm';
 import { buildExpansionMutations } from '../services/graphOperations/expansionMutations';
+import { processPrerequisitesFromLesson } from './prerequisites';
 
 /**
  * Parse progressive expansion content and generate mutations.
@@ -52,8 +53,6 @@ export async function parseExplainContent(
     prerequisites: string[];
   };
 }> {
-  const { processPrerequisitesFromLesson } = require('../utils/prerequisites');
-  
   const lessonMarkdown = content.trim();
 
   if (!lessonMarkdown) {
