@@ -7,10 +7,9 @@
 
 import React, { useState } from 'react';
 import { Edit2, Check, X, Circle, CheckCircle2 } from 'lucide-react';
-import { Card } from '../../molecules/Card';
 import { FormField } from '../../molecules/FormField';
 import { Input } from '../../atoms/Input';
-import { Button, ButtonGroup, Icon, Spinner, Textarea, Typography } from '@almadar/ui';
+import { Button, ButtonGroup, Card, CardFooter, CardHeader, Icon, Spinner, Textarea, Typography } from '@almadar/ui';
 import { cn } from '../../../utils/theme';
 
 export interface Milestone {
@@ -144,8 +143,8 @@ export const GoalReview: React.FC<GoalReviewProps> = ({
 
   return (
     <div className={cn('w-full', className)}>
-      <Card
-        header={
+      <Card>
+        <CardHeader className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
           <div className="flex flex-col sm:flex-row justify-between items-start gap-4">
             <Typography variant="h5" className="text-xl sm:text-2xl font-bold">
               Review Your Learning Goal
@@ -183,19 +182,7 @@ export const GoalReview: React.FC<GoalReviewProps> = ({
               </ButtonGroup>
             )}
           </div>
-        }
-        footer={
-          <div className="flex justify-end gap-4">
-            <Button
-              variant="primary"
-              onClick={onConfirm}
-              disabled={isEditing}
-            >
-              Confirm & Continue
-            </Button>
-          </div>
-        }
-      >
+        </CardHeader>
         <div className="space-y-6">
           {isEditing ? (
             <>
@@ -311,6 +298,17 @@ export const GoalReview: React.FC<GoalReviewProps> = ({
             </>
           )}
         </div>
+        <CardFooter className="px-6 py-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50">
+          <div className="flex justify-end gap-4">
+            <Button
+              variant="primary"
+              onClick={onConfirm}
+              disabled={isEditing}
+            >
+              Confirm & Continue
+            </Button>
+          </div>
+        </CardFooter>
       </Card>
     </div>
   );

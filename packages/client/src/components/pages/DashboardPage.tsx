@@ -11,8 +11,7 @@ import { EnhancedStatsCards } from '../organisms/EnhancedStatsCards';
 
 import { RecommendationsCard } from '../organisms/RecommendationsCard';
 import { AchievementsCard } from '../organisms/AchievementsCard';
-import { Button, Typography, Spinner } from '@almadar/ui';
-import { Card } from '../molecules/Card';
+import { Button, Card, Spinner, Typography } from '@almadar/ui';
 import {
   ArrowRight,
   Plus,

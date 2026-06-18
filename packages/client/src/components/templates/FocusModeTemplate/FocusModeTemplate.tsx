@@ -7,8 +7,7 @@
 
 import React, { useMemo, useState, useEffect, useRef, useCallback } from 'react';
 import { AppLayoutTemplate } from '../AppLayoutTemplate';
-import { Card } from '../../molecules/Card';
-import { Badge, Button, Modal, Spinner, Typography } from '@almadar/ui';
+import { Badge, Button, Card, Modal, Spinner, Typography } from '@almadar/ui';
 import { ConceptCard } from '../../organisms/ConceptCard';
 import { TreeMap, TreeMapNode } from '../../organisms/TreeMap';
 import { LessonPanel } from '../../organisms/LessonPanel';

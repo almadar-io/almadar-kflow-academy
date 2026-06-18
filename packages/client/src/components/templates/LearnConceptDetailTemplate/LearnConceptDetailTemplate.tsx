@@ -8,8 +8,7 @@
 
 import React from 'react';
 import { AppLayoutTemplate } from '../AppLayoutTemplate';
-import { Card } from '../../molecules/Card';
-import { Button, Typography, Badge } from '@almadar/ui';
+import { Badge, Button, Card, Typography } from '@almadar/ui';
 import { ConceptNavigation } from '../../molecules/ConceptNavigation';
 import { ArrowLeft, ChevronLeft, ChevronRight, ArrowRight, BookOpen, Loader2 } from 'lucide-react';
 import { cn } from '../../../utils/theme';

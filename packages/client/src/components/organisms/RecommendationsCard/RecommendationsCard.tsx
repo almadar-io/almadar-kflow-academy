@@ -7,8 +7,7 @@
 
 import React from 'react';
 import { Sparkles, BookOpen, ArrowRight } from 'lucide-react';
-import { Card } from '../../molecules/Card';
-import { Alert, Icon, Spinner, Typography } from '@almadar/ui';
+import { Alert, Card, CardHeader, Icon, Spinner, Typography } from '@almadar/ui';
 import { cn } from '../../../utils/theme';
 
 export interface RecommendedCourse {
@@ -94,17 +93,15 @@ export const RecommendationsCard: React.FC<RecommendationsCardProps> = ({
   };
 
   return (
-    <Card
-      className={className}
-      header={
+    <Card className={className}>
+      <CardHeader className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
         <div className="flex items-center gap-2">
           <div className="p-2 bg-purple-100 dark:bg-purple-900/30 rounded-lg text-purple-600 dark:text-purple-400">
             <Icon icon={Sparkles} size="md" />
           </div>
           <Typography variant="h6">Recommended for You</Typography>
         </div>
-      }
-    >
+      </CardHeader>
       {/* Continue Learning Section */}
       {continueCourses.length > 0 && (
         <div className="mb-6">

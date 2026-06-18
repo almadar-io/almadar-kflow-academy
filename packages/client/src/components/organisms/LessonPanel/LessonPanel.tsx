@@ -7,8 +7,7 @@
 
 import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { Edit2, X, Check, Sparkles, FileText, Loader2, Play } from 'lucide-react';
-import { Card } from '../../molecules/Card';
-import { Typography, Button, Badge, Divider } from '@almadar/ui';
+import { Badge, Button, Card, Divider, Typography } from '@almadar/ui';
 import { FormField } from '../../molecules/FormField';
 import { SegmentRenderer, parseLessonSegments } from '../LessonSegments';
 import { cn } from '../../../utils/theme';

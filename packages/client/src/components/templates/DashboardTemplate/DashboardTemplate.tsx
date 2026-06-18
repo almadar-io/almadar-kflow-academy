@@ -10,8 +10,7 @@ import type { LucideIcon } from 'lucide-react';
 import { AppLayoutTemplate } from '../AppLayoutTemplate';
 import { ProgressTracker, Lesson as ProgressTrackerLesson } from '../../organisms/ProgressTracker';
 import { StatCard } from '../../molecules/StatCard';
-import { Card } from '../../molecules/Card';
-import { Button, Typography } from '@almadar/ui';
+import { Button, Card, Typography } from '@almadar/ui';
 import { cn } from '../../../utils/theme';
 
 export interface DashboardStat {

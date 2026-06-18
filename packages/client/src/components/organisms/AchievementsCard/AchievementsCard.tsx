@@ -7,8 +7,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { Award, Lock, ChevronDown, ChevronUp } from 'lucide-react';
-import { Card } from '../../molecules/Card';
-import { Alert, Button, EmptyState, Icon, ProgressBar, Spinner, Typography } from '@almadar/ui';
+import { Alert, Button, Card, CardHeader, EmptyState, Icon, ProgressBar, Spinner, Typography } from '@almadar/ui';
 import { cn } from '../../../utils/theme';
 
 export interface Achievement {
@@ -128,9 +127,8 @@ export const AchievementsCard: React.FC<AchievementsCardProps> = ({
   const displayAchievements = isExpanded ? achievements : unlockedAchievements;
 
   return (
-    <Card
-      className={className}
-      header={
+    <Card className={className}>
+      <CardHeader className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <div className="p-2 bg-yellow-100 dark:bg-yellow-900/30 rounded-lg text-yellow-600 dark:text-yellow-400">
@@ -154,8 +152,7 @@ export const AchievementsCard: React.FC<AchievementsCardProps> = ({
             </Button>
           )}
         </div>
-      }
-    >
+      </CardHeader>
       {/* Content */}
       {hasUnlocked ? (
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">

@@ -7,9 +7,7 @@
 
 import React, { useState } from 'react';
 import type { LucideIcon } from 'lucide-react';
-import { Card } from '../../molecules/Card';
-
-import { Alert, Badge, Button, ButtonGroup, Icon, Modal, ProgressBar, Spinner, Typography } from '@almadar/ui';
+import { Alert, Badge, Button, ButtonGroup, Card, Icon, Modal, ProgressBar, Spinner, Typography } from '@almadar/ui';
 import { cn } from '../../../utils/theme';
 
 export interface Operation {

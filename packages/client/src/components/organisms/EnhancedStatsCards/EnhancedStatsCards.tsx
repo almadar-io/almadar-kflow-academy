@@ -7,9 +7,8 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { Flame, Trophy, BookOpen, CheckCircle, GraduationCap, Info, ChevronDown, ChevronUp } from 'lucide-react';
-import { Card } from '../../molecules/Card';
 import { StatCard } from '../../molecules/StatCard';
-import { Alert, Button, Icon, Spinner, Tooltip, Typography } from '@almadar/ui';
+import { Alert, Button, Card, Icon, Spinner, Tooltip, Typography } from '@almadar/ui';
 import { cn } from '../../../utils/theme';
 
 export interface DetailedStatistics {

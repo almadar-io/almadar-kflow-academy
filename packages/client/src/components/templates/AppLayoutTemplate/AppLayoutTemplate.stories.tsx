@@ -17,7 +17,7 @@ import {
   Sun,
   Moon
 } from 'lucide-react';
-import { Card } from '../../molecules/Card';
+import { Card } from '@almadar/ui';
 import { Typography } from '../../atoms/Typography';
 import { Button } from '../../atoms/Button';
 import { Badge } from '../../atoms/Badge';
