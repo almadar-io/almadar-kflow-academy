@@ -14,8 +14,8 @@ import { useCustomOperation } from '../../knowledge-graph/hooks/useCustomOperati
 import type { Concept } from '../types';
 import type { ConceptDisplay } from '../../knowledge-graph/api/types';
 import type { LearningGoal } from '../../learning/goalApi';
-import type { ConceptCardProps } from '../../../components/organisms/ConceptCard';
-import type { Operation } from '../../../components/organisms/OperationPanel';
+import type { ConceptCardProps } from '@design-system/organisms/ConceptCard';
+import type { Operation } from '@design-system/organisms/OperationPanel';
 
 interface ConceptLayer {
   id: string;
@@ -42,8 +42,8 @@ import { useAuthContext } from '../../auth/AuthContext';
 import { getNavigationItems, getUserForTemplate, mainNavItems } from '../../../config/navigation';
 import { useAppSelector } from '../../../app/hooks';
 import { Sparkles, BookOpen } from 'lucide-react';
-import { FocusModeTemplate } from '../../../components/templates/FocusModeTemplate';
-import type { LearnTemplateProps, LearnLevel, LearnConcept, LearnGoal } from '../../../components/templates/LearnTemplates/types';
+import { FocusModeTemplate } from '@design-system/templates/FocusModeTemplate';
+import type { LearnTemplateProps, LearnLevel, LearnConcept, LearnGoal } from '@design-system/templates/LearnTemplates/types';
 import { Button } from '@almadar/ui';
 
 // Operation types (matching mentor pattern)

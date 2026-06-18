@@ -13,10 +13,10 @@ import { CodeRunnerPanel, type CodeSimulationOutput } from '@design-system/organ
 import { Concept } from '../types';
 
 // Import learning science components
-import { ActivationBlock } from '../../../components/organisms/LessonSegments/ActivationBlock';
+import { ActivationBlock } from '@design-system/organisms/LessonSegments/ActivationBlock';
 import { ConnectionBlock } from './ConnectionBlock';
-import { ReflectionBlock } from '../../../components/organisms/LessonSegments/ReflectionBlock';
-import { BloomQuizBlock } from '../../../components/organisms/LessonSegments/BloomQuizBlock';
+import { ReflectionBlock } from '@design-system/organisms/LessonSegments/ReflectionBlock';
+import { BloomQuizBlock } from '@design-system/organisms/LessonSegments/BloomQuizBlock';
 
 // Isolated code block component with scroll preservation
 export const CodeBlock = React.memo(

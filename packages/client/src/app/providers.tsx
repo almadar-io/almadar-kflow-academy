@@ -9,7 +9,7 @@ import { store } from './store';
 import { queryClient } from './queryClient';
 import { apolloClient } from '../features/knowledge-graph';
 import { AuthProvider } from '../features/auth';
-import ErrorHandlerInitializer from '../components/ErrorHandlerInitializer';
+import ErrorHandlerInitializer from './ErrorHandlerInitializer';
 import enMessagesRaw from '../locales/en.json';
 
 // Filter out non-string entries ($meta, $extends) from locale file

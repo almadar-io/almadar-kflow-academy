@@ -3,7 +3,7 @@ import { Concept, ConceptGraph } from '../types';
 import { parseStreamingConcepts, ParsedConcept } from '../utils/streamParser';
 import { useSimpleLessonGeneration } from '../hooks/useSimpleLessonGeneration';
 import { X, Loader2, ArrowRight } from 'lucide-react';
-import { LessonPanel } from '../../../components/organisms/LessonPanel';
+import { LessonPanel } from '@design-system/organisms/LessonPanel';
 
 interface FirstLayerLoaderProps {
   seedConcept: Concept;

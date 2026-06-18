@@ -2,7 +2,7 @@ import React, { useCallback, useEffect } from 'react';
 import { useLocation } from 'react-router';
 import { useEventBus } from '@almadar/ui';
 import { useAuthContext } from '../../auth/AuthContext';
-import { DashboardPage } from '../../../components/pages/DashboardPage';
+import { DashboardPage } from '@design-system/pages/DashboardPage';
 import { getNavigationItems, getUserForTemplate, mainNavItems } from '../../../config/navigation';
 import { useRecentActivity } from '../hooks';
 import { useJumpBackIn } from '../hooks/useJumpBackIn';

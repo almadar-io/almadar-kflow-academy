@@ -8,7 +8,7 @@ import { useLocation } from 'react-router';
 import { useAppDispatch } from '../../../app/hooks';
 import { useAuthContext } from '../../auth/AuthContext';
 import { useEventBus } from '@almadar/ui';
-import { LearnPage } from '../../../components/pages/LearnPage';
+import { LearnPage } from '@design-system/pages/LearnPage';
 import { getNavigationItems, getUserForTemplate, mainNavItems } from '../../../config/navigation';
 import { useLearningPaths } from '../../knowledge-graph/hooks/useLearningPaths';
 import { useGetGraph } from '../../knowledge-graph/hooks/useKnowledgeGraphRest';
@@ -19,7 +19,7 @@ import { apiClient } from '../../../services/apiClient';
 import { graphOperationsStreamingApi } from '../../knowledge-graph/api/streaming';
 import { GoalForm } from '../components/GoalForm';
 import { useNavigateEvent } from '../../../hooks/useNavigateEvent';
-import type { SeedConceptDisplay, GraphDisplay } from '../../../components/pages/LearnPage';
+import type { SeedConceptDisplay, GraphDisplay } from '@design-system/pages/LearnPage';
 
 const LearnPageContainer: React.FC = () => {
   const navigate = useNavigateEvent();

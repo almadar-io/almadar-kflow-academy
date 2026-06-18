@@ -12,9 +12,9 @@ import {
 } from '../features/stories/containers';
 import { Login, ProtectedRoute } from '../features/auth';
 import { useAuthContext } from '../features/auth/AuthContext';
-import { Loader } from '../components';
-import { AppLayout } from '../components/AppLayout';
-import { NavigationHandler } from '../components/NavigationHandler';
+import { Spinner } from '@almadar/ui';
+import { AppLayout } from '../app/AppLayout';
+import { NavigationHandler } from '../app/NavigationHandler';
 
 /**
  * App Router: Dashboard, Learn, and Stories pages
@@ -25,12 +25,7 @@ const HomeRoute: React.FC = () => {
 
   if (loading) {
     return (
-      <Loader
-        size="lg"
-        text="Loading..."
-        overlay={false}
-        className="min-h-screen bg-gray-50 dark:bg-gray-900"
-      />
+      <Spinner className="min-h-screen bg-gray-50 dark:bg-gray-900" />
     );
   }
 

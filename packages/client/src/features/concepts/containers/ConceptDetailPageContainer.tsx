@@ -12,15 +12,15 @@ import { useUserProgress } from '../hooks/useUserProgress';
 import type { Concept, BloomLevel } from '../types';
 import type { ConceptDisplay } from '../../knowledge-graph/api/types';
 import type { QuestionAnswerItem, NoteItem, AnnotationType } from '../../knowledge-graph/types';
-import { LearnConceptDetailTemplate } from '../../../components/templates/LearnConceptDetailTemplate';
+import { LearnConceptDetailTemplate } from '@design-system/templates/LearnConceptDetailTemplate';
 
 // Component Library elements
-import { LessonPanel } from '../../../components/organisms/LessonPanel';
-import { AnnotatedLessonContent, SelectionInfo } from '../../../components/organisms/AnnotatedLessonContent';
-import { QuestionWidget, QuestionAnswerDisplay } from '../../../components/organisms/QuestionWidget';
-import { NotesWidget } from '../../../components/organisms/NotesWidget';
-import { ConceptDescription } from '../../../components/molecules/ConceptDescription';
-import { ConceptMetaTags } from '../../../components/molecules/ConceptMetaTags';
+import { LessonPanel } from '@design-system/organisms/LessonPanel';
+import { AnnotatedLessonContent, SelectionInfo } from '@design-system/organisms/AnnotatedLessonContent';
+import { QuestionWidget, QuestionAnswerDisplay } from '@design-system/organisms/QuestionWidget';
+import { NotesWidget } from '@design-system/organisms/NotesWidget';
+import { ConceptDescription } from '@design-system/molecules/ConceptDescription';
+import { ConceptMetaTags } from '@design-system/molecules/ConceptMetaTags';
 
 import { Button, Modal, Typography, useEventBus } from '@almadar/ui';
 import { useNavigateEvent } from '../../../hooks/useNavigateEvent';
