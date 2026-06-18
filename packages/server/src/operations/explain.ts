@@ -1,10 +1,17 @@
 import { Concept, OperationResult, ConceptGraph } from '../types/concept';
 import { explainSystemPrompt } from '../prompts';
 import { callLLM } from '../services/llm';
+import type { LLMStreamChunk } from '@almadar/llm';
 import { validateConcept } from '../utils/validation';
 import { processPrerequisitesFromLesson } from '../utils/prerequisites';
 import type { LearningGoal } from '../types/goal';
 import { getGoalTypeGuidance } from '../utils/goalGuidance';
+
+export interface ExplainStreamResult {
+  stream: AsyncGenerator<LLMStreamChunk>;
+  model: string;
+  prompt?: string;
+}
 
 /**
  * Generates a detailed Markdown explanation (lesson) for a concept.
@@ -27,7 +34,7 @@ export async function explain(
   concept: Concept,
   seedConcept?: Concept,
   options: ExplainOptions = {}
-): Promise<OperationResult> {
+): Promise<OperationResult | ExplainStreamResult> {
   if (!validateConcept(concept)) {
     throw new Error('Invalid concept input for explain operation');
   }
@@ -302,7 +309,7 @@ Again, return ONLY the Markdown lesson text.`;
       stream: response.raw,
       model: response.model,
       prompt: fullPrompt,
-    } as unknown as OperationResult & { prompt?: string };
+    } satisfies ExplainStreamResult;
   }
 
   // Trim only removes leading/trailing whitespace, preserving all internal newlines

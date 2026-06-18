@@ -13,7 +13,7 @@ process.env.FIREBASE_PROJECT_ID ??= process.env.FB_PROJECT_ID;
 process.env.FIREBASE_CLIENT_EMAIL ??= process.env.FB_CLIENT_EMAIL;
 process.env.FIREBASE_PRIVATE_KEY ??= process.env.FB_PRIVATE_KEY;
 
-import { createLogger } from "@almadar/server";
+import { createLogger, setupEventBroadcast } from "@almadar/server";
 import app, { initApp } from "./app";
 
 const logger = createLogger("kflow:server");
@@ -25,6 +25,8 @@ await initApp();
 const server = app.listen(port, () => {
   logger.info(`KFlow server running on port ${port}`);
   logger.info(`OpenAI: ${process.env.OPENAI_API_KEY ? "Enabled" : "Disabled"}`);
+  setupEventBroadcast(server, '/ws/events');
+  logger.info('WS event broadcast ready at /ws/events');
 });
 
 const connections = new Set<import("net").Socket>();

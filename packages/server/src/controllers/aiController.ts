@@ -10,7 +10,7 @@ import {
   ConceptOperationResponse,
   ErrorResponse,
 } from '../types';
-import { expand, progressiveExpandMultiple, advanceNextMultiple, deriveParents, deriveSummary, explain, generateLayerPractice, PracticeItem, answerQuestion, customOperation, synthesize, explore, tracePath, progressiveExplore, generateFlashCards, runCodeSimulation, generateInteractiveOrbital } from '../operations';
+import { expand, progressiveExpandMultiple, advanceNextMultiple, deriveParents, deriveSummary, explain, generateLayerPractice, PracticeItem, answerQuestion, customOperation, synthesize, explore, tracePath, progressiveExplore, generateFlashCards, runCodeSimulation, generateInteractiveOrbital, type ExplainStreamResult } from '../operations';
 import { createGraph, addConceptsToGraph } from '../utils/graph';
 import { ConceptGraph, Concept, GraphDifficulty } from '../types/concept';
 import { ExplainConceptRequest, GenerateLayerPracticeRequest, GenerateLayerPracticeResponse, AnswerQuestionRequest, AnswerQuestionResponse, CustomOperationRequest, SynthesizeRequest, ExploreRequest, TracePathRequest, ProgressiveExploreRequest, GenerateFlashCardsRequest, RunCodeSimulationRequest, RunCodeSimulationResponse, GenerateInteractiveOrbitalRequest, GenerateInteractiveOrbitalResponse } from '../types';
@@ -316,15 +316,11 @@ export async function explainConcept(
 
     // Check if result is a stream
     if (result && typeof result === 'object' && 'stream' in result && result.stream) {
-      const stream = result.stream as AsyncIterable<unknown>;
-      
-      // Use reusable stream handler with prerequisite processing callback
-      await handleStreamResponse(stream, req, res, {
+      const streamResult = result as ExplainStreamResult;
+      await handleStreamResponse(streamResult.stream, req, res, {
         onComplete: (fullContent) => {
-          // Process prerequisites using centralized function
           const prerequisites = processPrerequisitesFromLesson(fullContent, resolvedConcept, conceptGraph);
-          const streamPrompt = 'prompt' in result ? result.prompt : undefined;
-          return { prerequisites, prompt: streamPrompt };
+          return { prerequisites, prompt: streamResult.prompt };
         },
         errorMessage: 'Stream error',
       });
@@ -332,8 +328,8 @@ export async function explainConcept(
       return;
     }
 
-    // Non-streaming response (fallback)
-    res.json({ concepts: result, prompt: operationPrompt });
+    // Non-streaming response (fallback) — result is OperationResult here (stream branch returned above)
+    res.json({ concepts: result as import('../types').OperationResult, prompt: operationPrompt });
   } catch (error) {
     console.error('Error generating lesson:', error);
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';

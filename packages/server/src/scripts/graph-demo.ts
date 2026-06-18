@@ -762,7 +762,9 @@ async function runExplain() {
     const simple = simpleInput.trim().toLowerCase() === 'y';
 
     console.log('\n⏳ Crafting lesson...');
-    const results = await explain(latestConcept, seedConcept, { simple });
+    const explainResult = await explain(latestConcept, seedConcept, { simple });
+    if ('stream' in explainResult) throw new Error('Unexpected stream result in script');
+    const results = explainResult;
     graph = addConceptsToGraph(graph, results);
 
     const lessonConcept = results[0];
