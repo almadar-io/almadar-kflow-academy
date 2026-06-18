@@ -729,18 +729,43 @@ const ConceptListPageContainer: React.FC = () => {
     }
   }, [graphId, generatePractice]);
 
+  // Bus listeners for concept-list / focus-mode interactions
+  useEffect(() => {
+    const unsubConcept = on('UI:CONCEPT_CLICK', (event) => {
+      const payload = event.payload as { conceptId?: string } | undefined;
+      if (payload?.conceptId) handleConceptClick(payload.conceptId);
+    });
+    const unsubNextLevel = on('UI:LOAD_NEXT_LEVEL', () => {
+      handleLoadNextLevel();
+    });
+    const unsubPractice = on('UI:GENERATE_LAYER_PRACTICE', (event) => {
+      const payload = event.payload as { layerNumber?: number } | undefined;
+      if (payload?.layerNumber !== undefined) handleGenerateLayerPractice(payload.layerNumber);
+    });
+    const unsubOp = on('UI:OPERATION_EXECUTE', (event) => {
+      const payload = event.payload as { operationId?: string } | undefined;
+      if (payload?.operationId) handleOperationExecute(payload.operationId);
+    });
+    return () => {
+      unsubConcept();
+      unsubNextLevel();
+      unsubPractice();
+      unsubOp();
+    };
+  }, [on, handleConceptClick, handleLoadNextLevel, handleGenerateLayerPractice, handleOperationExecute]);
+
   // Common template props
   const commonTemplateProps: Omit<LearnTemplateProps, 'goal' | 'levels' | 'seedConcept'> = {
     viewMode,
     onViewModeChange: handleViewModeChange,
-    onConceptClick: handleConceptClick,
+    onConceptClick: (conceptId) => emit('UI:CONCEPT_CLICK', { conceptId }),
     onLevelClick: (_levelId) => {},
-    onLoadNextLevel: handleLoadNextLevel,
+    onLoadNextLevel: async () => { emit('UI:LOAD_NEXT_LEVEL', {}); },
     isLoadingNextLevel: isExpanding || showNextLevelLoader,
     nextLevelStreamContent: showNextLevelLoader ? nextLevelStreamContent : undefined,
     focusedLevelId,
     onFocusedLevelClear: handleFocusedLevelClear,
-    onGenerateLayerPractice: handleGenerateLayerPractice,
+    onGenerateLayerPractice: async (layerNumber) => { emit('UI:GENERATE_LAYER_PRACTICE', { layerNumber }); },
     layerPracticeStreamContent: practiceStreaming?.content,
     isGeneratingLayerPractice: isGeneratingPractice,
     graphId: graphId || undefined,

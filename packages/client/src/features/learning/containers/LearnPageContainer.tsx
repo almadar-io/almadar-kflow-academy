@@ -28,26 +28,24 @@ const LearnPageContainer: React.FC = () => {
   const dispatch = useAppDispatch();
   const { on, emit } = useEventBus();
 
-  // Data fetching hooks
   const { learningPaths, loading: isLoadingPaths, error: pathsError, refetch: refetchLearningPaths } = useLearningPaths();
   const { loading: isLoadingGraph } = useGetGraph();
+  const { showError, showSuccess } = useAlert();
 
-  // UI state
   const [showGoalForm, setShowGoalForm] = useState(false);
   const [isExpanding, setIsExpanding] = useState(false);
   const [expandingContent, setExpandingContent] = useState('');
   const [parsedConcepts, setParsedConcepts] = useState<Array<{ name: string; description: string }>>([]);
   const [parsedLevelName, setParsedLevelName] = useState('');
+  const [isDeleting, setIsDeleting] = useState(false);
   const contentAccRef = useRef('');
 
-  // Navigation configuration
   const navigationItems = getNavigationItems(location.pathname, mainNavItems).map(item => ({
     ...item,
     onClick: () => navigate(item.href),
   }));
   const templateUser = getUserForTemplate(user);
 
-  // Convert LearningPathSummary to format expected by LearnPage
   const seedEntries = useMemo<Array<{
     graph: GraphDisplay;
     seedConcept: SeedConceptDisplay;
@@ -62,25 +60,16 @@ const LearnPageContainer: React.FC = () => {
           name: path.title,
           seedConceptId: path.seedConcept!.id,
         };
-
         const seedConcept: SeedConceptDisplay = {
           id: path.seedConcept!.id,
           name: path.seedConcept!.name,
           description: path.seedConcept!.description,
         };
-
         const estimatedLevelCount = Math.max(1, Math.ceil(path.conceptCount / 7));
-
-        return {
-          graph,
-          seedConcept,
-          conceptCount: path.conceptCount,
-          levelCount: estimatedLevelCount,
-        };
+        return { graph, seedConcept, conceptCount: path.conceptCount, levelCount: estimatedLevelCount };
       });
   }, [learningPaths]);
 
-  // Handle goal form completion - expand the seed concept into a full learning path
   const handleGoalFormComplete = useCallback(async (result: { goalId: string; graphId: string }) => {
     dispatch(setCurrentGraphId(result.graphId));
     setIsExpanding(true);
@@ -89,7 +78,6 @@ const LearnPageContainer: React.FC = () => {
     setParsedLevelName('');
     contentAccRef.current = '';
 
-    // Trigger initial expansion with streaming to show progress
     try {
       await graphOperationsStreamingApi.progressiveExpand(
         result.graphId,
@@ -98,17 +86,10 @@ const LearnPageContainer: React.FC = () => {
           onChunk: (chunk: string) => {
             contentAccRef.current += chunk;
             setExpandingContent(contentAccRef.current);
-
-            // Parse level name
             const levelMatch = contentAccRef.current.match(/<level-name>(.*?)<\/level-name>/i);
             if (levelMatch) setParsedLevelName(levelMatch[1].trim());
-
-            // Parse concepts incrementally
             const conceptMatches = [...contentAccRef.current.matchAll(/<concept>(.*?)<\/concept>\s*<description>(.*?)<\/description>/gis)];
-            setParsedConcepts(conceptMatches.map(m => ({
-              name: m[1].trim(),
-              description: m[2].trim(),
-            })));
+            setParsedConcepts(conceptMatches.map(m => ({ name: m[1].trim(), description: m[2].trim() })));
           },
           onError: (error: string) => {
             console.error('Expansion stream error:', error);
@@ -129,33 +110,15 @@ const LearnPageContainer: React.FC = () => {
     refetchLearningPaths();
   }, [dispatch, navigate, refetchLearningPaths]);
 
-  // Handle create new path
-  const handleCreateNewPath = useCallback(() => {
-    setShowGoalForm(true);
-  }, []);
-
-  // Handle learning path click
-  const handleLearningPathClick = useCallback((graphId: string, _seedConcept: SeedConceptDisplay) => {
-    dispatch(setCurrentGraphId(graphId));
-    navigate(`/concepts/${graphId}`);
-  }, [dispatch, navigate]);
-
-  // Handle delete learning path
-  const { showError, showSuccess } = useAlert();
-  const [isDeleting, setIsDeleting] = useState(false);
   const handleDeleteLearningPath = useCallback(async (graphId: string) => {
     setIsDeleting(true);
     try {
       const currentUser = auth.currentUser;
-      if (!currentUser) {
-        throw new Error('User is not authenticated');
-      }
+      if (!currentUser) throw new Error('User is not authenticated');
       const token = await currentUser.getIdToken();
       await apiClient.fetch(`/api/graphs/${graphId}`, {
         method: 'DELETE',
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { Authorization: `Bearer ${token}` },
       });
       showSuccess('Learning path deleted successfully');
       await refetchLearningPaths();
@@ -167,19 +130,40 @@ const LearnPageContainer: React.FC = () => {
     }
   }, [refetchLearningPaths, showError, showSuccess]);
 
-  // Handle navigate to mentor — emit bus event; UIEventBridge handles navigation
-  const handleNavigateToMentor = useCallback((graphId: string) => {
-    emit('UI:NAVIGATE_TO_MENTOR', { graphId });
-  }, [emit]);
-
-  // Wire UI:NAVIGATE_TO_MENTOR to actual navigation
+  // Bus listeners — all LearnPage interaction events
   useEffect(() => {
-    const unsub = on('UI:NAVIGATE_TO_MENTOR', (event) => {
+    const unsubCreate = on('UI:CREATE_NEW_PATH', () => {
+      setShowGoalForm(true);
+    });
+    const unsubPath = on('UI:LEARNING_PATH_CLICK', (event) => {
+      const payload = event.payload as { graphId?: string } | undefined;
+      if (payload?.graphId) {
+        dispatch(setCurrentGraphId(payload.graphId));
+        navigate(`/concepts/${payload.graphId}`);
+      }
+    });
+    const unsubGoal = on('UI:GOAL_FORM_COMPLETE', (event) => {
+      const payload = event.payload as { goalId?: string; graphId?: string } | undefined;
+      if (payload?.goalId && payload?.graphId) {
+        handleGoalFormComplete({ goalId: payload.goalId, graphId: payload.graphId });
+      }
+    });
+    const unsubDelete = on('UI:DELETE_LEARNING_PATH', (event) => {
+      const payload = event.payload as { graphId?: string } | undefined;
+      if (payload?.graphId) handleDeleteLearningPath(payload.graphId);
+    });
+    const unsubMentor = on('UI:NAVIGATE_TO_MENTOR', (event) => {
       const payload = event.payload as { graphId?: string } | undefined;
       if (payload?.graphId) navigate(`/concepts/${payload.graphId}`);
     });
-    return unsub;
-  }, [on, navigate]);
+    return () => {
+      unsubCreate();
+      unsubPath();
+      unsubGoal();
+      unsubDelete();
+      unsubMentor();
+    };
+  }, [on, dispatch, navigate, handleGoalFormComplete, handleDeleteLearningPath]);
 
   return (
     <LearnPage
@@ -187,11 +171,11 @@ const LearnPageContainer: React.FC = () => {
       loading={isLoadingPaths || isLoadingGraph}
       error={pathsError}
       showGoalForm={showGoalForm}
-      onCreateNewPath={handleCreateNewPath}
-      onLearningPathClick={handleLearningPathClick}
-      onGoalFormComplete={handleGoalFormComplete}
-      onDeleteLearningPath={handleDeleteLearningPath}
-      onNavigateToMentor={handleNavigateToMentor}
+      onCreateNewPath={() => emit('UI:CREATE_NEW_PATH', {})}
+      onLearningPathClick={(graphId, seedConcept) => emit('UI:LEARNING_PATH_CLICK', { graphId, seedConceptId: seedConcept.id })}
+      onGoalFormComplete={(result) => emit('UI:GOAL_FORM_COMPLETE', result)}
+      onDeleteLearningPath={(graphId) => { emit('UI:DELETE_LEARNING_PATH', { graphId }); return Promise.resolve(); }}
+      onNavigateToMentor={(graphId) => emit('UI:NAVIGATE_TO_MENTOR', { graphId })}
       user={templateUser}
       navigationItems={navigationItems}
       goalFormDialog={(showGoalForm || isExpanding) ? (
@@ -210,7 +194,6 @@ const LearnPageContainer: React.FC = () => {
                     ? `Generated ${parsedConcepts.length} concept${parsedConcepts.length === 1 ? '' : 's'}...`
                     : 'Creating concepts and organizing them into layers...'}
                 </p>
-
                 {(parsedLevelName || parsedConcepts.length > 0) && (
                   <div className="w-full mt-2 space-y-3 max-h-72 overflow-y-auto">
                     {parsedLevelName && (
@@ -225,12 +208,8 @@ const LearnPageContainer: React.FC = () => {
                         key={i}
                         className="px-4 py-3 bg-white dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600 animate-[fadeIn_0.3s_ease-in]"
                       >
-                        <p className="text-sm font-medium text-gray-900 dark:text-white">
-                          {concept.name}
-                        </p>
-                        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 line-clamp-2">
-                          {concept.description}
-                        </p>
+                        <p className="text-sm font-medium text-gray-900 dark:text-white">{concept.name}</p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 line-clamp-2">{concept.description}</p>
                       </div>
                     ))}
                   </div>
@@ -238,9 +217,7 @@ const LearnPageContainer: React.FC = () => {
               </div>
             ) : (
               <GoalForm
-                onComplete={(result) => {
-                  handleGoalFormComplete(result);
-                }}
+                onComplete={(result) => handleGoalFormComplete(result)}
                 onCancel={() => setShowGoalForm(false)}
               />
             )}

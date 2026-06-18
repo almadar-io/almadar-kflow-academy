@@ -21,7 +21,7 @@ import { NotesWidget } from '../../../components/organisms/NotesWidget';
 import { ConceptDescription } from '../../../components/molecules/ConceptDescription';
 import { ConceptMetaTags } from '../../../components/molecules/ConceptMetaTags';
 
-import { Button, Modal, Typography } from '@almadar/ui';
+import { Button, Modal, Typography, useEventBus } from '@almadar/ui';
 import { useNavigateEvent } from '../../../hooks/useNavigateEvent';
 import { useConceptsByLayer } from '../../knowledge-graph/hooks/useConceptsByLayer';
 import { useAuthContext } from '../../auth/AuthContext';
@@ -65,6 +65,7 @@ const ConceptDetailPageContainer: React.FC = () => {
   const location = useLocation();
   const dispatch = useAppDispatch();
   const { user } = useAuthContext();
+  const { on, emit } = useEventBus();
 
   // Navigation configuration
   const navigationItems = getNavigationItems(location.pathname, mainNavItems).map(item => ({
@@ -544,6 +545,100 @@ const ConceptDetailPageContainer: React.FC = () => {
     </div>
   ) : null;
 
+  // Bus listeners for concept-detail interactions
+  useEffect(() => {
+    const unsubGenerate = on('UI:GENERATE_LESSON', (event) => {
+      const payload = event.payload as { simple?: boolean } | undefined;
+      handleGenerateLesson(payload?.simple ?? false);
+    });
+    const unsubEdit = on('UI:EDIT_LESSON', () => {
+      setIsEditingLesson(true);
+    });
+    const unsubCancelEdit = on('UI:CANCEL_EDIT', () => {
+      setIsEditingLesson(false);
+    });
+    const unsubSave = on('UI:SAVE_LESSON', (event) => {
+      const payload = event.payload as { lesson?: string } | undefined;
+      if (payload?.lesson !== undefined) handleSaveLesson(payload.lesson);
+    });
+    const unsubViewPrereq = on('UI:VIEW_PREREQUISITE', (event) => {
+      const payload = event.payload as { prerequisiteName?: string } | undefined;
+      if (payload?.prerequisiteName) handleNavigateToPrerequisite(payload.prerequisiteName);
+    });
+    const unsubSelectQ = on('UI:SELECT_FOR_QUESTION', (event) => {
+      const payload = event.payload as { selectionText?: string; selectionTextChunks?: string[]; posTop?: number; posLeft?: number } | undefined;
+      if (payload?.selectionText) handleSelectForQuestion({ text: payload.selectionText, textChunks: payload.selectionTextChunks ?? [], position: { top: payload.posTop ?? 0, left: payload.posLeft ?? 0 } });
+    });
+    const unsubSelectN = on('UI:SELECT_FOR_NOTE', (event) => {
+      const payload = event.payload as { selectionText?: string; selectionTextChunks?: string[]; posTop?: number; posLeft?: number } | undefined;
+      if (payload?.selectionText) handleSelectForNote({ text: payload.selectionText, textChunks: payload.selectionTextChunks ?? [], position: { top: payload.posTop ?? 0, left: payload.posLeft ?? 0 } });
+    });
+    const unsubAnnotation = on('UI:ANNOTATION_CLICK', (event) => {
+      const payload = event.payload as { type?: AnnotationType; annotationId?: string } | undefined;
+      if (!payload?.type || !payload?.annotationId) return;
+      const annotation = payload.type === 'question'
+        ? lessonQuestions.find(q => q.id === payload.annotationId)
+        : lessonNotes.find(n => n.id === payload.annotationId);
+      if (annotation) handleAnnotationClick(payload.type, annotation);
+    });
+    const unsubPrev = on('UI:PREVIOUS_CONCEPT', (event) => {
+      const payload = event.payload as { conceptId?: string; name?: string } | undefined;
+      if (payload?.conceptId && payload?.name) handleNavigateToPrevious({ id: payload.conceptId, name: payload.name });
+    });
+    const unsubNext = on('UI:NEXT_CONCEPT', (event) => {
+      const payload = event.payload as { conceptId?: string; name?: string } | undefined;
+      if (payload?.conceptId && payload?.name) handleNavigateToNext({ id: payload.conceptId, name: payload.name });
+    });
+    const unsubAddNote = on('UI:ADD_NOTE', (event) => {
+      const payload = event.payload as { text?: string; selectedText?: string; selectedTextChunks?: string[] } | undefined;
+      if (payload?.text) handleAddNote(payload.text, payload.selectedText, payload.selectedTextChunks);
+    });
+    const unsubDeleteNote = on('UI:DELETE_NOTE', (event) => {
+      const payload = event.payload as { noteId?: string } | undefined;
+      if (payload?.noteId) handleDeleteNote(payload.noteId);
+    });
+    const unsubSubmitQ = on('UI:SUBMIT_QUESTION', (event) => {
+      const payload = event.payload as { questionText?: string } | undefined;
+      if (payload?.questionText) handleSubmitQuestion(payload.questionText);
+    });
+    const unsubDeleteQ = on('UI:ASK_QUESTION', () => {
+      // open question widget if not already open
+      if (!showQuestionWidget) setShowQuestionWidget(true);
+    });
+    return () => {
+      unsubGenerate();
+      unsubEdit();
+      unsubCancelEdit();
+      unsubSave();
+      unsubViewPrereq();
+      unsubSelectQ();
+      unsubSelectN();
+      unsubAnnotation();
+      unsubPrev();
+      unsubNext();
+      unsubAddNote();
+      unsubDeleteNote();
+      unsubSubmitQ();
+      unsubDeleteQ();
+    };
+  }, [
+    on,
+    handleGenerateLesson,
+    handleSaveLesson,
+    handleNavigateToPrerequisite,
+    handleSelectForQuestion,
+    handleSelectForNote,
+    handleAnnotationClick,
+    handleNavigateToPrevious,
+    handleNavigateToNext,
+    handleAddNote,
+    handleDeleteNote,
+    handleSubmitQuestion,
+    lessonQuestions,
+    lessonNotes,
+    showQuestionWidget,
+  ]);
+
   // Prerequisites for the lesson panel (from relationships)
   const lessonPrerequisites = useMemo(() => {
     const prereqs = conceptDetail.conceptDetail?.relationships?.prerequisites || [];
@@ -556,9 +651,9 @@ const ConceptDetailPageContainer: React.FC = () => {
       content={renderedLesson}
       questions={lessonQuestions}
       notes={lessonNotes}
-      onSelectForQuestion={handleSelectForQuestion}
-      onSelectForNote={handleSelectForNote}
-      onAnnotationClick={handleAnnotationClick}
+      onSelectForQuestion={(sel) => emit('UI:SELECT_FOR_QUESTION', { selectionText: sel.text, selectionTextChunks: sel.textChunks, posTop: sel.position.top, posLeft: sel.position.left })}
+      onSelectForNote={(sel) => emit('UI:SELECT_FOR_NOTE', { selectionText: sel.text, selectionTextChunks: sel.textChunks, posTop: sel.position.top, posLeft: sel.position.left })}
+      onAnnotationClick={(type, annotation) => emit('UI:ANNOTATION_CLICK', { type, annotationId: annotation.id })}
       disabled={localLessonLoading || isExplaining || isAnswering}
     />
   ) : null;
@@ -568,15 +663,15 @@ const ConceptDetailPageContainer: React.FC = () => {
     <LessonPanel
       renderedLesson={renderedLesson}
       conceptHasLesson={hasLesson}
-      onGenerateLesson={handleGenerateLesson}
+      onGenerateLesson={(simple) => emit('UI:GENERATE_LESSON', { conceptId: conceptId || '', graphId: graphId || '', simple: simple ?? false })}
       isGenerating={localLessonLoading || isExplaining || annotationsLoading}
       prerequisites={lessonPrerequisites}
-      onViewPrerequisite={handleNavigateToPrerequisite}
+      onViewPrerequisite={(name) => emit('UI:VIEW_PREREQUISITE', { prerequisiteName: name, graphId: graphId || '' })}
       showGenerationButtons={true}
       isEditing={isEditingLesson}
-      onEdit={() => setIsEditingLesson(true)}
-      onCancelEdit={() => setIsEditingLesson(false)}
-      onSaveLesson={handleSaveLesson}
+      onEdit={() => emit('UI:EDIT_LESSON', { conceptId: conceptId || '' })}
+      onCancelEdit={() => emit('UI:CANCEL_EDIT', { conceptId: conceptId || '' })}
+      onSaveLesson={(lesson) => emit('UI:SAVE_LESSON', { conceptId: conceptId || '', lesson })}
       lessonContent={annotatedLessonContent}
     />
   ) : null;
@@ -722,8 +817,8 @@ const ConceptDetailPageContainer: React.FC = () => {
         lessonPanel={lessonPanel}
         previousConcept={previousConcept}
         nextConcept={nextConcept}
-        onPreviousConceptClick={handleNavigateToPrevious}
-        onNextConceptClick={handleNavigateToNext}
+        onPreviousConceptClick={(c) => emit('UI:PREVIOUS_CONCEPT', { conceptId: c.id, name: c.name })}
+        onNextConceptClick={(c) => emit('UI:NEXT_CONCEPT', { conceptId: c.id, name: c.name })}
         seedConceptAction={seedConceptAction}
         user={templateUser}
         navigationItems={navigationItems}
