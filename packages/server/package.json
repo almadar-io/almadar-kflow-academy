@@ -15,7 +15,6 @@
     "@almadar/core": "^10.3.0",
     "@almadar/llm": "^2.24.0",
     "@almadar/server": "^2.14.1",
-    "@google/genai": "^1.29.0",
     "@kflow-academy/shared": "*",
     "apollo-server-express": "^3.13.0",
     "class-transformer": "^0.5.1",

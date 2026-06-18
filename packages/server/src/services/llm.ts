@@ -4,17 +4,8 @@ import {
   type LLMProvider as AlmadarLLMProvider,
   type LLMStreamChunk,
 } from '@almadar/llm';
-import { calculateTokenPricing, logTokenUsage, TokenCountResult } from '../utils/tokenPricing';
 
 export type LLMProvider = 'openai' | 'gemini' | 'deepseek';
-
-export interface CostTrackingMetadata {
-  systemPrompt: string;
-  userPrompt: string;
-  provider: LLMProvider;
-  model: string;
-  uid?: string;
-}
 
 export interface LLMRequest {
   systemPrompt: string;
@@ -30,7 +21,6 @@ export interface LLMRequest {
 export interface LLMResponseBase {
   content: string;
   model: string;
-  costTrackingMetadata?: CostTrackingMetadata;
 }
 
 export interface LLMResponseText extends LLMResponseBase {
@@ -44,32 +34,6 @@ export interface LLMResponseStream extends LLMResponseBase {
 }
 
 export type LLMResponse = LLMResponseText | LLMResponseStream;
-
-export async function trackLLMCost(
-  metadata: CostTrackingMetadata,
-  outputContent: string
-): Promise<TokenCountResult | null> {
-  if (!metadata.uid) {
-    console.warn('[LLM Service] Skipping cost tracking - UID is missing');
-    return null;
-  }
-
-  try {
-    const tokenResult = await calculateTokenPricing(
-      metadata.provider,
-      metadata.systemPrompt,
-      metadata.userPrompt,
-      outputContent,
-      metadata.model,
-      metadata.uid
-    );
-    logTokenUsage(metadata.provider, metadata.model, tokenResult);
-    return tokenResult;
-  } catch (error) {
-    console.error('[LLM Service] Error tracking costs:', error);
-    return null;
-  }
-}
 
 export function extractJSONArray(response: string): JsonValue[] {
   const jsonBlockMatch = response.match(/```(?:json)?\s*(\[[\s\S]*?\])\s*```/);
@@ -121,29 +85,6 @@ function defaultModelFor(provider: LLMProvider): string {
   return 'deepseek-chat';
 }
 
-function resolvedKflowProvider(provider: LLMProvider): LLMProvider {
-  return provider === 'gemini' ? 'deepseek' : provider;
-}
-
-async function* adaptStreamChunks(
-  gen: AsyncGenerator<LLMStreamChunk>,
-  metadata: CostTrackingMetadata
-): AsyncGenerator<LLMStreamChunk> {
-  let fullContent = '';
-  try {
-    for await (const chunk of gen) {
-      if (chunk.content) fullContent += chunk.content;
-      yield chunk;
-    }
-  } finally {
-    if (metadata.uid && fullContent) {
-      trackLLMCost(metadata, fullContent).catch((err: unknown) => {
-        console.error('[LLM Service] Stream cost tracking error:', err);
-      });
-    }
-  }
-}
-
 export async function callLLM(request: LLMRequest): Promise<LLMResponse> {
   const kflowProvider = request.provider ?? 'deepseek';
   const almadarProvider = toAlmadarProvider(kflowProvider);
@@ -158,14 +99,6 @@ export async function callLLM(request: LLMRequest): Promise<LLMResponse> {
 
   try {
     if (request.stream) {
-      const costMeta: CostTrackingMetadata = {
-        systemPrompt,
-        userPrompt,
-        provider: resolvedKflowProvider(kflowProvider),
-        model: actualModel,
-        uid: request.uid,
-      };
-
       const rawStream = client.streamRaw({
         systemPrompt,
         messages: [
@@ -178,29 +111,14 @@ export async function callLLM(request: LLMRequest): Promise<LLMResponse> {
 
       const streamResponse: LLMResponseStream = {
         content: '',
-        raw: adaptStreamChunks(rawStream, costMeta),
+        raw: rawStream,
         model: actualModel,
         stream: true,
-        costTrackingMetadata: costMeta,
       };
       return streamResponse;
     }
 
     const raw = await client.callRaw({ systemPrompt, userPrompt, maxTokens: request.maxTokens });
-
-    if (request.uid) {
-      await trackLLMCost(
-        {
-          systemPrompt,
-          userPrompt,
-          provider: resolvedKflowProvider(kflowProvider),
-          model: actualModel,
-          uid: request.uid,
-        },
-        raw
-      );
-    }
-
     const textResponse: LLMResponseText = { content: raw, raw, model: actualModel };
     return textResponse;
   } catch (error) {

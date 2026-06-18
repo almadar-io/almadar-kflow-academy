@@ -23,16 +23,6 @@ jest.unstable_mockModule('../../config/redis', () => ({
   redisClient: null,
 }));
 
-jest.unstable_mockModule('../../config/gemini', () => ({
-  getGemini: jest.fn(() => null),
-  geminiClient: null,
-}));
-
-jest.unstable_mockModule('../../config/openai', () => ({
-  getOpenAI: jest.fn(() => null),
-  openaiClient: null,
-}));
-
 jest.unstable_mockModule('../../config/llmConfig', () => ({
   getLLMConfig: jest.fn(() => ({})),
 }));
