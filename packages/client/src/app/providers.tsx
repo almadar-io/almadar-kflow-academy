@@ -2,7 +2,8 @@ import React from 'react';
 import { Provider } from 'react-redux';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ApolloProvider } from '@apollo/client';
-import { I18nProvider, createTranslate } from '@almadar/ui';
+import { I18nProvider, NotifyListener, createTranslate } from '@almadar/ui';
+import { EventBusProvider } from '@almadar/ui/providers';
 import { store } from './store';
 import { queryClient } from './queryClient';
 import { apolloClient } from '../features/knowledge-graph';
@@ -31,22 +32,25 @@ interface ProvidersProps {
 
 export const Providers: React.FC<ProvidersProps> = ({ children }) => {
   return (
-    <Provider store={store}>
-      <QueryClientProvider client={queryClient}>
-        <ApolloProvider client={apolloClient}>
-          <I18nProvider value={i18nValue}>
-            <ThemeProvider>
-              <AlertProvider>
-                <ErrorHandlerInitializer />
-                <AuthProvider>
-                  {children}
-                  <AlertContainer />
-                </AuthProvider>
-              </AlertProvider>
-            </ThemeProvider>
-          </I18nProvider>
-        </ApolloProvider>
-      </QueryClientProvider>
-    </Provider>
+    <EventBusProvider>
+      <NotifyListener />
+      <Provider store={store}>
+        <QueryClientProvider client={queryClient}>
+          <ApolloProvider client={apolloClient}>
+            <I18nProvider value={i18nValue}>
+              <ThemeProvider>
+                <AlertProvider>
+                  <ErrorHandlerInitializer />
+                  <AuthProvider>
+                    {children}
+                    <AlertContainer />
+                  </AuthProvider>
+                </AlertProvider>
+              </ThemeProvider>
+            </I18nProvider>
+          </ApolloProvider>
+        </QueryClientProvider>
+      </Provider>
+    </EventBusProvider>
   );
 };
