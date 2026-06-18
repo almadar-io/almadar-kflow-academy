@@ -9,6 +9,7 @@ import { MarkdownContent } from '../components/MarkdownRenderer';
 import { useAnswerQuestion } from '../../knowledge-graph/hooks/useAnswerQuestion';
 import { useCustomOperation } from '../../knowledge-graph/hooks/useCustomOperation';
 import { useUserProgress } from '../hooks/useUserProgress';
+import { useServerEvents } from '../../learning/hooks/useServerEvents';
 import type { Concept, BloomLevel } from '../types';
 import type { ConceptDisplay } from '../../knowledge-graph/api/types';
 import type { QuestionAnswerItem, NoteItem, AnnotationType } from '../../knowledge-graph/types';
@@ -67,6 +68,7 @@ const ConceptDetailPageContainer: React.FC = () => {
   const dispatch = useAppDispatch();
   const { user } = useAuthContext();
   const { on, emit } = useEventBus();
+  const { sendEvent } = useServerEvents();
 
   // Navigation configuration
   const navigationItems = getNavigationItems(location.pathname, mainNavItems).map(item => ({
@@ -606,8 +608,14 @@ const ConceptDetailPageContainer: React.FC = () => {
       if (payload?.noteId) handleDeleteNote(payload.noteId);
     });
     const unsubSubmitQ = on('UI:SUBMIT_QUESTION', (event) => {
-      const payload = event.payload as { questionText?: string } | undefined;
-      if (payload?.questionText) handleSubmitQuestion(payload.questionText);
+      const payload = event.payload as { questionText?: string; context?: string } | undefined;
+      if (!payload?.questionText) return;
+      handleSubmitQuestion(payload.questionText);
+      sendEvent('UI:SUBMIT_QUESTION', {
+        orbital: 'concept-detail',
+        question: payload.questionText,
+        context: payload.context ?? null,
+      });
     });
     const unsubDeleteQ = on('UI:ASK_QUESTION', () => {
       // open question widget if not already open
@@ -657,6 +665,7 @@ const ConceptDetailPageContainer: React.FC = () => {
     handleAddNote,
     handleDeleteNote,
     handleSubmitQuestion,
+    sendEvent,
     lessonQuestions,
     lessonNotes,
     showQuestionWidget,
