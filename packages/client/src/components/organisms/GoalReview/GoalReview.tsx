@@ -6,10 +6,8 @@
  */
 
 import React, { useState } from 'react';
-import { Edit2, Check, X, Circle, CheckCircle2 } from 'lucide-react';
-import { FormField } from '../../molecules/FormField';
-import { Input } from '../../atoms/Input';
-import { Button, ButtonGroup, Card, CardFooter, CardHeader, Icon, Spinner, Textarea, Typography } from '@almadar/ui';
+import { Edit2, Check, X, Circle } from 'lucide-react';
+import { Button, ButtonGroup, Card, CardFooter, CardHeader, Input, Typography } from '@almadar/ui';
 import { cn } from '../../../utils/theme';
 
 export interface Milestone {
@@ -186,40 +184,29 @@ export const GoalReview: React.FC<GoalReviewProps> = ({
         <div className="space-y-6">
           {isEditing ? (
             <>
-              {/* Title */}
-              <FormField
-                type="input"
+              <Input
                 label="Title"
                 required
-                inputProps={{
-                  type: 'text',
-                  value: displayGoal.title || '',
-                  onChange: (e) => setEditedGoal({ ...editedGoal, title: e.target.value }),
-                }}
+                inputType="text"
+                value={displayGoal.title || ''}
+                onChange={(e) => setEditedGoal({ ...editedGoal, title: (e as React.ChangeEvent<HTMLInputElement>).target.value })}
               />
 
-              {/* Description */}
-              <FormField
-                type="textarea"
+              <Input
                 label="Description"
                 required
-                inputProps={{
-                  value: displayGoal.description || '',
-                  onChange: (e) => setEditedGoal({ ...editedGoal, description: e.target.value }),
-                  rows: 4,
-                }}
+                inputType="textarea"
+                value={displayGoal.description || ''}
+                onChange={(e) => setEditedGoal({ ...editedGoal, description: (e as React.ChangeEvent<HTMLTextAreaElement>).target.value })}
+                rows={4}
               />
 
-              {/* Target */}
-              <FormField
-                type="input"
+              <Input
                 label="Target"
                 required
-                inputProps={{
-                  type: 'text',
-                  value: displayGoal.target || '',
-                  onChange: (e) => setEditedGoal({ ...editedGoal, target: e.target.value }),
-                }}
+                inputType="text"
+                value={displayGoal.target || ''}
+                onChange={(e) => setEditedGoal({ ...editedGoal, target: (e as React.ChangeEvent<HTMLInputElement>).target.value })}
               />
 
               {/* Type */}
@@ -232,17 +219,13 @@ export const GoalReview: React.FC<GoalReviewProps> = ({
                 </Typography>
               </div>
 
-              {/* Estimated Time */}
               {displayGoal.estimatedTime !== undefined && (
-                <FormField
-                  type="input"
+                <Input
                   label="Estimated Time (hours)"
-                  inputProps={{
-                    type: 'number',
-                    value: displayGoal.estimatedTime?.toString() || '',
-                    onChange: (e) => setEditedGoal({ ...editedGoal, estimatedTime: parseInt(e.target.value) || undefined }),
-                    placeholder: 'Hours',
-                  }}
+                  inputType="number"
+                  value={displayGoal.estimatedTime?.toString() || ''}
+                  onChange={(e) => setEditedGoal({ ...editedGoal, estimatedTime: parseInt((e as React.ChangeEvent<HTMLInputElement>).target.value) || undefined })}
+                  placeholder="Hours"
                 />
               )}
 

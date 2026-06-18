@@ -2,7 +2,7 @@ import React from 'react';
 import { useAuthContext } from '../AuthContext';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../../app/store';
-import { Menu, MenuOption } from '../../../components/Menu';
+import { Menu, MenuItem } from '@almadar/ui';
 import { LogOut, User } from 'lucide-react';
 
 const UserProfile: React.FC = () => {
@@ -19,12 +19,12 @@ const UserProfile: React.FC = () => {
     }
   };
 
-  const menuOptions: MenuOption[] = [
+  const menuItems: MenuItem[] = [
     {
       id: 'signout',
       label: 'Sign Out',
       onClick: handleSignOut,
-      icon: <LogOut className="h-4 w-4" />,
+      icon: LogOut,
       disabled: loading
     }
   ];
@@ -62,10 +62,9 @@ const UserProfile: React.FC = () => {
           )}
         </div>
       }
-      options={menuOptions}
-      children={userInfo}
+      items={menuItems}
+      header={userInfo}
       position="top-right"
-      className="relative"
     />
   );
 };

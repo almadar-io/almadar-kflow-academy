@@ -23,11 +23,8 @@
 
 import React, { useState, useEffect } from 'react';
 import type { LucideIcon } from 'lucide-react';
-import { Header, useEventBus } from '@almadar/ui';
-import { Sidebar } from '../../organisms/Sidebar';
+import { Avatar, Header, Sidebar, ThemeToggle, useEventBus } from '@almadar/ui';
 import { ProfilePopup } from '../../molecules/ProfilePopup/ProfilePopup';
-import { Avatar } from '@almadar/ui';
-import { ThemeToggle } from '@almadar/ui';
 import { cn } from '../../../utils/theme';
 
 export interface AppLayoutTemplateProps {
@@ -159,20 +156,27 @@ export const AppLayoutTemplate: React.FC<AppLayoutTemplateProps> = ({
   contentClassName,
   className,
 }) => {
-  const { emit } = useEventBus();
+  const { emit, on } = useEventBus();
   const [sidebarOpen, setSidebarOpen] = useState(!defaultSidebarCollapsed);
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
 
-  // Mobile detection
   useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth < 1024);
-    };
+    const checkMobile = () => setIsMobile(window.innerWidth < 1024);
     checkMobile();
     window.addEventListener('resize', checkMobile);
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
+
+  useEffect(() => {
+    const unsubCollapse = on('SIDEBAR:COLLAPSE_CHANGE', (event) => {
+      const p = event.payload as { collapsed?: boolean } | undefined;
+      setSidebarOpen(!(p?.collapsed ?? false));
+    });
+    const unsubClose = on('SIDEBAR:CLOSE', () => setMobileSidebarOpen(false));
+    const unsubLogo = on('SIDEBAR:LOGO_CLICK', () => { onLogoClick?.(); emit('UI:LOGO_CLICK', {}); });
+    return () => { unsubCollapse(); unsubClose(); unsubLogo(); };
+  }, [on, emit, onLogoClick]);
 
   // Calculate user initials
   const userInitials = user?.name
@@ -274,9 +278,7 @@ export const AppLayoutTemplate: React.FC<AppLayoutTemplateProps> = ({
               href: item.href,
               onClick: () => {
                 item.onClick?.();
-                if (isMobile) {
-                  setMobileSidebarOpen(false);
-                }
+                if (isMobile) setMobileSidebarOpen(false);
               },
               badge: item.badge,
               active: item.active,
@@ -284,10 +286,10 @@ export const AppLayoutTemplate: React.FC<AppLayoutTemplateProps> = ({
             userSection={defaultUserSection}
             footerContent={defaultFooterContent}
             collapsed={!sidebarOpen}
-            onCollapseChange={(collapsed) => setSidebarOpen(!collapsed)}
+            collapseChangeEvent="SIDEBAR:COLLAPSE_CHANGE"
             showCloseButton={mobileSidebarOpen}
-            onClose={() => setMobileSidebarOpen(false)}
-            onLogoClick={onLogoClick}
+            closeEvent="SIDEBAR:CLOSE"
+            logoClickEvent="SIDEBAR:LOGO_CLICK"
           />
         </aside>
       )}

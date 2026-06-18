@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Concept } from '../types';
-import { Menu } from '../../../components';
+import { Menu, MenuItem } from '@almadar/ui';
 import { MoreVertical, Trash2, GraduationCap, Upload } from 'lucide-react';
 import { ConfirmDialog } from '@almadar/ui';
 import { PlacementTest } from '../../learning/components/PlacementTest';
@@ -89,28 +89,12 @@ const ConceptCard: React.FC<ConceptCardProps> = ({
                   <MoreVertical size={18} />
                 </button>
               }
-              options={[
-                ...(graphId && onPublishCourse ? [{
-                  id: 'publish',
-                  label: 'Publish Course',
-                  onClick: () => onPublishCourse(graphId),
-                  icon: <Upload size={16} className="text-indigo-600" />,
-                }] : []),
-                ...(graphId && onNavigateToMentor ? [{
-                  id: 'mentor',
-                  label: 'Mentor Mode',
-                  onClick: () => onNavigateToMentor(graphId),
-                  icon: <GraduationCap size={16} className="text-purple-600" />,
-                }] : []),
-                ...(graphId && onDelete ? [{
-                  id: 'delete',
-                  label: 'Delete',
-                  onClick: () => setShowDeleteDialog(true),
-                  icon: <Trash2 size={16} className="text-red-600" />,
-                }] : []),
+              items={[
+                ...(graphId && onPublishCourse ? [{ id: 'publish', label: 'Publish Course', onClick: () => onPublishCourse(graphId), icon: Upload } satisfies MenuItem] : []),
+                ...(graphId && onNavigateToMentor ? [{ id: 'mentor', label: 'Mentor Mode', onClick: () => onNavigateToMentor(graphId), icon: GraduationCap } satisfies MenuItem] : []),
+                ...(graphId && onDelete ? [{ id: 'delete', label: 'Delete', onClick: () => setShowDeleteDialog(true), icon: Trash2, variant: 'danger' as const } satisfies MenuItem] : []),
               ]}
               position="bottom-right"
-              className="relative"
             />
           </div>
         )}

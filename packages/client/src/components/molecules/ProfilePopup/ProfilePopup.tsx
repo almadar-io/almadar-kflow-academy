@@ -1,8 +1,6 @@
 import React from 'react';
 import { LogOut } from 'lucide-react';
-import { useEventBus } from '@almadar/ui';
-import { Menu, MenuOption } from '../../../components/Menu';
-import { Typography, Avatar } from '@almadar/ui';
+import { Avatar, Menu, MenuItem, Typography, useEventBus } from '@almadar/ui';
 
 export interface ProfilePopupProps {
   userName: string;
@@ -25,12 +23,12 @@ export const ProfilePopup: React.FC<ProfilePopupProps> = ({
 }) => {
   const { emit } = useEventBus();
 
-  const menuOptions: MenuOption[] = [
+  const menuItems: MenuItem[] = [
     {
       id: 'logout',
       label: 'Log Out',
       onClick: () => emit('UI:LOGOUT', {}),
-      icon: <LogOut className="h-4 w-4" />,
+      icon: LogOut,
       disabled: isLoggingOut,
     },
   ];
@@ -65,10 +63,9 @@ export const ProfilePopup: React.FC<ProfilePopupProps> = ({
   return (
     <Menu
       trigger={trigger}
-      options={menuOptions}
-      children={userInfo}
+      items={menuItems}
+      header={userInfo}
       position={position}
-      className="relative"
     />
   );
 };

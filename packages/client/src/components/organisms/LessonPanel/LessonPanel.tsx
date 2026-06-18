@@ -7,8 +7,7 @@
 
 import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { Edit2, X, Check, Sparkles, FileText, Loader2, Play } from 'lucide-react';
-import { Badge, Button, Card, Divider, Typography } from '@almadar/ui';
-import { FormField } from '../../molecules/FormField';
+import { Badge, Button, Card, Divider, Input, Typography } from '@almadar/ui';
 import { SegmentRenderer, parseLessonSegments } from '../LessonSegments';
 import { cn } from '../../../utils/theme';
 
@@ -242,16 +241,14 @@ export const LessonPanel: React.FC<LessonPanelProps> = ({
                 </Button>
               </div>
             </div>
-            <FormField
-              type="textarea"
-              inputProps={{
-                value: editValue,
-                onChange: (e) => setEditValue(e.target.value),
-                onKeyDown: handleKeyDown,
-                rows: 20,
-                className: 'font-mono text-sm',
-                placeholder: 'Enter lesson markdown content...',
-              }}
+            <Input
+              inputType="textarea"
+              value={editValue}
+              onChange={(e) => setEditValue((e as React.ChangeEvent<HTMLTextAreaElement>).target.value)}
+              onKeyDown={handleKeyDown as React.KeyboardEventHandler}
+              rows={20}
+              className="font-mono text-sm"
+              placeholder="Enter lesson markdown content..."
             />
             <Typography variant="small" color="secondary" className="mt-2">
               Press Ctrl+Enter (or Cmd+Enter on Mac) to save, or Escape to cancel
