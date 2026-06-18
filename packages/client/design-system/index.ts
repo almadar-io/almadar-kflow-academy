@@ -49,8 +49,8 @@ export { StorySceneCard, StoryNarrativeView } from "./molecules/story/StoryNarra
 export { StoryRabbitHole } from "./molecules/story/StoryRabbitHole";
 export { StoryRewardView } from "./molecules/story/StoryRewardView";
 export { AppShellBoard } from "./organisms/AppShellBoard";
-export { CodeRunnerPanel } from "./organisms/CodeRunnerPanel";
-export type { CodeSimulationOutput, CodeRunnerPanelProps } from "./organisms/CodeRunnerPanel";
+export { CodeRunnerPanel } from "@almadar/ui";
+export type { CodeSimulationOutput, CodeRunnerPanelProps } from "@almadar/ui";
 export { InteractiveOrbitalPanel } from "./organisms/InteractiveOrbitalPanel";
 export type { InteractiveOrbitalPanelProps } from "./organisms/InteractiveOrbitalPanel";
 export { CrossDomainDiscoveryBoard } from "./organisms/CrossDomainDiscoveryBoard";

@@ -9,6 +9,7 @@
 import React, { useRef, useCallback, useEffect, useMemo } from 'react';
 import { SelectionToolbar, SelectionInfo } from '../../molecules/SelectionToolbar';
 import { SegmentRenderer, parseLessonSegments } from '../LessonSegments';
+import { InteractiveOrbitalPanel } from '../InteractiveOrbitalPanel';
 import { useRunCodeSimulation } from '@features/learning/hooks/useRunCodeSimulation';
 import { useGenerateInteractiveOrbital } from '@features/learning/hooks/useGenerateInteractiveOrbital';
 import type { GenerateInteractiveOrbitalRequest } from '@features/learning/api/interactiveOrbitalAPI';
@@ -221,8 +222,16 @@ export const AnnotatedLessonContent: React.FC<AnnotatedLessonContentProps> = ({
         <SegmentRenderer
           segments={segments}
           onRunCodeSimulation={handleRunCodeSimulation}
-          concept={concept}
-          onGenerateInteractiveOrbital={handleGenerateInteractiveOrbital}
+          onRenderVisualization={concept ? (type, description, index) => (
+            <InteractiveOrbitalPanel
+              key={`visualize-${index}`}
+              type={type}
+              description={description}
+              concept={concept}
+              onGenerate={handleGenerateInteractiveOrbital}
+              autoGenerate={false}
+            />
+          ) : undefined}
         />
       </div>
 

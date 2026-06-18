@@ -5,7 +5,7 @@ import { applyHighlightingToDOM } from '../utils/domHighlighter';
 import { Modal } from '@almadar/ui';
 import { Concept, QuestionAnswer } from '../types';
 
-interface HighlightedSegmentRendererProps extends Omit<SegmentRendererProps, 'concept'> {
+interface HighlightedSegmentRendererProps extends SegmentRendererProps {
   concept?: Concept | null;
 }
 

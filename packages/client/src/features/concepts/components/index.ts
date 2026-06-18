@@ -10,9 +10,6 @@ export { default as ConceptLoader } from './ConceptLoader';
 export { default as FirstLayerLoader } from './FirstLayerLoader';
 export { default as RelatedConceptList } from './RelatedConceptList';
 
-// Learning science components
-export { ActivationBlock } from '@design-system/organisms/LessonSegments/ActivationBlock';
-export { ConnectionBlock } from './ConnectionBlock';
-export { ReflectionBlock } from '@design-system/organisms/LessonSegments/ReflectionBlock';
-export { BloomQuizBlock } from '@design-system/organisms/LessonSegments/BloomQuizBlock';
+// Learning science components (now from @almadar/ui)
+export { ActivationBlock, ConnectionBlock, ReflectionBlock, BloomQuizBlock } from '@almadar/ui';
 

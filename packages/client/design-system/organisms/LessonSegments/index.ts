@@ -1,36 +1,32 @@
 /**
- * LessonSegments Organism Components
- * 
- * Components for rendering lesson content segments including:
- * - Markdown and code blocks
- * - Learning science blocks (activation, connection, reflection)
- * - Quiz blocks (regular and Bloom's taxonomy)
+ * LessonSegments — re-exports from @almadar/ui
  */
 
 export { CodeBlock } from '@design-system/molecules/markdown/CodeBlock';
 export type { CodeBlockProps } from '@design-system/molecules/markdown/CodeBlock';
 
-export { MarkdownContent, type MarkdownContentProps } from '@almadar/ui';
-
-export { ActivationBlock } from './ActivationBlock';
-export type { ActivationBlockProps } from './ActivationBlock';
-
-export { ConnectionBlock } from './ConnectionBlock';
-export type { ConnectionBlockProps } from './ConnectionBlock';
-
-export { ReflectionBlock } from './ReflectionBlock';
-export type { ReflectionBlockProps } from './ReflectionBlock';
+export {
+  MarkdownContent,
+  type MarkdownContentProps,
+  ActivationBlock,
+  type ActivationBlockProps,
+  ConnectionBlock,
+  type ConnectionBlockProps,
+  ReflectionBlock,
+  type ReflectionBlockProps,
+  BloomQuizBlock,
+  type BloomQuizBlockProps,
+  SegmentRenderer,
+  type SegmentRendererProps,
+  parseLessonSegments,
+  CodeRunnerPanel,
+  type CodeSimulationOutput,
+} from '@almadar/ui';
 
 export { QuizBlock } from '@design-system/molecules/learning/QuizBlock';
 export type { QuizBlockProps } from '@design-system/molecules/learning/QuizBlock';
 
-export { BloomQuizBlock } from './BloomQuizBlock';
-export type { BloomQuizBlockProps } from './BloomQuizBlock';
-
-export { SegmentRenderer } from './SegmentRenderer';
-export type { SegmentRendererProps } from './SegmentRenderer';
-
-export { parseLessonSegments } from './parseLessonSegments';
 export { parseMarkdownWithCodeBlocks } from './utils';
 
-export type { Segment, BloomLevel, UserProgress } from './types';
+// Re-export types with backward-compat aliases
+export type { LessonSegment as Segment, LessonUserProgress as UserProgress, BloomLevel } from '@almadar/ui';

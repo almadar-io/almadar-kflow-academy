@@ -9,14 +9,30 @@ import { vscDarkPlus as dark } from 'react-syntax-highlighter/dist/esm/styles/pr
 import { Copy, Check } from 'lucide-react';
 import 'katex/dist/katex.min.css';
 import { normalizeLatexDelimiters } from '@design-system/utils/normalizeLatexDelimiters';
-import { CodeRunnerPanel, type CodeSimulationOutput } from '@design-system/organisms/CodeRunnerPanel';
 import { Concept } from '../types';
 
-// Import learning science components
-import { ActivationBlock } from '@design-system/organisms/LessonSegments/ActivationBlock';
-import { ConnectionBlock } from './ConnectionBlock';
-import { ReflectionBlock } from '@design-system/organisms/LessonSegments/ReflectionBlock';
-import { BloomQuizBlock } from '@design-system/organisms/LessonSegments/BloomQuizBlock';
+// Upstream components from @almadar/ui
+export {
+  ActivationBlock,
+  ReflectionBlock,
+  BloomQuizBlock,
+  ConnectionBlock,
+  SegmentRenderer,
+  parseLessonSegments,
+  CodeRunnerPanel,
+} from '@almadar/ui';
+export type {
+  ActivationBlockProps,
+  ReflectionBlockProps,
+  BloomQuizBlockProps,
+  ConnectionBlockProps,
+  SegmentRendererProps,
+  CodeSimulationOutput,
+} from '@almadar/ui';
+
+// Re-export LessonSegment as Segment for backward compatibility
+export type { LessonSegment as Segment, LessonUserProgress as UserProgress } from '@almadar/ui';
+export type { BloomLevel } from '@almadar/ui';
 
 // Isolated code block component with scroll preservation
 export const CodeBlock = React.memo(
@@ -247,229 +263,3 @@ export const QuizBlock: React.FC<{ question: string; answer: string }> = ({ ques
     </div>
   );
 };
-
-// Parse lesson content to extract all segments including learning science tags
-export const parseLessonSegments = (
-  lesson: string | undefined
-): Segment[] => {
-  if (!lesson) {
-    return [];
-  }
-
-  // Remove <prq> tags from lesson content since we display prerequisites separately
-  let content = lesson.replace(/<prq>[\s\S]*?<\/prq>/gi, '').trim();
-
-  const segments: Segment[] = [];
-
-  // 1. Extract <activate> tag (should be first)
-  const activateMatch = content.match(/<activate>([\s\S]*?)<\/activate>/i);
-  if (activateMatch) {
-    segments.push({
-      type: 'activate',
-      question: activateMatch[1].trim()
-    });
-    content = content.replace(activateMatch[0], '').trim();
-  }
-
-  // 2. Extract <connect> tag (should be after activate)
-  const connectMatch = content.match(/<connect>([\s\S]*?)<\/connect>/i);
-  if (connectMatch) {
-    segments.push({
-      type: 'connect',
-      content: connectMatch[1].trim()
-    });
-    content = content.replace(connectMatch[0], '').trim();
-  }
-
-  // 3. Parse the rest: markdown, code, reflect, bloom, and regular quiz tags
-  // Build a comprehensive regex to match all special tags
-  const tagRegex = new RegExp(
-    '(' +
-    // Reflect tags
-    '<reflect>([\\s\\S]*?)<\\/reflect>|' +
-    // Bloom tags (with nested question/answer)
-    '<bloom\\s+level="(remember|understand|apply|analyze|evaluate|create)">([\\s\\S]*?)<\\/bloom>|' +
-    // Regular quiz tags (backward compatibility)
-    '<question>([\\s\\S]*?)<\\/question>\\s*<answer>([\\s\\S]*?)<\\/answer>' +
-    ')',
-    'gi'
-  );
-
-  let lastIndex = 0;
-  let match: RegExpExecArray | null;
-
-  while ((match = tagRegex.exec(content)) !== null) {
-    // Add markdown/code before this match
-    const before = content.slice(lastIndex, match.index);
-    if (before.trim()) {
-      const parsedSegments = parseMarkdownWithCodeBlocks(before);
-      segments.push(...parsedSegments);
-    }
-
-    // Determine which tag was matched
-    if (match[0].startsWith('<reflect>')) {
-      // Reflect tag
-      segments.push({
-        type: 'reflect',
-        prompt: match[2].trim()
-      });
-    } else if (match[0].startsWith('<bloom')) {
-      // Bloom tag - extract level and nested question/answer
-      const level = match[3] as BloomLevel;
-      const bloomContent = match[4];
-
-      const questionMatch = bloomContent.match(/<question>([\s\S]*?)<\/question>/i);
-      const answerMatch = bloomContent.match(/<answer>([\s\S]*?)<\/answer>/i);
-
-      if (questionMatch && answerMatch) {
-        segments.push({
-          type: 'bloom',
-          level,
-          question: questionMatch[1].trim(),
-          answer: answerMatch[1].trim()
-        });
-      }
-    } else {
-      // Regular quiz tag (backward compatibility)
-      segments.push({
-        type: 'quiz',
-        question: match[5].trim(),
-        answer: match[6].trim()
-      });
-    }
-
-    lastIndex = tagRegex.lastIndex;
-  }
-
-  // Parse remaining content (markdown and code blocks)
-  const remaining = content.slice(lastIndex);
-  if (remaining.trim()) {
-    const parsedSegments = parseMarkdownWithCodeBlocks(remaining);
-    segments.push(...parsedSegments);
-  }
-
-  return segments;
-};
-
-// Bloom's Taxonomy cognitive levels
-export type BloomLevel = 'remember' | 'understand' | 'apply' | 'analyze' | 'evaluate' | 'create';
-
-// Type for segment (markdown, code, quiz, or learning science tags)
-export type Segment =
-  | { type: 'markdown'; content: string }
-  | { type: 'code'; language: string; content: string; runnable?: boolean }
-  | { type: 'quiz'; question: string; answer: string }
-  | { type: 'activate'; question: string }
-  | { type: 'connect'; content: string }
-  | { type: 'reflect'; prompt: string }
-  | { type: 'bloom'; level: BloomLevel; question: string; answer: string };
-
-
-// Shared component to render segments in a container
-export interface SegmentRendererProps {
-  segments: Segment[];
-  className?: string;
-  containerClassName?: string;
-  concept?: Concept | null; // Concept for text highlighting
-  // User progress tracking props
-  userProgress?: {
-    activationResponse?: string;
-    reflectionNotes?: string[];
-    bloomAnswered?: Record<number, boolean>;
-  };
-  /** Callback that simulates executing runnable code blocks */
-  onRunCodeSimulation?: (code: string, language: string) => Promise<CodeSimulationOutput>;
-}
-
-export const SegmentRenderer: React.FC<SegmentRendererProps> = ({
-  segments,
-  className = '',
-  containerClassName = 'border border-gray-200 dark:border-gray-700 rounded-lg p-2 md:p-4 overflow-x-auto lesson-markdown space-y-6 touch-auto',
-  concept,
-  userProgress,
-  onRunCodeSimulation,
-}) => {
-  if (segments.length === 0) {
-    return null;
-  }
-
-  // Track indices for reflect and bloom segments
-  let reflectIndex = 0;
-  let bloomIndex = 0;
-
-  return (
-    <div className={containerClassName}>
-      {segments.map((segment, index) => {
-        if (segment.type === 'markdown') {
-          return <MarkdownContent key={`md-${index}`} content={segment.content} />;
-        } else if (segment.type === 'code') {
-          if (segment.runnable && onRunCodeSimulation) {
-            return (
-              <CodeRunnerPanel
-                key={`code-${index}`}
-                language={segment.language}
-                code={segment.content}
-                runnable
-                onRun={(code) => onRunCodeSimulation(code, segment.language)}
-              />
-            );
-          }
-          return (
-            <CodeBlock
-              key={`code-${index}`}
-              language={segment.language}
-              codeContent={segment.content}
-            />
-          );
-        } else if (segment.type === 'quiz') {
-          return (
-            <QuizBlock
-              key={`quiz-${index}`}
-              question={segment.question}
-              answer={segment.answer}
-            />
-          );
-        } else if (segment.type === 'activate') {
-          return (
-            <ActivationBlock
-              key={`activate-${index}`}
-              question={segment.question}
-              savedResponse={userProgress?.activationResponse}
-            />
-          );
-        } else if (segment.type === 'connect') {
-          return (
-            <ConnectionBlock
-              key={`connect-${index}`}
-              content={segment.content}
-            />
-          );
-        } else if (segment.type === 'reflect') {
-          const currentReflectIndex = reflectIndex++;
-          return (
-            <ReflectionBlock
-              key={`reflect-${index}`}
-              prompt={segment.prompt}
-              index={currentReflectIndex}
-              savedNote={userProgress?.reflectionNotes?.[currentReflectIndex]}
-            />
-          );
-        } else if (segment.type === 'bloom') {
-          const currentBloomIndex = bloomIndex++;
-          return (
-            <BloomQuizBlock
-              key={`bloom-${index}`}
-              level={segment.level}
-              question={segment.question}
-              answer={segment.answer}
-              index={currentBloomIndex}
-              isAnswered={userProgress?.bloomAnswered?.[currentBloomIndex]}
-            />
-          );
-        }
-        return null;
-      })}
-    </div>
-  );
-};
-

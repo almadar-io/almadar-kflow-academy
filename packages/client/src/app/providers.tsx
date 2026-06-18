@@ -36,7 +36,11 @@ export const Providers: React.FC<ProvidersProps> = ({ children }) => {
         <QueryClientProvider client={queryClient}>
           <ApolloProvider client={apolloClient}>
             <I18nProvider value={i18nValue}>
-              <ThemeProvider defaultMode="dark">
+              <ThemeProvider
+                themes={[{ name: 'kflow', displayName: 'KFlow', hasLightMode: true, hasDarkMode: true }]}
+                defaultTheme="kflow"
+                defaultMode="dark"
+              >
                 <ErrorHandlerInitializer />
                 <AuthProvider>
                   {children}
