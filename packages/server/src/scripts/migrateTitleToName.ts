@@ -19,7 +19,7 @@ import * as path from 'path';
 // Must be called before importing Firebase Admin or other services that depend on env vars
 dotenv.config({ path: path.join(__dirname, '..', '..', '.env') });
 
-import { getFirestore } from '../config/firebaseAdmin';
+import { getFirestore } from '@almadar/server';
 import { getNodeBasedKnowledgeGraph, saveNodeBasedKnowledgeGraph } from '../services/knowledgeGraphService';
 
 interface MigrationStats {

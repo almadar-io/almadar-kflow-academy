@@ -8,7 +8,7 @@
  * as part of the graph-based publishing migration.
  */
 
-import { getFirestore } from '../config/firebaseAdmin';
+import { getFirestore } from '@almadar/server';
 import { getStudentEnrollments } from './enrollmentService';
 import type { PublishedCourse } from '../types/publishing';
 

@@ -12,7 +12,7 @@ import {
   getConceptDetailHandler,
   getMindMapHandler,
 } from '../controllers/graphQueryController';
-import authenticateFirebase from '../middlewares/authenticateFirebase';
+import { authenticateFirebase } from '@almadar/server';
 
 const router = Router();
 

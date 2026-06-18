@@ -2,7 +2,7 @@
  * Service for managing placement tests and level assessment
  */
 
-import { getFirestore } from '../config/firebaseAdmin';
+import { getFirestore } from '@almadar/server';
 import type {
   PlacementTest,
   PlacementQuestion,

@@ -14,7 +14,7 @@ import type {
 } from '../types/nodeBasedKnowledgeGraph';
 import type { StoredConceptGraph } from './graphService';
 import type { LearningGoal } from '../types/goal';
-import { getFirestore } from '../config/firebaseAdmin';
+import { getFirestore } from '@almadar/server';
 import {
   createGraphNode,
   createRelationship,

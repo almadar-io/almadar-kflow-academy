@@ -3,7 +3,7 @@
  * When a graph is deleted, all dependent collections should also be cleaned up
  */
 
-import { getFirestore } from '../config/firebaseAdmin';
+import { getFirestore } from '@almadar/server';
 import { getGoalsByGraphId, deleteGoal } from './goalService';
 import { deletePlacementTest } from './placementTestService';
 

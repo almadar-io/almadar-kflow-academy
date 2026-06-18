@@ -18,7 +18,7 @@ import {
   getDetailedStatisticsHandler,
   getJumpBackInHandler,
 } from '../controllers/userProgressController';
-import authenticateFirebase from '../middlewares/authenticateFirebase';
+import { authenticateFirebase } from '@almadar/server';
 
 const router = Router();
 

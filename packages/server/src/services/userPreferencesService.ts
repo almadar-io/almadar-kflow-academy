@@ -1,4 +1,4 @@
-import { getFirestore } from '../config/firebaseAdmin';
+import { getFirestore } from '@almadar/server';
 import { cache, CACHE_TTL } from './cacheService';
 
 /**

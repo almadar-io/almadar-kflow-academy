@@ -1,4 +1,4 @@
-import { getFirestore } from '../config/firebaseAdmin';
+import { getFirestore } from '@almadar/server';
 import { getUserGraphById, upsertUserGraph } from './graphService';
 import type {
   LearningGoal,

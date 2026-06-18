@@ -8,7 +8,7 @@
  */
 
 import { Router } from 'express';
-import authenticateFirebase from '../middlewares/authenticateFirebase';
+import { authenticateFirebase } from '@almadar/server';
 import {
   validateGraphId,
   validateNodeId,

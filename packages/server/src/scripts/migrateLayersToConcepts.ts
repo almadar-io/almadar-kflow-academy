@@ -17,7 +17,7 @@
 
 import * as dotenv from 'dotenv';
 import * as path from 'path';
-import { getFirestore } from '../config/firebaseAdmin';
+import { getFirestore } from '@almadar/server';
 import { getUserGraphById, upsertUserGraph } from '../services/graphService';
 import { getLayerByNumber } from '../services/layerService';
 import { Concept } from '../types/concept';

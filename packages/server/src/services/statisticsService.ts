@@ -1,4 +1,4 @@
-import { getFirestore } from '../config/firebaseAdmin';
+import { getFirestore } from '@almadar/server';
 import { getStudentEnrollments } from './enrollmentService';
 import { getConceptsMastered, getAllUserProgress } from './userProgressService';
 import { getUserPreferences } from './userPreferencesService';

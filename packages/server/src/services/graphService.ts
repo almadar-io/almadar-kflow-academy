@@ -12,7 +12,7 @@
  */
 
 import type { Concept, GraphDifficulty } from '../types/concept';
-import { getFirestore } from '../config/firebaseAdmin';
+import { getFirestore } from '@almadar/server';
 import { getGraphLayers } from './layerService';
 import { LayerDocument } from './layerService';
 

@@ -18,7 +18,7 @@ import {
   runCodeSimulationHandler,
   generateInteractiveOrbitalHandler
 } from '../controllers/aiController';
-import authenticateFirebase from '../middlewares/authenticateFirebase';
+import { authenticateFirebase } from '@almadar/server';
 import graphRoutes from './graphs';
 import userRoutes from './userRoutes';
 import goalRoutes from './goalRoutes';

@@ -9,7 +9,7 @@ import Graph from 'graphology';
 import { GraphCacheManager } from './GraphCacheManager';
 import { toGraphologyGraph } from '../GraphologyAdapter';
 import { getNodeBasedKnowledgeGraph, saveNodeBasedKnowledgeGraph } from '../../knowledgeGraphService';
-import { getFirestore } from '../../../config/firebaseAdmin';
+import { getFirestore } from '@almadar/server';
 import { invalidateGraphCaches } from '../../cacheInvalidation';
 import type { NodeBasedKnowledgeGraph } from '../../../types/nodeBasedKnowledgeGraph';
 

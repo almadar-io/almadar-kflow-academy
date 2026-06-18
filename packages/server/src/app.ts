@@ -1,60 +1,60 @@
-import express, { Application } from 'express';
+import express from 'express';
 import cors from 'cors';
+import helmet from 'helmet';
+import {
+  initializeFirebase,
+  getFirestore,
+  logger,
+  authenticateFirebase,
+  errorHandler,
+  notFoundHandler,
+  observabilityRouter,
+} from '@almadar/server';
 import routes from './routes';
 import { createApolloServer, applyGraphQLMiddleware } from './graphql/server';
 
-const app: Application = express();
+const app: express.Application = express();
 
-// Configure CORS with environment variables
+app.use(helmet());
+
 const getAllowedOrigins = (): string[] => {
   const corsOrigins = process.env.CORS_ORIGINS;
-  
   if (!corsOrigins) {
-    // Fallback to default if not set
-    console.warn('CORS_ORIGINS not set, using default origins');
+    logger.warn('CORS_ORIGINS not set, using default origins');
     return ['http://localhost:3000'];
   }
-  
-  // Parse comma-separated origins and trim whitespace
-  return corsOrigins
-    .split(',')
-    .map(origin => origin.trim())
-    .filter(origin => origin.length > 0);
+  return corsOrigins.split(',').map((o) => o.trim()).filter(Boolean);
 };
 
-const corsOptions = {
-  origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
-    const allowedOrigins = getAllowedOrigins();
-    
-    // Allow requests with no origin (like mobile apps or curl requests)
-    if (!origin) {
-      return callback(null, true);
-    }
-    
-    // Check if the origin is in the allowed list
-    if (allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      console.warn(`CORS blocked origin: ${origin}`);
-      callback(new Error('Not allowed by CORS'));
-    }
+app.use(cors({
+  origin: (origin, callback) => {
+    const allowed = getAllowedOrigins();
+    if (!origin) return callback(null, true);
+    if (allowed.includes(origin)) return callback(null, true);
+    logger.warn(`CORS blocked origin: ${origin}`);
+    callback(new Error('Not allowed by CORS'));
   },
   credentials: true,
   optionsSuccessStatus: 200,
-};
+}));
 
-// Global middleware
-app.use(cors(corsOptions));
 app.use(express.json({ limit: '1mb' }));
 
-// API routes
-app.use('/api', routes);
+export async function initApp(): Promise<void> {
+  initializeFirebase();
+  getFirestore().settings({ ignoreUndefinedProperties: true, databaseId: process.env.FB_DB_ID });
 
-// GraphQL Server (async setup)
-const apolloServer = createApolloServer();
-applyGraphQLMiddleware(app, apolloServer).catch((error) => {
-  console.error('Failed to start GraphQL server:', error);
-});
+  app.use('/api', routes);
+
+  const apolloServer = createApolloServer();
+  applyGraphQLMiddleware(app, apolloServer).catch((err) => {
+    logger.error('Failed to start GraphQL server', { error: (err as Error).message });
+  });
+
+  app.use('/observability', authenticateFirebase, await observabilityRouter());
+
+  app.use(notFoundHandler);
+  app.use(errorHandler);
+}
 
 export default app;
-

@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { getGraph, listGraphs, removeGraph, upsertGraph } from '../controllers/graphController';
-import authenticateFirebase from '../middlewares/authenticateFirebase';
+import { authenticateFirebase } from '@almadar/server';
 
 const router = Router();
 

@@ -1,4 +1,4 @@
-import { getFirestore } from '../config/firebaseAdmin';
+import { getFirestore } from '@almadar/server';
 
 export interface PracticeItem {
   type: 'question' | 'project';

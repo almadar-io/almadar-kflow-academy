@@ -6,7 +6,7 @@
  * is performed server-side to keep the client thin.
  */
 
-import { getFirestore } from '../config/firebaseAdmin';
+import { getFirestore } from '@almadar/server';
 import { KnowledgeGraphAccessLayer } from './knowledgeGraphAccess/KnowledgeGraphAccessLayer';
 import { cache, CACHE_TTL, hybridCache } from './cacheService';
 import type { NodeBasedKnowledgeGraph, GraphNode } from '../types/nodeBasedKnowledgeGraph';

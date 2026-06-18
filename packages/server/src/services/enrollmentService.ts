@@ -1,4 +1,4 @@
-import { getFirestore } from "../config/firebaseAdmin";
+import { getFirestore } from '@almadar/server';
 import { hybridCache, CACHE_TTL } from "./cacheService";
 import { CACHE_KEYS, invalidateEnrollments } from "./cacheInvalidation";
 import type { PublishedCourse } from "../types/publishing";

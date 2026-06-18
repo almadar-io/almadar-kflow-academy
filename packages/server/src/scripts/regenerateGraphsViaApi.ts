@@ -17,7 +17,7 @@
 
 import * as dotenv from 'dotenv';
 import * as path from 'path';
-import { getFirestore } from '../config/firebaseAdmin';
+import { getFirestore } from '@almadar/server';
 import { getUserGraphs } from '../services/graphService';
 import { saveNodeBasedKnowledgeGraph } from '../services/knowledgeGraphService';
 import { generateGoals } from '../services/graphOperations/generateGoals';

@@ -22,7 +22,7 @@
 import * as dotenv from 'dotenv';
 import * as path from 'path';
 import * as fs from 'fs';
-import { getFirestore } from '../config/firebaseAdmin';
+import { getFirestore } from '@almadar/server';
 import { getUserGraphs } from '../services/graphService';
 import { convertStoredConceptGraphToNodeBased } from '../services/knowledgeGraphService';
 import { exportToGraphML, type GraphMLExportOptions } from '../services/graphmlExportService';
