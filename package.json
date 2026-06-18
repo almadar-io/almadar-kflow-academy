@@ -7,7 +7,7 @@
   ],
   "scripts": {
     "start": "node packages/server/dist/server.js",
-    "dev": "npm run dev --workspaces --if-present",
+    "dev": "concurrently -k -n server,client -c blue,green \"npm run dev:server\" \"npm run dev:client\"",
     "dev:server": "npm run dev -w @kflow-academy/server",
     "dev:client": "npm run dev -w @kflow-academy/client",
     "build": "npm run build:server",
@@ -29,6 +29,7 @@
   },
   "devDependencies": {
     "@types/node": "^22.10.1",
+    "concurrently": "^9.1.0",
     "esbuild": "^0.27.2",
     "prettier": "^3.4.2",
     "typescript": "^5.7.2",
