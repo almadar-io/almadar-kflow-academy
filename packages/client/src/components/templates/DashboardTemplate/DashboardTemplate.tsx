@@ -9,8 +9,7 @@ import React from 'react';
 import type { LucideIcon } from 'lucide-react';
 import { AppLayoutTemplate } from '../AppLayoutTemplate';
 import { ProgressTracker, Lesson as ProgressTrackerLesson } from '../../organisms/ProgressTracker';
-import { StatCard } from '../../molecules/StatCard';
-import { Button, Card, Typography } from '@almadar/ui';
+import { Button, Card, StatCard, Typography } from '@almadar/ui';
 import { cn } from '../../../utils/theme';
 
 export interface DashboardStat {
@@ -217,8 +216,7 @@ export const DashboardTemplate: React.FC<DashboardTemplateProps> = ({
                 label={stat.label}
                 value={stat.value}
                 icon={stat.icon}
-                change={stat.change !== undefined ? (stat.change > 0 ? `+${stat.change}` : `${stat.change}`) : undefined}
-                changeType={stat.changeType === 'increase' ? 'positive' : stat.changeType === 'decrease' ? 'negative' : 'neutral'}
+                subtitle={stat.change !== undefined ? (stat.change > 0 ? `+${stat.change}` : `${stat.change}`) : undefined}
               />
             ))}
           </div>

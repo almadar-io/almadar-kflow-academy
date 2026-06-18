@@ -7,8 +7,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { Flame, Trophy, BookOpen, CheckCircle, GraduationCap, Info, ChevronDown, ChevronUp } from 'lucide-react';
-import { StatCard } from '../../molecules/StatCard';
-import { Alert, Button, Card, Icon, Spinner, Tooltip, Typography } from '@almadar/ui';
+import { Alert, Button, Card, Icon, Spinner, StatCard, Tooltip, Typography } from '@almadar/ui';
 import { cn } from '../../../utils/theme';
 
 export interface DetailedStatistics {
@@ -97,7 +96,7 @@ export const EnhancedStatsCards: React.FC<EnhancedStatsCardsProps> = ({
           setDetailedStats(data);
           hasFetchedDetailsRef.current = true;
         })
-        .catch((err: any) => {
+        .catch((err: unknown) => {
           console.error('Failed to load detailed statistics:', err);
         })
         .finally(() => {
@@ -199,7 +198,6 @@ export const EnhancedStatsCards: React.FC<EnhancedStatsCardsProps> = ({
               label={stat.label}
               value={stat.value}
               icon={stat.icon}
-              iconVariant="primary"
             />
             <Tooltip content={stat.tooltip} position="top">
               <div className="absolute right-4 top-4 z-10">
@@ -245,7 +243,6 @@ export const EnhancedStatsCards: React.FC<EnhancedStatsCardsProps> = ({
                   label={stat.label}
                   value={stat.value}
                   icon={stat.icon}
-                  iconVariant="primary"
                 />
                 <Tooltip content={stat.tooltip} position="top">
                   <div className="absolute right-4 top-4 z-10">

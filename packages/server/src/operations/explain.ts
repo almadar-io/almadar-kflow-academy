@@ -297,7 +297,6 @@ Again, return ONLY the Markdown lesson text.`;
     stream: stream
   });
 
-  // If streaming, return the stream with prompt
   if (response.stream && response.raw) {
     return {
       stream: response.raw,

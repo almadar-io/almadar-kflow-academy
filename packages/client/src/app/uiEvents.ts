@@ -12,6 +12,10 @@ export const UI_EVENTS = {
   ACTIVITY_CLICK: 'UI:ACTIVITY_CLICK',
   LEARNING_PATH_CLICK: 'UI:LEARNING_PATH_CLICK',
 
+  // Sidebar local UI state
+  SIDEBAR_COLLAPSE: 'UI:SIDEBAR_COLLAPSE',
+  SIDEBAR_CLOSE: 'UI:SIDEBAR_CLOSE',
+
   // LearnPage / learning-path management
   CREATE_NEW_PATH: 'UI:CREATE_NEW_PATH',
   DELETE_LEARNING_PATH: 'UI:DELETE_LEARNING_PATH',
@@ -255,4 +259,8 @@ export interface UiGenerateInteractiveOrbitalPayload {
   conceptName: string;
   description?: string;
   type?: string;
+}
+
+export interface UiSidebarCollapsePayload {
+  collapsed: boolean;
 }

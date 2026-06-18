@@ -70,10 +70,6 @@ export interface ExtendedConcept extends Concept {
   importance?: 'low' | 'medium' | 'high';  // For refocus operations
 }
 
-/**
- * Operation Result - Standard return type for all prompt functions
- * Can be an array of concepts or an object with concepts and optional prompt
- */
 export type OperationResult = Concept[] | (Concept[] & { prompt?: string });
 
 /**

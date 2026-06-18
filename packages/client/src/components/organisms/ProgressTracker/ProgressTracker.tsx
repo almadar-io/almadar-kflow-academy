@@ -9,8 +9,7 @@ import React from 'react';
 import type { LucideIcon } from 'lucide-react';
 import { CheckCircle, Play, Trophy } from 'lucide-react';
 import { ProgressCard } from '../../molecules/ProgressCard';
-import { StatCard } from '../../molecules/StatCard';
-import { Badge, Button, Card, Icon, ProgressBar, Typography } from '@almadar/ui';
+import { Badge, Button, Card, Icon, ProgressBar, StatCard, Typography } from '@almadar/ui';
 import { cn } from '../../../utils/theme';
 
 export interface Lesson {
@@ -134,7 +133,6 @@ export const ProgressTracker: React.FC<ProgressTrackerProps> = ({
                 label={stat.label}
                 value={stat.value}
                 icon={stat.icon}
-                iconVariant="primary"
               />
             ))}
           </div>

@@ -26,6 +26,7 @@ import type { LucideIcon } from 'lucide-react';
 import { Avatar, Header, Sidebar, ThemeToggle, useEventBus } from '@almadar/ui';
 import { ProfilePopup } from '../../molecules/ProfilePopup/ProfilePopup';
 import { cn } from '../../../utils/theme';
+import type { UiSidebarCollapsePayload } from '../../../app/uiEvents';
 
 export interface AppLayoutTemplateProps {
   /**
@@ -169,14 +170,14 @@ export const AppLayoutTemplate: React.FC<AppLayoutTemplateProps> = ({
   }, []);
 
   useEffect(() => {
-    const unsubCollapse = on('SIDEBAR:COLLAPSE_CHANGE', (event) => {
-      const p = event.payload as { collapsed?: boolean } | undefined;
+    const unsubCollapse = on('UI:SIDEBAR_COLLAPSE', (event) => {
+      const p = event.payload as UiSidebarCollapsePayload | undefined;
       setSidebarOpen(!(p?.collapsed ?? false));
     });
-    const unsubClose = on('SIDEBAR:CLOSE', () => setMobileSidebarOpen(false));
-    const unsubLogo = on('SIDEBAR:LOGO_CLICK', () => { onLogoClick?.(); emit('UI:LOGO_CLICK', {}); });
+    const unsubClose = on('UI:SIDEBAR_CLOSE', () => setMobileSidebarOpen(false));
+    const unsubLogo = on('UI:LOGO_CLICK', () => onLogoClick?.());
     return () => { unsubCollapse(); unsubClose(); unsubLogo(); };
-  }, [on, emit, onLogoClick]);
+  }, [on, onLogoClick]);
 
   // Calculate user initials
   const userInitials = user?.name
@@ -286,10 +287,10 @@ export const AppLayoutTemplate: React.FC<AppLayoutTemplateProps> = ({
             userSection={defaultUserSection}
             footerContent={defaultFooterContent}
             collapsed={!sidebarOpen}
-            collapseChangeEvent="SIDEBAR:COLLAPSE_CHANGE"
+            collapseChangeEvent="UI:SIDEBAR_COLLAPSE"
             showCloseButton={mobileSidebarOpen}
-            closeEvent="SIDEBAR:CLOSE"
-            logoClickEvent="SIDEBAR:LOGO_CLICK"
+            closeEvent="UI:SIDEBAR_CLOSE"
+            logoClickEvent="UI:LOGO_CLICK"
           />
         </aside>
       )}
