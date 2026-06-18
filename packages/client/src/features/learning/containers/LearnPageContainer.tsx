@@ -13,7 +13,7 @@ import { getNavigationItems, getUserForTemplate, mainNavItems } from '../../../c
 import { useLearningPaths } from '../../knowledge-graph/hooks/useLearningPaths';
 import { useGetGraph } from '../../knowledge-graph/hooks/useKnowledgeGraphRest';
 import { setCurrentGraphId } from '../../knowledge-graph/knowledgeGraphSlice';
-import { useAlert } from '../../../contexts/AlertContext';
+import type { UiNotifyPayload } from '../../../app/uiEvents';
 import { auth } from '../../../config/firebase';
 import { apiClient } from '../../../services/apiClient';
 import { graphOperationsStreamingApi } from '../../knowledge-graph/api/streaming';
@@ -30,7 +30,6 @@ const LearnPageContainer: React.FC = () => {
 
   const { learningPaths, loading: isLoadingPaths, error: pathsError, refetch: refetchLearningPaths } = useLearningPaths();
   const { loading: isLoadingGraph } = useGetGraph();
-  const { showError, showSuccess } = useAlert();
 
   const [showGoalForm, setShowGoalForm] = useState(false);
   const [isExpanding, setIsExpanding] = useState(false);
@@ -120,15 +119,15 @@ const LearnPageContainer: React.FC = () => {
         method: 'DELETE',
         headers: { Authorization: `Bearer ${token}` },
       });
-      showSuccess('Learning path deleted successfully');
+      emit('UI:NOTIFY', { severity: 'success', message: 'Learning path deleted successfully' } satisfies UiNotifyPayload);
       await refetchLearningPaths();
     } catch (error) {
       console.error('Failed to delete learning path:', error);
-      showError('Failed to delete learning path. Please try again.');
+      emit('UI:NOTIFY', { severity: 'error', message: 'Failed to delete learning path. Please try again.' } satisfies UiNotifyPayload);
     } finally {
       setIsDeleting(false);
     }
-  }, [refetchLearningPaths, showError, showSuccess]);
+  }, [refetchLearningPaths, emit]);
 
   // Bus listeners — all LearnPage interaction events
   useEffect(() => {

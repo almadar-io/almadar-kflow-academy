@@ -2,7 +2,8 @@ import { useCallback, useState } from 'react';
 import { useAppDispatch } from '../../../app/hooks';
 import { deleteGraph } from '../conceptSlice';
 import { graphApi } from '../graphApi';
-import { useAlert } from '../../../contexts/AlertContext';
+import { useEventBus } from '@almadar/ui';
+import type { UiNotifyPayload } from '../../../app/uiEvents';
 
 interface UseDeleteGraphReturn {
   deleteGraph: (graphId: string) => Promise<void>;
@@ -11,25 +12,23 @@ interface UseDeleteGraphReturn {
 
 export const useDeleteGraph = (): UseDeleteGraphReturn => {
   const dispatch = useAppDispatch();
-  const { showError, showSuccess } = useAlert();
+  const { emit } = useEventBus();
   const [isDeleting, setIsDeleting] = useState(false);
 
   const handleDelete = useCallback(async (graphId: string) => {
     setIsDeleting(true);
     try {
-      // Delete from server first
       await graphApi.deleteGraph(graphId);
-      // Then update Redux state (middleware will also try to delete, but it's idempotent)
       dispatch(deleteGraph(graphId));
-      showSuccess('Learning path deleted successfully');
+      emit('UI:NOTIFY', { severity: 'success', message: 'Learning path deleted successfully' } satisfies UiNotifyPayload);
     } catch (error) {
       console.error('Failed to delete graph:', error);
-      showError('Failed to delete learning path. Please try again.');
+      emit('UI:NOTIFY', { severity: 'error', message: 'Failed to delete learning path. Please try again.' } satisfies UiNotifyPayload);
       throw error;
     } finally {
       setIsDeleting(false);
     }
-  }, [dispatch, showError, showSuccess]);
+  }, [dispatch, emit]);
 
   return {
     deleteGraph: handleDelete,

@@ -9,8 +9,6 @@ import { store } from './store';
 import { queryClient } from './queryClient';
 import { apolloClient } from '../features/knowledge-graph';
 import { AuthProvider } from '../features/auth';
-import { AlertProvider } from '../contexts/AlertContext';
-import AlertContainer from '../components/AlertContainer';
 import ErrorHandlerInitializer from '../components/ErrorHandlerInitializer';
 import enMessagesRaw from '../locales/en.json';
 
@@ -39,13 +37,10 @@ export const Providers: React.FC<ProvidersProps> = ({ children }) => {
           <ApolloProvider client={apolloClient}>
             <I18nProvider value={i18nValue}>
               <ThemeProvider defaultMode="dark">
-                <AlertProvider>
-                  <ErrorHandlerInitializer />
-                  <AuthProvider>
-                    {children}
-                    <AlertContainer />
-                  </AuthProvider>
-                </AlertProvider>
+                <ErrorHandlerInitializer />
+                <AuthProvider>
+                  {children}
+                </AuthProvider>
               </ThemeProvider>
             </I18nProvider>
           </ApolloProvider>
