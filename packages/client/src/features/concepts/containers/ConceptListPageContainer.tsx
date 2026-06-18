@@ -14,10 +14,30 @@ import { useCustomOperation } from '../../knowledge-graph/hooks/useCustomOperati
 import type { Concept } from '../types';
 import type { ConceptDisplay } from '../../knowledge-graph/api/types';
 import type { LearningGoal } from '../../learning/goalApi';
-import { ConceptListPage } from '../../../components/pages/ConceptListPage';
-import type { ConceptLayer, GraphNode, GraphEdge } from '../../../components/templates/KnowledgeGraphTemplate';
-import { ConceptCardProps } from '../../../components/organisms/ConceptCard';
-import { Operation } from '../../../components/organisms/OperationPanel';
+import type { ConceptCardProps } from '../../../components/organisms/ConceptCard';
+import type { Operation } from '../../../components/organisms/OperationPanel';
+
+interface ConceptLayer {
+  id: string;
+  name: string;
+  color: string;
+  concepts: ConceptCardProps[];
+}
+
+interface GraphNode {
+  id: string;
+  label: string;
+  layer: string;
+  nodeType?: string;
+  nodeData?: unknown;
+}
+
+interface GraphEdge {
+  source: string;
+  target: string;
+  label?: string;
+  relationshipData?: unknown;
+}
 import { useAuthContext } from '../../auth/AuthContext';
 import { getNavigationItems, getUserForTemplate, mainNavItems } from '../../../config/navigation';
 import { useAppSelector } from '../../../app/hooks';
@@ -309,7 +329,6 @@ const ConceptListPageContainer: React.FC = () => {
     navigate('/home');
   }, [navigate]);
 
-  // Transform groupedByLayer to ConceptLayer[] format for KnowledgeGraphTemplate
   const layers: ConceptLayer[] = useMemo(() => {
     if (!conceptsData.groupedByLayer) return [];
     
@@ -357,7 +376,6 @@ const ConceptListPageContainer: React.FC = () => {
       });
   }, [conceptsData.groupedByLayer, handleSelectConcept]);
 
-  // Transform graph nodes and relationships to graphNodes and graphEdges for ForceGraph
   const { graphNodes, graphEdges } = useMemo(() => {
     if (!graph || !graph.nodes || !graph.relationships) {
       return { graphNodes: [], graphEdges: [] };
