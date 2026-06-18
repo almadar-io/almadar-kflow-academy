@@ -18,7 +18,7 @@ import {
   Sun,
   Moon
 } from 'lucide-react';
-import { ThemeProvider } from '../../../contexts/ThemeContext';
+import { ThemeProvider } from '@almadar/ui/context';
 
 const meta: Meta<typeof DashboardTemplate> = {
   title: 'Templates/DashboardTemplate',

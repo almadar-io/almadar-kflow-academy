@@ -5,7 +5,7 @@ import { BrowserRouter } from 'react-router';
 import { configureStore, Store } from '@reduxjs/toolkit';
 import authSlice from '../features/auth/authSlice';
 import conceptsSlice from '../features/concepts/conceptSlice';
-import { ThemeProvider } from '../contexts/ThemeContext';
+import { ThemeProvider } from '@almadar/ui/context';
 
 // Mock Firebase Auth
 export const mockFirebaseAuth = {

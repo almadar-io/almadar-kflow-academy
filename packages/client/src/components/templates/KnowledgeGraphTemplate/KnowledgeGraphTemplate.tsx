@@ -48,7 +48,7 @@ import { Avatar, Badge, Button, ButtonGroup, Checkbox, Divider, EmptyState, Floa
 import { JsonViewer } from '../../JsonViewer';
 
 import { ProfilePopup } from '../../molecules/ProfilePopup/ProfilePopup';
-import ThemeToggle from '../../ThemeToggle';
+import { ThemeToggle } from '@almadar/ui';
 import { cn } from '../../../utils/theme';
 
 export interface ConceptLayer {

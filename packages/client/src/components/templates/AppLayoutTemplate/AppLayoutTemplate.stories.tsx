@@ -22,7 +22,7 @@ import { Typography } from '../../atoms/Typography';
 import { Button } from '../../atoms/Button';
 import { Badge } from '../../atoms/Badge';
 import { useState } from 'react';
-import { ThemeProvider } from '../../../contexts/ThemeContext';
+import { ThemeProvider } from '@almadar/ui/context';
 
 const meta: Meta<typeof AppLayoutTemplate> = {
   title: 'Templates/AppLayoutTemplate',

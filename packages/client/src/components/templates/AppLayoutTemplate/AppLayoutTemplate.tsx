@@ -27,7 +27,7 @@ import { Header } from '@almadar/ui';
 import { Sidebar } from '../../organisms/Sidebar';
 import { ProfilePopup } from '../../molecules/ProfilePopup/ProfilePopup';
 import { Avatar } from '@almadar/ui';
-import ThemeToggle from '../../ThemeToggle';
+import { ThemeToggle } from '@almadar/ui';
 import { cn } from '../../../utils/theme';
 
 export interface AppLayoutTemplateProps {

@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-webpack5';
 import { KnowledgeGraphTemplate } from './KnowledgeGraphTemplate';
 import { Home, Network, BookOpen, Settings, Sparkles, FileText, Layers } from 'lucide-react';
-import { ThemeProvider } from '../../../contexts/ThemeContext';
+import { ThemeProvider } from '@almadar/ui/context';
 
 const meta: Meta<typeof KnowledgeGraphTemplate> = {
   title: 'Templates/KnowledgeGraphTemplate',

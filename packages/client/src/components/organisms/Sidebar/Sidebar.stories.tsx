@@ -11,7 +11,7 @@ import {
   Sun,
   Moon
 } from 'lucide-react';
-import { ThemeProvider } from '../../../contexts/ThemeContext';
+import { ThemeProvider } from '@almadar/ui/context';
 import kflowLogo from '../../../assets/kflow-logo.svg';
 
 const meta: Meta<typeof Sidebar> = {
