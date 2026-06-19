@@ -1,14 +1,11 @@
-import { getFirestore } from '@almadar/server';
-import { getUserGraphById, upsertUserGraph } from './graphService';
+import { KnowledgeGraphAccessLayer } from '@almadar-io/knowledge/server';
+import { createEmptyNodeTypeIndex } from '@almadar-io/knowledge';
+import type { LearningGoalNodeProperties, GraphNodeOf } from '@almadar-io/knowledge';
 import type {
   LearningGoal,
   GoalQuestionAnswer,
 } from '../types/goal';
-import type { Concept } from '../types/concept';
 
-/**
- * Common goal types (suggestions, but custom types allowed)
- */
 export const COMMON_GOAL_TYPES = [
   'certification',
   'skill_mastery',
@@ -16,271 +13,187 @@ export const COMMON_GOAL_TYPES = [
   'project_completion',
 ] as const;
 
-/**
- * Get learning goals for a user
- */
-export async function getUserGoals(uid: string): Promise<LearningGoal[]> {
-  const db = getFirestore();
-  const goalsRef = db.collection('userLearningGoals').doc(uid).collection('goals');
-  
-  const snapshot = await goalsRef.get();
-  
-  return snapshot.docs.map(doc => ({
-    id: doc.id,
-    ...doc.data(),
-  })) as LearningGoal[];
-}
+const kgal = new KnowledgeGraphAccessLayer();
 
-/**
- * Get learning goals for a specific graph
- */
-export async function getGoalsByGraphId(
-  uid: string,
-  graphId: string
-): Promise<LearningGoal[]> {
-  const db = getFirestore();
-  const goalsRef = db.collection('userLearningGoals').doc(uid).collection('goals');
-  
-  const snapshot = await goalsRef
-    .where('graphId', '==', graphId)
-    .get();
-  
-  return snapshot.docs.map(doc => ({
-    id: doc.id,
-    ...doc.data(),
-  })) as LearningGoal[];
-}
+const GOALS_GRAPH = (uid: string) => `goals:${uid}`;
 
-/**
- * Get a specific learning goal by ID
- */
-export async function getGoalById(
-  uid: string,
-  goalId: string
-): Promise<LearningGoal | null> {
-  const db = getFirestore();
-  const goalDoc = await db
-    .collection('userLearningGoals')
-    .doc(uid)
-    .collection('goals')
-    .doc(goalId)
-    .get();
-  
-  if (!goalDoc.exists) {
-    return null;
-  }
-  
+function toNodeProps(goal: LearningGoal): LearningGoalNodeProperties {
   return {
-    id: goalDoc.id,
-    ...goalDoc.data(),
-  } as LearningGoal;
-}
-
-/**
- * Save a learning goal to Firestore
- * If the goal has a graphId, also update the seedConcept to store the goal
- */
-export async function saveGoal(
-  uid: string,
-  goal: LearningGoal
-): Promise<LearningGoal> {
-  const db = getFirestore();
-  const goalRef = db
-    .collection('userLearningGoals')
-    .doc(uid)
-    .collection('goals')
-    .doc(goal.id);
-
-  const goalData = {
-    ...goal,
-    updatedAt: Date.now(),
+    id: goal.id,
+    name: goal.title,
+    description: goal.description,
+    type: goal.type,
+    target: goal.target,
+    estimatedTime: goal.estimatedTime ?? undefined,
+    assessedLevel: goal.assessedLevel ?? undefined,
+    placementTestId: goal.placementTestId ?? undefined,
+    customMetadata: {
+      graphId: goal.graphId ?? '',
+      milestones: JSON.stringify(goal.milestones ?? []),
+      shortTermGoals: JSON.stringify(goal.shortTermGoals ?? []),
+      ...(goal.customMetadata ?? {}),
+    },
+    createdAt: goal.createdAt,
+    updatedAt: goal.updatedAt,
   };
-
-  await goalRef.set(goalData);
-  
-  // If goal has a graphId, update the seedConcept to store the learning goal
-  if (goal.graphId) {
-    try {
-      const graph = await getUserGraphById(uid, goal.graphId);
-      if (graph && graph.seedConceptId) {
-        const seedConcept = graph.concepts?.[graph.seedConceptId];
-        if (seedConcept) {
-          // Store the overall learning goal (title + description) in the seedConcept
-          const learningGoalText = `${goal.title}: ${goal.description}`;
-          const updatedSeedConcept: Concept = {
-            ...seedConcept,
-            goal: learningGoalText,
-          };
-          
-          // Update the graph with the updated seedConcept
-          const updatedConcepts = {
-            ...graph.concepts,
-            [graph.seedConceptId]: updatedSeedConcept,
-          };
-          
-          await upsertUserGraph(uid, {
-            ...graph,
-            concepts: updatedConcepts,
-            updatedAt: Date.now(),
-          });
-        }
-      }
-    } catch (error) {
-      // Log error but don't fail the goal save operation
-      console.error(`Failed to update seedConcept with goal for graph ${goal.graphId}:`, error);
-    }
-  }
-  
-  return goal;
 }
 
-/**
- * Update a learning goal
- */
+function fromNode(node: GraphNodeOf<'LearningGoal'>): LearningGoal {
+  const p = node.properties;
+  let milestones: LearningGoal['milestones'] = [];
+  let shortTermGoals: string[] = [];
+  if (p.customMetadata?.milestones) {
+    try { milestones = JSON.parse(p.customMetadata.milestones as string); } catch { /* empty */ }
+  }
+  if (p.customMetadata?.shortTermGoals) {
+    try { shortTermGoals = JSON.parse(p.customMetadata.shortTermGoals as string); } catch { /* empty */ }
+  }
+
+  const { graphId, milestones: _m, shortTermGoals: _s, ...rest } = p.customMetadata ?? {};
+
+  return {
+    id: node.id,
+    graphId: (graphId as string) ?? '',
+    title: p.name,
+    description: p.description,
+    type: p.type,
+    target: p.target ?? '',
+    estimatedTime: p.estimatedTime,
+    assessedLevel: p.assessedLevel,
+    placementTestId: p.placementTestId,
+    milestones,
+    shortTermGoals,
+    customMetadata: rest as Record<string, string | number | boolean | null>,
+    createdAt: node.createdAt ?? p.createdAt,
+    updatedAt: node.updatedAt ?? p.updatedAt,
+  };
+}
+
+async function ensureGoalGraph(uid: string): Promise<string> {
+  const graphId = GOALS_GRAPH(uid);
+  const exists = await kgal.getNode(uid, graphId, graphId).catch(() => null);
+  if (!exists) {
+    const now = Date.now();
+    const emptyIndex = createEmptyNodeTypeIndex();
+    await kgal.saveGraph(uid, {
+      id: graphId,
+      seedConceptId: graphId,
+      createdAt: now,
+      updatedAt: now,
+      version: 1,
+      name: `Goals:${uid}`,
+      nodes: {},
+      nodeTypes: { ...emptyIndex, Graph: [graphId] },
+      relationships: [],
+    });
+  }
+  return graphId;
+}
+
+export async function getUserGoals(uid: string): Promise<LearningGoal[]> {
+  const graphId = await ensureGoalGraph(uid);
+  const nodes = await kgal.getNodesByType(uid, graphId, 'LearningGoal');
+  return nodes.map(fromNode);
+}
+
+export async function getGoalsByGraphId(uid: string, graphId: string): Promise<LearningGoal[]> {
+  const all = await getUserGoals(uid);
+  return all.filter((g) => g.graphId === graphId);
+}
+
+export async function getGoalById(uid: string, goalId: string): Promise<LearningGoal | null> {
+  const graphId = await ensureGoalGraph(uid);
+  const node = await kgal.getNode(uid, graphId, goalId);
+  if (!node || node.type !== 'LearningGoal') return null;
+  return fromNode(node as GraphNodeOf<'LearningGoal'>);
+}
+
+export async function saveGoal(uid: string, goal: LearningGoal): Promise<LearningGoal> {
+  const graphId = await ensureGoalGraph(uid);
+  const payload = { ...goal, updatedAt: Date.now() };
+  const nodeProps = toNodeProps(payload);
+
+  const existing = await kgal.getNode(uid, graphId, goal.id);
+  if (existing) {
+    await kgal.updateNode(uid, graphId, goal.id, {
+      id: goal.id,
+      type: 'LearningGoal',
+      properties: nodeProps,
+    });
+  } else {
+    await kgal.createNode(uid, graphId, {
+      id: goal.id,
+      type: 'LearningGoal',
+      properties: nodeProps,
+    });
+  }
+
+  return payload;
+}
+
 export async function updateGoal(
   uid: string,
   goalId: string,
   updates: Partial<Omit<LearningGoal, 'id' | 'createdAt'>>
 ): Promise<LearningGoal> {
-  const db = getFirestore();
-  const goalRef = db
-    .collection('userLearningGoals')
-    .doc(uid)
-    .collection('goals')
-    .doc(goalId);
-
-  const existingDoc = await goalRef.get();
-  if (!existingDoc.exists) {
-    throw new Error(`Goal with ID ${goalId} not found`);
-  }
-
-  const updatedData = {
-    ...updates,
-    updatedAt: Date.now(),
-  };
-
-  await goalRef.update(updatedData);
-
-  const updatedGoal = {
-    id: goalId,
-    ...existingDoc.data(),
-    ...updatedData,
-  } as LearningGoal;
-
-  return updatedGoal;
+  const existing = await getGoalById(uid, goalId);
+  if (!existing) throw new Error(`Goal with ID ${goalId} not found`);
+  const updated: LearningGoal = { ...existing, ...updates, updatedAt: Date.now() };
+  return saveGoal(uid, updated);
 }
 
-/**
- * Delete a learning goal
- */
-export async function deleteGoal(
-  uid: string,
-  goalId: string
-): Promise<void> {
-  const db = getFirestore();
-  const goalRef = db
-    .collection('userLearningGoals')
-    .doc(uid)
-    .collection('goals')
-    .doc(goalId);
-
-  const doc = await goalRef.get();
-  if (!doc.exists) {
-    throw new Error(`Goal with ID ${goalId} not found`);
-  }
-
-  await goalRef.delete();
+export async function deleteGoal(uid: string, goalId: string): Promise<void> {
+  const graphId = await ensureGoalGraph(uid);
+  const existing = await getGoalById(uid, goalId);
+  if (!existing) throw new Error(`Goal with ID ${goalId} not found`);
+  await kgal.deleteNode(uid, graphId, goalId);
 }
 
-/**
- * Link a goal to a graph (update graphId)
- */
-export async function linkGoalToGraph(
-  uid: string,
-  goalId: string,
-  graphId: string
-): Promise<LearningGoal> {
+export async function linkGoalToGraph(uid: string, goalId: string, graphId: string): Promise<LearningGoal> {
   return updateGoal(uid, goalId, { graphId });
 }
 
-/**
- * Mark a milestone as completed by index
- * This is called when a new top-level concept is generated (each top-level concept = one milestone)
- */
 export async function markMilestoneCompleted(
   uid: string,
   graphId: string,
   milestoneIndex: number
 ): Promise<void> {
   try {
-    // Get goals for this graph
     const goals = await getGoalsByGraphId(uid, graphId);
-    
-    if (goals.length === 0) {
-      // No goal found - skip silently (graph might not have a goal yet)
-      return;
-    }
-    
-    // Use the first goal (primary goal)
+    if (goals.length === 0) return;
+
     const goal = goals[0];
-    
-    if (!goal.milestones || goal.milestones.length === 0) {
-      // No milestones defined - skip silently
-      return;
-    }
-    
-    // Check if milestone index is valid
+    if (!goal.milestones || goal.milestones.length === 0) return;
     if (milestoneIndex < 0 || milestoneIndex >= goal.milestones.length) {
-      console.warn(`Milestone index ${milestoneIndex} is out of range for goal ${goal.id}. Total milestones: ${goal.milestones.length}`);
+      console.warn(`Milestone index ${milestoneIndex} out of range for goal ${goal.id}.`);
       return;
     }
-    
+
     const milestone = goal.milestones[milestoneIndex];
-    
-    // Skip if already completed (idempotent)
-    if (milestone.completed) {
-      return;
-    }
-    
-    // Mark milestone as completed
+    if (milestone.completed) return;
+
     const updatedMilestones = [...goal.milestones];
-    updatedMilestones[milestoneIndex] = {
-      ...milestone,
-      completed: true,
-      completedAt: Date.now(),
-    };
-    
-    // Update the goal
-    await updateGoal(uid, goal.id, {
-      milestones: updatedMilestones,
-    });
-    
+    updatedMilestones[milestoneIndex] = { ...milestone, completed: true, completedAt: Date.now() };
+
+    await updateGoal(uid, goal.id, { milestones: updatedMilestones });
     console.log(`Marked milestone "${milestone.title}" as completed for goal ${goal.id}`);
   } catch (error) {
-    // Log error but don't fail the operation
     console.error(`Failed to mark milestone ${milestoneIndex} as completed for graph ${graphId}:`, error);
   }
 }
 
-/**
- * Anchor question configuration
- */
 export const ANCHOR_QUESTION = "What's something you've always wanted to learn?";
 
-/**
- * Options for creating a graph with a goal
- */
 export interface CreateGraphWithGoalOptions {
   uid: string;
   anchorAnswer: string;
   questionAnswers: GoalQuestionAnswer[];
-  seedConceptName?: string; // If not provided, will be derived from anchor answer
+  seedConceptName?: string;
   seedConceptDescription?: string;
   difficulty?: 'beginner' | 'intermediate' | 'advanced';
   focus?: string;
   goalFocused?: boolean;
-  stream?: boolean; // Whether to stream the goal generation
-  // Manual goal entry - if provided, use this goal exactly and only generate milestones
+  stream?: boolean;
   manualGoal?: {
     title: string;
     description: string;
@@ -290,13 +203,8 @@ export interface CreateGraphWithGoalOptions {
   };
 }
 
-/**
- * Result from creating a graph with a goal
- */
 export interface CreateGraphWithGoalResult {
   goal: LearningGoal;
   graphId: string;
   seedConceptId: string;
 }
-
-

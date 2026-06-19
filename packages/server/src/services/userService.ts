@@ -1,4 +1,5 @@
 import { getFirestore } from '@almadar/server';
+import { studentData } from './studentDataAccess';
 
 export interface UserData {
   uid: string;
@@ -7,9 +8,6 @@ export interface UserData {
   updatedAt: number;
 }
 
-/**
- * Creates or updates user data in Firestore
- */
 export async function upsertUser(uid: string, email: string): Promise<UserData> {
   try {
     const db = getFirestore();
@@ -28,6 +26,8 @@ export async function upsertUser(uid: string, email: string): Promise<UserData> 
 
     await userRef.set(userData, { merge: true });
 
+    await studentData.upsertStudent(uid);
+
     return userData;
   } catch (error) {
     console.error('Error upserting user:', error);
@@ -35,23 +35,15 @@ export async function upsertUser(uid: string, email: string): Promise<UserData> 
   }
 }
 
-/**
- * Gets user data from Firestore
- */
 export async function getUser(uid: string): Promise<UserData | null> {
   try {
     const db = getFirestore();
     const userRef = db.collection('users').doc(uid);
     const userDoc = await userRef.get();
-
-    if (!userDoc.exists) {
-      return null;
-    }
-
+    if (!userDoc.exists) return null;
     return userDoc.data() as UserData;
   } catch (error) {
     console.error('Error getting user:', error);
     return null;
   }
 }
-
