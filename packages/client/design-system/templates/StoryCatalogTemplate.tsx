@@ -11,6 +11,7 @@
 import React from 'react';
 import { StoryCatalogBoard } from '../organisms/StoryCatalogBoard';
 import type { StoryCatalogEntity } from '../organisms/StoryCatalogBoard';
+import type { DisplayStateProps } from '@almadar/ui';
 import type { StorySummary } from '../types/knowledge';
 
 export type { StoryCatalogEntity } from '../organisms/StoryCatalogBoard';
@@ -30,13 +31,14 @@ interface StoryLike {
   episodeId?: string;
 }
 
-export interface StoryCatalogTemplateProps {
+export interface StoryCatalogTemplateProps extends DisplayStateProps {
   entity: StoryCatalogEntity | StoryLike[];
-  className?: string;
 }
 
 export const StoryCatalogTemplate = ({
   entity,
+  isLoading,
+  error,
   className,
 }: StoryCatalogTemplateProps) => {
   const resolvedEntity: StoryCatalogEntity = Array.isArray(entity)
@@ -58,7 +60,7 @@ export const StoryCatalogTemplate = ({
       }
     : (entity as StoryCatalogEntity);
 
-  return <StoryCatalogBoard entity={resolvedEntity} className={className} />;
+  return <StoryCatalogBoard entity={resolvedEntity} isLoading={isLoading} error={error} className={className} />;
 };
 
 StoryCatalogTemplate.displayName = 'StoryCatalogTemplate';

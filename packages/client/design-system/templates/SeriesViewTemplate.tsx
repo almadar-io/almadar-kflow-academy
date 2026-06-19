@@ -9,6 +9,7 @@ import React from 'react';
 import { StoriesShellTemplate } from './StoriesShellTemplate';
 import { SeriesViewBoard } from '../organisms/SeriesViewBoard';
 import type { SeriesViewEntity } from '../organisms/SeriesViewBoard';
+import { LoadingState, type DisplayStateProps } from '@almadar/ui';
 import type { StoriesNavUser } from '../molecules/StoriesNavHeader';
 import type { KnowledgeDomainType, SeriesStatus } from '../types/knowledge';
 
@@ -35,15 +36,17 @@ interface SeriesRecordLike {
   updatedAt?: string;
 }
 
-export interface SeriesViewTemplateProps {
+export interface SeriesViewTemplateProps extends DisplayStateProps {
   entity?: SeriesViewTemplateEntity | SeriesRecordLike[] | unknown[];
-  className?: string;
 }
 
 export function SeriesViewTemplate({
   entity,
+  isLoading,
+  error,
   className,
 }: SeriesViewTemplateProps): React.JSX.Element | null {
+  if (isLoading && !entity) return <LoadingState />;
   if (!entity) return null;
   const resolved: SeriesViewTemplateEntity = Array.isArray(entity)
     ? (() => {
@@ -84,7 +87,7 @@ export function SeriesViewTemplate({
 
   return (
     <StoriesShellTemplate entity={resolved.shell}>
-      <SeriesViewBoard entity={resolved} className={className} />
+      <SeriesViewBoard entity={resolved} isLoading={isLoading} error={error} className={className} />
     </StoriesShellTemplate>
   );
 }
