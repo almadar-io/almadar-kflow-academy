@@ -5,7 +5,7 @@
  */
 
 import type { Request } from 'express';
-import type { NodeBasedKnowledgeGraph, LearningGoalNodeProperties, MilestoneNodeProperties } from '../types/nodeBasedKnowledgeGraph';
+import type { NodeBasedKnowledgeGraph } from '../types/nodeBasedKnowledgeGraph';
 import type { MutationContext } from '../types/mutations';
 import type { LearningGoal, Milestone } from '../types/goal';
 import type { GraphAccessLevel } from '../types/graphAuthorization';
@@ -73,44 +73,42 @@ export function inferLearningGoalFromGraph(
     return undefined;
   }
   
-  const goalNode = goalNodes[0];
-  const goalProps = goalNode.properties as unknown as LearningGoalNodeProperties & {
-    title?: string;
-    estimatedTime?: number;
-    customMetadata?: Record<string, unknown>;
-    assessedLevel?: string;
-    placementTestId?: string;
-  };
+  const _goalNode = goalNodes[0];
+  if (!_goalNode || _goalNode.type !== 'LearningGoal') return undefined;
+  const goalNode = _goalNode;
+  const gp = goalNode.properties;
 
   // Get milestone nodes connected to this goal
   const milestoneNodes = getMilestonesForGoal(graph, goalNode.id);
 
   // Convert milestone nodes to Milestone objects
-  const milestones: Milestone[] = milestoneNodes.map(node => {
-    const mp = node.properties as unknown as MilestoneNodeProperties & { title?: string; completedAt?: number };
-    return {
-      id: mp.id || node.id,
-      title: mp.name || mp.title || '',
-      description: mp.description,
-      targetDate: mp.targetDate,
-      completed: mp.completed || false,
-      completedAt: mp.completedAt,
-    };
-  });
+  const milestones: Milestone[] = milestoneNodes
+    .filter((n): n is Extract<typeof n, { type: 'Milestone' }> => n.type === 'Milestone')
+    .map(node => {
+      const mp = node.properties;
+      return {
+        id: mp.id || node.id,
+        title: mp.name || '',
+        description: mp.description,
+        targetDate: mp.targetDate,
+        completed: mp.completed,
+        completedAt: mp.completedAt,
+      };
+    });
 
   // Reconstruct the full LearningGoal with milestones
   return {
-    id: goalProps.id || goalNode.id,
+    id: gp.id || goalNode.id,
     graphId: graph.id,
-    title: goalProps.name || goalProps.title || '',
-    description: goalProps.description || '',
-    type: goalProps.type || 'skill_mastery',
-    target: goalProps.target || '',
-    estimatedTime: goalProps.estimatedTime,
+    title: gp.name || '',
+    description: gp.description || '',
+    type: gp.type || 'skill_mastery',
+    target: gp.target || '',
+    estimatedTime: gp.estimatedTime,
     milestones: milestones.length > 0 ? milestones : undefined,
-    customMetadata: goalProps.customMetadata,
-    assessedLevel: goalProps.assessedLevel,
-    placementTestId: goalProps.placementTestId,
+    customMetadata: gp.customMetadata,
+    assessedLevel: gp.assessedLevel as 'beginner' | 'intermediate' | 'advanced' | undefined,
+    placementTestId: gp.placementTestId,
     createdAt: goalNode.createdAt || Date.now(),
     updatedAt: goalNode.updatedAt || Date.now(),
   };

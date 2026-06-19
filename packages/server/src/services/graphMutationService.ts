@@ -195,15 +195,10 @@ export class GraphMutationService {
       throw new Error(`Node ${nodeId} not found`);
     }
 
-    // Merge properties
-    const updatedNode: GraphNode = {
-      ...existingNode,
-      properties: {
-        ...existingNode.properties,
-        ...properties,
-      },
-      updatedAt: updateTimestamp ? Date.now() : existingNode.updatedAt,
-    };
+    // Merge properties into existing node. `type` is preserved from existingNode so the
+    // discriminant is intact; the properties cast is a single narrowing to the same member.
+    const mergedProps = { ...existingNode.properties, ...properties } as typeof existingNode.properties;
+    const updatedNode = Object.assign({}, existingNode, { properties: mergedProps, updatedAt: updateTimestamp ? Date.now() : existingNode.updatedAt }) as GraphNode;
 
     return {
       ...graph,

@@ -10,14 +10,10 @@ import type {
   NodeBasedKnowledgeGraph,
   GraphNode,
   Relationship,
-  ConceptNodeProperties,
-  LayerNodeProperties,
-  LessonNodeProperties,
-  ConceptMetadataNodeProperties,
-  FlashCardNodeProperties,
 } from '../types/nodeBasedKnowledgeGraph';
 import { getConnectedNodes } from '../utils/nodeBasedGraphQueries';
 import type { EnhancedConcept } from '../types/knowledgeGraph';
+import { str, optStr, optNum, bool } from '@almadar-io/knowledge';
 
 export interface GraphMLExportOptions {
   includeEmbeddings?: boolean;  // Include embedding vectors (default: false)
@@ -69,7 +65,6 @@ export function exportToGraphML(
   // Add all nodes
   for (const node of allNodes) {
     if (node.type === 'Concept') {
-      // Convert concept nodes to EnhancedConcept format for compatibility
       const enhancedConcept = convertNodeToEnhancedConcept(node, nodeBasedGraph);
       addNode(lines, node.id, enhancedConcept, nodeKeys, includeEmbeddings, simplified);
     } else {
@@ -96,14 +91,10 @@ export function exportToGraphML(
  * Convert a GraphNode to EnhancedConcept format for compatibility with existing addNode function
  */
 function convertNodeToEnhancedConcept(
-  conceptNode: GraphNode,
+  conceptNode: Extract<GraphNode, { type: 'Concept' }>,
   graph: NodeBasedKnowledgeGraph
 ): EnhancedConcept {
-  const props = conceptNode.properties as unknown as ConceptNodeProperties & {
-    metadata?: Record<string, unknown>;
-    embeddings?: { node2vec?: unknown; dimensions?: unknown; model?: unknown };
-    goal?: string;
-  };
+  const p = conceptNode.properties;
 
   // Get parent/child relationships
   const parentNodes = getConnectedNodes(graph, conceptNode.id, 'hasParent', 'outgoing');
@@ -112,38 +103,47 @@ function convertNodeToEnhancedConcept(
 
   // Get layer relationship
   const layerNodes = getConnectedNodes(graph, conceptNode.id, 'belongsToLayer', 'outgoing');
-  const layer = layerNodes.length > 0 ? (layerNodes[0].properties as unknown as LayerNodeProperties).layerNumber : undefined;
+  const layerNode0 = layerNodes.length > 0 ? layerNodes[0] : undefined;
+  const layer = (layerNode0 && layerNode0.type === 'Layer')
+    ? optNum(layerNode0.properties.layerNumber)
+    : undefined;
 
   // Get lesson
-  const lessonNode = getConnectedNodes(graph, conceptNode.id, 'hasLesson', 'outgoing')
+  const lessonNodeRaw = getConnectedNodes(graph, conceptNode.id, 'hasLesson', 'outgoing')
     .find(n => n.type === 'Lesson');
-  const lesson = lessonNode ? (lessonNode.properties as unknown as LessonNodeProperties).content : undefined;
+  const lessonTyped = (lessonNodeRaw && lessonNodeRaw.type === 'Lesson') ? lessonNodeRaw : undefined;
+  const lesson = lessonTyped ? str(lessonTyped.properties.content) || undefined : undefined;
 
   // Get metadata - check both separate metadata node and direct properties
-  const metadataNode = getConnectedNodes(graph, conceptNode.id, 'hasMetadata', 'outgoing')
+  const metadataNodeRaw = getConnectedNodes(graph, conceptNode.id, 'hasMetadata', 'outgoing')
     .find(n => n.type === 'ConceptMetadata');
-  const metadataFromNode = metadataNode
+  const metadataTyped = (metadataNodeRaw && metadataNodeRaw.type === 'ConceptMetadata') ? metadataNodeRaw : undefined;
+  const metadataFromNode = metadataTyped
     ? (() => {
-        const mp = metadataNode.properties as unknown as ConceptMetadataNodeProperties;
+        const mp = metadataTyped.properties;
         return {
-          difficulty: mp.difficulty,
-          timeEstimate: mp.timeEstimate,
-          domain: mp.domain,
-          tags: mp.tags,
-          resourceLinks: mp.resourceLinks,
+          difficulty: optNum(mp.difficulty),
+          timeEstimate: optNum(mp.timeEstimate),
+          domain: optStr(mp.domain),
+          tags: Array.isArray(mp.tags) ? mp.tags.filter((t): t is string => typeof t === 'string') : undefined,
+          resourceLinks: Array.isArray(mp.resourceLinks) ? mp.resourceLinks.filter((r): r is string => typeof r === 'string') : undefined,
         };
       })()
     : undefined;
 
   // Also check if metadata is directly in properties (for backward compatibility)
-  const rawMeta = props.metadata;
+  const pUnknown: unknown = p;
+  const pRaw = pUnknown as Record<string, unknown>;
+  const rawMeta = typeof pRaw.metadata === 'object' && pRaw.metadata !== null && !Array.isArray(pRaw.metadata)
+    ? pRaw.metadata as Record<string, unknown>
+    : undefined;
   const metadataFromProps = rawMeta
     ? {
-        difficulty: rawMeta.difficulty as number | undefined,
-        timeEstimate: rawMeta.timeEstimate as number | undefined,
-        domain: rawMeta.domain as string | undefined,
-        tags: rawMeta.tags as string[] | undefined,
-        resourceLinks: rawMeta.resourceLinks as string[] | undefined,
+        difficulty: optNum(rawMeta.difficulty),
+        timeEstimate: optNum(rawMeta.timeEstimate),
+        domain: optStr(rawMeta.domain),
+        tags: Array.isArray(rawMeta.tags) ? rawMeta.tags.filter((t): t is string => typeof t === 'string') : undefined,
+        resourceLinks: Array.isArray(rawMeta.resourceLinks) ? rawMeta.resourceLinks.filter((r): r is string => typeof r === 'string') : undefined,
       }
     : undefined;
 
@@ -151,43 +151,45 @@ function convertNodeToEnhancedConcept(
   const metadata = metadataFromNode || metadataFromProps;
 
   // Get embeddings from properties (if stored directly in concept node)
-  const rawEmbed = props.embeddings;
+  const rawEmbed = typeof pRaw.embeddings === 'object' && pRaw.embeddings !== null && !Array.isArray(pRaw.embeddings)
+    ? pRaw.embeddings as Record<string, unknown>
+    : undefined;
   const embeddings = rawEmbed
     ? {
-        node2vec: rawEmbed.node2vec as number[] | undefined,
-        dimensions: rawEmbed.dimensions as number | undefined,
-        model: rawEmbed.model as string | undefined,
+        node2vec: Array.isArray(rawEmbed.node2vec) ? rawEmbed.node2vec.filter((x): x is number => typeof x === 'number') : undefined,
+        dimensions: optNum(rawEmbed.dimensions),
+        model: optStr(rawEmbed.model),
       }
     : undefined;
 
   // Get flash cards
   const flashCardNodes = getConnectedNodes(graph, conceptNode.id, 'hasFlashCard', 'outgoing')
-    .filter(n => n.type === 'FlashCard');
+    .filter((n): n is Extract<GraphNode, { type: 'FlashCard' }> => n.type === 'FlashCard');
   const flash = flashCardNodes.length > 0
-    ? flashCardNodes.map(card => {
-        const fp = card.properties as unknown as FlashCardNodeProperties;
-        return { front: fp.front, back: fp.back };
-      })
+    ? flashCardNodes.map(card => ({
+        front: str(card.properties.front),
+        back: str(card.properties.back),
+      }))
     : undefined;
 
   return {
-    id: props.id || conceptNode.id,
-    name: props.name,
-    description: props.description,
+    id: optStr(p.id) || conceptNode.id,
+    name: str(p.name),
+    description: str(p.description),
     parents: parentNodes.map(n => n.id),
     children: childNodes.map(n => n.id),
     prerequisites: prerequisiteNodes.map(n => n.id),
     lesson,
     flash,
-    sequence: props.sequence,
-    focus: props.focus,
-    isSeed: props.isSeed || false,
-    isAutoGenerated: props.isAutoGenerated || false,
-    isPrerequisite: props.isPrerequisite || false,
+    sequence: optNum(p.sequence),
+    focus: optStr(p.focus),
+    isSeed: bool(p.isSeed),
+    isAutoGenerated: bool(p.isAutoGenerated),
+    isPrerequisite: bool(p.isPrerequisite),
     layer,
     metadata,
     embeddings,
-    goal: props.goal,
+    goal: optStr(p.goal),
   };
 }
 
@@ -387,9 +389,9 @@ function addNodeFromGraphNode(
   if (!simplified) {
     // Layer-specific attributes
     if (node.type === 'Layer') {
-      const lp = props as unknown as LayerNodeProperties;
-      if (nodeKeys.has('layerNumber') && lp.layerNumber !== undefined) {
-        lines.push(`      <data key="layerNumber">${lp.layerNumber}</data>`);
+      const layerNum = optNum(props.layerNumber);
+      if (nodeKeys.has('layerNumber') && layerNum !== undefined) {
+        lines.push(`      <data key="layerNumber">${layerNum}</data>`);
       }
       if (nodeKeys.has('description') && typeof props.goal === 'string') {
         lines.push(`      <data key="description">${escapeXml(props.goal)}</data>`);
@@ -425,8 +427,8 @@ function getNodeLabel(node: GraphNode): string {
     case 'Concept':
       return name || node.id;
     case 'Layer': {
-      const lp = props as unknown as LayerNodeProperties;
-      return name || `Layer ${lp.layerNumber || ''}`.trim() || 'Layer';
+      const layerNum = optNum(props.layerNumber);
+      return name || `Layer ${layerNum ?? ''}`.trim() || 'Layer';
     }
     case 'LearningGoal':
       return name || 'Learning Goal';

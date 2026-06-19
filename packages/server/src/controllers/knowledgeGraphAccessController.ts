@@ -656,7 +656,7 @@ export async function findNodesHandler(req: Request, res: Response): Promise<voi
           if (node.type !== value) return false;
         } else if (key.startsWith('properties.')) {
           const propKey = key.replace('properties.', '');
-          if (node.properties[propKey] !== value) return false;
+          if ((node.properties as Record<string, unknown>)[propKey] !== value) return false;
         } else {
           const nodeRecord: Record<string, unknown> = {
             id: node.id, createdAt: node.createdAt, updatedAt: node.updatedAt,

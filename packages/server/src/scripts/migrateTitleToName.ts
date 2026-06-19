@@ -20,7 +20,7 @@ import * as path from 'path';
 dotenv.config({ path: path.join(__dirname, '..', '..', '.env') });
 
 import { getFirestore } from '@almadar/server';
-import { getNodeBasedKnowledgeGraph, saveNodeBasedKnowledgeGraph } from '../services/knowledgeGraphService';
+import { getNodeBasedKnowledgeGraph, saveNodeBasedKnowledgeGraph } from '@almadar-io/knowledge/server';
 
 interface MigrationStats {
   graphsProcessed: number;
@@ -64,19 +64,22 @@ async function migrateGraph(uid: string, graphId: string): Promise<{
     for (const goalId of goalNodeIds) {
       const goalNode = graph.nodes[goalId];
       if (goalNode && goalNode.type === 'LearningGoal') {
-        const props = goalNode.properties;
-        
+        const propsUnknown: unknown = goalNode.properties;
+        const props = propsUnknown as Record<string, unknown>;
+        const propsTitle = typeof props.title === 'string' ? props.title : undefined;
+        const propsName = typeof props.name === 'string' ? props.name : undefined;
+
         // Check if migration is needed
-        if (props.title && !props.name) {
+        if (propsTitle && !propsName) {
           // Copy title to name
-          props.name = props.title;
+          props.name = propsTitle;
           goalsMigrated++;
           graphModified = true;
-          console.log(`  ✓ Migrated LearningGoal ${goalId}: "${props.title}" → name`);
-        } else if (props.title && props.name && props.title !== props.name) {
+          console.log(`  ✓ Migrated LearningGoal ${goalId}: "${propsTitle}" → name`);
+        } else if (propsTitle && propsName && propsTitle !== propsName) {
           // Both exist but different - log warning, keep name
-          console.warn(`  ⚠ LearningGoal ${goalId} has both title and name (different values). Keeping name: "${props.name}"`);
-        } else if (props.title && props.name && props.title === props.name) {
+          console.warn(`  ⚠ LearningGoal ${goalId} has both title and name (different values). Keeping name: "${propsName}"`);
+        } else if (propsTitle && propsName && propsTitle === propsName) {
           // Both exist and same - safe to remove title later
           console.log(`  ℹ LearningGoal ${goalId} has both title and name (same value). Title can be removed.`);
         }
@@ -88,19 +91,22 @@ async function migrateGraph(uid: string, graphId: string): Promise<{
     for (const milestoneId of milestoneNodeIds) {
       const milestoneNode = graph.nodes[milestoneId];
       if (milestoneNode && milestoneNode.type === 'Milestone') {
-        const props = milestoneNode.properties;
-        
+        const propsUnknown: unknown = milestoneNode.properties;
+        const props = propsUnknown as Record<string, unknown>;
+        const propsTitle = typeof props.title === 'string' ? props.title : undefined;
+        const propsName = typeof props.name === 'string' ? props.name : undefined;
+
         // Check if migration is needed
-        if (props.title && !props.name) {
+        if (propsTitle && !propsName) {
           // Copy title to name
-          props.name = props.title;
+          props.name = propsTitle;
           milestonesMigrated++;
           graphModified = true;
-          console.log(`  ✓ Migrated Milestone ${milestoneId}: "${props.title}" → name`);
-        } else if (props.title && props.name && props.title !== props.name) {
+          console.log(`  ✓ Migrated Milestone ${milestoneId}: "${propsTitle}" → name`);
+        } else if (propsTitle && propsName && propsTitle !== propsName) {
           // Both exist but different - log warning, keep name
-          console.warn(`  ⚠ Milestone ${milestoneId} has both title and name (different values). Keeping name: "${props.name}"`);
-        } else if (props.title && props.name && props.title === props.name) {
+          console.warn(`  ⚠ Milestone ${milestoneId} has both title and name (different values). Keeping name: "${propsName}"`);
+        } else if (propsTitle && propsName && propsTitle === propsName) {
           // Both exist and same - safe to remove title later
           console.log(`  ℹ Milestone ${milestoneId} has both title and name (same value). Title can be removed.`);
         }
@@ -112,36 +118,38 @@ async function migrateGraph(uid: string, graphId: string): Promise<{
     for (const layerId of layerNodeIds) {
       const layerNode = graph.nodes[layerId];
       if (layerNode && layerNode.type === 'Layer') {
-        const props = layerNode.properties as Record<string, unknown>;
+        const typedProps = layerNode.properties;
+        const mutablePropsUnknown: unknown = typedProps;
+        const mutableProps = mutablePropsUnknown as Record<string, unknown>;
         let layerName: string | undefined;
-        const propLevelName = typeof props.levelName === 'string' ? props.levelName : undefined;
-        const propName = typeof props.name === 'string' ? props.name : undefined;
-        const propGoal = typeof props.goal === 'string' ? props.goal : undefined;
+        const propLevelName = typeof mutableProps.levelName === 'string' ? mutableProps.levelName : undefined;
+        const propName = typedProps.name;
+        const propGoal = typedProps.goal;
 
         // Priority: levelName > goal > generate from layerNumber
         if (propLevelName && !propName) {
           layerName = propLevelName;
-          props.name = layerName;
+          mutableProps.name = layerName;
           layersMigrated++;
           graphModified = true;
           console.log(`  ✓ Migrated Layer ${layerId}: levelName "${propLevelName}" → name`);
         } else if (propGoal && !propName && !propLevelName) {
           layerName = propGoal;
-          props.name = layerName;
+          mutableProps.name = layerName;
           layersMigrated++;
           graphModified = true;
           console.log(`  ✓ Migrated Layer ${layerId}: goal "${propGoal}" → name`);
-        } else if (!propName && !propLevelName && !propGoal && props.layerNumber !== undefined) {
-          layerName = `Layer ${props.layerNumber}`;
-          props.name = layerName;
+        } else if (!propName && !propLevelName && !propGoal && typedProps.layerNumber !== undefined) {
+          layerName = `Layer ${typedProps.layerNumber}`;
+          mutableProps.name = layerName;
           layersMigrated++;
           graphModified = true;
           console.log(`  ✓ Migrated Layer ${layerId}: generated name "${layerName}" from layerNumber`);
-        } else if (props.levelName && props.name && props.levelName !== props.name) {
+        } else if (mutableProps.levelName && propName && mutableProps.levelName !== propName) {
           // Both exist but different - log warning, keep name
-          console.warn(`  ⚠ Layer ${layerId} has both levelName and name (different values). Keeping name: "${props.name}"`);
+          console.warn(`  ⚠ Layer ${layerId} has both levelName and name (different values). Keeping name: "${propName}"`);
         }
-        
+
         // Note: We don't remove levelName here - that can be done in a later phase
         // to maintain backward compatibility during transition
       }

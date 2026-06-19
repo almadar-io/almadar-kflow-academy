@@ -25,6 +25,7 @@
     "firebase:use": "firebase use kflow-b3a39"
   },
   "dependencies": {
+    "@almadar-io/knowledge": "^0.1.2",
     "three": "^0.160.1"
   },
   "devDependencies": {

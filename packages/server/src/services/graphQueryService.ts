@@ -8,16 +8,11 @@
 
 import { getFirestore } from '@almadar/server';
 import { KnowledgeGraphAccessLayer } from '@almadar-io/knowledge/server';
+import { str, optStr, optNum, bool } from '@almadar-io/knowledge';
 import { cache, CACHE_TTL, hybridCache } from './cacheService';
 import type {
   NodeBasedKnowledgeGraph,
   GraphNode,
-  ConceptNodeProperties,
-  LayerNodeProperties,
-  LearningGoalNodeProperties,
-  MilestoneNodeProperties,
-  LessonNodeProperties,
-  FlashCardNodeProperties,
 } from '../types/nodeBasedKnowledgeGraph';
 import type {
   LearningPathSummary,
@@ -147,11 +142,11 @@ export class GraphQueryService {
     let goal = null;
     if (goalNodeIds.length > 0) {
       const goalNode = nodes[goalNodeIds[0]];
-      if (goalNode) {
-        const gp = goalNode.properties as unknown as LearningGoalNodeProperties & { title?: string };
+      if (goalNode && goalNode.type === 'LearningGoal') {
+        const gp = goalNode.properties;
         goal = {
           id: goalNode.id,
-          title: gp.name || gp.title || '',
+          title: gp.name || '',
           description: gp.description || '',
           type: gp.type || '',
           target: gp.target || '',
@@ -162,26 +157,25 @@ export class GraphQueryService {
     const milestoneNodeIds = graph.nodeTypes?.Milestone || [];
     const milestones = milestoneNodeIds
       .map(id => nodes[id])
-      .filter(Boolean)
+      .filter((node): node is Extract<GraphNode, { type: 'Milestone' }> => node?.type === 'Milestone')
       .map(node => {
-        const mp = node.properties as unknown as MilestoneNodeProperties & { title?: string };
+        const mp = node.properties;
         return {
           id: node.id,
-          title: mp.name || mp.title || '',
+          title: mp.name || '',
           description: mp.description || '',
           targetDate: mp.targetDate,
-          completed: mp.completed || false,
+          completed: mp.completed,
         };
       });
 
     let seedConcept = null;
     if (graph.seedConceptId) {
       const seedNode = nodes[graph.seedConceptId];
-      if (seedNode) {
-        const sp = seedNode.properties as unknown as ConceptNodeProperties;
+      if (seedNode && seedNode.type === 'Concept') {
         seedConcept = {
           id: seedNode.id,
-          name: sp.name || '',
+          name: seedNode.properties.name || '',
         };
       }
     }
@@ -300,11 +294,12 @@ export class GraphQueryService {
     if (lessonRel) {
       const lessonNode = graph.nodes[lessonRel.target];
       if (lessonNode?.type === 'Lesson') {
-        const lp = lessonNode.properties as unknown as LessonNodeProperties & { prerequisites?: string[] };
+        const lp = lessonNode.properties;
+        const prereqs = Array.isArray(lp.prerequisites) ? lp.prerequisites.filter((p): p is string => typeof p === 'string') : [];
         lesson = {
           id: lessonNode.id,
-          content: lp.content || '',
-          prerequisites: lp.prerequisites || [],
+          content: optStr(lp.content) || '',
+          prerequisites: prereqs,
         };
       }
     }
@@ -314,15 +309,12 @@ export class GraphQueryService {
     );
     const flashcards = flashCardRels
       .map(rel => graph.nodes[rel.target])
-      .filter(node => node?.type === 'FlashCard')
-      .map(node => {
-        const fp = node.properties as unknown as FlashCardNodeProperties;
-        return {
-          id: node.id,
-          front: fp.front || '',
-          back: fp.back || '',
-        };
-      });
+      .filter((node): node is Extract<GraphNode, { type: 'FlashCard' }> => node?.type === 'FlashCard')
+      .map(node => ({
+        id: node.id,
+        front: node.properties.front || '',
+        back: node.properties.back || '',
+      }));
 
     const metadataRel = graph.relationships.find(
       rel => rel.source === conceptId && rel.type === 'hasMetadata'
@@ -331,7 +323,8 @@ export class GraphQueryService {
     if (metadataRel) {
       const metadataNode = graph.nodes[metadataRel.target];
       if (metadataNode?.type === 'ConceptMetadata') {
-        const qaPairs = (metadataNode.properties as Record<string, unknown>).qaPairs;
+        const metaPropsUnknown: unknown = metadataNode.properties;
+        const qaPairs = (metaPropsUnknown as Record<string, unknown>).qaPairs;
         const qaPairsArr = Array.isArray(qaPairs) ? qaPairs : [];
         if (qaPairsArr.length > 0) {
           const qa = qaPairsArr.map((pair: { question: string; answer: string }) => ({
@@ -385,18 +378,17 @@ export class GraphQueryService {
 
     if (goalNodeIds.length > 0) {
       const goalNode = graph.nodes[goalNodeIds[0]];
-      if (goalNode) {
-        const gp = goalNode.properties as unknown as LearningGoalNodeProperties;
-        title = gp.name || title;
-        description = gp.description || '';
+      if (goalNode && goalNode.type === 'LearningGoal') {
+        title = goalNode.properties.name || title;
+        description = goalNode.properties.description || '';
       }
     }
 
     // Fallback to seed concept name if no goal
     if (title === 'Untitled Learning Path' && graph.seedConceptId) {
       const seedNode = graph.nodes[graph.seedConceptId];
-      if (seedNode) {
-        title = (seedNode.properties as unknown as ConceptNodeProperties).name || title;
+      if (seedNode && seedNode.type === 'Concept') {
+        title = seedNode.properties.name || title;
       }
     }
 
@@ -412,11 +404,10 @@ export class GraphQueryService {
         const conceptNodeIds = graph.nodeTypes?.Concept || [];
         for (const nodeId of conceptNodeIds) {
           const node = graph.nodes[nodeId];
-          const np = node?.properties as unknown as ConceptNodeProperties | undefined;
-          if (node && np && (
-            np.isSeed === true ||
+          if (node && node.type === 'Concept' && (
+            node.properties.isSeed === true ||
             node.id === graph.seedConceptId ||
-            np.name === graph.seedConceptId
+            node.properties.name === graph.seedConceptId
           )) {
             seedNode = node;
             break;
@@ -424,12 +415,11 @@ export class GraphQueryService {
         }
       }
 
-      if (seedNode) {
-        const sp = seedNode.properties as unknown as ConceptNodeProperties;
+      if (seedNode && seedNode.type === 'Concept') {
         seedConcept = {
           id: seedNode.id,
-          name: sp.name || '',
-          description: sp.description || '',
+          name: seedNode.properties.name || '',
+          description: seedNode.properties.description || '',
         };
       }
     }
@@ -473,7 +463,10 @@ export class GraphQueryService {
       prerequisites = this.extractRelationshipNames(graph, node.id, 'hasPrerequisite', 'source');
     }
 
-    const cp = node.properties as unknown as ConceptNodeProperties;
+    if (node.type !== 'Concept') {
+      throw new Error(`Expected Concept node, got ${node.type}`);
+    }
+    const cp = node.properties;
     return {
       id: node.id,
       name: cp.name || '',
@@ -501,7 +494,7 @@ export class GraphQueryService {
     }
     
     // Use node.properties.layer directly
-    if (node.properties?.layer !== undefined && node.properties.layer !== null) {
+    if (node.type === 'Concept' && node.properties.layer !== undefined && node.properties.layer !== null) {
       const layerValue = Number(node.properties.layer);
       if (!isNaN(layerValue) && layerValue >= 0) {
         return layerValue;
@@ -560,7 +553,8 @@ export class GraphQueryService {
           relatedNodeId = direction === 'source' ? rel.target : rel.source;
         }
         const relatedNode = graph.nodes[relatedNodeId];
-        const name = typeof relatedNode?.properties.name === 'string' ? relatedNode.properties.name : undefined;
+        const rawProps = relatedNode?.properties as Record<string, unknown> | undefined;
+        const name = typeof rawProps?.name === 'string' ? rawProps.name : undefined;
         if (name) {
           names.add(name);
         }
@@ -590,9 +584,10 @@ export class GraphQueryService {
         const relatedNodeId = direction === 'source' ? rel.target : rel.source;
         const relatedNode = graph.nodes[relatedNodeId];
         if (relatedNode) {
+          const rawProps = relatedNode.properties as Record<string, unknown>;
           return {
             id: relatedNode.id,
-            name: typeof relatedNode.properties.name === 'string' ? relatedNode.properties.name : '',
+            name: typeof rawProps.name === 'string' ? rawProps.name : '',
           };
         }
         return null;
@@ -618,9 +613,8 @@ export class GraphQueryService {
     for (const layerId of layerNodeIds) {
       const layerNode = graph.nodes[layerId];
       if (layerNode?.type === 'Layer') {
-        const lp = layerNode.properties as Record<string, unknown>;
-        // Try multiple sources for layer number
-        const layerNumber = Number(lp.number || lp.layerNumber || lp.layer || 0);
+        const lp = layerNode.properties;
+        const layerNumber = lp.layerNumber || 0;
 
         // Count concepts in this layer using both relationship types
         // belongsToLayer: concept -> belongsToLayer -> layer (concept is source, layer is target)

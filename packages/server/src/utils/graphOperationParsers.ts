@@ -5,12 +5,13 @@
  * for use in streaming scenarios where content is accumulated first.
  */
 
-import type { GraphNode, NodeBasedKnowledgeGraph, ConceptNodeProperties, LayerNodeProperties } from '../types/nodeBasedKnowledgeGraph';
+import type { GraphNode, NodeBasedKnowledgeGraph } from '../types/nodeBasedKnowledgeGraph';
+import { str, num } from '@almadar-io/knowledge';
 import { generateNodeId, generateRelationshipId } from '../types/nodeBasedKnowledgeGraph';
 import type { GraphMutation, MutationBatch, MutationContext } from '../types/mutations';
 import type { LearningGoal, Milestone } from '../types/goal';
 import { extractJSONArray } from '../services/llm';
-import { buildExpansionMutations } from '../services/graphOperations/expansionMutations';
+import { buildExpansionMutations } from '@almadar-io/knowledge/server';
 import { processPrerequisitesFromLesson } from './prerequisites';
 
 /**
@@ -66,13 +67,12 @@ export async function parseExplainContent(
   }
 
   // Process prerequisites from lesson
-  const conceptProps = concept.properties as unknown as ConceptNodeProperties;
   const processedPrerequisites = processPrerequisitesFromLesson(
     lessonMarkdown,
     {
       id: concept.id,
-      name: conceptProps.name,
-      description: conceptProps.description || '',
+      name: str(concept.properties.name),
+      description: str(concept.properties.description) || '',
       parents: [],
       children: []
     },
@@ -93,6 +93,7 @@ export async function parseExplainContent(
     id: lessonNodeId,
     type: 'Lesson',
     properties: {
+      id: lessonNodeId,
       content: lessonMarkdown,
       generatedAt: Date.now(),
       prerequisites: prerequisiteNames
@@ -241,12 +242,11 @@ export async function parseGenerateGoalsContent(
       id: seedConceptId,
       type: 'Concept',
       properties: {
+        id: seedConceptId,
         name: seedConceptName,
         description: seedConceptDescription,
         isSeed: true,
         goal: `${goalName}: ${goalDescription}`,
-        createdAt: Date.now(),
-        updatedAt: Date.now()
       },
       createdAt: Date.now(),
       updatedAt: Date.now()
@@ -279,12 +279,13 @@ export async function parseGenerateGoalsContent(
     id: goalNodeId,
     type: 'LearningGoal',
     properties: {
-      name: goalName,  // Use name property
+      id: goalNodeId,
+      name: goalName,
       description: goalDescription,
       type: goalType,
       target: goalTarget,
-      estimatedTime: goalEstimatedTime,
-      customMetadata: goalData.customMetadata || {},
+      estimatedTime: goalEstimatedTime ?? undefined,
+      customMetadata: goalData.customMetadata || undefined,
       assessedLevel: goalData.assessedLevel,
       createdAt: Date.now(),
       updatedAt: Date.now()
@@ -344,11 +345,12 @@ export async function parseGenerateGoalsContent(
         id: milestoneNodeId,
         type: 'Milestone',
         properties: {
-          name: milestoneName,  // Use name property
-          description: milestoneData.description || '',
-          targetDate: milestoneData.targetDate || null,
+          id: milestoneNodeId,
+          name: milestoneName,
+          description: milestoneData.description || undefined,
+          targetDate: milestoneData.targetDate || undefined,
           completed: milestoneData.completed || false,
-          sequence: index,  // Explicit sequence for ordering
+          sequence: index,
         },
         createdAt: Date.now(),
         updatedAt: Date.now()
@@ -424,11 +426,10 @@ export async function parseGenerateGoalsContent(
 function findConceptNodeByName(
   graph: NodeBasedKnowledgeGraph,
   name: string
-): GraphNode | undefined {
-  return Object.values(graph.nodes).find(n => 
-    n.type === 'Concept' && 
-    (n.properties.name === name || n.id === name)
-  );
+): Extract<GraphNode, { type: 'Concept' }> | undefined {
+  return Object.values(graph.nodes)
+    .filter((n): n is Extract<GraphNode, { type: 'Concept' }> => n.type === 'Concept')
+    .find(n => n.properties.name === name || n.id === name);
 }
 
 /**
@@ -458,12 +459,12 @@ function findConceptLayerForParser(
 /**
  * Get all layer nodes sorted by layer number
  */
-function getAllLayersForParser(graph: NodeBasedKnowledgeGraph): GraphNode[] {
+function getAllLayersForParser(graph: NodeBasedKnowledgeGraph): Array<Extract<GraphNode, { type: 'Layer' }>> {
   return Object.values(graph.nodes)
-    .filter((n): n is GraphNode => n.type === 'Layer')
+    .filter((n): n is Extract<GraphNode, { type: 'Layer' }> => n.type === 'Layer')
     .sort((a, b) =>
-      ((a.properties as unknown as LayerNodeProperties).layerNumber || 0) -
-      ((b.properties as unknown as LayerNodeProperties).layerNumber || 0)
+      (num(a.properties.layerNumber) || 0) -
+      (num(b.properties.layerNumber) || 0)
     );
 }
 
@@ -650,10 +651,11 @@ export async function parseCustomOperationContent(
         id: conceptNodeId,
         type: 'Concept',
         properties: {
+          id: conceptNodeId,
           name: conceptName,
           description: item.description || '',
           ...(item.sequence !== undefined && { sequence: item.sequence }),
-          ...(targetLayer && { layer: targetLayer.properties.layerNumber })
+          ...(targetLayer && targetLayer.type === 'Layer' && { layer: targetLayer.properties.layerNumber })
         },
         createdAt: Date.now(),
         updatedAt: Date.now()
@@ -750,6 +752,7 @@ export async function parseCustomOperationContent(
         id: lessonNodeId,
         type: 'Lesson',
         properties: {
+          id: lessonNodeId,
           content: item.lesson,
           generatedAt: Date.now()
         },
@@ -790,6 +793,7 @@ export async function parseCustomOperationContent(
             id: flashCardNodeId,
             type: 'FlashCard',
             properties: {
+              id: flashCardNodeId,
               front: card.front.trim(),
               back: card.back.trim()
             },

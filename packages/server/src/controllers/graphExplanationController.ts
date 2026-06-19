@@ -7,7 +7,7 @@
 import type { Request, Response } from 'express';
 import { GraphMutationService } from '../services/graphMutationService';
 import { KnowledgeGraphAccessLayer } from '@almadar-io/knowledge/server';
-import { explain, answerQuestion } from '../services/graphOperations';
+import { explain, answerQuestion } from '@almadar-io/knowledge/server';
 import {
   getUserId,
   loadGraphForOperation,

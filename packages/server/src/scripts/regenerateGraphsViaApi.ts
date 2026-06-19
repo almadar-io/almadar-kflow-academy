@@ -19,9 +19,9 @@ import * as dotenv from 'dotenv';
 import * as path from 'path';
 import { getFirestore } from '@almadar/server';
 import { getUserGraphs } from '../services/graphService';
-import { saveNodeBasedKnowledgeGraph } from '../services/knowledgeGraphService';
-import { generateGoals } from '../services/graphOperations/generateGoals';
-import { progressiveExpandMultipleFromText } from '../services/graphOperations/progressiveExpandMultipleFromText';
+import { saveNodeBasedKnowledgeGraph } from '@almadar-io/knowledge/server';
+import { generateGoals } from '@almadar-io/knowledge/server';
+import { progressiveExpandMultipleFromText } from '@almadar-io/knowledge/server';
 import { GraphMutationService } from '../services/graphMutationService';
 import type { NodeBasedKnowledgeGraph, GraphNode, NodeTypeIndex } from '../types/nodeBasedKnowledgeGraph';
 import type { MutationContext } from '../types/mutations';
@@ -81,10 +81,11 @@ function createEmptyGraphWithSeed(
     id: seedConceptId,
     type: 'Concept',
     properties: {
+      id: seedConceptId,
       name: seedConceptName,
       description: seedConceptDescription,
       isSeed: true,
-      layer: 0, // Seed concept is layer 0, generated layers start at 1
+      layer: 0,
     },
     createdAt: Date.now(),
     updatedAt: Date.now(),

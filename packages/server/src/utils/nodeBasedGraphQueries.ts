@@ -10,9 +10,8 @@ import type {
   Relationship,
   NodeType,
   RelationshipType,
-  LayerNodeProperties,
-  MilestoneNodeProperties,
 } from '../types/nodeBasedKnowledgeGraph';
+import { optNum } from '@almadar-io/knowledge';
 
 /**
  * Get all nodes of a specific type
@@ -122,8 +121,8 @@ export function getLayersForGraph(
       return belongsToGraph;
     })
     .sort((a, b) => {
-      const layerNumA = (a.properties as unknown as LayerNodeProperties).layerNumber || 0;
-      const layerNumB = (b.properties as unknown as LayerNodeProperties).layerNumber || 0;
+      const layerNumA = a.type === 'Layer' ? a.properties.layerNumber : 0;
+      const layerNumB = b.type === 'Layer' ? b.properties.layerNumber : 0;
       return layerNumA - layerNumB;
     });
 }
@@ -186,17 +185,13 @@ export function getMilestonesForGoal(
   return getConnectedNodes(graph, goalNodeId, 'hasMilestone', 'outgoing')
     .filter((node) => node.type === 'Milestone')
     .sort((a, b) => {
-      const mpA = a.properties as unknown as MilestoneNodeProperties & { sequence?: number };
-      const mpB = b.properties as unknown as MilestoneNodeProperties & { sequence?: number };
-      // Sort by sequence property (primary), then by target date or creation order (fallback)
-      const seqA = mpA.sequence ?? Infinity;
-      const seqB = mpB.sequence ?? Infinity;
+      const seqA = optNum(a.properties.sequence) ?? Infinity;
+      const seqB = optNum(b.properties.sequence) ?? Infinity;
       if (seqA !== seqB) {
         return seqA - seqB;
       }
-      // Fallback to target date or creation order
-      const dateA = mpA.targetDate ?? a.createdAt ?? 0;
-      const dateB = mpB.targetDate ?? b.createdAt ?? 0;
+      const dateA = optNum(a.properties.targetDate) ?? a.createdAt ?? 0;
+      const dateB = optNum(b.properties.targetDate) ?? b.createdAt ?? 0;
       return dateA - dateB;
     });
 }

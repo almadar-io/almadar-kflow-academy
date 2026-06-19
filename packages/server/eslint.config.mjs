@@ -28,6 +28,13 @@ export default [
     },
     rules: {
       'almadar/no-as-any': 'error',
+      'no-restricted-syntax': [
+        'error',
+        {
+          selector: 'TSAsExpression > TSAsExpression',
+          message: 'Double-cast (as unknown as) is forbidden — validate/narrow instead.',
+        },
+      ],
     },
   },
 ];

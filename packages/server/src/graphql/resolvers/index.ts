@@ -108,7 +108,7 @@ export const resolvers: ResolverMap = {
           if (filter.type && node.type !== filter.type) return false;
           if (filter.properties) {
             for (const [key, value] of Object.entries(filter.properties)) {
-              if (node.properties[key] !== value) return false;
+              if ((node.properties as Record<string, unknown>)[key] !== value) return false;
             }
           }
           return true;
@@ -138,7 +138,7 @@ export const resolvers: ResolverMap = {
         if (filter.type && node.type !== filter.type) return false;
         if (filter.properties) {
           for (const [key, value] of Object.entries(filter.properties)) {
-            if (node.properties[key] !== value) return false;
+            if ((node.properties as Record<string, unknown>)[key] !== value) return false;
           }
         }
         return true;

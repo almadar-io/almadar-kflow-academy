@@ -14,7 +14,7 @@ import type {
   GenerateGoalsResult as GenerateGoalsResultOperation,
   GenerateLayerPracticeResult as GenerateLayerPracticeResultOperation,
   CustomOperationResult as CustomOperationResultOperation
-} from '../services/graphOperations';
+} from '@almadar-io/knowledge/server';
 
 /**
  * GraphQL Context Type

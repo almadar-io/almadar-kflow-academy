@@ -10,6 +10,7 @@ import type { LearningGoal } from '../../../types/goal';
 import type { GraphQLContext } from '../../types';
 import type { GraphAccessLevel } from '../../../types/graphAuthorization';
 import { KnowledgeGraphAccessLayer } from '@almadar-io/knowledge/server';
+import { optStr, optNum } from '@almadar-io/knowledge';
 import { GraphAuthorizationService } from '../../../services/graphAuthorizationService';
 
 const accessLayer = new KnowledgeGraphAccessLayer();
@@ -63,12 +64,27 @@ export function inferLearningGoalFromGraph(
   graph: NodeBasedKnowledgeGraph
 ): LearningGoal | undefined {
   const goalNodes = Object.values(graph.nodes).filter(
-    (n): n is GraphNode => n.type === 'LearningGoal'
+    (n): n is Extract<GraphNode, { type: 'LearningGoal' }> => n.type === 'LearningGoal'
   );
-  if (goalNodes.length > 0) {
-    return goalNodes[0].properties as unknown as LearningGoal;
-  }
-  return undefined;
+  if (goalNodes.length === 0) return undefined;
+  const p = goalNodes[0].properties;
+  const goal: LearningGoal = {
+    id: p.id || goalNodes[0].id,
+    graphId: graph.id,
+    title: p.name || '',
+    description: p.description || '',
+    type: p.type || 'custom',
+    target: p.target ?? '',
+    estimatedTime: p.estimatedTime,
+    assessedLevel: p.assessedLevel as 'beginner' | 'intermediate' | 'advanced' | undefined,
+    placementTestId: p.placementTestId,
+    customMetadata: typeof p.customMetadata === 'object' && p.customMetadata !== null && !Array.isArray(p.customMetadata)
+      ? p.customMetadata as Record<string, unknown>
+      : undefined,
+    createdAt: p.createdAt || goalNodes[0].createdAt || Date.now(),
+    updatedAt: p.updatedAt || goalNodes[0].updatedAt || Date.now(),
+  };
+  return goal;
 }
 
 /**

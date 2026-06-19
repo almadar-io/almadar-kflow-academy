@@ -24,7 +24,7 @@ import * as path from 'path';
 import * as fs from 'fs';
 import { getFirestore } from '@almadar/server';
 import { getUserGraphs } from '../services/graphService';
-import { convertStoredConceptGraphToNodeBased } from '../services/knowledgeGraphService';
+import { convertStoredConceptGraphToNodeBased } from '@almadar-io/knowledge/server';
 import { exportToGraphML, type GraphMLExportOptions } from '../services/graphmlExportService';
 import { getGoalsByGraphId } from '../services/goalService';
 import type { NodeBasedKnowledgeGraph } from '../types/nodeBasedKnowledgeGraph';
@@ -107,7 +107,6 @@ async function exportUserConceptGraphs(
         
         // Convert to NodeBasedKnowledgeGraph (pass full LearningGoal object to include milestones)
         const conversionResult = convertStoredConceptGraphToNodeBased(graph, {
-          includeLayers: true,
           includeLessons: true,
           includeMetadata: true,
           includeFlashCards: true,

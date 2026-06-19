@@ -6,7 +6,7 @@
 
 import { GraphMutationService } from '../../services/graphMutationService';
 import { KnowledgeGraphAccessLayer } from '@almadar-io/knowledge/server';
-import { generateLayerPractice } from '../../services/graphOperations';
+import { generateLayerPractice } from '@almadar-io/knowledge/server';
 import type {
   GraphQLContext,
   GenerateLayerPracticeArgs,
@@ -21,7 +21,8 @@ import {
   inferFocus,
   verifyGraphAccessForResolver,
 } from './shared/resolverHelpers';
-import type { GraphNode, NodeBasedKnowledgeGraph, LayerNodeProperties } from '../../types/nodeBasedKnowledgeGraph';
+import type { GraphNode, NodeBasedKnowledgeGraph } from '../../types/nodeBasedKnowledgeGraph';
+import { optStr } from '@almadar-io/knowledge';
 
 const mutationService = new GraphMutationService();
 const accessLayer = new KnowledgeGraphAccessLayer();
@@ -65,12 +66,12 @@ function getLayerGoal(
   graph: NodeBasedKnowledgeGraph,
   layerNumber: number
 ): string {
-  const layerNodes = Object.values(graph.nodes).filter(
-    (n): n is GraphNode => n.type === 'Layer' && n.properties.layerNumber === layerNumber
-  );
+  const layerNodes = Object.values(graph.nodes)
+    .filter((n): n is Extract<GraphNode, { type: 'Layer' }> => n.type === 'Layer')
+    .filter(n => n.properties.layerNumber === layerNumber);
 
   if (layerNodes.length > 0) {
-    return (layerNodes[0].properties as unknown as LayerNodeProperties & { goal?: string }).goal || '';
+    return optStr(layerNodes[0].properties.goal) || '';
   }
 
   return '';

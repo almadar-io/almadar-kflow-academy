@@ -18,7 +18,7 @@ import { getUserGraphs } from '../services/graphService';
 import { 
   convertStoredConceptGraphToNodeBased, 
   saveNodeBasedKnowledgeGraph 
-} from '../services/knowledgeGraphService';
+} from '@almadar-io/knowledge/server';
 import { getGoalsByGraphId } from '../services/goalService';
 
 interface ConversionStats {
@@ -71,7 +71,6 @@ async function convertUserGraphs(uid: string): Promise<ConversionStats> {
         
         // Convert to NodeBasedKnowledgeGraph (pass full LearningGoal object to include milestones)
         const result = convertStoredConceptGraphToNodeBased(graph, {
-          includeLayers: true,
           includeLessons: true,
           includeMetadata: true,
           includeFlashCards: true,

@@ -6,7 +6,7 @@
 
 import { GraphMutationService } from '../../services/graphMutationService';
 import { KnowledgeGraphAccessLayer } from '@almadar-io/knowledge/server';
-import { generateGoals } from '../../services/graphOperations';
+import { generateGoals } from '@almadar-io/knowledge/server';
 import type {
   GraphQLContext,
   GenerateGoalsArgs,
