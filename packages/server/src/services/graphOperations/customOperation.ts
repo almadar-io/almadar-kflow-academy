@@ -8,6 +8,7 @@
  */
 
 import { GraphNode, NodeBasedKnowledgeGraph, generateNodeId, generateRelationshipId } from '../../types/nodeBasedKnowledgeGraph';
+import type { LayerNodeProperties } from '../../types/nodeBasedKnowledgeGraph';
 import { callLLM, extractJSONArray } from '../../services/llm';
 import { buildCustomOperationPrompt, CustomOperationPromptContext } from './promptBuilders/customOperationPromptBuilder';
 import type { GraphMutation, MutationBatch, MutationContext } from '../../types/mutations';
@@ -85,7 +86,10 @@ function findConceptLayer(
 function getAllLayers(graph: NodeBasedKnowledgeGraph): GraphNode[] {
   return Object.values(graph.nodes)
     .filter((n): n is GraphNode => n.type === 'Layer')
-    .sort((a, b) => (a.properties.layerNumber || 0) - (b.properties.layerNumber || 0));
+    .sort((a, b) =>
+      ((a.properties as unknown as LayerNodeProperties).layerNumber || 0) -
+      ((b.properties as unknown as LayerNodeProperties).layerNumber || 0)
+    );
 }
 
 /**

@@ -9,7 +9,7 @@ import type { MutationContext } from '../../../types/mutations';
 import type { LearningGoal } from '../../../types/goal';
 import type { GraphQLContext } from '../../types';
 import type { GraphAccessLevel } from '../../../types/graphAuthorization';
-import { KnowledgeGraphAccessLayer } from '../../../services/knowledgeGraphAccess/KnowledgeGraphAccessLayer';
+import { KnowledgeGraphAccessLayer } from '@almadar-io/knowledge/server';
 import { GraphAuthorizationService } from '../../../services/graphAuthorizationService';
 
 const accessLayer = new KnowledgeGraphAccessLayer();
@@ -66,7 +66,7 @@ export function inferLearningGoalFromGraph(
     (n): n is GraphNode => n.type === 'LearningGoal'
   );
   if (goalNodes.length > 0) {
-    return goalNodes[0].properties as LearningGoal;
+    return goalNodes[0].properties as unknown as LearningGoal;
   }
   return undefined;
 }

@@ -62,7 +62,7 @@ export function buildExplainPrompt(context: ExplainPromptContext): { system: str
 
   // Prerequisites
   if (context.prerequisites && context.prerequisites.length > 0) {
-    builder.list('Prerequisites', context.prerequisites.map(p => p.properties.name));
+    builder.list('Prerequisites', context.prerequisites.map(p => typeof p.properties.name === 'string' ? p.properties.name : ''));
   }
 
   // Task

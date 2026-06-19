@@ -112,23 +112,26 @@ async function migrateGraph(uid: string, graphId: string): Promise<{
     for (const layerId of layerNodeIds) {
       const layerNode = graph.nodes[layerId];
       if (layerNode && layerNode.type === 'Layer') {
-        const props = layerNode.properties;
+        const props = layerNode.properties as Record<string, unknown>;
         let layerName: string | undefined;
-        
+        const propLevelName = typeof props.levelName === 'string' ? props.levelName : undefined;
+        const propName = typeof props.name === 'string' ? props.name : undefined;
+        const propGoal = typeof props.goal === 'string' ? props.goal : undefined;
+
         // Priority: levelName > goal > generate from layerNumber
-        if (props.levelName && !props.name) {
-          layerName = props.levelName;
+        if (propLevelName && !propName) {
+          layerName = propLevelName;
           props.name = layerName;
           layersMigrated++;
           graphModified = true;
-          console.log(`  ✓ Migrated Layer ${layerId}: levelName "${props.levelName}" → name`);
-        } else if (props.goal && !props.name && !props.levelName) {
-          layerName = props.goal;
+          console.log(`  ✓ Migrated Layer ${layerId}: levelName "${propLevelName}" → name`);
+        } else if (propGoal && !propName && !propLevelName) {
+          layerName = propGoal;
           props.name = layerName;
           layersMigrated++;
           graphModified = true;
-          console.log(`  ✓ Migrated Layer ${layerId}: goal "${props.goal}" → name`);
-        } else if (!props.name && !props.levelName && !props.goal && props.layerNumber !== undefined) {
+          console.log(`  ✓ Migrated Layer ${layerId}: goal "${propGoal}" → name`);
+        } else if (!propName && !propLevelName && !propGoal && props.layerNumber !== undefined) {
           layerName = `Layer ${props.layerNumber}`;
           props.name = layerName;
           layersMigrated++;

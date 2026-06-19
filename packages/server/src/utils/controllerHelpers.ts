@@ -5,11 +5,11 @@
  */
 
 import type { Request } from 'express';
-import type { NodeBasedKnowledgeGraph } from '../types/nodeBasedKnowledgeGraph';
+import type { NodeBasedKnowledgeGraph, LearningGoalNodeProperties, MilestoneNodeProperties } from '../types/nodeBasedKnowledgeGraph';
 import type { MutationContext } from '../types/mutations';
 import type { LearningGoal, Milestone } from '../types/goal';
 import type { GraphAccessLevel } from '../types/graphAuthorization';
-import { KnowledgeGraphAccessLayer } from '../services/knowledgeGraphAccess/KnowledgeGraphAccessLayer';
+import { KnowledgeGraphAccessLayer } from '@almadar-io/knowledge/server';
 import { GraphAuthorizationService } from '../services/graphAuthorizationService';
 import { getNodesByType, getMilestonesForGoal } from './nodeBasedGraphQueries';
 
@@ -74,26 +74,35 @@ export function inferLearningGoalFromGraph(
   }
   
   const goalNode = goalNodes[0];
-  const goalProps = goalNode.properties;
-  
+  const goalProps = goalNode.properties as unknown as LearningGoalNodeProperties & {
+    title?: string;
+    estimatedTime?: number;
+    customMetadata?: Record<string, unknown>;
+    assessedLevel?: string;
+    placementTestId?: string;
+  };
+
   // Get milestone nodes connected to this goal
   const milestoneNodes = getMilestonesForGoal(graph, goalNode.id);
-  
+
   // Convert milestone nodes to Milestone objects
-  const milestones: Milestone[] = milestoneNodes.map(node => ({
-    id: node.properties.id || node.id,
-    title: node.properties.name || node.properties.title || '', // Handle both name and title
-    description: node.properties.description,
-    targetDate: node.properties.targetDate,
-    completed: node.properties.completed || false,
-    completedAt: node.properties.completedAt,
-  }));
-  
+  const milestones: Milestone[] = milestoneNodes.map(node => {
+    const mp = node.properties as unknown as MilestoneNodeProperties & { title?: string; completedAt?: number };
+    return {
+      id: mp.id || node.id,
+      title: mp.name || mp.title || '',
+      description: mp.description,
+      targetDate: mp.targetDate,
+      completed: mp.completed || false,
+      completedAt: mp.completedAt,
+    };
+  });
+
   // Reconstruct the full LearningGoal with milestones
   return {
     id: goalProps.id || goalNode.id,
     graphId: graph.id,
-    title: goalProps.name || goalProps.title || '', // Handle both name and title
+    title: goalProps.name || goalProps.title || '',
     description: goalProps.description || '',
     type: goalProps.type || 'skill_mastery',
     target: goalProps.target || '',

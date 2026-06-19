@@ -9,7 +9,7 @@
 
 import type { Request, Response } from 'express';
 import { singleParam, singleQueryParam } from '../utils/httpParams';
-import { KnowledgeGraphAccessLayer } from '../services/knowledgeGraphAccess/KnowledgeGraphAccessLayer';
+import { KnowledgeGraphAccessLayer } from '@almadar-io/knowledge/server';
 import { GraphQueryService } from '../services/graphQueryService';
 import type {
   GraphNode,

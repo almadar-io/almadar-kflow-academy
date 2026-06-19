@@ -6,7 +6,7 @@
  */
 
 import { GraphMutationService } from '../../services/graphMutationService';
-import { KnowledgeGraphAccessLayer } from '../../services/knowledgeGraphAccess/KnowledgeGraphAccessLayer';
+import { KnowledgeGraphAccessLayer } from '@almadar-io/knowledge/server';
 import type {
   GraphQLContext,
   ApplyMutationsArgs,

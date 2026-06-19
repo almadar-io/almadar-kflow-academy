@@ -5,7 +5,7 @@
  */
 
 import { GraphMutationService } from '../../services/graphMutationService';
-import { KnowledgeGraphAccessLayer } from '../../services/knowledgeGraphAccess/KnowledgeGraphAccessLayer';
+import { KnowledgeGraphAccessLayer } from '@almadar-io/knowledge/server';
 import { generateLayerPractice } from '../../services/graphOperations';
 import type {
   GraphQLContext,
@@ -21,7 +21,7 @@ import {
   inferFocus,
   verifyGraphAccessForResolver,
 } from './shared/resolverHelpers';
-import type { GraphNode, NodeBasedKnowledgeGraph } from '../../types/nodeBasedKnowledgeGraph';
+import type { GraphNode, NodeBasedKnowledgeGraph, LayerNodeProperties } from '../../types/nodeBasedKnowledgeGraph';
 
 const mutationService = new GraphMutationService();
 const accessLayer = new KnowledgeGraphAccessLayer();
@@ -70,7 +70,7 @@ function getLayerGoal(
   );
 
   if (layerNodes.length > 0) {
-    return layerNodes[0].properties.goal || '';
+    return (layerNodes[0].properties as unknown as LayerNodeProperties & { goal?: string }).goal || '';
   }
 
   return '';

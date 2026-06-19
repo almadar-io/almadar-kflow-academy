@@ -5,7 +5,7 @@
  * for use in streaming scenarios where content is accumulated first.
  */
 
-import type { GraphNode, NodeBasedKnowledgeGraph } from '../types/nodeBasedKnowledgeGraph';
+import type { GraphNode, NodeBasedKnowledgeGraph, ConceptNodeProperties, LayerNodeProperties } from '../types/nodeBasedKnowledgeGraph';
 import { generateNodeId, generateRelationshipId } from '../types/nodeBasedKnowledgeGraph';
 import type { GraphMutation, MutationBatch, MutationContext } from '../types/mutations';
 import type { LearningGoal, Milestone } from '../types/goal';
@@ -66,12 +66,13 @@ export async function parseExplainContent(
   }
 
   // Process prerequisites from lesson
+  const conceptProps = concept.properties as unknown as ConceptNodeProperties;
   const processedPrerequisites = processPrerequisitesFromLesson(
     lessonMarkdown,
     {
       id: concept.id,
-      name: concept.properties.name,
-      description: concept.properties.description || '',
+      name: conceptProps.name,
+      description: conceptProps.description || '',
       parents: [],
       children: []
     },
@@ -460,7 +461,10 @@ function findConceptLayerForParser(
 function getAllLayersForParser(graph: NodeBasedKnowledgeGraph): GraphNode[] {
   return Object.values(graph.nodes)
     .filter((n): n is GraphNode => n.type === 'Layer')
-    .sort((a, b) => (a.properties.layerNumber || 0) - (b.properties.layerNumber || 0));
+    .sort((a, b) =>
+      ((a.properties as unknown as LayerNodeProperties).layerNumber || 0) -
+      ((b.properties as unknown as LayerNodeProperties).layerNumber || 0)
+    );
 }
 
 /**

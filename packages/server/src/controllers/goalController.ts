@@ -12,7 +12,7 @@ import {
 } from '../services/goalService';
 import { generateConceptId } from '../utils/uuid';
 import { normalizeConcept } from '../utils/validation';
-import { KnowledgeGraphAccessLayer } from '../services/knowledgeGraphAccess/KnowledgeGraphAccessLayer';
+import { KnowledgeGraphAccessLayer } from '@almadar-io/knowledge/server';
 import { invalidateLearningPaths, invalidateJumpBackIn } from '../services/cacheInvalidation';
 import { createGraphNode, createRelationship, createEmptyNodeTypeIndex } from '../types/nodeBasedKnowledgeGraph';
 import type { NodeBasedKnowledgeGraph } from '../types/nodeBasedKnowledgeGraph';

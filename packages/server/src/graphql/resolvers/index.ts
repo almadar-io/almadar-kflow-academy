@@ -15,7 +15,7 @@ type ResolverMap = {
     ) => any;
   };
 };
-import { KnowledgeGraphAccessLayer } from '../../services/knowledgeGraphAccess/KnowledgeGraphAccessLayer';
+import { KnowledgeGraphAccessLayer } from '@almadar-io/knowledge/server';
 import type {
   GraphNode,
   Relationship as NodeBasedRelationship,

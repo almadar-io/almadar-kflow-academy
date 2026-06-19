@@ -69,8 +69,9 @@ export function buildCustomOperationPrompt(context: CustomOperationPromptContext
       // Get parent node names
       parentRelationships.forEach(rel => {
         const parentNode = context.graph!.nodes[rel.source];
-        if (parentNode && parentNode.properties?.name) {
-          parents.push(parentNode.properties.name);
+        const parentName = typeof parentNode?.properties?.name === 'string' ? parentNode.properties.name : undefined;
+        if (parentName) {
+          parents.push(parentName);
         }
       });
     }

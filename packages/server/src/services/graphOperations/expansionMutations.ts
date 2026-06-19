@@ -9,7 +9,7 @@
  * same-layer parents unwired and milestone completion inconsistent.
  */
 
-import type { GraphNode, NodeBasedKnowledgeGraph } from '../../types/nodeBasedKnowledgeGraph';
+import type { GraphNode, NodeBasedKnowledgeGraph, LayerNodeProperties, MilestoneNodeProperties } from '../../types/nodeBasedKnowledgeGraph';
 import { generateNodeId, generateRelationshipId } from '../../types/nodeBasedKnowledgeGraph';
 import type { GraphMutation, MutationBatch, MutationContext } from '../../types/mutations';
 import type { LearningGoal } from '../../types/goal';
@@ -55,20 +55,23 @@ export function buildExpansionMutations(
   // Determine next layer number from existing Layer nodes.
   const existingLayers = Object.values(graph.nodes).filter(n => n.type === 'Layer');
   const nextLayerNumber = existingLayers.length > 0
-    ? Math.max(...existingLayers.map(n => n.properties.layerNumber || 0)) + 1
+    ? Math.max(...existingLayers.map(n => (n.properties as unknown as LayerNodeProperties).layerNumber || 0)) + 1
     : 1;
   const isFirstLayer = existingLayers.length === 0;
 
   // Determine target milestone for this layer (Layer N targets milestone with sequence N-1).
   const milestoneNodes = Object.values(graph.nodes).filter(n => n.type === 'Milestone');
   const sortedMilestones = milestoneNodes
-    .map(node => ({
-      id: node.id,
-      sequence: node.properties.sequence ?? 0,
-      title: node.properties.name || node.properties.title || 'Milestone',
-      description: node.properties.description,
-      completed: node.properties.completed || false,
-    }))
+    .map(node => {
+      const mp = node.properties as unknown as MilestoneNodeProperties & { sequence?: number; title?: string };
+      return {
+        id: node.id,
+        sequence: mp.sequence ?? 0,
+        title: mp.name || mp.title || 'Milestone',
+        description: mp.description,
+        completed: mp.completed || false,
+      };
+    })
     .sort((a, b) => a.sequence - b.sequence);
 
   const milestonesWithSequence = sortedMilestones.length > 0

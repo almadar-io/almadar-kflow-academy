@@ -8,6 +8,7 @@
  */
 
 import { GraphNode, NodeBasedKnowledgeGraph, generateRelationshipId } from '../../types/nodeBasedKnowledgeGraph';
+import type { ConceptNodeProperties } from '../../types/nodeBasedKnowledgeGraph';
 import { callLLM } from '../../services/llm';
 import { buildExplainPrompt, ExplainPromptContext } from './promptBuilders';
 import { processPrerequisitesFromLesson } from '../../utils/prerequisites';
@@ -133,12 +134,13 @@ export async function explain(
 
   // Process prerequisites from lesson (using existing utility)
   // Note: This utility expects Concept type, so we may need to adapt it
+  const conceptProps = concept.properties as unknown as ConceptNodeProperties;
   const processedPrerequisites = processPrerequisitesFromLesson(
     lessonMarkdown,
     {
       id: concept.id,
-      name: concept.properties.name,
-      description: concept.properties.description || '',
+      name: conceptProps.name,
+      description: conceptProps.description || '',
       parents: [],
       children: []
     },

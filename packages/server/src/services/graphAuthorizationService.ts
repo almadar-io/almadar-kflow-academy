@@ -7,7 +7,17 @@
 
 import type { GraphAccessLevel, GraphPermissions } from '../types/graphAuthorization';
 import { AuthorizationError as AuthError } from '../types/graphAuthorization';
-import { getNodeBasedKnowledgeGraph } from './knowledgeGraphService';
+import { KnowledgeGraphAccessLayer } from '@almadar-io/knowledge/server';
+
+const _accessLayer = new KnowledgeGraphAccessLayer();
+
+async function getNodeBasedKnowledgeGraph(uid: string, graphId: string) {
+  try {
+    return await _accessLayer.getGraph(uid, graphId);
+  } catch {
+    return null;
+  }
+}
 
 /**
  * Graph Authorization Service

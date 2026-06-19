@@ -12,6 +12,7 @@
     "test": "node --experimental-vm-modules node_modules/.bin/jest"
   },
   "dependencies": {
+    "@almadar-io/knowledge": ">=0.1.1",
     "@almadar/core": "^10.3.0",
     "@almadar/llm": "^2.24.0",
     "@almadar/server": "^2.14.2",
@@ -20,7 +21,6 @@
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.3",
     "cors": "^2.8.5",
-    "helmet": "^8.0.0",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
     "firebase-admin": "^13.6.0",
@@ -29,6 +29,7 @@
     "graphology-shortest-path": "^2.1.0",
     "graphology-types": "^0.24.8",
     "graphql": "^16.12.0",
+    "helmet": "^8.0.0",
     "ioredis": "^5.11.1",
     "openai": "^4.20.1",
     "tiktoken": "^1.0.22",

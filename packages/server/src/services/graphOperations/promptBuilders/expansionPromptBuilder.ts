@@ -163,7 +163,7 @@ export function buildSubsequentLayerPrompt(context: ExpansionPromptContext): str
   for (const n of conceptNodes) {
     const layer = typeof n.properties.layer === 'number' ? n.properties.layer : 0;
     if (!byLayer.has(layer)) byLayer.set(layer, []);
-    byLayer.get(layer)!.push(n.properties.name);
+    byLayer.get(layer)!.push(typeof n.properties.name === 'string' ? n.properties.name : '');
   }
   const layersDesc = [...byLayer.keys()].sort((a, b) => b - a);
   const RECENT_FULL_LAYERS = 3;

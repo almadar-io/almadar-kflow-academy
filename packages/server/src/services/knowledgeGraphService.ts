@@ -7,10 +7,11 @@
  * Note: Embeddings and NetworkX conversions remain in Python service.
  */
 
-import type { 
+import type {
   NodeBasedKnowledgeGraph,
   GraphNode,
   Relationship as NodeBasedRelationship,
+  ConceptNodeProperties,
 } from '../types/nodeBasedKnowledgeGraph';
 import type { StoredConceptGraph } from './graphService';
 import type { LearningGoal } from '../types/goal';
@@ -300,9 +301,11 @@ export function convertStoredConceptGraphToNodeBased(
   // Step 2: Sort top-level concepts by sequence property
   // Each top-level concept defines a layer boundary
   const sortedTopLevelConcepts = [...topLevelConcepts].sort((a, b) => {
-    const seqA = nodes[a]?.properties?.sequence ?? Infinity;
-    const seqB = nodes[b]?.properties?.sequence ?? Infinity;
-    return seqA - seqB;
+    const seqA = (nodes[a]?.properties as Record<string, unknown>)?.sequence;
+    const seqB = (nodes[b]?.properties as Record<string, unknown>)?.sequence;
+    const nA = seqA != null ? Number(seqA) : Infinity;
+    const nB = seqB != null ? Number(seqB) : Infinity;
+    return nA - nB;
   });
   
   console.log(`[convertStoredConceptGraphToNodeBased] Found ${sortedTopLevelConcepts.length} top-level concepts (sorted by sequence):`, 
@@ -419,21 +422,23 @@ export function convertStoredConceptGraphToNodeBased(
     // Priority 1: Get name and goal from top-level concept
     if (topLevelConceptInLayer && nodes[topLevelConceptInLayer]) {
       const topLevelNode = nodes[topLevelConceptInLayer];
+      const tlp = topLevelNode.properties as unknown as ConceptNodeProperties & { goal?: string };
       // Use top-level concept's name (e.g., "Foundation")
-      if (topLevelNode.properties?.name) {
-        layerName = topLevelNode.properties.name;
+      if (tlp.name) {
+        layerName = tlp.name;
       }
       // Use top-level concept's goal
-      if (topLevelNode.properties?.goal) {
-        layerGoal = topLevelNode.properties.goal;
+      if (tlp.goal) {
+        layerGoal = tlp.goal;
       }
     }
-    
+
     // Priority 2: Fallback to first concept's goal
     if (!layerGoal) {
       const firstConceptId = layerConceptIds[0];
       if (firstConceptId && nodes[firstConceptId]) {
-        layerGoal = nodes[firstConceptId].properties?.goal || '';
+        const fcp = nodes[firstConceptId].properties as unknown as ConceptNodeProperties & { goal?: string };
+        layerGoal = fcp.goal || '';
       }
     }
     
@@ -856,7 +861,7 @@ export async function saveNodeBasedKnowledgeGraph(
       .doc(nodeBasedGraph.id);
 
     // Import merge service dynamically to avoid circular dependencies
-    const { mergeGraphMutations } = await import('./graphMergeService');
+    const { mergeGraphMutations } = await import('@almadar-io/knowledge/server');
 
     return await db.runTransaction(async (transaction) => {
       const doc = await transaction.get(kgRef);

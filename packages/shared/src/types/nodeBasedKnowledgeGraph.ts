@@ -1,864 +1,104 @@
-/**
- * Node-Based Knowledge Graph Types
- * 
- * This module defines the types for a fully node-based knowledge graph structure
- * where everything (milestones, layers, learning goals, etc.) becomes a node
- * with explicit relationships.
- */
+import type {
+  GraphNode,
+  NodeType,
+  AssessmentNodeProperties,
+  AssessmentQuestionNodeProperties,
+  TranslationNodeProperties,
+  LanguageConfigNodeProperties,
+  StudentNodeProperties,
+  ScheduleSlotNodeProperties,
+} from '@almadar-io/knowledge';
+import {
+  createGraphNode as _pkgCreateGraphNode,
+  generateNodeId,
+} from '@almadar-io/knowledge';
 
-import type { GraphDifficulty, NoteItem } from './concept.js';
-import type { GoalType } from './goal.js';
-
-/**
- * Node types in the knowledge graph
- */
-export type NodeType =
-  | 'Graph'
-  | 'Concept'
-  | 'Layer'
-  | 'LearningGoal'
-  | 'Milestone'
-  | 'PracticeExercise'
-  | 'Lesson'
-  | 'ConceptMetadata'
-  | 'GraphMetadata'
-  | 'FlashCard'
-  // Story/Series types
-  | 'Story'
-  | 'Series'
-  | 'Season'
-  | 'Episode'
-  // Publishing/Course types
-  | 'CourseSettings'
-  | 'ModuleSettings'
-  | 'LessonSettings'
-  | 'Assessment'
-  | 'AssessmentQuestion'
-  | 'Translation'
-  | 'LanguageConfig'
-  | 'Student'
-  | 'ScheduleSlot';
-
-/**
- * Relationship types between nodes
- */
-export type RelationshipType =
-  // Hierarchical
-  | 'hasParent'
-  | 'hasChild'
-  | 'hasPrerequisite'
-  | 'isPrerequisiteOf'
-  | 'hasTopLevelConcept'
-  | 'topLevelConceptOf'
-  // Containment
-  | 'containsConcept'
-  | 'belongsToGraph'
-  | 'belongsToLayer'
-  | 'hasLayer'
-  | 'hasLearningGoal'
-  | 'hasMilestone'
-  | 'belongsToGoal'
-  | 'hasPracticeExercise'
-  | 'hasLesson'
-  | 'belongsToConcept'
-  | 'hasMetadata'
-  | 'hasFlashCard'
-  // Sequence
-  | 'precedesLayer'
-  | 'followsLayer'
-  | 'precedesMilestone'
-  | 'followsMilestone'
-  | 'precedesConcept'
-  | 'followsConcept'
-  // Reference
-  | 'referencesConcept'
-  | 'referencesLayer'
-  | 'hasShortTermGoal'
-  // Generation
-  | 'generatedBy'
-  // Seed
-  | 'hasSeedConcept'
-  // Publishing/Course relationships
-  | 'hasCourseSettings'
-  | 'hasModuleSettings'
-  | 'hasLessonSettings'
-  | 'hasAssessment'
-  | 'hasQuestion'
-  | 'hasTranslation'
-  | 'translationOf'
-  | 'hasLanguageConfig'
-  // Student management relationships
-  | 'hasEnrolledStudent'
-  | 'belongsToStudent'
-  | 'assignedToCourse'
-  // Story/Series relationships
-  | 'hasStory'
-  | 'belongsToSeries'
-  | 'hasSeason'
-  | 'hasEpisode'
-  | 'episodeContainsStory';
-
-/**
- * Relationship direction
- */
-export type RelationshipDirection = 'forward' | 'backward' | 'bidirectional';
-
-/**
- * Relationship metadata
- */
-export interface RelationshipMetadata {
-  extractedFrom?: string;  // Source of relationship (e.g., 'concept_structure', 'llm', 'user')
-  confidence?: number;      // Confidence score (0-1)
-  [key: string]: any;      // Additional metadata
+// Bridge: package's createGraphNode uses Record<string,unknown> properties;
+// kflow factory helpers use concrete typed property interfaces that lack an index signature.
+// This wrapper keeps the one cast in one place.
+function makeGraphNode(id: string, type: NodeType, properties: object): GraphNode {
+  return _pkgCreateGraphNode(id, type, properties as Record<string, unknown>);
 }
 
-/**
- * Relationship between nodes
- */
-export interface Relationship {
-  id: string;
-  source: string;        // Source node ID
-  target: string;        // Target node ID
-  type: RelationshipType;
-  direction: RelationshipDirection;
-  strength?: number;     // 0-1
-  metadata?: RelationshipMetadata;
-  createdAt?: number;
-}
+// Re-export all types and pure functions from the published package
+export type {
+  NodeType,
+  RelationshipType,
+  RelationshipDirection,
+  RelationshipMetadata,
+  Relationship,
+  GraphNode,
+  GraphNodeProperties,
+  ConceptNodeProperties,
+  LayerNodeProperties,
+  LearningGoalNodeProperties,
+  MilestoneNodeProperties,
+  PracticeExerciseNodeProperties,
+  QuestionAnswerItem,
+  LessonNodeProperties,
+  ConceptMetadataNodeProperties,
+  GraphMetadataNodeProperties,
+  FlashCardNodeProperties,
+  StoryNodeProperties,
+  StoryStep,
+  SeriesNodeProperties,
+  SeasonNodeProperties,
+  EpisodeNodeProperties,
+  CourseVisibility,
+  CourseSettingsNodeProperties,
+  ModuleSettingsNodeProperties,
+  LessonSettingsNodeProperties,
+  AssessmentType,
+  AssessmentNodeProperties,
+  QuestionType,
+  AssessmentQuestionNodeProperties,
+  TranslationNodeProperties,
+  LanguageConfigNodeProperties,
+  StudentNodeProperties,
+  ScheduleSlotNodeProperties,
+  NodeTypeIndex,
+  NodeBasedKnowledgeGraph,
+  NodeIdContext,
+  SchemaVersion,
+  TypedNodeProperties,
+  TraverseOptions,
+  TraverseResult,
+  Violation,
+} from '@almadar-io/knowledge';
 
-/**
- * Base graph node structure
- */
-export interface GraphNode {
-  id: string;
-  type: NodeType;
-  properties: Record<string, any>; // Type-specific properties
-  createdAt?: number;
-  updatedAt?: number;
-}
+export {
+  SCHEMA_VERSION,
+  isNodeType,
+  createGraphNode,
+  createRelationship,
+  generateRelationshipId,
+  generateNodeId,
+  createCourseSettingsNode,
+  createModuleSettingsNode,
+  createLessonSettingsNode,
+  createPublishingRelationship,
+  createEmptyNodeTypeIndex,
+  validateGraph,
+  toGraphologyGraph,
+  fromGraphologyGraph,
+  createGraphologyGraph,
+  extractSubgraph,
+  findPath,
+  traverse,
+} from '@almadar-io/knowledge';
 
-/**
- * Graph node properties
- */
-export interface GraphNodeProperties {
-  id: string;
-  name?: string;
-  seedConceptId: string;
-  createdAt: number;
-  updatedAt: number;
-  model?: string;
-  goalFocused?: boolean;
-  difficulty?: GraphDifficulty;
-  focus?: string;
-}
+// kflow-specific helpers not present in the package
 
-/**
- * Concept node properties
- */
-export interface ConceptNodeProperties {
-  id: string;
-  name: string;
-  description: string;
-  sequence?: number;
-  focus?: string;
-  isSeed?: boolean;
-  isAutoGenerated?: boolean;
-  isPrerequisite?: boolean;
-}
-
-/**
- * Layer node properties
- */
-export interface LayerNodeProperties {
-  id: string;
-  name?: string;  // Migrate from levelName, or generate from goal/layerNumber
-  layerNumber: number;
-  goal?: string;
-  prompt: string;
-  response: string;
-  createdAt: number;
-}
-
-/**
- * Learning Goal node properties
- */
-export interface LearningGoalNodeProperties {
-  id: string;
-  name: string;  // Changed from title
-  description: string;
-  type: GoalType;
-  target?: string;
-  estimatedTime?: number;
-  assessedLevel?: GraphDifficulty;
-  placementTestId?: string;
-  customMetadata?: Record<string, any>;
-  createdAt: number;
-  updatedAt: number;
-}
-
-/**
- * Milestone node properties
- */
-export interface MilestoneNodeProperties {
-  id: string;
-  name: string;  // Changed from title
-  description?: string;
-  targetDate?: number;
-  completed: boolean;
-  completedAt?: number;
-}
-
-/**
- * Practice Exercise node properties
- */
-export interface PracticeExerciseNodeProperties {
-  id: string;
-  type: 'question' | 'project';
-  question: string;
-  answer: string;
-}
-
-/**
- * Question and answer item for lesson annotations
- */
-export interface QuestionAnswerItem {
-  id: string;
-  question: string;
-  answer: string;
-  selectedText?: string; // Full selected text for display context
-  selectedTextChunks?: string[]; // Chunks of selected text for highlighting
-  timestamp: number;
-}
-
-/**
- * Lesson node properties
- */
-export interface LessonNodeProperties {
-  id: string;
-  content: string; // markdown
-  generatedAt: number;
-  model?: string;
-  minimal?: boolean;
-  questions?: QuestionAnswerItem[]; // Array of Q&A annotations
-  notes?: NoteItem[]; // Array of note annotations
-}
-
-/**
- * Concept Metadata node properties
- */
-export interface ConceptMetadataNodeProperties {
-  id: string;
-  difficulty?: number; // 1-5
-  timeEstimate?: number; // hours
-  domain?: string;
-  tags?: string[];
-  resourceLinks?: string[];
-}
-
-/**
- * Graph Metadata node properties
- */
-export interface GraphMetadataNodeProperties {
-  id: string;
-  totalConcepts?: number;
-  totalRelationships?: number;
-  averageDifficulty?: number;
-  estimatedTotalTime?: number;
-  domains?: string[];
-  lastEmbeddingUpdate?: number;
-}
-
-/**
- * FlashCard node properties
- */
-export interface FlashCardNodeProperties {
-  id: string;
-  front: string;
-  back: string;
-}
-
-// ==================== Story/Series Node Properties ====================
-
-/**
- * Story node properties
- */
-export interface StoryNodeProperties {
-  id: string;
-  title: string;
-  teaser: string;
-  domain: string;
-  difficulty: string;
-  duration: number;
-  coverImage?: string;
-  rating?: number;
-  playCount?: number;
-  seriesId?: string;
-  episodeId?: string;
-  /** Story content steps (for KnowledgeStoryTemplate) */
-  steps?: StoryStep[];
-  gameType?: string;
-  createdAt: number;
-  updatedAt: number;
-}
-
-/**
- * A single step in a knowledge story
- */
-export interface StoryStep {
-  id: string;
-  type: 'narrative' | 'challenge' | 'reflection' | 'game' | 'summary';
-  title: string;
-  content: string;
-  gameConfig?: Record<string, unknown>;
-}
-
-/**
- * Series node properties
- */
-export interface SeriesNodeProperties {
-  id: string;
-  title: string;
-  description: string;
-  creatorId: string;
-  creatorName: string;
-  creatorAvatar?: string;
-  domain: string;
-  tags: string[];
-  coverImage?: string;
-  status: 'draft' | 'published' | 'featured';
-  subscriberCount: number;
-  rating?: number;
-  createdAt: number;
-  updatedAt: number;
-}
-
-/**
- * Season node properties
- */
-export interface SeasonNodeProperties {
-  id: string;
-  title: string;
-  description: string;
-  number: number;
-  coverImage?: string;
-  status: 'draft' | 'published';
-  createdAt: number;
-  updatedAt: number;
-}
-
-/**
- * Episode node properties
- */
-export interface EpisodeNodeProperties {
-  id: string;
-  title: string;
-  description: string;
-  number: number;
-  duration: number;
-  difficulty: string;
-  createdAt: number;
-  updatedAt: number;
-}
-
-// ==================== Publishing/Course Node Properties ====================
-
-/**
- * Course visibility options
- */
-export type CourseVisibility = 'private' | 'unlisted' | 'public';
-
-/**
- * Course Settings node properties - stored in graph, represents course publish state
- */
-export interface CourseSettingsNodeProperties {
-  id: string;
-  title: string;
-  description: string;
-  visibility: CourseVisibility;
-  isPublished: boolean;
-  publishedAt?: number;
-  unpublishedAt?: number;
-  enrollmentEnabled: boolean;
-  maxStudents?: number;
-  price?: number;
-  currency?: string;
-  thumbnailUrl?: string;
-  tags?: string[];
-  category?: string;
-  estimatedDuration?: number; // hours
-  difficulty?: GraphDifficulty;
-  supportedLanguages?: string[]; // ISO codes: ['en', 'es', 'ar']
-  defaultLanguage?: string;
-  enrolledStudentIds?: string[]; // Array of user IDs of enrolled students
-  enrolledMentorId?: string; // Mentor's user ID (auto-enrolled)
-  createdAt: number;
-  updatedAt: number;
-}
-
-/**
- * Module Settings node properties - settings for a published layer/module
- */
-export interface ModuleSettingsNodeProperties {
-  id: string;
-  layerId: string; // Reference to the Layer node
-  title?: string; // Override layer name for course
-  description?: string;
-  isPublished: boolean;
-  publishedAt?: number;
-  sequence: number; // Order in the course
-  estimatedDuration?: number;
-  isPreviewable?: boolean; // Can students preview before enrollment?
-  createdAt: number;
-  updatedAt: number;
-}
-
-/**
- * Lesson Settings node properties - settings for a published concept/lesson
- */
-export interface LessonSettingsNodeProperties {
-  id: string;
-  conceptId: string; // Reference to the Concept node
-  title?: string; // Override concept name for course
-  description?: string;
-  isPublished: boolean;
-  publishedAt?: number;
-  sequence: number; // Order within the module
-  hasAssessment: boolean;
-  assessmentRequired?: boolean; // Must pass to proceed?
-  passingScore?: number; // 0-100
-  estimatedDuration?: number; // minutes
-  isPreviewable?: boolean;
-  createdAt: number;
-  updatedAt: number;
-}
-
-/**
- * Assessment type
- */
-export type AssessmentType = 'quiz' | 'exam' | 'practice' | 'placement';
-
-/**
- * Assessment node properties
- */
-export interface AssessmentNodeProperties {
-  id: string;
-  title: string;
-  description?: string;
-  type: AssessmentType;
-  timeLimit?: number; // minutes
-  passingScore: number; // 0-100
-  maxAttempts?: number;
-  shuffleQuestions?: boolean;
-  shuffleAnswers?: boolean;
-  showCorrectAnswers?: boolean;
-  showCorrectAnswersAfterSubmit?: boolean;
-  createdAt: number;
-  updatedAt: number;
-}
-
-/**
- * Question type
- */
-export type QuestionType = 'multiple_choice' | 'true_false' | 'short_answer' | 'essay' | 'matching';
-
-/**
- * Assessment Question node properties
- */
-export interface AssessmentQuestionNodeProperties {
-  id: string;
-  type: QuestionType;
-  question: string;
-  options?: string[]; // For multiple choice
-  correctAnswer: string | string[]; // Single or multiple correct answers
-  explanation?: string;
-  points: number;
-  sequence: number;
-  hint?: string;
-  createdAt: number;
-  updatedAt: number;
-}
-
-/**
- * Translation node properties - stores translated content
- */
-export interface TranslationNodeProperties {
-  id: string;
-  sourceNodeId: string; // Original node being translated
-  sourceNodeType: NodeType; // Type of the source node
-  language: string; // ISO 639-1 code (e.g., 'es', 'ar', 'zh')
-  translatedContent: Record<string, any>; // Translated properties
-  translatedAt: number;
-  translatedBy?: string; // 'ai' | userId
-  aiModel?: string;
-  reviewedBy?: string;
-  reviewedAt?: number;
-  status: 'draft' | 'pending_review' | 'approved' | 'rejected';
-  quality?: number; // 0-100 quality score
-  createdAt: number;
-  updatedAt: number;
-}
-
-/**
- * Language Config node properties - course-level language settings
- */
-export interface LanguageConfigNodeProperties {
-  id: string;
-  language: string; // ISO 639-1 code
-  displayName: string; // "Spanish", "Arabic", etc.
-  nativeDisplayName: string; // "Español", "العربية", etc.
-  direction: 'ltr' | 'rtl';
-  isEnabled: boolean;
-  autoTranslate: boolean; // Auto-translate new content?
-  aiTranslationModel?: string;
-  customTerminology?: Record<string, string>; // Domain-specific translations
-  createdAt: number;
-  updatedAt: number;
-}
-
-/**
- * Student node properties
- */
-export interface StudentNodeProperties {
-  id: string;
-  userId: string; // User ID from auth system
-  name: string;
-  email: string;
-  phone?: string;
-  createdAt: number;
-  updatedAt: number;
-}
-
-/**
- * ScheduleSlot node properties
- */
-export interface ScheduleSlotNodeProperties {
-  id: string;
-  studentUserId: string; // User ID of the student
-  courseSettingsId?: string; // Optional course settings ID if slot is course-specific
-  dayOfWeek: number; // 0-6 (Sunday-Saturday)
-  startTime: string; // ISO time string (e.g., "14:30:00")
-  endTime: string; // ISO time string (e.g., "15:30:00")
-  duration?: number; // Duration in minutes (calculated from start/end)
-  location?: string; // Physical location
-  room?: string; // Room number/identifier
-  recurring: boolean; // Whether this slot repeats weekly
-  createdAt: number;
-  updatedAt: number;
-}
-
-/**
- * Node type index for efficient querying
- */
-export interface NodeTypeIndex {
-  Graph: string[];           // Graph node IDs
-  Concept: string[];          // Concept node IDs
-  Layer: string[];            // Layer node IDs
-  LearningGoal: string[];      // LearningGoal node IDs
-  Milestone: string[];        // Milestone node IDs
-  PracticeExercise: string[]; // PracticeExercise node IDs
-  Lesson: string[];           // Lesson node IDs
-  ConceptMetadata: string[];  // ConceptMetadata node IDs
-  GraphMetadata: string[];     // GraphMetadata node IDs
-  FlashCard: string[];        // FlashCard node IDs
-  // Story/Series types (optional for backward compatibility)
-  Story?: string[];              // Story node IDs
-  Series?: string[];             // Series node IDs
-  Season?: string[];             // Season node IDs
-  Episode?: string[];            // Episode node IDs
-  // Publishing/Course types (optional for backward compatibility)
-  CourseSettings?: string[];       // CourseSettings node IDs
-  ModuleSettings?: string[];       // ModuleSettings node IDs
-  LessonSettings?: string[];       // LessonSettings node IDs
-  Assessment?: string[];           // Assessment node IDs
-  AssessmentQuestion?: string[];   // AssessmentQuestion node IDs
-  Translation?: string[];          // Translation node IDs
-  LanguageConfig?: string[];       // LanguageConfig node IDs
-  Student?: string[];              // Student node IDs
-  ScheduleSlot?: string[];         // ScheduleSlot node IDs
-}
-
-/**
- * Node-based knowledge graph structure
- */
-export interface NodeBasedKnowledgeGraph {
-  // Core graph information
-  id: string;
-  seedConceptId: string;
-  createdAt: number;
-  updatedAt: number;
-  version?: number; // Version field for optimistic locking (increments on each save)
-  model?: string;
-  goalFocused?: boolean;
-  difficulty?: GraphDifficulty;
-  focus?: string;
-  name?: string;
-  
-  // All nodes in the graph (unified node store)
-  nodes: Record<string, GraphNode>;
-  
-  // Node type index for efficient querying
-  nodeTypes: NodeTypeIndex;
-  
-  // Relationships (unified relationship store)
-  relationships: Relationship[];
-}
-
-/**
- * Type guard to check if a node is of a specific type
- */
-export function isNodeType<T extends NodeType>(
-  node: GraphNode,
-  type: T
-): node is GraphNode & { type: T } {
-  return node.type === type;
-}
-
-/**
- * Type guard to get typed node properties
- */
 export function getNodeProperties<T extends NodeType>(
   node: GraphNode,
   type: T
-): any {
+): unknown {
   if (node.type !== type) {
     throw new Error(`Node ${node.id} is not of type ${type}`);
   }
   return node.properties;
 }
 
-/**
- * Helper to create a graph node
- */
-export function createGraphNode(
-  id: string,
-  type: NodeType,
-  properties: Record<string, any>,
-  createdAt?: number,
-  updatedAt?: number
-): GraphNode {
-  return {
-    id,
-    type,
-    properties,
-    createdAt: createdAt || Date.now(),
-    updatedAt: updatedAt || Date.now(),
-  };
-}
-
-/**
- * Helper to create a relationship
- */
-export function createRelationship(
-  source: string,
-  target: string,
-  type: RelationshipType,
-  direction: RelationshipDirection = 'forward',
-  strength?: number,
-  metadata?: RelationshipMetadata
-): Relationship {
-  const id = generateRelationshipId(source, target, type);
-  return {
-    id,
-    source,
-    target,
-    type,
-    direction,
-    strength,
-    metadata,
-    createdAt: Date.now(),
-  };
-}
-
-/**
- * Generate a relationship ID
- */
-export function generateRelationshipId(
-  source: string,
-  target: string,
-  type: RelationshipType
-): string {
-  // Sanitize IDs for use in relationship ID
-  const sanitize = (str: string) => str.replace(/[^a-zA-Z0-9-]/g, '_');
-  return `rel-${sanitize(source)}-${type}-${sanitize(target)}`;
-}
-
-/**
- * Generate a node ID based on type and context
- */
-export function generateNodeId(
-  type: NodeType,
-  context: {
-    graphId?: string;
-    conceptId?: string;
-    layerId?: string;
-    layerNumber?: number;
-    index?: number;
-    name?: string;
-    language?: string;
-    sourceNodeId?: string;
-    userId?: string;
-    studentUserId?: string;
-    dayOfWeek?: number;
-    startTime?: string;
-  }
-): string {
-  const { graphId, conceptId, layerId, layerNumber, index, name, language, sourceNodeId, userId, studentUserId, dayOfWeek, startTime } = context;
-  
-  switch (type) {
-    case 'Graph':
-      return graphId || 'graph-unknown';
-    case 'Concept':
-      // Use concept name as ID for consistency
-      return name || `concept-${graphId}-${index || 'unknown'}`;
-    case 'Layer':
-      return `layer-${graphId}-${layerNumber || index || 'unknown'}`;
-    case 'LearningGoal':
-      return `goal-${graphId}-${index || 'unknown'}`;
-    case 'Milestone':
-      return `milestone-${graphId || 'unknown'}-${index || 'unknown'}`;
-    case 'PracticeExercise':
-      return `practice-${graphId || 'unknown'}-${layerNumber || 'unknown'}-${index || 'unknown'}`;
-    case 'Lesson':
-      return `lesson-${conceptId || 'unknown'}`;
-    case 'ConceptMetadata':
-      return `metadata-concept-${conceptId || 'unknown'}`;
-    case 'GraphMetadata':
-      return `metadata-graph-${graphId || 'unknown'}`;
-    case 'FlashCard':
-      return `flash-${conceptId || 'unknown'}-${index || 'unknown'}`;
-    // Publishing/Course types
-    case 'CourseSettings':
-      return `course-settings-${graphId || 'unknown'}`;
-    case 'ModuleSettings':
-      return `module-settings-${layerId || layerNumber || 'unknown'}`;
-    case 'LessonSettings':
-      return `lesson-settings-${conceptId || 'unknown'}`;
-    case 'Assessment':
-      return `assessment-${conceptId || graphId || 'unknown'}-${index || 'unknown'}`;
-    case 'AssessmentQuestion':
-      return `question-${conceptId || 'unknown'}-${index || 'unknown'}`;
-    case 'Translation':
-      return `translation-${sourceNodeId || 'unknown'}-${language || 'unknown'}`;
-    case 'LanguageConfig':
-      return `lang-config-${graphId || 'unknown'}-${language || 'unknown'}`;
-    case 'Student':
-      return `student-${userId || 'unknown'}`;
-    case 'ScheduleSlot':
-      return `schedule-slot-${studentUserId || 'unknown'}-${dayOfWeek || 'unknown'}-${startTime || 'unknown'}`;
-    case 'Story':
-      return name ? `story-${name}` : `story-${graphId || 'unknown'}-${index || 'unknown'}`;
-    case 'Series':
-      return name ? `series-${name}` : `series-${graphId || 'unknown'}-${index || 'unknown'}`;
-    case 'Season':
-      return `season-${graphId || 'unknown'}-${index || 'unknown'}`;
-    case 'Episode':
-      return `episode-${graphId || 'unknown'}-${index || 'unknown'}`;
-  }
-
-  // TypeScript exhaustiveness check - this should never happen
-  // If we reach here, it means a new NodeType was added but not handled
-  throw new Error(`Unhandled node type: ${String(type)}`);
-}
-
-// ==================== Publishing Helper Functions ====================
-
-/**
- * Create a CourseSettings node
- */
-export function createCourseSettingsNode(
-  graphId: string,
-  settings: Partial<CourseSettingsNodeProperties>
-): GraphNode {
-  const id = generateNodeId('CourseSettings', { graphId });
-  const now = Date.now();
-  
-  const properties: CourseSettingsNodeProperties = {
-    id,
-    title: settings.title || '',
-    description: settings.description || '',
-    visibility: settings.visibility || 'private',
-    isPublished: settings.isPublished ?? false,
-    publishedAt: settings.publishedAt,
-    enrollmentEnabled: settings.enrollmentEnabled ?? false,
-    maxStudents: settings.maxStudents,
-    price: settings.price,
-    currency: settings.currency,
-    thumbnailUrl: settings.thumbnailUrl,
-    tags: settings.tags,
-    category: settings.category,
-    estimatedDuration: settings.estimatedDuration,
-    difficulty: settings.difficulty,
-    supportedLanguages: settings.supportedLanguages || ['en'],
-    defaultLanguage: settings.defaultLanguage || 'en',
-    enrolledStudentIds: settings.enrolledStudentIds || [],
-    enrolledMentorId: settings.enrolledMentorId,
-    createdAt: settings.createdAt || now,
-    updatedAt: settings.updatedAt || now,
-  };
-  
-  return createGraphNode(id, 'CourseSettings', properties);
-}
-
-/**
- * Create a ModuleSettings node
- */
-export function createModuleSettingsNode(
-  layerId: string,
-  settings: Partial<ModuleSettingsNodeProperties>
-): GraphNode {
-  const id = generateNodeId('ModuleSettings', { layerId });
-  const now = Date.now();
-  
-  const properties: ModuleSettingsNodeProperties = {
-    id,
-    layerId,
-    title: settings.title,
-    description: settings.description,
-    isPublished: settings.isPublished ?? false,
-    publishedAt: settings.publishedAt,
-    sequence: settings.sequence ?? 0,
-    estimatedDuration: settings.estimatedDuration,
-    isPreviewable: settings.isPreviewable ?? false,
-    createdAt: settings.createdAt || now,
-    updatedAt: settings.updatedAt || now,
-  };
-  
-  return createGraphNode(id, 'ModuleSettings', properties);
-}
-
-/**
- * Create a LessonSettings node
- */
-export function createLessonSettingsNode(
-  conceptId: string,
-  settings: Partial<LessonSettingsNodeProperties>
-): GraphNode {
-  const id = generateNodeId('LessonSettings', { conceptId });
-  const now = Date.now();
-  
-  const properties: LessonSettingsNodeProperties = {
-    id,
-    conceptId,
-    title: settings.title,
-    description: settings.description,
-    isPublished: settings.isPublished ?? false,
-    publishedAt: settings.publishedAt,
-    sequence: settings.sequence ?? 0,
-    hasAssessment: settings.hasAssessment ?? false,
-    assessmentRequired: settings.assessmentRequired,
-    passingScore: settings.passingScore,
-    estimatedDuration: settings.estimatedDuration,
-    isPreviewable: settings.isPreviewable ?? false,
-    createdAt: settings.createdAt || now,
-    updatedAt: settings.updatedAt || now,
-  };
-  
-  return createGraphNode(id, 'LessonSettings', properties);
-}
-
-/**
- * Create an Assessment node
- */
 export function createAssessmentNode(
   conceptId: string,
   assessment: Partial<AssessmentNodeProperties>,
@@ -866,7 +106,6 @@ export function createAssessmentNode(
 ): GraphNode {
   const id = generateNodeId('Assessment', { conceptId, index });
   const now = Date.now();
-  
   const properties: AssessmentNodeProperties = {
     id,
     title: assessment.title || 'Assessment',
@@ -882,13 +121,9 @@ export function createAssessmentNode(
     createdAt: assessment.createdAt || now,
     updatedAt: assessment.updatedAt || now,
   };
-  
-  return createGraphNode(id, 'Assessment', properties);
+  return makeGraphNode(id, 'Assessment', properties);
 }
 
-/**
- * Create an AssessmentQuestion node
- */
 export function createAssessmentQuestionNode(
   conceptId: string,
   question: Partial<AssessmentQuestionNodeProperties>,
@@ -896,7 +131,6 @@ export function createAssessmentQuestionNode(
 ): GraphNode {
   const id = generateNodeId('AssessmentQuestion', { conceptId, index });
   const now = Date.now();
-  
   const properties: AssessmentQuestionNodeProperties = {
     id,
     type: question.type || 'multiple_choice',
@@ -910,23 +144,18 @@ export function createAssessmentQuestionNode(
     createdAt: question.createdAt || now,
     updatedAt: question.updatedAt || now,
   };
-  
-  return createGraphNode(id, 'AssessmentQuestion', properties);
+  return makeGraphNode(id, 'AssessmentQuestion', properties);
 }
 
-/**
- * Create a Translation node
- */
 export function createTranslationNode(
   sourceNodeId: string,
   sourceNodeType: NodeType,
   language: string,
-  translatedContent: Record<string, any>,
+  translatedContent: Record<string, string | number | boolean | null>,
   options: Partial<TranslationNodeProperties> = {}
 ): GraphNode {
   const id = generateNodeId('Translation', { sourceNodeId, language });
   const now = Date.now();
-  
   const properties: TranslationNodeProperties = {
     id,
     sourceNodeId,
@@ -943,21 +172,15 @@ export function createTranslationNode(
     createdAt: options.createdAt || now,
     updatedAt: options.updatedAt || now,
   };
-  
-  return createGraphNode(id, 'Translation', properties);
+  return makeGraphNode(id, 'Translation', properties);
 }
 
-/**
- * Create a LanguageConfig node
- */
 export function createLanguageConfigNode(
   graphId: string,
   config: Partial<LanguageConfigNodeProperties> & { language: string }
 ): GraphNode {
   const id = generateNodeId('LanguageConfig', { graphId, language: config.language });
   const now = Date.now();
-  
-  // Determine default display names
   const languageDisplayNames: Record<string, { display: string; native: string; direction: 'ltr' | 'rtl' }> = {
     en: { display: 'English', native: 'English', direction: 'ltr' },
     es: { display: 'Spanish', native: 'Español', direction: 'ltr' },
@@ -971,9 +194,11 @@ export function createLanguageConfigNode(
     hi: { display: 'Hindi', native: 'हिन्दी', direction: 'ltr' },
     ru: { display: 'Russian', native: 'Русский', direction: 'ltr' },
   };
-  
-  const defaults = languageDisplayNames[config.language] || { display: config.language, native: config.language, direction: 'ltr' };
-  
+  const defaults = languageDisplayNames[config.language] || {
+    display: config.language,
+    native: config.language,
+    direction: 'ltr' as const,
+  };
   const properties: LanguageConfigNodeProperties = {
     id,
     language: config.language,
@@ -987,31 +212,15 @@ export function createLanguageConfigNode(
     createdAt: config.createdAt || now,
     updatedAt: config.updatedAt || now,
   };
-  
-  return createGraphNode(id, 'LanguageConfig', properties);
+  return makeGraphNode(id, 'LanguageConfig', properties);
 }
 
-/**
- * Create a publishing relationship (e.g., hasCourseSettings, hasModuleSettings)
- */
-export function createPublishingRelationship(
-  source: string,
-  target: string,
-  type: 'hasCourseSettings' | 'hasModuleSettings' | 'hasLessonSettings' | 'hasAssessment' | 'hasQuestion' | 'hasTranslation' | 'hasLanguageConfig'
-): Relationship {
-  return createRelationship(source, target, type, 'forward');
-}
-
-/**
- * Create a Student node
- */
 export function createStudentNode(
   userId: string,
   studentData: Partial<StudentNodeProperties>
 ): GraphNode {
   const id = generateNodeId('Student', { userId });
   const now = Date.now();
-
   const properties: StudentNodeProperties = {
     id,
     userId,
@@ -1021,13 +230,9 @@ export function createStudentNode(
     createdAt: studentData.createdAt || now,
     updatedAt: studentData.updatedAt || now,
   };
-
-  return createGraphNode(id, 'Student', properties);
+  return makeGraphNode(id, 'Student', properties);
 }
 
-/**
- * Create a ScheduleSlot node
- */
 export function createScheduleSlotNode(
   studentUserId: string,
   scheduleData: Partial<ScheduleSlotNodeProperties>
@@ -1038,15 +243,12 @@ export function createScheduleSlotNode(
     startTime: scheduleData.startTime,
   });
   const now = Date.now();
-
-  // Calculate duration if not provided
   let duration = scheduleData.duration;
   if (!duration && scheduleData.startTime && scheduleData.endTime) {
     const start = new Date(`2000-01-01T${scheduleData.startTime}`);
     const end = new Date(`2000-01-01T${scheduleData.endTime}`);
-    duration = Math.round((end.getTime() - start.getTime()) / (1000 * 60)); // minutes
+    duration = Math.round((end.getTime() - start.getTime()) / (1000 * 60));
   }
-
   const properties: ScheduleSlotNodeProperties = {
     id,
     studentUserId,
@@ -1061,40 +263,6 @@ export function createScheduleSlotNode(
     createdAt: scheduleData.createdAt || now,
     updatedAt: scheduleData.updatedAt || now,
   };
-
-  return createGraphNode(id, 'ScheduleSlot', properties);
-}
-
-/**
- * Initialize empty node type index for new graphs
- */
-export function createEmptyNodeTypeIndex(): NodeTypeIndex {
-  return {
-    Graph: [],
-    Concept: [],
-    Layer: [],
-    LearningGoal: [],
-    Milestone: [],
-    PracticeExercise: [],
-    Lesson: [],
-    ConceptMetadata: [],
-    GraphMetadata: [],
-    FlashCard: [],
-    // Story/Series types
-    Story: [],
-    Series: [],
-    Season: [],
-    Episode: [],
-    // Publishing/Course types
-    CourseSettings: [],
-    ModuleSettings: [],
-    LessonSettings: [],
-    Assessment: [],
-    AssessmentQuestion: [],
-    Translation: [],
-    LanguageConfig: [],
-    Student: [],
-    ScheduleSlot: [],
-  };
+  return makeGraphNode(id, 'ScheduleSlot', properties);
 }
 

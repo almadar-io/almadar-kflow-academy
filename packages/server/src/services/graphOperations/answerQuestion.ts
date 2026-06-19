@@ -146,7 +146,7 @@ export async function answerQuestion(
       // Update existing metadata node
       metadataNodeId = existingMetadataRel.target;
       const existingNode = mutationContext.existingNodes[metadataNodeId];
-      const existingQAPairs = existingNode?.properties.qaPairs || [];
+      const existingQAPairs = (existingNode?.properties.qaPairs as unknown[]) || [];
 
       mutations.push({
         type: 'update_node',

@@ -7,6 +7,11 @@
 
 import type {
   NodeBasedKnowledgeGraph,
+  ConceptNodeProperties,
+  LayerNodeProperties,
+  LessonNodeProperties,
+  ConceptMetadataNodeProperties,
+  FlashCardNodeProperties,
 } from '../types/nodeBasedKnowledgeGraph';
 import type {
   EnhancedConcept,
@@ -39,30 +44,33 @@ export function extractGraphForOperations(
   // Convert concept nodes to EnhancedConcept
   for (const conceptNode of conceptNodes) {
     const conceptId = conceptNode.id;
-    const props = conceptNode.properties;
+    const props = conceptNode.properties as unknown as ConceptNodeProperties;
 
     // Get lesson if exists
     const lessonNode = getLessonForConcept(nodeBasedGraph, conceptId);
-    const lesson = lessonNode?.properties.content;
+    const lesson = lessonNode ? (lessonNode.properties as unknown as LessonNodeProperties).content : undefined;
 
     // Get metadata if exists
     const metadataNode = getMetadataForConcept(nodeBasedGraph, conceptId);
     const metadata = metadataNode
-      ? {
-          difficulty: metadataNode.properties.difficulty,
-          timeEstimate: metadataNode.properties.timeEstimate,
-          domain: metadataNode.properties.domain,
-          tags: metadataNode.properties.tags,
-          resourceLinks: metadataNode.properties.resourceLinks,
-        }
+      ? (() => {
+          const mp = metadataNode.properties as unknown as ConceptMetadataNodeProperties;
+          return {
+            difficulty: mp.difficulty,
+            timeEstimate: mp.timeEstimate,
+            domain: mp.domain,
+            tags: mp.tags,
+            resourceLinks: mp.resourceLinks,
+          };
+        })()
       : undefined;
 
     // Get flash cards
     const flashCardNodes = getFlashCardsForConcept(nodeBasedGraph, conceptId);
-    const flash = flashCardNodes.map((card) => ({
-      front: card.properties.front,
-      back: card.properties.back,
-    }));
+    const flash = flashCardNodes.map((card) => {
+      const fp = card.properties as unknown as FlashCardNodeProperties;
+      return { front: fp.front, back: fp.back };
+    });
 
     // Get parent/child relationships
     const parentNodes = getConnectedNodes(nodeBasedGraph, conceptId, 'hasParent', 'outgoing');
@@ -76,7 +84,7 @@ export function extractGraphForOperations(
 
     // Get layer relationship
     const layerNodes = getConnectedNodes(nodeBasedGraph, conceptId, 'belongsToLayer', 'outgoing');
-    const layer = layerNodes.length > 0 ? layerNodes[0].properties.layerNumber : undefined;
+    const layer = layerNodes.length > 0 ? (layerNodes[0].properties as unknown as LayerNodeProperties).layerNumber : undefined;
 
     // Build concept
     const concept: EnhancedConcept = {
@@ -169,7 +177,7 @@ export function extractLayersFromNodeBasedGraph(
   const layerNodes = getNodesByType(nodeBasedGraph, 'Layer');
 
   for (const layerNode of layerNodes) {
-    const layerNumber = layerNode.properties.layerNumber;
+    const layerNumber = (layerNode.properties as unknown as LayerNodeProperties).layerNumber;
     
     // Get concepts in this layer
     const conceptNodes = getConnectedNodes(nodeBasedGraph, layerNode.id, 'containsConcept', 'outgoing')

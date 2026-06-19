@@ -8,6 +8,7 @@
  */
 
 import { GraphNode, NodeBasedKnowledgeGraph } from '../../types/nodeBasedKnowledgeGraph';
+import type { LayerNodeProperties, MilestoneNodeProperties } from '../../types/nodeBasedKnowledgeGraph';
 import { callLLM } from '../../services/llm';
 import { buildExpansionPrompt, ExpansionPromptContext } from './promptBuilders';
 import { buildExpansionMutations } from './expansionMutations';
@@ -76,7 +77,7 @@ export async function progressiveExpandMultipleFromText(
   // Get existing layer nodes to determine next layer number
   const existingLayers = getNodesByType(graph, 'Layer');
   const nextLayerNumber = existingLayers.length > 0
-    ? Math.max(...existingLayers.map(n => n.properties.layerNumber || 0)) + 1
+    ? Math.max(...existingLayers.map(n => (n.properties as unknown as LayerNodeProperties).layerNumber || 0)) + 1
     : 1;
 
   const isFirstLayer = existingLayers.length === 0;
@@ -102,13 +103,16 @@ export async function progressiveExpandMultipleFromText(
   
   // Sort milestones by their sequence property (stored on node)
   const sortedMilestones = milestoneNodes
-    .map(node => ({
-      id: node.id,
-      sequence: node.properties.sequence ?? 0,
-      title: node.properties.name || node.properties.title || 'Milestone',
-      description: node.properties.description,
-      completed: node.properties.completed || false
-    }))
+    .map(node => {
+      const mp = node.properties as unknown as MilestoneNodeProperties & { sequence?: number; title?: string };
+      return {
+        id: node.id,
+        sequence: mp.sequence ?? 0,
+        title: mp.name || mp.title || 'Milestone',
+        description: mp.description,
+        completed: mp.completed || false,
+      };
+    })
     .sort((a, b) => a.sequence - b.sequence);
   
   // Fallback to learningGoal.milestones if no nodes found (for goals passed as parameters)
