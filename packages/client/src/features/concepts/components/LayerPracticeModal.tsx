@@ -2,7 +2,7 @@ import React, { useRef, useMemo } from 'react';
 import { Loader2, BookOpen, CheckCircle2, X } from 'lucide-react';
 import { Concept, PracticeItem } from '../types';
 import { useLayerPractice } from '../hooks/useLayerPractice';
-import { parseMarkdownWithCodeBlocks, SegmentRenderer, type LessonSegment } from '@almadar/ui';
+import { parseMarkdownWithCodeBlocks, SegmentRenderer, type LessonSegment, useTranslate } from '@almadar/ui';
 
 interface LayerPracticeModalProps {
   isOpen: boolean;
@@ -24,7 +24,8 @@ const LayerPracticeModal: React.FC<LayerPracticeModalProps> = ({
   graphId,
 }) => {
   const modalRef = useRef<HTMLDivElement>(null);
-  
+  const { t } = useTranslate();
+
   const {
     items,
     isLoading,
@@ -67,7 +68,7 @@ const LayerPracticeModal: React.FC<LayerPracticeModalProps> = ({
       >
         {/* Header */}
         <div className="flex justify-between items-center p-6 border-b border-border sticky top-0 bg-card z-10">
-          <h3 className="text-2xl font-semibold text-foreground">Level {layerNumber} Final Review</h3>
+          <h3 className="text-2xl font-semibold text-foreground">{t('concept.levelFinalReview', { number: layerNumber })}</h3>
           <button
             className="p-2 text-muted-foreground hover:text-foreground hover:bg-surface-hover rounded-lg transition-colors duration-200"
             onClick={onClose}
@@ -89,7 +90,7 @@ const LayerPracticeModal: React.FC<LayerPracticeModalProps> = ({
                     </div>
                   </div>
                   <div className="flex-1 min-w-0">
-                    <h4 className="text-sm font-semibold text-foreground mb-1">Learning Goal</h4>
+                    <h4 className="text-sm font-semibold text-foreground mb-1">{t('knowledge.learningGoal')}</h4>
                     <p className="text-sm text-foreground leading-relaxed">{layerGoal}</p>
                   </div>
                 </div>
@@ -100,7 +101,7 @@ const LayerPracticeModal: React.FC<LayerPracticeModalProps> = ({
             {isLoading && !streamingContent && (
               <div className="flex items-center justify-center py-12">
                 <Loader2 size={32} className="animate-spin text-primary" />
-                <span className="ml-3 text-muted-foreground">Generating review...</span>
+                <span className="ml-3 text-muted-foreground">{t('concept.generatingReview')}</span>
               </div>
             )}
 
@@ -112,7 +113,7 @@ const LayerPracticeModal: React.FC<LayerPracticeModalProps> = ({
                   onClick={loadPractice}
                   className="mt-3 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-sm font-medium"
                 >
-                  Retry
+                  {t('learn.retry')}
                 </button>
               </div>
             )}
@@ -133,7 +134,7 @@ const LayerPracticeModal: React.FC<LayerPracticeModalProps> = ({
             {!isLoading && !error && !displayContent && (
               <div className="text-center py-12">
                 <BookOpen size={48} className="mx-auto text-muted-foreground mb-4" />
-                <p className="text-muted-foreground">No review available for this level.</p>
+                <p className="text-muted-foreground">{t('concept.noReviewForLevel')}</p>
               </div>
             )}
           </div>

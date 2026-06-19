@@ -18,6 +18,7 @@ import {
   Button,
   EmptyState,
   useEventBus,
+  useTranslate,
   type DisplayStateProps,
 } from "@almadar/ui";
 import { Search } from "lucide-react";
@@ -47,6 +48,7 @@ export function KnowledgeSearchBoard({
   className = "",
 }: KnowledgeSearchBoardProps): React.JSX.Element | null {
   const { emit } = useEventBus();
+  const { t } = useTranslate();
   const [domainFilter, setDomainFilter] = useState<DomainFilter>("all");
 
   const data = (entity && typeof entity === 'object' && !Array.isArray(entity)) ? entity as KnowledgeSearchEntity : undefined;
@@ -107,7 +109,7 @@ export function KnowledgeSearchBoard({
   }, [emit]);
 
   const domainTabs: Array<{ key: DomainFilter; label: string }> = [
-    { key: "all", label: "All" },
+    { key: "all", label: t('catalog.all') },
     { key: "formal", label: DOMAIN_LABELS.formal },
     { key: "natural", label: DOMAIN_LABELS.natural },
     { key: "social", label: DOMAIN_LABELS.social },
@@ -116,12 +118,12 @@ export function KnowledgeSearchBoard({
   return (
     <VStack gap="md" className={className}>
       <Typography variant="h2" size="xl">
-        Knowledge Search
+        {t('knowledge.searchTitle')}
       </Typography>
 
       <Input
         inputType="search"
-        placeholder="Search concepts, subjects, disciplines..."
+        placeholder={t('knowledge.searchPlaceholder')}
         value={query}
         onChange={handleSearchChange}
         icon={Search}
@@ -157,16 +159,16 @@ export function KnowledgeSearchBoard({
         {!query.trim() && (
           <EmptyState
             icon={Search}
-            title="Search your knowledge"
-            description={`Type to search across ${nodes.length.toLocaleString()} knowledge nodes.`}
+            title={t('knowledge.searchEmptyTitle')}
+            description={t('knowledge.searchEmptyDesc', { count: String(nodes.length) })}
           />
         )}
 
         {query.trim() && results.length === 0 && (
           <EmptyState
             icon={Search}
-            title="No results"
-            description={`No results found for "${query}".`}
+            title={t('knowledge.searchNoResults')}
+            description={t('knowledge.searchNoResultsDesc', { query })}
           />
         )}
 
@@ -174,8 +176,8 @@ export function KnowledgeSearchBoard({
           <VStack gap="sm">
             <Typography variant="body" size="xs" color="muted">
               {domainCounts[domainFilter] > MAX_RESULTS
-                ? `Showing ${MAX_RESULTS} of ${domainCounts[domainFilter]} results`
-                : `${results.length} results`}
+                ? t('knowledge.searchShowingOf', { shown: String(MAX_RESULTS), total: String(domainCounts[domainFilter]) })
+                : t('knowledge.searchResultCount', { count: String(results.length) })}
             </Typography>
             {results.map((node) => (
               <Box key={node.id} data-entity-row={node.id}>

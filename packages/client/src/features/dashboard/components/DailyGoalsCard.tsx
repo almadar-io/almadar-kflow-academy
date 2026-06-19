@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import { Target, CheckCircle, BookOpen, BookMarked, Loader2 } from 'lucide-react';
 import { useDailyGoals } from '../hooks/useDailyGoals';
+import { useTranslate } from '@almadar/ui';
 
 export const DailyGoalsCard: React.FC = () => {
+  const { t } = useTranslate();
   const { preferences, dailyProgress, isLoading, error, isUpdating, updateGoal } = useDailyGoals();
   const [isEditing, setIsEditing] = useState(false);
   const [tempGoal, setTempGoal] = useState<number>(3);
@@ -12,7 +14,7 @@ export const DailyGoalsCard: React.FC = () => {
       <div className="bg-card rounded-xl shadow-sm border border-border p-6">
         <div className="flex items-center justify-center gap-3 text-muted-foreground">
           <Loader2 className="animate-spin" size={20} />
-          <span>Loading daily goals...</span>
+          <span>{t('dashboard.loadingDailyGoals')}</span>
         </div>
       </div>
     );
@@ -22,7 +24,7 @@ export const DailyGoalsCard: React.FC = () => {
     return (
       <div className="bg-card rounded-xl shadow-sm border border-error p-6">
         <div className="text-error text-sm">
-          Error loading daily goals: {error}
+          {t('dashboard.errorLoadingDailyGoals')}: {error}
         </div>
       </div>
     );
@@ -35,13 +37,13 @@ export const DailyGoalsCard: React.FC = () => {
 
   const getMotivationalMessage = () => {
     if (progressPercentage === 0) {
-      return "Start your learning journey today!";
+      return t('dashboard.motivationStart');
     } else if (progressPercentage < 50) {
-      return "Keep going! You're making progress.";
+      return t('dashboard.motivationKeepGoing');
     } else if (progressPercentage < 100) {
-      return "Almost there! Just a bit more.";
+      return t('dashboard.motivationAlmostThere');
     } else {
-      return "Excellent! Goal achieved! 🎉";
+      return t('dashboard.motivationGoalAchieved');
     }
   };
 
@@ -66,7 +68,7 @@ export const DailyGoalsCard: React.FC = () => {
           <div className="p-2 bg-surface rounded-lg text-primary">
             <Target size={20} />
           </div>
-          <h3 className="text-lg font-bold text-foreground">Daily Goal</h3>
+          <h3 className="text-lg font-bold text-foreground">{t('dashboard.dailyGoal')}</h3>
         </div>
         {!isEditing && (
           <button
@@ -76,7 +78,7 @@ export const DailyGoalsCard: React.FC = () => {
             }}
             className="text-sm text-primary hover:text-primary font-medium"
           >
-            Edit
+            {t('learningGoal.edit')}
           </button>
         )}
       </div>
@@ -85,7 +87,7 @@ export const DailyGoalsCard: React.FC = () => {
       {isEditing ? (
         <div className="mb-4 flex items-center gap-2">
           <label className="text-sm text-muted-foreground">
-            Complete
+            {t('dashboard.complete')}
           </label>
           <input
             type="number"
@@ -97,7 +99,7 @@ export const DailyGoalsCard: React.FC = () => {
             disabled={isUpdating}
           />
           <label className="text-sm text-muted-foreground">
-            lessons today
+            {t('dashboard.lessonsToday')}
           </label>
           <div className="flex gap-2 ml-auto">
             <button
@@ -105,21 +107,21 @@ export const DailyGoalsCard: React.FC = () => {
               disabled={isUpdating}
               className="px-3 py-1 bg-primary text-primary-foreground rounded-lg hover:bg-primary transition-colors text-sm font-medium disabled:opacity-50"
             >
-              {isUpdating ? 'Saving...' : 'Save'}
+              {isUpdating ? t('learningGoal.saving') : t('learningGoal.save')}
             </button>
             <button
               onClick={handleCancel}
               disabled={isUpdating}
               className="px-3 py-1 bg-surface text-foreground rounded-lg hover:bg-surface-hover transition-colors text-sm font-medium disabled:opacity-50"
             >
-              Cancel
+              {t('learningGoal.cancel')}
             </button>
           </div>
         </div>
       ) : (
         <div className="mb-4">
           <div className="text-sm text-muted-foreground mb-2">
-            Goal: Complete <span className="font-semibold text-foreground">{goal}</span> lessons today
+            {t('dashboard.goal')}: {t('dashboard.complete')} <span className="font-semibold text-foreground">{goal}</span> {t('dashboard.lessonsToday')}
           </div>
         </div>
       )}
@@ -153,7 +155,7 @@ export const DailyGoalsCard: React.FC = () => {
       {activities.length > 0 && (
         <div className="border-t border-border pt-4">
           <h4 className="text-sm font-semibold text-foreground mb-2">
-            Today's Activities
+            {t('dashboard.todaysActivities')}
           </h4>
           <div className="space-y-2">
             {activities.slice(0, 5).map((activity, index) => (
@@ -181,7 +183,7 @@ export const DailyGoalsCard: React.FC = () => {
       {activities.length === 0 && (
         <div className="border-t border-border pt-4">
           <p className="text-sm text-muted-foreground text-center">
-            No activities yet today. Start learning to track your progress!
+            {t('dashboard.noActivitiesYet')}
           </p>
         </div>
       )}

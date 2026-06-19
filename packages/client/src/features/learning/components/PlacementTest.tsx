@@ -8,6 +8,7 @@ import { usePlacementTest } from '../hooks/usePlacementTest';
 import { placementTestApi } from '../placementTestApi';
 import type { PlacementAnswer } from '@/types/server/placementTest';
 import { Loader2, CheckCircle2, XCircle } from 'lucide-react';
+import { useTranslate } from '@almadar/ui';
 
 interface PlacementTestProps {
   goalId: string;
@@ -26,6 +27,7 @@ export const PlacementTest: React.FC<PlacementTestProps> = ({
   onComplete,
   onSkip,
 }) => {
+  const { t } = useTranslate();
   const {
     test,
     questions,
@@ -149,7 +151,7 @@ export const PlacementTest: React.FC<PlacementTestProps> = ({
       <div className="w-full max-w-3xl mx-auto p-4 sm:p-6 bg-white dark:bg-gray-800 rounded-lg shadow-md">
         <div className="flex flex-col items-center justify-center py-8 sm:py-12">
           <Loader2 className="w-8 h-8 animate-spin text-blue-600 dark:text-blue-400 mb-4" />
-          <p className="text-gray-600 dark:text-gray-400">Generating placement test questions...</p>
+          <p className="text-gray-600 dark:text-gray-400">{t('placement.generatingQuestions')}</p>
         </div>
       </div>
     );
@@ -168,10 +170,10 @@ export const PlacementTest: React.FC<PlacementTestProps> = ({
         <div className="text-center mb-6 sm:mb-8">
           <CheckCircle2 className="w-16 h-16 text-green-500 mx-auto mb-4" />
           <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-2">
-            Placement Test Complete!
+            {t('placement.testComplete')}
           </h2>
           <p className="text-gray-600 dark:text-gray-400">
-            We've assessed your current knowledge level
+            {t('placement.assessedDesc')}
           </p>
         </div>
 
@@ -179,15 +181,13 @@ export const PlacementTest: React.FC<PlacementTestProps> = ({
           {/* Assessed Level */}
           <div className="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-4 sm:p-6">
             <h3 className="text-lg font-semibold text-gray-800 dark:text-white mb-4">
-              Your Level
+              {t('placement.yourLevel')}
             </h3>
             <div className={`inline-block px-4 py-2 rounded-lg font-semibold ${levelColors[result.assessedLevel]}`}>
               {result.assessedLevel.charAt(0).toUpperCase() + result.assessedLevel.slice(1)}
             </div>
             <p className="mt-3 text-gray-600 dark:text-gray-400">
-              Based on your answers, we've determined you're at an{' '}
-              <span className="font-semibold">{result.assessedLevel}</span> level. Your learning path
-              will be tailored to this level.
+              {t('placement.levelExplain', { level: result.assessedLevel })}
             </p>
           </div>
 
@@ -195,12 +195,12 @@ export const PlacementTest: React.FC<PlacementTestProps> = ({
           {/* Score Breakdown */}
           <div className="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-4 sm:p-6">
             <h3 className="text-lg font-semibold text-gray-800 dark:text-white mb-4">
-              Score Breakdown
+              {t('placement.scoreBreakdown')}
             </h3>
             <div className="space-y-3">
               <div>
                 <div className="flex justify-between text-sm mb-1">
-                  <span className="text-gray-600 dark:text-gray-400">Beginner Questions</span>
+                  <span className="text-gray-600 dark:text-gray-400">{t('placement.beginnerQuestions')}</span>
                   <span className="font-semibold text-gray-800 dark:text-white">
                     {Math.round(result.beginnerScore * 100)}%
                   </span>
@@ -214,7 +214,7 @@ export const PlacementTest: React.FC<PlacementTestProps> = ({
               </div>
               <div>
                 <div className="flex justify-between text-sm mb-1">
-                  <span className="text-gray-600 dark:text-gray-400">Intermediate Questions</span>
+                  <span className="text-gray-600 dark:text-gray-400">{t('placement.intermediateQuestions')}</span>
                   <span className="font-semibold text-gray-800 dark:text-white">
                     {Math.round(result.intermediateScore * 100)}%
                   </span>
@@ -228,7 +228,7 @@ export const PlacementTest: React.FC<PlacementTestProps> = ({
               </div>
               <div>
                 <div className="flex justify-between text-sm mb-1">
-                  <span className="text-gray-600 dark:text-gray-400">Advanced Questions</span>
+                  <span className="text-gray-600 dark:text-gray-400">{t('placement.advancedQuestions')}</span>
                   <span className="font-semibold text-gray-800 dark:text-white">
                     {Math.round(result.advancedScore * 100)}%
                   </span>
@@ -255,7 +255,7 @@ export const PlacementTest: React.FC<PlacementTestProps> = ({
               }}
               className="px-6 py-2 bg-blue-600 dark:bg-blue-500 text-white rounded-lg hover:bg-blue-700 dark:hover:bg-blue-600 transition"
             >
-              Continue to Learning Path
+              {t('placement.continueToPath')}
             </button>
           </div>
         </div>
@@ -275,7 +275,7 @@ export const PlacementTest: React.FC<PlacementTestProps> = ({
           onClick={handleSkip}
           className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition"
         >
-          Skip Placement Test
+          {t('placement.skipTest')}
         </button>
       </div>
     );
@@ -287,14 +287,14 @@ export const PlacementTest: React.FC<PlacementTestProps> = ({
       <div className="w-full max-w-3xl mx-auto p-4 sm:p-6 bg-white dark:bg-gray-800 rounded-lg shadow-md">
         <div className="text-center py-8 sm:py-12">
           <p className="text-gray-600 dark:text-gray-400 mb-4">
-            {loading ? 'Generating questions...' : 'No questions available'}
+            {loading ? t('placement.generatingQuestionsShort') : t('placement.noQuestionsAvailable')}
           </p>
           {!loading && (
             <button
               onClick={handleSkip}
               className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition"
             >
-              Skip Placement Test
+              {t('placement.skipTest')}
             </button>
           )}
         </div>
@@ -313,14 +313,14 @@ export const PlacementTest: React.FC<PlacementTestProps> = ({
             onClick={handleSkip}
             className="absolute top-0 right-0 px-4 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 transition"
           >
-            Skip Test
+            {t('placement.skipTest')}
           </button>
         )}
         <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-2 pr-32">
-          Placement Test
+          {t('placement.title')}
         </h2>
         <p className="text-gray-600 dark:text-gray-400">
-          Answer these questions to help us tailor your learning path to your current level.
+          {t('placement.answerDesc')}
         </p>
       </div>
 
@@ -328,9 +328,9 @@ export const PlacementTest: React.FC<PlacementTestProps> = ({
       <div className="mb-6">
         <div className="flex justify-between text-sm text-gray-600 dark:text-gray-400 mb-2">
           <span>
-            Question {currentQuestionIndex + 1} of {questions.length}
+            {t('learning.questionOf', { current: currentQuestionIndex + 1, total: questions.length })}
           </span>
-          <span>{answeredCount} answered</span>
+          <span>{t('placement.answered', { count: answeredCount })}</span>
         </div>
         <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
           <div
@@ -415,7 +415,7 @@ export const PlacementTest: React.FC<PlacementTestProps> = ({
             <textarea
               value={typeof currentAnswer?.answer === 'string' ? currentAnswer.answer : ''}
               onChange={(e) => handleAnswerSelect(currentQuestion.id, e.target.value)}
-              placeholder="Type your answer here..."
+              placeholder={t('learning.typeAnswerHere')}
               className="w-full p-4 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500"
               rows={4}
             />
@@ -430,7 +430,7 @@ export const PlacementTest: React.FC<PlacementTestProps> = ({
                 onClick={handlePrevious}
                 className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition"
               >
-                Previous
+                {t('lesson.previous')}
               </button>
             )}
           </div>
@@ -444,10 +444,10 @@ export const PlacementTest: React.FC<PlacementTestProps> = ({
               <Loader2 size={18} className="animate-spin" />
             )}
             {loading
-              ? 'Submitting...'
-              : currentQuestionIndex === questions.length - 1 
-              ? 'Submit Test' 
-              : 'Next'}
+              ? t('placement.submitting')
+              : currentQuestionIndex === questions.length - 1
+              ? t('placement.submitTest')
+              : t('lesson.next')}
           </button>
         </div>
 

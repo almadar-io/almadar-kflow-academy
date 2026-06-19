@@ -8,6 +8,7 @@ import { Edit2, Check, X } from 'lucide-react';
 import type { LearningGoal, Milestone } from '../goalApi';
 import { updateGoal } from '../goalApi';
 import { GoalOverview } from './GoalOverview';
+import { useTranslate } from '@almadar/ui';
 
 interface GoalReviewProps {
   goal: LearningGoal;
@@ -16,6 +17,7 @@ interface GoalReviewProps {
 }
 
 export const GoalReview: React.FC<GoalReviewProps> = ({ goal, onConfirm, onCancel }) => {
+  const { t } = useTranslate();
   const [isEditing, setIsEditing] = useState(false);
   const [editedGoal, setEditedGoal] = useState<Partial<LearningGoal>>({
     title: goal.title,
@@ -60,7 +62,7 @@ export const GoalReview: React.FC<GoalReviewProps> = ({ goal, onConfirm, onCance
     <div className="w-full">
       <div className="flex flex-col sm:flex-row justify-between items-start gap-4 mb-4 sm:mb-6">
         <h2 className="text-xl sm:text-2xl font-bold text-gray-800 dark:text-white">
-          Review Your Learning Goal
+          {t('learning.reviewYourGoal')}
         </h2>
         {!isEditing ? (
           <button
@@ -68,7 +70,7 @@ export const GoalReview: React.FC<GoalReviewProps> = ({ goal, onConfirm, onCance
             className="flex items-center gap-2 px-4 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition"
           >
             <Edit2 size={16} />
-            Edit
+            {t('learningGoal.edit')}
           </button>
         ) : (
           <div className="flex gap-2">
@@ -78,7 +80,7 @@ export const GoalReview: React.FC<GoalReviewProps> = ({ goal, onConfirm, onCance
               className="flex items-center gap-2 px-4 py-2 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition disabled:opacity-50"
             >
               <Check size={16} />
-              Save
+              {t('learningGoal.save')}
             </button>
             <button
               onClick={handleCancelEdit}
@@ -86,7 +88,7 @@ export const GoalReview: React.FC<GoalReviewProps> = ({ goal, onConfirm, onCance
               className="flex items-center gap-2 px-4 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition"
             >
               <X size={16} />
-              Cancel
+              {t('learningGoal.cancel')}
             </button>
           </div>
         )}
@@ -98,7 +100,7 @@ export const GoalReview: React.FC<GoalReviewProps> = ({ goal, onConfirm, onCance
             {/* Title */}
             <div>
               <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                Title
+                {t('learning.titleLabel')}
               </label>
               <input
                 type="text"
@@ -111,7 +113,7 @@ export const GoalReview: React.FC<GoalReviewProps> = ({ goal, onConfirm, onCance
             {/* Description */}
             <div>
               <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                Description
+                {t('learning.descriptionLabel')}
               </label>
               <textarea
                 value={displayGoal.description || ''}
@@ -124,7 +126,7 @@ export const GoalReview: React.FC<GoalReviewProps> = ({ goal, onConfirm, onCance
             {/* Target */}
             <div>
               <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                Target
+                {t('learning.targetLabel')}
               </label>
               <input
                 type="text"
@@ -137,7 +139,7 @@ export const GoalReview: React.FC<GoalReviewProps> = ({ goal, onConfirm, onCance
             {/* Type */}
             <div>
               <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                Goal Type
+                {t('learning.goalType')}
               </label>
               <p className="text-gray-700 dark:text-gray-300 capitalize">{goal.type}</p>
             </div>
@@ -146,14 +148,14 @@ export const GoalReview: React.FC<GoalReviewProps> = ({ goal, onConfirm, onCance
             {displayGoal.estimatedTime && (
               <div>
                 <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                  Estimated Time
+                  {t('learning.estimatedTime')}
                 </label>
                 <input
                   type="number"
                   value={displayGoal.estimatedTime || ''}
                   onChange={(e) => setEditedGoal({ ...editedGoal, estimatedTime: parseInt(e.target.value) || undefined })}
                   className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                  placeholder="Hours"
+                  placeholder={t('learning.hoursPlaceholder')}
                 />
               </div>
             )}
@@ -162,7 +164,7 @@ export const GoalReview: React.FC<GoalReviewProps> = ({ goal, onConfirm, onCance
             {goal.milestones && goal.milestones.length > 0 && (
               <div>
                 <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                  Milestones
+                  {t('learning.milestones')}
                 </label>
                 <ul className="space-y-2">
                   {goal.milestones.map((milestone: Milestone) => (
@@ -192,7 +194,7 @@ export const GoalReview: React.FC<GoalReviewProps> = ({ goal, onConfirm, onCance
             disabled={isEditing}
             className="px-6 py-2 bg-blue-600 dark:bg-blue-500 text-white rounded-lg hover:bg-blue-700 dark:hover:bg-blue-600 transition disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            Confirm & Continue
+            {t('learning.confirmAndContinue')}
           </button>
         </div>
       </div>

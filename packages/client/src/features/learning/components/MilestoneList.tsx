@@ -1,12 +1,14 @@
 import React from 'react';
 import { Milestone } from '../goalApi';
 import { CheckCircle2, Circle, Calendar, Clock } from 'lucide-react';
+import { useTranslate } from '@almadar/ui';
 
 interface MilestoneListProps {
     milestones: Milestone[];
 }
 
 export const MilestoneList: React.FC<MilestoneListProps> = ({ milestones }) => {
+    const { t } = useTranslate();
     if (!milestones || milestones.length === 0) return null;
 
     return (
@@ -66,7 +68,7 @@ export const MilestoneList: React.FC<MilestoneListProps> = ({ milestones }) => {
                                 {isNext && (
                                     <span className="inline-flex items-center gap-1 text-xs font-semibold text-blue-600 dark:text-blue-400">
                                         <Clock size={12} />
-                                        Current Focus
+                                        {t('learning.currentFocus')}
                                     </span>
                                 )}
                             </div>

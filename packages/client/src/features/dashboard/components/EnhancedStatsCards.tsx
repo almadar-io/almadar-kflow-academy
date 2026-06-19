@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import { statisticsApi } from '../statisticsApi';
 import { useDashboardStats } from '../hooks/useDashboardStats';
+import { useTranslate } from '@almadar/ui';
 
 interface DetailedStatistics {
   totalStudyTime: number;
@@ -23,6 +24,7 @@ interface DetailedStatistics {
 }
 
 export const EnhancedStatsCards: React.FC = () => {
+  const { t } = useTranslate();
   const { stats, isLoading: isLoadingStats, error: statsError } = useDashboardStats();
   const [detailedStats, setDetailedStats] = useState<DetailedStatistics | null>(null);
   const [isLoadingDetails, setIsLoadingDetails] = useState(false);
@@ -53,49 +55,49 @@ export const EnhancedStatsCards: React.FC = () => {
 
   // Main stats cards (always visible)
   const mainStatsCards = [
-    { 
-      label: stats.learningStreak === 1 ? 'Day Streak' : 'Day Streak', 
-      value: stats.learningStreak.toString(), 
-      icon: Flame, 
-      color: 'text-orange-500', 
+    {
+      label: t('dashboard.stat.streak'),
+      value: stats.learningStreak.toString(),
+      icon: Flame,
+      color: 'text-orange-500',
       bg: 'bg-surface',
-      tooltip: 'Consecutive days you\'ve studied. Keep it going!'
+      tooltip: t('dashboard.stat.streakTooltip'),
     },
-    { 
-      label: stats.conceptsMastered === 1 ? 'Concept Mastered' : 'Concepts Mastered', 
-      value: stats.conceptsMastered.toString(), 
-      icon: Trophy, 
-      color: 'text-yellow-500', 
+    {
+      label: t('dashboard.stat.concepts'),
+      value: stats.conceptsMastered.toString(),
+      icon: Trophy,
+      color: 'text-yellow-500',
       bg: 'bg-surface',
-      tooltip: 'Concepts you\'ve fully mastered by completing lessons, answering questions, and reflecting on your learning.'
+      tooltip: t('dashboard.stat.conceptsTooltip'),
     },
-    { 
-      label: stats.activeCourses === 1 ? 'Active Course' : 'Active Courses', 
-      value: stats.activeCourses.toString(), 
-      icon: BookOpen, 
-      color: 'text-blue-500', 
+    {
+      label: t('dashboard.activeCourses'),
+      value: stats.activeCourses.toString(),
+      icon: BookOpen,
+      color: 'text-blue-500',
       bg: 'bg-surface',
-      tooltip: 'Courses you\'re currently enrolled in and haven\'t completed yet.'
+      tooltip: t('dashboard.stat.activeCoursesTooltip'),
     },
   ];
 
   // Additional stats (shown when expanded)
   const additionalStats = detailedStats ? [
-    { 
-      label: 'Lessons Completed', 
-      value: detailedStats.lessonsCompleted.toString(), 
-      icon: CheckCircle, 
-      color: 'text-green-500', 
+    {
+      label: t('dashboard.lessonsCompleted'),
+      value: detailedStats.lessonsCompleted.toString(),
+      icon: CheckCircle,
+      color: 'text-green-500',
       bg: 'bg-surface',
-      tooltip: 'Total number of lessons you\'ve completed across all courses.'
+      tooltip: t('dashboard.stat.lessonsCompletedTooltip'),
     },
-    { 
-      label: 'Courses Completed', 
-      value: detailedStats.coursesCompleted.toString(), 
-      icon: GraduationCap, 
-      color: 'text-purple-500', 
+    {
+      label: t('dashboard.coursesCompleted'),
+      value: detailedStats.coursesCompleted.toString(),
+      icon: GraduationCap,
+      color: 'text-purple-500',
       bg: 'bg-purple-100 dark:bg-purple-900/30',
-      tooltip: 'Total number of courses you\'ve fully completed.'
+      tooltip: t('dashboard.stat.coursesCompletedTooltip'),
     },
   ] : [];
 
@@ -118,7 +120,7 @@ export const EnhancedStatsCards: React.FC = () => {
   if (statsError) {
     return (
       <div className="col-span-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl p-4 text-red-600 dark:text-red-400 mb-8">
-        Error loading statistics: {statsError}
+        {t('dashboard.errorLoadingStats')}: {statsError}
       </div>
     );
   }
@@ -170,12 +172,12 @@ export const EnhancedStatsCards: React.FC = () => {
           {isExpanded ? (
             <>
               <ChevronUp size={16} />
-              Show Less
+              {t('dashboard.showLess')}
             </>
           ) : (
             <>
               <ChevronDown size={16} />
-              Show More Stats
+              {t('dashboard.showMoreStats')}
             </>
           )}
         </button>
@@ -187,7 +189,7 @@ export const EnhancedStatsCards: React.FC = () => {
           {isLoadingDetails ? (
             <div className="col-span-2 bg-white dark:bg-gray-800 p-4 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 flex items-center justify-center gap-3 text-gray-500 dark:text-gray-400">
               <Loader2 className="animate-spin" size={20} />
-              <span>Loading additional stats...</span>
+              <span>{t('dashboard.loadingAdditionalStats')}</span>
             </div>
           ) : additionalStats.length > 0 ? (
             additionalStats.map((stat, index) => (
@@ -224,7 +226,7 @@ export const EnhancedStatsCards: React.FC = () => {
             ))
           ) : (
             <div className="col-span-2 bg-white dark:bg-gray-800 p-4 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 text-center text-gray-500 dark:text-gray-400">
-              <p className="text-sm">No additional statistics available</p>
+              <p className="text-sm">{t('dashboard.noAdditionalStats')}</p>
             </div>
           )}
         </div>

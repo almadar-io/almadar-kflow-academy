@@ -1,5 +1,6 @@
 import React from 'react';
 import { ChevronRight } from 'lucide-react';
+import { useTranslate } from '@almadar/ui';
 
 interface RelatedConcept {
   name: string;
@@ -12,11 +13,12 @@ interface RelatedConceptListProps {
 }
 
 const RelatedConceptList: React.FC<RelatedConceptListProps> = ({ concepts, onSelect }) => {
+  const { t } = useTranslate();
   if (concepts.length === 0) return null;
 
   return (
     <div>
-      <h3 className="text-sm font-medium text-muted-foreground mb-3">Related Concepts</h3>
+      <h3 className="text-sm font-medium text-muted-foreground mb-3">{t('concept.relatedConcepts')}</h3>
       <div className="-mx-4 sm:mx-0">
         <div className="overflow-x-auto pb-2">
           <div className="flex gap-4 px-4 sm:px-0">

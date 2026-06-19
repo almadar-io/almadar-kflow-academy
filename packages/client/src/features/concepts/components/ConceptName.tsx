@@ -1,5 +1,6 @@
 import React from 'react';
 import { Concept } from '../types';
+import { useTranslate } from '@almadar/ui';
 
 interface ConceptNameProps {
   concept: Concept;
@@ -26,6 +27,8 @@ const ConceptName: React.FC<ConceptNameProps> = ({
   className = '',
   onTitleClick,
 }) => {
+  const { t } = useTranslate();
+
   const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newName = e.target.value;
     onNameChange(newName);
@@ -58,7 +61,7 @@ const ConceptName: React.FC<ConceptNameProps> = ({
           onBlur={onCancelEdit}
           autoFocus
           onClick={(e) => e.stopPropagation()}
-          placeholder="Enter concept name..."
+          placeholder={t('concept.enterConceptName')}
           onKeyDown={handleNameKeyDown}
         />
       </div>
@@ -70,7 +73,7 @@ const ConceptName: React.FC<ConceptNameProps> = ({
       <h4 
         className="flex-1 text-lg font-semibold text-primary hover:text-primary underline underline-offset-4 decoration-transparent hover:decoration-primary px-2 py-1 rounded cursor-pointer transition-all duration-200"
         onClick={handleClick}
-        title="View concept details"
+        title={t('concept.viewDetails')}
         role="button"
       >
         {concept.name}

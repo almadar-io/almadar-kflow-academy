@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { ArrowLeft, Circle, ChevronDown, ChevronUp, FileText, List, Map, Network } from 'lucide-react';
+import { useTranslate } from '@almadar/ui';
 
 export type ConceptViewMode = 'list' | 'detail' | 'mindmap' | 'radial' | 'graph';
 
@@ -41,6 +42,7 @@ const ConceptViewHeader: React.FC<ConceptViewHeaderProps> = ({
   rightContent,
   hideViewToggle = false,
 }) => {
+  const { t } = useTranslate();
   const [isMobileToggleOpen, setIsMobileToggleOpen] = useState(false);
 
   const toggleMobileNav = () => {
@@ -53,7 +55,7 @@ const ConceptViewHeader: React.FC<ConceptViewHeaderProps> = ({
         <button
           onClick={onBack}
           className="concept-view-header__back inline-flex items-center rounded-md px-2 py-1 text-muted-foreground hover:text-foreground hover:bg-surface-hover transition-colors flex-shrink-0"
-          title="Back"
+          title={t('concept.back')}
           type="button"
         >
           <ArrowLeft size={20} />
@@ -83,7 +85,7 @@ const ConceptViewHeader: React.FC<ConceptViewHeaderProps> = ({
               onClick={toggleMobileNav}
               className="concept-view-header__view-toggle flex items-center justify-between sm:hidden bg-white/20 rounded-lg px-4 py-2 text-sm font-medium"
             >
-              <span>View Modes</span>
+              <span>{t('concept.viewModes')}</span>
               {isMobileToggleOpen ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
             </button>
 

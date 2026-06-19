@@ -11,6 +11,7 @@ import {
   Loader2
 } from 'lucide-react';
 import { statisticsApi } from '../statisticsApi';
+import { useTranslate } from '@almadar/ui';
 
 interface DetailedStatistics {
   totalStudyTime: number;
@@ -22,6 +23,7 @@ interface DetailedStatistics {
 }
 
 export const QuickStatsWidget: React.FC = () => {
+  const { t } = useTranslate();
   const [stats, setStats] = useState<DetailedStatistics | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -56,7 +58,7 @@ export const QuickStatsWidget: React.FC = () => {
       <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
         <div className="flex items-center justify-center gap-3 text-gray-500 dark:text-gray-400">
           <Loader2 className="animate-spin" size={20} />
-          <span>Loading statistics...</span>
+          <span>{t('dashboard.loadingStats')}</span>
         </div>
       </div>
     );
@@ -68,16 +70,16 @@ export const QuickStatsWidget: React.FC = () => {
 
   // Summary stats (shown when collapsed)
   const summaryStats = [
-    { label: 'Lessons Completed', value: stats.lessonsCompleted, icon: CheckCircle, color: 'text-green-500' },
-    { label: 'Courses Completed', value: stats.coursesCompleted, icon: GraduationCap, color: 'text-blue-500' },
-    { label: 'Concepts Mastered', value: stats.conceptsMastered, icon: Trophy, color: 'text-yellow-500' },
+    { label: t('dashboard.lessonsCompleted'), value: stats.lessonsCompleted, icon: CheckCircle, color: 'text-green-500' },
+    { label: t('dashboard.coursesCompleted'), value: stats.coursesCompleted, icon: GraduationCap, color: 'text-blue-500' },
+    { label: t('dashboard.stat.concepts'), value: stats.conceptsMastered, icon: Trophy, color: 'text-yellow-500' },
   ];
 
   // All stats (shown when expanded)
   const allStats = [
     ...summaryStats,
-    { label: 'Learning Streak', value: `${stats.learningStreak} days`, icon: Flame, color: 'text-orange-500' },
-    { label: 'Active Courses', value: stats.activeCourses, icon: BookOpen, color: 'text-indigo-500' },
+    { label: t('dashboard.stat.streak'), value: `${stats.learningStreak} days`, icon: Flame, color: 'text-orange-500' },
+    { label: t('dashboard.activeCourses'), value: stats.activeCourses, icon: BookOpen, color: 'text-indigo-500' },
     // { label: 'Total Study Time', value: formatTime(stats.totalStudyTime), icon: Clock, color: 'text-purple-500' },
   ];
 
@@ -86,7 +88,7 @@ export const QuickStatsWidget: React.FC = () => {
   return (
     <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-lg font-bold text-gray-900 dark:text-white">Quick Stats</h3>
+        <h3 className="text-lg font-bold text-gray-900 dark:text-white">{t('dashboard.quickStats')}</h3>
         {allStats.length > summaryStats.length && (
           <button
             onClick={() => setIsExpanded(!isExpanded)}
@@ -95,12 +97,12 @@ export const QuickStatsWidget: React.FC = () => {
             {isExpanded ? (
               <>
                 <ChevronUp size={16} />
-                Show Less
+                {t('dashboard.showLess')}
               </>
             ) : (
               <>
                 <ChevronDown size={16} />
-                Show More
+                {t('dashboard.showMore')}
               </>
             )}
           </button>

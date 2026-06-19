@@ -2,22 +2,24 @@ import React from 'react';
 import { LearningGoal } from '../goalApi';
 import { MilestoneList } from './MilestoneList';
 import { Target, Clock, BookOpen, Award } from 'lucide-react';
+import { useTranslate } from '@almadar/ui';
 
 interface GoalOverviewProps {
     goal: LearningGoal | Partial<LearningGoal>;
 }
 
 export const GoalOverview: React.FC<GoalOverviewProps> = ({ goal }) => {
+    const { t } = useTranslate();
     return (
         <div className="space-y-8">
             {/* Header Section */}
             <div className="space-y-4">
                 <div>
                     <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
-                        {goal.title || <span className="text-gray-400 italic">Generating title...</span>}
+                        {goal.title || <span className="text-gray-400 italic">{t('learning.generatingTitle')}</span>}
                     </h3>
                     <p className="text-lg text-gray-600 dark:text-gray-300 leading-relaxed">
-                        {goal.description || <span className="text-gray-400 italic">Generating description...</span>}
+                        {goal.description || <span className="text-gray-400 italic">{t('learning.generatingDescription')}</span>}
                     </p>
                 </div>
 
@@ -29,10 +31,10 @@ export const GoalOverview: React.FC<GoalOverviewProps> = ({ goal }) => {
                         </div>
                         <div>
                             <p className="text-xs font-semibold uppercase tracking-wider text-indigo-600 dark:text-indigo-400 mb-0.5">
-                                Target Outcome
+                                {t('learning.targetOutcome')}
                             </p>
                             <p className="text-sm font-medium text-gray-900 dark:text-white">
-                                {goal.target || <span className="text-gray-400 italic">Generating...</span>}
+                                {goal.target || <span className="text-gray-400 italic">{t('learning.generating')}</span>}
                             </p>
                         </div>
                     </div>
@@ -44,10 +46,10 @@ export const GoalOverview: React.FC<GoalOverviewProps> = ({ goal }) => {
                             </div>
                             <div>
                                 <p className="text-xs font-semibold uppercase tracking-wider text-blue-600 dark:text-blue-400 mb-0.5">
-                                    Est. Time
+                                    {t('learning.estTime')}
                                 </p>
                                 <p className="text-sm font-medium text-gray-900 dark:text-white">
-                                    {goal.estimatedTime} hours
+                                    {t('learning.hours', { count: goal.estimatedTime })}
                                 </p>
                             </div>
                         </div>
@@ -59,10 +61,10 @@ export const GoalOverview: React.FC<GoalOverviewProps> = ({ goal }) => {
                         </div>
                         <div>
                             <p className="text-xs font-semibold uppercase tracking-wider text-purple-600 dark:text-purple-400 mb-0.5">
-                                Type
+                                {t('learning.type')}
                             </p>
                             <p className="text-sm font-medium text-gray-900 dark:text-white capitalize">
-                                {goal.type || <span className="text-gray-400 italic">Generating...</span>}
+                                {goal.type || <span className="text-gray-400 italic">{t('learning.generating')}</span>}
                             </p>
                         </div>
                     </div>
@@ -74,7 +76,7 @@ export const GoalOverview: React.FC<GoalOverviewProps> = ({ goal }) => {
                             </div>
                             <div>
                                 <p className="text-xs font-semibold uppercase tracking-wider text-pink-600 dark:text-pink-400 mb-0.5">
-                                    Level
+                                    {t('learning.level')}
                                 </p>
                                 <p className="text-sm font-medium text-gray-900 dark:text-white capitalize">
                                     {goal.assessedLevel}
@@ -90,7 +92,7 @@ export const GoalOverview: React.FC<GoalOverviewProps> = ({ goal }) => {
                 <div>
                     <h4 className="text-lg font-bold text-gray-900 dark:text-white mb-6 flex items-center gap-2">
                         <span className="w-1 h-6 bg-indigo-500 rounded-full"></span>
-                        Learning Milestones
+                        {t('learning.learningMilestones')}
                     </h4>
                     <MilestoneList milestones={goal.milestones} />
                 </div>
@@ -102,7 +104,7 @@ export const GoalOverview: React.FC<GoalOverviewProps> = ({ goal }) => {
                 {goal.shortTermGoals && goal.shortTermGoals.length > 0 && (
                     <div>
                         <h4 className="text-sm font-bold text-gray-900 dark:text-white uppercase tracking-wider mb-4 border-b border-gray-200 dark:border-gray-700 pb-2">
-                            Immediate Steps
+                            {t('learning.immediateSteps')}
                         </h4>
                         <ul className="space-y-3">
                             {goal.shortTermGoals.map((shortTermGoal, index) => (

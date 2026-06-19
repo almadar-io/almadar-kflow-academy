@@ -13,6 +13,7 @@
  */
 
 import React from "react";
+import { useTranslate } from "@almadar/ui";
 import { DomainExplorerBoard } from "../organisms/DomainExplorerBoard";
 import type { DomainExplorerEntity } from "../organisms/DomainExplorerBoard";
 import type { KnowledgeNode, KnowledgeDomain, KnowledgeSubject, KnowledgeDomainType } from "../types/knowledge";
@@ -35,20 +36,14 @@ export interface KnowledgeExplorerTemplateProps {
   className?: string;
 }
 
-const DOMAIN_NAMES: Record<string, string> = {
-  formal: "Formal Sciences",
-  natural: "Natural Sciences",
-  social: "Social Sciences",
-};
-
-function fromNodeArray(nodes: NodeLike[]): DomainExplorerEntity {
+function fromNodeArray(nodes: NodeLike[], domainNames: Record<string, string>): DomainExplorerEntity {
   const domainTypes: KnowledgeDomainType[] = ["formal", "natural", "social"];
 
   const domains: KnowledgeDomain[] = domainTypes.map((dt) => {
     const dn = nodes.filter((n) => n.domain === dt);
     return {
       id: dt,
-      name: DOMAIN_NAMES[dt] ?? dt,
+      name: domainNames[dt] ?? dt,
       domain: dt,
       description: "",
       subjectCount: new Set(dn.map((n) => n.subject)).size,
@@ -88,10 +83,17 @@ export const KnowledgeExplorerTemplate = ({
   entity,
   className,
 }: KnowledgeExplorerTemplateProps) => {
+  const { t } = useTranslate();
   if (!entity || (Array.isArray(entity) && entity.length === 0)) return null;
 
+  const domainNames: Record<string, string> = {
+    formal: t('explorer.domain.formal'),
+    natural: t('explorer.domain.natural'),
+    social: t('explorer.domain.social'),
+  };
+
   const resolved: DomainExplorerEntity = Array.isArray(entity)
-    ? fromNodeArray(entity as NodeLike[])
+    ? fromNodeArray(entity as NodeLike[], domainNames)
     : (entity as DomainExplorerEntity);
 
   return (

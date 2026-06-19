@@ -13,6 +13,7 @@
  */
 
 import React from 'react';
+import { useTranslate } from '@almadar/ui';
 import { AppShellTemplate } from './AppShellTemplate';
 import type { AppShellEntity } from './AppShellTemplate';
 import { LearnBoard } from '../organisms/LearnBoard';
@@ -34,13 +35,6 @@ interface GraphLike {
   description?: string;
 }
 
-const KFLOW_NAV_ITEMS = [
-  { href: '/', label: 'Dashboard' },
-  { href: '/learn', label: 'Learn' },
-  { href: '/stories', label: 'Stories' },
-  { href: '/explore', label: 'Explore' },
-];
-
 export interface LearnTemplateProps {
   entity: LearnTemplateEntity | GraphLike[];
   className?: string;
@@ -50,7 +44,14 @@ export function LearnTemplate({
   entity,
   className,
 }: LearnTemplateProps): React.JSX.Element {
+  const { t } = useTranslate();
   const isArray = Array.isArray(entity);
+  const navItems = [
+    { href: '/', label: t('nav.dashboard') },
+    { href: '/learn', label: t('nav.learn') },
+    { href: '/stories', label: t('nav.stories') },
+    { href: '/explore', label: t('nav.explore') },
+  ];
 
   const learnEntity: LearnEntity = isArray
     ? {
@@ -70,7 +71,7 @@ export function LearnTemplate({
   const shell = isArray ? undefined : (entity as LearnTemplateEntity).shell;
 
   return (
-    <AppShellTemplate entity={shell} appName="KFlow" navItems={KFLOW_NAV_ITEMS}>
+    <AppShellTemplate entity={shell} appName="KFlow" navItems={navItems}>
       <LearnBoard entity={learnEntity} className={className} />
     </AppShellTemplate>
   );

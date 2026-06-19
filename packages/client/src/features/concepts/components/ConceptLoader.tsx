@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Target } from 'lucide-react';
+import { useTranslate } from '@almadar/ui';
 import { parseStreamingConcepts, ParsedConcept } from '../utils/streamParser';
 
 interface LessonPreview {
@@ -45,6 +46,7 @@ const ConceptLoader: React.FC<ConceptLoaderProps> = ({
   goal,
   onStreamChunk,
 }) => {
+  const { t } = useTranslate();
   const [parsedConcepts, setParsedConcepts] = useState<ParsedConcept[]>([]);
   const [extractedGoal, setExtractedGoal] = useState<string | undefined>(goal);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
@@ -136,8 +138,8 @@ const ConceptLoader: React.FC<ConceptLoaderProps> = ({
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-2">
-                    <h4 className="text-sm font-semibold text-foreground">Learning Goal</h4>
-                    <span className="text-xs text-indigo-500 font-medium">Level Target</span>
+                    <h4 className="text-sm font-semibold text-foreground">{t('knowledge.learningGoal')}</h4>
+                    <span className="text-xs text-indigo-500 font-medium">{t('concept.levelTarget')}</span>
                   </div>
                   <p className="text-sm text-foreground leading-relaxed">{extractedGoal}</p>
                 </div>
@@ -147,7 +149,7 @@ const ConceptLoader: React.FC<ConceptLoaderProps> = ({
           
           <div className="flex items-center justify-between mb-3">
             <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
-              Generating Concepts
+              {t('concept.generatingConcepts')}
             </h3>
             <span className="text-xs text-muted-foreground">{parsedConcepts.length}</span>
           </div>
@@ -179,7 +181,7 @@ const ConceptLoader: React.FC<ConceptLoaderProps> = ({
                     )}
                     {concept.parents.length > 0 && (
                       <div className="flex flex-wrap gap-2 mt-2">
-                        <span className="text-xs font-medium text-muted-foreground">Prerequisites:</span>
+                        <span className="text-xs font-medium text-muted-foreground">{t('concept.prerequisites')}</span>
                         {concept.parents.map((parent, i) => (
                           <span
                             key={i}
@@ -204,7 +206,7 @@ const ConceptLoader: React.FC<ConceptLoaderProps> = ({
       return (
         <div className="w-full">
           <div className="flex items-center justify-between mb-3">
-            <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">Previous Lessons</h3>
+            <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">{t('concept.previousLessons')}</h3>
             <span className="text-xs text-muted-foreground">{lessons.length}</span>
           </div>
           <div className="overflow-x-auto pb-2 -mx-2">

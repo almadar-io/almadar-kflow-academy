@@ -105,7 +105,7 @@ export function SubjectOverviewBoard({
   );
 
   if (isLoading || !resolved || !subject || !rootNode) {
-    return <LoadingState message="Loading subject..." />;
+    return <LoadingState message={t('subject.loading')} />;
   }
 
   const tabItems = [

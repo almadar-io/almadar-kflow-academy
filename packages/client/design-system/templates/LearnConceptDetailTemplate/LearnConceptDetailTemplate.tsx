@@ -13,7 +13,7 @@
 
 import React from 'react';
 import { AppLayoutTemplate } from '../AppLayoutTemplate';
-import { Badge, Button, Card, Typography, useEventBus } from '@almadar/ui';
+import { Badge, Button, Card, Typography, useEventBus, useTranslate } from '@almadar/ui';
 import type { DisplayStateProps } from '@almadar/ui';
 import { ArrowLeft, ChevronLeft, ChevronRight, ArrowRight } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
@@ -100,6 +100,7 @@ function isEntityProps(p: AllProps): p is LearnConceptDetailEntityProps {
 
 export const LearnConceptDetailTemplate: React.FC<AllProps> = (props) => {
   const { emit } = useEventBus();
+  const { t } = useTranslate();
 
   const entityMode = isEntityProps(props);
   const flat = entityMode ? undefined : (props as LearnConceptDetailTemplateProps);
@@ -159,7 +160,7 @@ export const LearnConceptDetailTemplate: React.FC<AllProps> = (props) => {
         <div className="min-h-screen flex items-center justify-center">
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-            <Typography variant="body" color="muted">Loading concept...</Typography>
+            <Typography variant="body" color="muted">{t('learning.loadingConcept')}</Typography>
           </div>
         </div>
       </AppLayoutTemplate>
@@ -177,7 +178,7 @@ export const LearnConceptDetailTemplate: React.FC<AllProps> = (props) => {
         <div className="min-h-screen flex items-center justify-center">
           <Card className="p-4 sm:p-8 text-center">
             <Typography variant="h3" className="mb-4 text-error">
-              Error
+              {t('learning.error')}
             </Typography>
             <Typography variant="body" color="muted" className="mb-6">
               {error}
@@ -218,12 +219,12 @@ export const LearnConceptDetailTemplate: React.FC<AllProps> = (props) => {
             <div className="flex items-center justify-center gap-3 mb-4">
               {concept.isSeed && (
                 <Badge variant="primary">
-                  Seed Concept
+                  {t('concept.seedConcept')}
                 </Badge>
               )}
               {concept.layer !== undefined && (
                 <Badge variant="default">
-                  Level {concept.layer}
+                  {t('learning.levelN', { number: String(concept.layer) })}
                 </Badge>
               )}
             </div>
@@ -269,7 +270,7 @@ export const LearnConceptDetailTemplate: React.FC<AllProps> = (props) => {
                 className="flex-1"
               >
                 <div className="text-left">
-                  <div className="text-xs text-muted-foreground mb-1">Previous</div>
+                  <div className="text-xs text-muted-foreground mb-1">{t('lesson.previous')}</div>
                   <div className="font-medium">{previousConcept.name}</div>
                 </div>
               </Button>
@@ -284,7 +285,7 @@ export const LearnConceptDetailTemplate: React.FC<AllProps> = (props) => {
                 className="flex-1"
               >
                 <div className="text-left">
-                  <div className="text-xs text-primary-foreground mb-1">Next</div>
+                  <div className="text-xs text-primary-foreground mb-1">{t('lesson.next')}</div>
                   <div className="font-medium">{nextConcept.name}</div>
                 </div>
               </Button>

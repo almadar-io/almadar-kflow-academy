@@ -17,6 +17,7 @@ import { GoalOverview } from './GoalOverview';
 import { updateGoal } from '../goalApi';
 import type { GoalQuestion, GoalQuestionAnswer, LearningGoal } from '../goalApi';
 import { Edit3, ClipboardList, Loader2 } from 'lucide-react';
+import { useTranslate } from '@almadar/ui';
 
 // Anchor question constant (matches backend)
 const ANCHOR_QUESTION = "What's something you've always wanted to learn?";
@@ -27,6 +28,7 @@ interface GoalFormProps {
 }
 
 export const GoalForm: React.FC<GoalFormProps> = ({ onComplete, onCancel }) => {
+  const { t } = useTranslate();
   const [step, setStep] = useState<'anchor' | 'choice' | 'questions' | 'loading' | 'review' | 'level-selection' | 'placement'>('anchor');
   const [anchorAnswer, setAnchorAnswer] = useState('');
   const [goalDescription, setGoalDescription] = useState('');
@@ -401,10 +403,10 @@ export const GoalForm: React.FC<GoalFormProps> = ({ onComplete, onCancel }) => {
         <div className="flex flex-col items-center justify-center mb-6">
             <Loader2 className="h-12 w-12 animate-spin text-indigo-600 dark:text-indigo-400 mb-4" />
             <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-2">
-              Generating Your Learning Goal...
+              {t('learning.generatingGoal')}
             </h3>
             <p className="text-gray-600 dark:text-gray-400 text-center mb-4">
-              Please wait while our AI crafts your personalized learning objective.
+              {t('learning.generatingGoalDesc')}
             </p>
           </div>
           
@@ -454,7 +456,7 @@ export const GoalForm: React.FC<GoalFormProps> = ({ onComplete, onCancel }) => {
       <div className="w-full">
         <div className="flex flex-col items-center justify-center py-8 sm:py-12">
             <Loader2 className="w-8 h-8 animate-spin text-blue-600 dark:text-blue-400 mb-4" />
-            <p className="text-gray-600 dark:text-gray-400">Generating goal questions...</p>
+            <p className="text-gray-600 dark:text-gray-400">{t('learning.generatingQuestions')}</p>
         </div>
       </div>
     );
@@ -466,27 +468,27 @@ export const GoalForm: React.FC<GoalFormProps> = ({ onComplete, onCancel }) => {
       <div className="w-full">
         <div className="text-center mb-6 sm:mb-8">
             <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-2">
-              Tell us more about your goal
+              {t('learning.tellUsMore')}
             </h2>
             <p className="text-gray-600 dark:text-gray-400">
-              You want to learn: <span className="font-semibold text-gray-900 dark:text-white">{anchorAnswer}</span>
+              {t('learning.youWantToLearn')}: <span className="font-semibold text-gray-900 dark:text-white">{anchorAnswer}</span>
             </p>
           </div>
 
           {/* Goal Description */}
           <div className="mb-8">
             <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-              Goal Description (Optional)
+              {t('learning.goalDescriptionOptional')}
             </label>
             <textarea
               value={goalDescription}
               onChange={(e) => setGoalDescription(e.target.value)}
-              placeholder="Provide more details about your learning goal. What do you hope to achieve? What specific skills or knowledge are you looking to gain?"
+              placeholder={t('learning.goalDescriptionPlaceholder')}
               rows={4}
               className="w-full p-4 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500"
             />
             <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
-              Enter a description for your learning goal
+              {t('learning.enterDescriptionHint')}
             </p>
           </div>
 
@@ -497,7 +499,7 @@ export const GoalForm: React.FC<GoalFormProps> = ({ onComplete, onCancel }) => {
             </div>
             <div className="relative flex justify-center text-sm">
               <span className="px-4 bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-400">
-                OR
+                {t('common.or')}
               </span>
             </div>
           </div>
@@ -519,12 +521,12 @@ export const GoalForm: React.FC<GoalFormProps> = ({ onComplete, onCancel }) => {
                 </div>
                 <div className="flex-1 text-left">
                   <h3 className="font-semibold text-lg text-gray-900 dark:text-white mb-1">
-                    {isGeneratingQuestions ? 'Generating Questions...' : 'Take Goal Form'}
+                    {isGeneratingQuestions ? t('learning.generatingQuestionsShort') : t('learning.takeGoalForm')}
                   </h3>
                   <p className="text-sm text-gray-600 dark:text-gray-400">
-                    {isGeneratingQuestions 
-                      ? 'Please wait while we create personalized questions for you'
-                      : 'Answer questions to help us create a tailored goal'}
+                    {isGeneratingQuestions
+                      ? t('learning.generatingQuestionsDesc')
+                      : t('learning.answerQuestionsDesc')}
                   </p>
                 </div>
               </div>
@@ -539,7 +541,7 @@ export const GoalForm: React.FC<GoalFormProps> = ({ onComplete, onCancel }) => {
                 className="px-6 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition"
                 disabled={isSubmitting || isGeneratingQuestions}
               >
-                Back
+                {t('concept.back')}
               </button>
               <button
                 onClick={handleManualGoalSubmit}
@@ -549,12 +551,12 @@ export const GoalForm: React.FC<GoalFormProps> = ({ onComplete, onCancel }) => {
                 {isSubmitting ? (
                   <>
                     <Loader2 size={18} className="animate-spin" />
-                    Creating Goal...
+                    {t('learning.creatingGoal')}
                   </>
                 ) : (
                   <>
                     <Edit3 size={18} />
-                    Create Goal
+                    {t('learning.createGoal')}
                   </>
                 )}
               </button>
@@ -570,8 +572,8 @@ export const GoalForm: React.FC<GoalFormProps> = ({ onComplete, onCancel }) => {
       {step === 'questions' && questions.length > 0 && (
         <div className="mb-4 sm:mb-6">
           <div className="flex justify-between text-sm text-gray-600 dark:text-gray-400 mb-2">
-            <span>Question {currentQuestionIndex + 1} of {questions.length}</span>
-            <span>{answeredCount} answered, {skippedCount} skipped</span>
+            <span>{t('learning.questionOf', { current: currentQuestionIndex + 1, total: questions.length })}</span>
+            <span>{t('learning.answeredSkipped', { answered: answeredCount, skipped: skippedCount })}</span>
           </div>
           <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
             <div
@@ -598,7 +600,7 @@ export const GoalForm: React.FC<GoalFormProps> = ({ onComplete, onCancel }) => {
             <textarea
               value={anchorAnswer}
               onChange={(e) => setAnchorAnswer(e.target.value)}
-              placeholder="Type your answer here..."
+              placeholder={t('learning.typeAnswerHere')}
               className="w-full p-4 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500"
               rows={4}
               disabled={isGeneratingQuestions}
@@ -613,7 +615,7 @@ export const GoalForm: React.FC<GoalFormProps> = ({ onComplete, onCancel }) => {
                 disabled={!anchorAnswer.trim() || isGeneratingQuestions}
                 className="px-6 py-2 bg-blue-600 dark:bg-blue-500 text-white rounded-lg hover:bg-blue-700 dark:hover:bg-blue-600 transition disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                Continue
+                {t('episode.continue')}
               </button>
             </div>
           </div>
@@ -629,7 +631,7 @@ export const GoalForm: React.FC<GoalFormProps> = ({ onComplete, onCancel }) => {
               onClick={() => handleSkip(currentQuestion.id)}
               className="absolute top-0 right-0 px-4 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 transition"
             >
-              Skip
+              {t('activation.skipForNow')}
             </button>
           )}
           
@@ -746,7 +748,7 @@ export const GoalForm: React.FC<GoalFormProps> = ({ onComplete, onCancel }) => {
                         onChange={() => handleSelectAll(currentQuestion.id)}
                         className="mr-3"
                       />
-                      <span className="flex-1 text-gray-900 dark:text-white font-medium">All of the above</span>
+                      <span className="flex-1 text-gray-900 dark:text-white font-medium">{t('learning.allOfTheAbove')}</span>
                     </label>
                   </>
                 );
@@ -767,14 +769,14 @@ export const GoalForm: React.FC<GoalFormProps> = ({ onComplete, onCancel }) => {
                       onChange={() => handleOtherToggle(currentQuestion.id, currentQuestion.selectionType === 'single')}
                       className="mr-3"
                     />
-                    <span className="text-gray-900 dark:text-white">Other (specify)</span>
+                    <span className="text-gray-900 dark:text-white">{t('learning.otherSpecify')}</span>
                   </label>
                   {currentAnswer?.isOther && (
                     <input
                       type="text"
                       value={currentAnswer.otherValue || ''}
                       onChange={(e) => handleOtherSelect(currentQuestion.id, e.target.value)}
-                      placeholder="Please specify..."
+                      placeholder={t('learning.pleaseSpecify')}
                       className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded mt-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500"
                     />
                   )}
@@ -792,7 +794,7 @@ export const GoalForm: React.FC<GoalFormProps> = ({ onComplete, onCancel }) => {
                     onClick={handlePrevious}
                     className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition"
                   >
-                    Previous
+                    {t('lesson.previous')}
                   </button>
                 )}
               </div>
@@ -807,9 +809,9 @@ export const GoalForm: React.FC<GoalFormProps> = ({ onComplete, onCancel }) => {
                 )}
                 {currentQuestionIndex === questions.length - 1
                   ? isSubmitting
-                    ? 'Creating Goal...'
-                    : 'Create Learning Goal'
-                  : 'Next'}
+                    ? t('learning.creatingGoal')
+                    : t('learning.createLearningGoal')
+                  : t('lesson.next')}
               </button>
             </div>
           </div>

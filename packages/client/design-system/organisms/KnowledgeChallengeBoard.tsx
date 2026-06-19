@@ -132,7 +132,7 @@ export function KnowledgeChallengeBoard({
 
   // Early return after all hooks
   if (isLoading || !resolved) {
-    return <LoadingState message="Loading..." />;
+    return <LoadingState message={t('common.loading')} />;
   }
 
   const { challenge, puzzleEntity } = resolved;

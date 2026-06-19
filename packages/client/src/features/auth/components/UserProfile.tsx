@@ -2,10 +2,11 @@ import React from 'react';
 import { useAuthContext } from '../AuthContext';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../../app/store';
-import { Menu, MenuItem } from '@almadar/ui';
+import { Menu, MenuItem, useTranslate } from '@almadar/ui';
 import { LogOut, User } from 'lucide-react';
 
 const UserProfile: React.FC = () => {
+  const { t } = useTranslate();
   const { user, signOut } = useAuthContext();
   const { loading } = useSelector((state: RootState) => state.auth);
 
@@ -22,7 +23,7 @@ const UserProfile: React.FC = () => {
   const menuItems: MenuItem[] = [
     {
       id: 'signout',
-      label: 'Sign Out',
+      label: t('nav.signOut'),
       onClick: handleSignOut,
       icon: LogOut,
       disabled: loading
@@ -36,7 +37,7 @@ const UserProfile: React.FC = () => {
       </div>
       <div className="min-w-0 flex-1">
         <p className="text-sm font-medium text-foreground truncate">
-          {user.displayName || 'User'}
+          {user.displayName || t('auth.user')}
         </p>
         <p className="text-sm text-muted-foreground truncate">
           {user.email}
@@ -53,7 +54,7 @@ const UserProfile: React.FC = () => {
             <img
               className="h-8 w-8 rounded-full ring-2 ring-border shadow-sm"
               src={user.photoURL}
-              alt={user.displayName || user.email || 'User'}
+              alt={user.displayName || user.email || t('auth.user')}
             />
           ) : (
             <div className="h-8 w-8 rounded-full bg-surface flex items-center justify-center">

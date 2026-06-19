@@ -3,7 +3,7 @@
  * Displays the learning goal details in a read-only modal
  */
 
-import { Modal } from '@almadar/ui';
+import { Modal, useTranslate } from '@almadar/ui';
 import React from 'react';
 
 import type { LearningGoal, Milestone } from '../goalApi';
@@ -23,26 +23,28 @@ export const GoalDetailsModal: React.FC<GoalDetailsModalProps> = ({
   goal,
   isLoading = false,
 }) => {
+  const { t } = useTranslate();
+
   if (!isOpen) return null;
 
   return (
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      title="Learning Goal Details"
+      title={t('learning.goalDetails')}
       size="lg"
     >
       {isLoading ? (
         <div className="flex items-center justify-center py-12">
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 dark:border-indigo-400 mx-auto mb-4"></div>
-            <p className="text-gray-600 dark:text-gray-400">Loading goal details...</p>
+            <p className="text-gray-600 dark:text-gray-400">{t('learning.loadingGoalDetails')}</p>
           </div>
         </div>
       ) : !goal ? (
         <div className="flex items-center justify-center py-12">
           <div className="text-center">
-            <p className="text-gray-600 dark:text-gray-400">No learning goal found for this learning path.</p>
+            <p className="text-gray-600 dark:text-gray-400">{t('learning.noGoalFound')}</p>
           </div>
         </div>
       ) : (

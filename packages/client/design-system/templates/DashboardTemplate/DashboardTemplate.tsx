@@ -9,7 +9,7 @@ import React from 'react';
 import type { LucideIcon } from 'lucide-react';
 import { AppLayoutTemplate } from '../AppLayoutTemplate';
 import { ProgressTracker, Lesson as ProgressTrackerLesson } from '../../organisms/ProgressTracker';
-import { Button, Card, StatCard, Typography } from '@almadar/ui';
+import { Button, Card, StatCard, Typography, useTranslate } from '@almadar/ui';
 import { cn } from '@utils/theme';
 
 export interface DashboardStat {
@@ -195,6 +195,7 @@ export const DashboardTemplate: React.FC<DashboardTemplateProps> = ({
   onLogout,
   className,
 }) => {
+  const { t } = useTranslate();
   return (
     <AppLayoutTemplate
       navigationItems={navigationItems}
@@ -258,7 +259,7 @@ export const DashboardTemplate: React.FC<DashboardTemplateProps> = ({
               {quickActions.length > 0 && (
                 <Card>
                   <Typography variant="h6" className="mb-4">
-                    Quick Actions
+                    {t('dashboard.quickActions')}
                   </Typography>
                   <div className="space-y-2">
                     {quickActions.map((action, index) => (
@@ -280,7 +281,7 @@ export const DashboardTemplate: React.FC<DashboardTemplateProps> = ({
               {activities.length > 0 && (
                 <Card>
                   <Typography variant="h6" className="mb-4">
-                    Recent Activity
+                    {t('dashboard.recentActivity')}
                   </Typography>
                   <div className="space-y-4">
                     {activities.map((activity) => (

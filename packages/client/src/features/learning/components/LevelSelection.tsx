@@ -5,6 +5,7 @@
 
 import React, { useState } from 'react';
 import { User } from 'lucide-react';
+import { useTranslate } from '@almadar/ui';
 
 interface LevelSelectionProps {
   onSelectLevel: (level: 'beginner' | 'intermediate' | 'advanced') => void;
@@ -15,29 +16,30 @@ export const LevelSelection: React.FC<LevelSelectionProps> = ({
   onSelectLevel,
   onSkip,
 }) => {
+  const { t } = useTranslate();
   const [selectedLevel, setSelectedLevel] = useState<'beginner' | 'intermediate' | 'advanced' | null>('beginner');
 
   const levels = [
     {
       value: 'beginner' as const,
-      label: 'Beginner',
-      description: 'I\'m new to this topic or have limited experience',
+      label: t('level.beginner'),
+      description: t('level.beginnerDesc'),
       color: 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800',
       selectedColor: 'bg-green-100 dark:bg-green-900/40 border-green-500 dark:border-green-600',
       textColor: 'text-green-800 dark:text-green-300',
     },
     {
       value: 'intermediate' as const,
-      label: 'Intermediate',
-      description: 'I have some experience and understand the basics',
+      label: t('level.intermediate'),
+      description: t('level.intermediateDesc'),
       color: 'bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800',
       selectedColor: 'bg-blue-100 dark:bg-blue-900/40 border-blue-500 dark:border-blue-600',
       textColor: 'text-blue-800 dark:text-blue-300',
     },
     {
       value: 'advanced' as const,
-      label: 'Advanced',
-      description: 'I have significant experience and want to deepen my knowledge',
+      label: t('level.advanced'),
+      description: t('level.advancedDesc'),
       color: 'bg-purple-50 dark:bg-purple-900/20 border-purple-200 dark:border-purple-800',
       selectedColor: 'bg-purple-100 dark:bg-purple-900/40 border-purple-500 dark:border-purple-600',
       textColor: 'text-purple-800 dark:text-purple-300',
@@ -48,10 +50,10 @@ export const LevelSelection: React.FC<LevelSelectionProps> = ({
     <div className="w-full">
         <div className="text-center mb-6 sm:mb-8">
           <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-2">
-            What's Your Current Level?
+            {t('level.whatsYourLevel')}
           </h2>
           <p className="text-gray-600 dark:text-gray-400">
-            Help us tailor your learning path to your experience level
+            {t('level.tailorDesc')}
           </p>
         </div>
 
@@ -99,7 +101,7 @@ export const LevelSelection: React.FC<LevelSelectionProps> = ({
               onClick={onSkip}
               className="px-6 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition"
             >
-              Skip for Now
+              {t('activation.skipForNow')}
             </button>
           )}
           <button
@@ -112,7 +114,7 @@ export const LevelSelection: React.FC<LevelSelectionProps> = ({
             className="px-6 py-2 bg-blue-600 dark:bg-blue-500 text-white rounded-lg hover:bg-blue-700 dark:hover:bg-blue-600 transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
           >
             <User size={18} />
-            Continue with {selectedLevel ? selectedLevel : 'Level'}
+            {t('level.continueWith', { level: selectedLevel ?? t('level.level') })}
           </button>
         </div>
       </div>

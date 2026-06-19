@@ -25,12 +25,14 @@ import {
   Sidebar,
   Header,
   Overlay,
+  Select,
   useEventBus,
   useEventListener,
   useTranslate,
   cn,
   type SidebarItem,
   type DisplayStateProps,
+  type SelectOption,
 } from '@almadar/ui';
 
 export interface AppShellNavItem {
@@ -153,8 +155,29 @@ export function AppShellBoard({
     </HStack>
   ) : undefined;
 
+  const localeOptions: SelectOption[] = [
+    { value: 'en', label: t('locale.en') },
+    { value: 'ar', label: t('locale.ar') },
+    { value: 'sl', label: t('locale.sl') },
+  ];
+
+  const handleLocaleChange = useCallback((value: string | string[]) => {
+    const next = Array.isArray(value) ? value[0] : value;
+    emit('UI:SET_LOCALE', { locale: next });
+  }, [emit]);
+
   const footerContent = (
-    <ThemeToggle />
+    <Box className="flex flex-col gap-2 w-full">
+      {!collapsed && (
+        <Select
+          options={localeOptions}
+          value={typeof window !== 'undefined' ? (localStorage.getItem('kflow-locale') ?? 'en') : 'en'}
+          onValueChange={handleLocaleChange}
+          className="w-full"
+        />
+      )}
+      <ThemeToggle />
+    </Box>
   );
 
   return (

@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useCallback, useState, useRef } from 'react';
 import { useParams, useLocation } from 'react-router';
-import { useEventBus } from '@almadar/ui';
+import { useEventBus, useTranslate } from '@almadar/ui';
 import { useNavigateEvent } from '../hooks/useNavigateEvent';
 import { useAppDispatch, useAppSelector } from '../app/hooks';
 import { useGraphSummary, useConceptsByLayer, useGetGraph, useMindMapStructure } from '../features/knowledge-graph/hooks';
@@ -29,6 +29,7 @@ export const ConceptsPage: React.FC = () => {
   const location = useLocation();
   const { user } = useAuthContext();
   const { on, emit } = useEventBus();
+  const { t } = useTranslate();
 
   const [viewMode, setViewMode] = useState<'list' | 'mindmap'>('list');
   const [nextLevelStreamContent, setNextLevelStreamContent] = useState('');
@@ -286,7 +287,7 @@ export const ConceptsPage: React.FC = () => {
         return {
           id: layer.id,
           number: displayLayerNum,
-          name: `Level ${displayLayerNum}`,
+          name: t('concept.levelLabel', { number: String(displayLayerNum) }),
           concepts: learnConcepts,
           completed: isCompleted,
           isCurrent,

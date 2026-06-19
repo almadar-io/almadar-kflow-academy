@@ -1,5 +1,6 @@
 import React from 'react';
 import { Concept } from '../types';
+import { useTranslate } from '@almadar/ui';
 
 interface ConceptParentsProps {
   concept: Concept;
@@ -12,6 +13,8 @@ const ConceptParents: React.FC<ConceptParentsProps> = ({
   onNavigateToParent,
   className = '',
 }) => {
+  const { t } = useTranslate();
+
   const handleParentClick = (parentName: string, e: React.MouseEvent) => {
     e.stopPropagation();
     onNavigateToParent(parentName);
@@ -28,7 +31,7 @@ const ConceptParents: React.FC<ConceptParentsProps> = ({
           key={parentName}
           onClick={(e) => handleParentClick(parentName, e)}
           className="px-2 py-1 bg-purple-100 text-purple-800 rounded-full text-xs font-medium hover:bg-purple-200 transition-colors duration-200"
-          title={`Navigate to ${parentName}`}
+          title={t('concept.navigateTo', { name: parentName })}
         >
           ← {parentName}
         </button>

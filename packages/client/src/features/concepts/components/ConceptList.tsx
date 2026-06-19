@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Concept, ConceptGraph } from '../types';
+import { useTranslate } from '@almadar/ui';
 import ConceptName from './ConceptName';
 import { ConceptDescription } from '@design-system/molecules/ConceptDescription';
 import ConceptParents from './ConceptParents';
@@ -30,6 +31,7 @@ const ConceptListItem: React.FC<ConceptListItemProps & { itemRef?: React.RefObje
   conceptMap: map,
   itemRef,
 }) => {
+  const { t } = useTranslate();
   const isSelected = selectedConcept?.id === concept.id;
   const hasLesson = Boolean(concept.lesson);
 
@@ -130,7 +132,7 @@ const ConceptListItem: React.FC<ConceptListItemProps & { itemRef?: React.RefObje
             className={`mt-3 text-xs font-semibold uppercase tracking-wide ${isSelected ? 'text-indigo-600' : 'text-emerald-600'
               }`}
           >
-            Lesson Available
+            {t('concept.lessonAvailable')}
           </div>
         )}
       </div>
@@ -173,6 +175,7 @@ const PrerequisitesSubList: React.FC<PrerequisitesSubListProps> = ({
   conceptMap,
   onViewPrerequisite,
 }) => {
+  const { t } = useTranslate();
   const [isExpanded, setIsExpanded] = useState(false);
 
   return (
@@ -191,7 +194,7 @@ const PrerequisitesSubList: React.FC<PrerequisitesSubListProps> = ({
           <ChevronRight className="h-3 w-3 text-orange-700" />
         )}
         <span className="text-xs font-semibold text-orange-700 uppercase tracking-wide">
-          Prerequisites for {concept.name}
+          {t('concept.prerequisitesFor', { name: concept.name })}
         </span>
         <span className="inline-flex items-center justify-center min-w-[1.25rem] h-4 px-1 text-xs font-medium text-orange-700 bg-orange-100 rounded-full">
           {(concept.prerequisites || []).length}
@@ -230,11 +233,14 @@ interface ConceptListProps {
   graph?: ConceptGraph; // Graph to access layer goals
 }
 
-const ConceptListEmptyState: React.FC = () => (
-  <div className="text-center py-12 bg-muted rounded-lg border-2 border-dashed border-border">
-    <p className="text-muted-foreground text-lg mb-4">No concepts yet</p>
-  </div>
-);
+const ConceptListEmptyState: React.FC = () => {
+  const { t } = useTranslate();
+  return (
+    <div className="text-center py-12 bg-muted rounded-lg border-2 border-dashed border-border">
+      <p className="text-muted-foreground text-lg mb-4">{t('concept.noConceptsYet')}</p>
+    </div>
+  );
+};
 
 interface ConceptLevelSectionProps {
   level: number;
@@ -271,6 +277,7 @@ const ConceptLevelSection: React.FC<ConceptLevelSectionProps> = ({
   sectionRef,
   graph,
 }) => {
+  const { t } = useTranslate();
   const [isPracticeModalOpen, setIsPracticeModalOpen] = useState(false);
   
   // Automatically expand goal when layer is expanded
@@ -289,9 +296,9 @@ const ConceptLevelSection: React.FC<ConceptLevelSectionProps> = ({
           </span>
           <span className="flex items-center gap-2">
             <Layers size={20} className="text-indigo-600" />
-            <span>Level {level + 1}</span>
+            <span>{t('concept.levelNumber', { number: level + 1 })}</span>
             <span className="text-sm font-normal text-muted-foreground">
-              ({concepts.length} concept{concepts.length !== 1 ? 's' : ''})
+              ({t('dashboard.concepts', { count: concepts.length })})
             </span>
           </span>
         </button>
@@ -306,7 +313,7 @@ const ConceptLevelSection: React.FC<ConceptLevelSectionProps> = ({
             </div>
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2 mb-2">
-                <h4 className="text-sm font-semibold text-foreground">Learning Goal</h4>
+                <h4 className="text-sm font-semibold text-foreground">{t('knowledge.learningGoal')}</h4>
                 <Info size={14} className="text-indigo-500 flex-shrink-0" />
               </div>
               <p className="text-sm text-foreground leading-relaxed">{goal}</p>
@@ -350,14 +357,14 @@ const ConceptLevelSection: React.FC<ConceptLevelSectionProps> = ({
                     className="w-full flex items-center justify-center gap-2 px-4 py-3 text-sm font-semibold text-primary-foreground bg-primary hover:bg-primary active:bg-primary rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 shadow-sm hover:shadow-md cursor-pointer"
                   >
                     <BookOpen size={16} />
-                    <span>Level {level + 1} Final Review</span>
+                    <span>{t('concept.levelFinalReview', { number: level + 1 })}</span>
                   </button>
                 </div>
                 <LayerPracticeModal
                   isOpen={isPracticeModalOpen}
                   onClose={() => setIsPracticeModalOpen(false)}
                   concepts={concepts}
-                  layerGoal={goal || `Practice exercises for Level ${level + 1}`}
+                  layerGoal={goal || t('concept.practiceExercisesForLevel', { number: level + 1 })}
                   layerNumber={level}
                   existingExercises={layerData?.practiceExercises}
                   graphId={graph?.id}
@@ -388,6 +395,7 @@ const ConceptList: React.FC<ConceptListProps> = ({
   conceptMap,
   graph,
 }) => {
+  const { t } = useTranslate();
   const conceptRefs = useMemo(() => {
     const refs: Record<string, React.RefObject<HTMLDivElement | null>> = {};
     concepts.forEach(concept => {
@@ -447,11 +455,11 @@ const ConceptList: React.FC<ConceptListProps> = ({
             {isLoading ? (
               <>
                 <Loader2 size={18} className="animate-spin" />
-                Loading...
+                {t('learn.loading')}
               </>
             ) : (
               <>
-                Load Next Level
+                {t('concept.loadNextLevel')}
               </>
             )}
           </button>

@@ -4,10 +4,12 @@ import { useSelector } from 'react-redux';
 import { useSearchParams } from 'react-router';
 import { useNavigateEvent } from '../../../hooks/useNavigateEvent';
 import { RootState } from '../../../app/store';
+import { useTranslate } from '@almadar/ui';
 
 const EMAIL_FOR_SIGN_IN_KEY = 'emailForSignIn';
 
 const Login: React.FC = () => {
+  const { t } = useTranslate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isSignUp, setIsSignUp] = useState(false);
@@ -120,11 +122,11 @@ const Login: React.FC = () => {
       <div className="max-w-md w-full space-y-8 bg-card border border-border rounded-xl p-8 shadow-lg">
         <div>
           <h2 className="mt-6 text-center text-3xl font-extrabold text-foreground">
-            {completingEmailLink 
-              ? 'Complete sign-in' 
-              : isSignUp 
-                ? 'Create your account' 
-                : 'Sign in to your account'}
+            {completingEmailLink
+              ? t('auth.completeSignIn')
+              : isSignUp
+                ? t('auth.createAccount')
+                : t('auth.signInToAccount')}
           </h2>
         </div>
         
@@ -134,10 +136,10 @@ const Login: React.FC = () => {
             <form onSubmit={handleCompleteEmailLink} className="space-y-4">
               <div>
                 <p className="text-sm text-muted-foreground mb-3">
-                  Please enter your email address to complete sign-in.
+                  {t('auth.enterEmailToComplete')}
                 </p>
                 <label htmlFor="email-completion" className="sr-only">
-                  Email address
+                  {t('auth.emailAddress')}
                 </label>
                 <input
                   id="email-completion"
@@ -148,7 +150,7 @@ const Login: React.FC = () => {
                   value={emailForLinkCompletion}
                   onChange={(e) => setEmailForLinkCompletion(e.target.value)}
                   className="appearance-none rounded-md relative block w-full px-3 py-2 border border-border placeholder:text-[var(--color-placeholder)] text-foreground bg-card focus:outline-none focus:ring-primary focus:border-primary focus:z-10 sm:text-sm transition-colors duration-200"
-                  placeholder="Enter your email"
+                  placeholder={t('auth.enterYourEmail')}
                 />
               </div>
 
@@ -163,7 +165,7 @@ const Login: React.FC = () => {
                 disabled={loading || !emailForLinkCompletion.trim()}
                 className="group relative w-full flex justify-center items-center gap-2 py-2 px-4 border border-transparent text-sm font-medium rounded-md text-primary-foreground bg-primary hover:bg-primary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary disabled:opacity-50 transition-colors duration-200"
               >
-                {loading ? 'Signing in...' : 'Complete sign-in'}
+                {loading ? t('auth.signingIn') : t('auth.completeSignIn')}
               </button>
             </form>
           )}
@@ -178,7 +180,7 @@ const Login: React.FC = () => {
                   disabled={loading}
                   className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-primary-foreground bg-primary hover:bg-primary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary disabled:opacity-50 transition-colors duration-200"
                 >
-                  {loading ? 'Signing in...' : 'Sign in with Google'}
+                  {loading ? t('auth.signingIn') : t('auth.signInWithGoogle')}
                 </button>
               </div>
 
@@ -188,7 +190,7 @@ const Login: React.FC = () => {
                   <div className="w-full border-t border-border" />
                 </div>
                 <div className="relative flex justify-center text-sm">
-                  <span className="px-2 bg-card text-muted-foreground">Or sign in with email</span>
+                  <span className="px-2 bg-card text-muted-foreground">{t('auth.orSignInWithEmail')}</span>
                 </div>
               </div>
 
@@ -198,7 +200,7 @@ const Login: React.FC = () => {
               {isSignUp && (
                 <div>
                   <label htmlFor="displayName" className="sr-only">
-                    Display Name
+                    {t('auth.displayName')}
                   </label>
                   <input
                     id="displayName"
@@ -206,7 +208,7 @@ const Login: React.FC = () => {
                     type="text"
                     required={isSignUp}
                     className="appearance-none rounded-md relative block w-full px-3 py-2 border border-border placeholder:text-[var(--color-placeholder)] text-foreground bg-card focus:outline-none focus:ring-primary focus:border-primary focus:z-10 sm:text-sm transition-colors duration-200"
-                    placeholder="Display Name"
+                    placeholder={t('auth.displayName')}
                     value={displayName}
                     onChange={(e) => setDisplayName(e.target.value)}
                   />
@@ -215,7 +217,7 @@ const Login: React.FC = () => {
               
               <div>
                 <label htmlFor="email-address" className="sr-only">
-                  Email address
+                  {t('auth.emailAddress')}
                 </label>
                 <input
                   id="email-address"
@@ -224,7 +226,7 @@ const Login: React.FC = () => {
                   autoComplete="email"
                   required
                   className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-700 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm transition-colors duration-200"
-                  placeholder="Email address"
+                  placeholder={t('auth.emailAddress')}
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                 />
@@ -232,7 +234,7 @@ const Login: React.FC = () => {
               
               <div>
                 <label htmlFor="password" className="sr-only">
-                  Password
+                  {t('auth.password')}
                 </label>
                 <input
                   id="password"
@@ -241,7 +243,7 @@ const Login: React.FC = () => {
                   autoComplete={isSignUp ? "new-password" : "current-password"}
                   required
                   className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-700 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm transition-colors duration-200"
-                  placeholder="Password"
+                  placeholder={t('auth.password')}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                 />
@@ -259,7 +261,7 @@ const Login: React.FC = () => {
                   disabled={loading}
                   className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-primary-foreground bg-primary hover:bg-primary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary disabled:opacity-50 transition-colors duration-200"
                 >
-                  {loading ? 'Processing...' : (isSignUp ? 'Sign Up' : 'Sign In')}
+                  {loading ? t('auth.processing') : (isSignUp ? t('auth.signUp') : t('auth.signIn'))}
                 </button>
               </div>
                 </form>
@@ -269,7 +271,7 @@ const Login: React.FC = () => {
                     onClick={() => setIsSignUp(!isSignUp)}
                     className="text-primary hover:text-primary transition-colors duration-200 font-medium text-sm"
                   >
-                    {isSignUp ? 'Already have an account? Sign in' : "Don't have an account? Sign up"}
+                    {isSignUp ? t('auth.alreadyHaveAccount') : t('auth.dontHaveAccount')}
                   </button>
                 </div>
               </div>

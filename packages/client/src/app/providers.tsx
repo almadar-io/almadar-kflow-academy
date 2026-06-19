@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Provider } from 'react-redux';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ApolloProvider } from '@apollo/client';
-import { I18nProvider, NotifyListener, createTranslate } from '@almadar/ui';
+import { I18nProvider, createTranslate, useEventListener, NotifyListener } from '@almadar/ui';
+import type { I18nContextValue } from '@almadar/ui';
 import { EventBusProvider } from '@almadar/ui/providers';
 import { ThemeProvider } from '@almadar/ui/context';
 import { store } from './store';
@@ -11,21 +12,73 @@ import { apolloClient } from '../features/knowledge-graph';
 import { AuthProvider } from '../features/auth';
 import ErrorHandlerInitializer from './ErrorHandlerInitializer';
 import enMessagesRaw from '../locales/en.json';
+import arMessagesRaw from '../locales/ar.json';
+import slMessagesRaw from '../locales/sl.json';
 
-// Filter out non-string entries ($meta, $extends) from locale file
-const enMessages: Record<string, string> = {};
-for (const [k, v] of Object.entries(enMessagesRaw)) {
-  if (typeof v === 'string') enMessages[k] = v;
+type SupportedLocale = 'en' | 'ar' | 'sl';
+
+function filterMessages(raw: Record<string, unknown>): Record<string, string> {
+  const out: Record<string, string> = {};
+  for (const [k, v] of Object.entries(raw)) {
+    if (typeof v === 'string' && !k.startsWith('$')) out[k] = v;
+  }
+  return out;
 }
 
-const i18nValue = {
-  locale: 'en',
-  direction: 'ltr' as const,
-  t: createTranslate(enMessages),
+const messagesByLocale: Record<SupportedLocale, Record<string, string>> = {
+  en: filterMessages(enMessagesRaw as Record<string, unknown>),
+  ar: filterMessages(arMessagesRaw as Record<string, unknown>),
+  sl: filterMessages(slMessagesRaw as Record<string, unknown>),
 };
+
+const metaByLocale: Record<SupportedLocale, { direction: 'ltr' | 'rtl' }> = {
+  en: { direction: 'ltr' },
+  ar: { direction: 'rtl' },
+  sl: { direction: 'ltr' },
+};
+
+function buildI18nValue(locale: SupportedLocale): I18nContextValue {
+  return {
+    locale,
+    direction: metaByLocale[locale].direction,
+    t: createTranslate(messagesByLocale[locale]),
+  };
+}
+
+function getInitialLocale(): SupportedLocale {
+  const stored = localStorage.getItem('kflow-locale');
+  if (stored === 'ar' || stored === 'sl' || stored === 'en') return stored;
+  return 'en';
+}
 
 interface ProvidersProps {
   children: React.ReactNode;
+}
+
+function I18nController({ children }: ProvidersProps): React.JSX.Element {
+  const [locale, setLocale] = useState<SupportedLocale>(getInitialLocale);
+  const [i18nValue, setI18nValue] = useState<I18nContextValue>(() => buildI18nValue(getInitialLocale()));
+
+  const handleSetLocale = useCallback((event: { payload?: { locale?: string } }) => {
+    const next = event.payload?.locale;
+    if (next !== 'en' && next !== 'ar' && next !== 'sl') return;
+    localStorage.setItem('kflow-locale', next);
+    setLocale(next);
+    setI18nValue(buildI18nValue(next));
+  }, []);
+
+  useEventListener('UI:SET_LOCALE', handleSetLocale);
+
+  useEffect(() => {
+    document.documentElement.dir = metaByLocale[locale].direction;
+    document.documentElement.lang = locale;
+  }, [locale]);
+
+  return (
+    <I18nProvider value={i18nValue}>
+      {children}
+    </I18nProvider>
+  );
 }
 
 export const Providers: React.FC<ProvidersProps> = ({ children }) => {
@@ -35,7 +88,7 @@ export const Providers: React.FC<ProvidersProps> = ({ children }) => {
       <Provider store={store}>
         <QueryClientProvider client={queryClient}>
           <ApolloProvider client={apolloClient}>
-            <I18nProvider value={i18nValue}>
+            <I18nController>
               <ThemeProvider
                 themes={[{ name: 'kflow', displayName: 'KFlow', hasLightMode: true, hasDarkMode: true }]}
                 defaultTheme="kflow"
@@ -46,7 +99,7 @@ export const Providers: React.FC<ProvidersProps> = ({ children }) => {
                   {children}
                 </AuthProvider>
               </ThemeProvider>
-            </I18nProvider>
+            </I18nController>
           </ApolloProvider>
         </QueryClientProvider>
       </Provider>

@@ -4,6 +4,7 @@ import { parseStreamingConcepts, ParsedConcept } from '../utils/streamParser';
 import { useSimpleLessonGeneration } from '../hooks/useSimpleLessonGeneration';
 import { X, Loader2, ArrowRight } from 'lucide-react';
 import { LessonPanel } from '@design-system/organisms/LessonPanel';
+import { useTranslate } from '@almadar/ui';
 
 interface FirstLayerLoaderProps {
   seedConcept: Concept;
@@ -29,6 +30,7 @@ const FirstLayerLoader: React.FC<FirstLayerLoaderProps> = ({
   onClose,
   onComplete,
 }) => {
+  const { t } = useTranslate();
   const { lesson, isGenerating, generateSimpleLesson, clearLesson } = useSimpleLessonGeneration();
   const [showCloseButton, setShowCloseButton] = useState(false);
   const [parsedConcepts, setParsedConcepts] = useState<ParsedConcept[]>([]);
@@ -93,7 +95,7 @@ const FirstLayerLoader: React.FC<FirstLayerLoaderProps> = ({
         {/* Header with close button */}
         <div className="flex items-center justify-between p-4 border-b border-border">
           <h2 className="text-xl font-semibold text-foreground">
-            Creating Your Learning Path
+            {t('concept.creatingLearningPath')}
           </h2>
           <button
             onClick={handleClose}
@@ -110,7 +112,7 @@ const FirstLayerLoader: React.FC<FirstLayerLoaderProps> = ({
           {lesson && (
             <div className="mb-6">
               <h3 className="text-lg font-semibold text-foreground mb-4">
-                Introduction to {seedConcept.name}
+                {t('concept.introductionTo', { name: seedConcept.name })}
               </h3>
               <LessonPanel
                 renderedLesson={lesson}
@@ -126,7 +128,7 @@ const FirstLayerLoader: React.FC<FirstLayerLoaderProps> = ({
             <div className="mt-6 border-t border-border pt-6">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-lg font-semibold text-foreground">
-                  Concepts Being Generated
+                  {t('concept.conceptsBeingGenerated')}
                 </h3>
                 {isLoading && (
                   <Loader2 size={20} className="animate-spin text-primary" />
@@ -144,8 +146,8 @@ const FirstLayerLoader: React.FC<FirstLayerLoaderProps> = ({
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-2">
-                        <h4 className="text-sm font-semibold text-foreground">Learning Goal</h4>
-                        <span className="text-xs text-indigo-500 font-medium">Level Target</span>
+                        <h4 className="text-sm font-semibold text-foreground">{t('knowledge.learningGoal')}</h4>
+                        <span className="text-xs text-indigo-500 font-medium">{t('concept.levelTarget')}</span>
                       </div>
                       <p className="text-sm text-foreground leading-relaxed">{extractedGoal}</p>
                     </div>
@@ -179,7 +181,7 @@ const FirstLayerLoader: React.FC<FirstLayerLoaderProps> = ({
                           )}
                           {concept.parents.length > 0 && (
                             <div className="flex flex-wrap gap-2 mt-2">
-                              <span className="text-xs font-medium text-muted-foreground">Prerequisites:</span>
+                              <span className="text-xs font-medium text-muted-foreground">{t('concept.prerequisites')}</span>
                               {concept.parents.map((parent, i) => (
                                 <span
                                   key={i}
@@ -198,7 +200,7 @@ const FirstLayerLoader: React.FC<FirstLayerLoaderProps> = ({
               ) : (
                 <div className="text-center py-8 text-muted-foreground">
                   <Loader2 size={24} className="animate-spin mx-auto mb-2 text-primary" />
-                  <p className="text-sm">Generating concepts...</p>
+                  <p className="text-sm">{t('concept.generatingConcepts')}</p>
                 </div>
               )}
             </div>
@@ -212,7 +214,7 @@ const FirstLayerLoader: React.FC<FirstLayerLoaderProps> = ({
               onClick={handleClose}
               className="inline-flex items-center gap-2 px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-medium transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105"
             >
-              View Your Learning Path
+              {t('concept.viewYourLearningPath')}
               <ArrowRight size={18} />
             </button>
           </div>

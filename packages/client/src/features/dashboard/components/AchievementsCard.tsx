@@ -1,8 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Award, Lock, Loader2, ChevronDown, ChevronUp } from 'lucide-react';
 import { getAchievements, type Achievement } from '../preferencesApi';
+import { useTranslate } from '@almadar/ui';
 
 export const AchievementsCard: React.FC = () => {
+  const { t } = useTranslate();
   const [achievements, setAchievements] = useState<Achievement[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -37,7 +39,7 @@ export const AchievementsCard: React.FC = () => {
       <div className="bg-card rounded-xl shadow-sm border border-border p-6">
         <div className="flex items-center justify-center gap-3 text-muted-foreground">
           <Loader2 className="animate-spin" size={20} />
-          <span>Loading achievements...</span>
+          <span>{t('dashboard.loadingAchievements')}</span>
         </div>
       </div>
     );
@@ -47,7 +49,7 @@ export const AchievementsCard: React.FC = () => {
     return (
       <div className="bg-card rounded-xl shadow-sm border border-error p-6">
         <div className="text-error text-sm">
-          Error loading achievements: {error}
+          {t('dashboard.errorLoadingAchievements')}: {error}
         </div>
       </div>
     );
@@ -73,7 +75,7 @@ export const AchievementsCard: React.FC = () => {
           <div className="p-2 bg-surface rounded-lg text-warning">
             <Award size={20} />
           </div>
-          <h3 className="text-lg font-bold text-foreground">Achievements</h3>
+          <h3 className="text-lg font-bold text-foreground">{t('dashboard.achievements')}</h3>
           {hasUnlocked && (
             <span className="text-sm text-muted-foreground">
               ({unlockedAchievements.length}/{achievements.length})
@@ -88,12 +90,12 @@ export const AchievementsCard: React.FC = () => {
             {isExpanded ? (
               <>
                 <ChevronUp size={16} />
-                Show Less
+                {t('dashboard.showLess')}
               </>
             ) : (
               <>
                 <ChevronDown size={16} />
-                Show All
+                {t('dashboard.showAll')}
               </>
             )}
           </button>
@@ -154,7 +156,7 @@ export const AchievementsCard: React.FC = () => {
         <div className="text-center py-8">
           <div className="text-4xl mb-2">🎯</div>
           <p className="text-sm text-muted-foreground">
-            Complete lessons and courses to unlock achievements!
+            {t('dashboard.unlockAchievementsHint')}
           </p>
         </div>
       )}

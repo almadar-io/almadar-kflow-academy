@@ -16,7 +16,7 @@ import { getNavigationItems, getUserForTemplate, mainNavItems } from '../config/
 import type { Concept, BloomLevel } from '../features/concepts/types';
 import type { QuestionAnswerItem, NoteItem, AnnotationType } from '../features/knowledge-graph/types';
 import { convertConceptDisplayToConcept } from '../features/concepts/utils/convertConceptDisplay';
-import { useEventBus } from '@almadar/ui';
+import { useEventBus, useTranslate } from '@almadar/ui';
 import { LearnConceptDetailTemplate } from '@design-system/templates/LearnConceptDetailTemplate';
 import type { ConceptDetailTemplateEntity } from '@design-system/templates/LearnConceptDetailTemplate';
 import { LessonPanel } from '@design-system/organisms/LessonPanel';
@@ -35,6 +35,7 @@ export const ConceptDetailPage: React.FC = () => {
   const dispatch = useAppDispatch();
   const { user } = useAuthContext();
   const { on, emit } = useEventBus();
+  const { t } = useTranslate();
   const { sendEvent } = useServerEvents();
 
   const navigationItems = getNavigationItems(location.pathname, mainNavItems).map(item => ({
@@ -318,7 +319,7 @@ export const ConceptDetailPage: React.FC = () => {
     const firstLevel1Concept = level1Concepts[0];
     if (!firstLevel1Concept) return undefined;
     return {
-      label: `Start Learning Level 1: ${firstLevel1Concept.name}`,
+      label: t('concept.startLearningLevel', { name: firstLevel1Concept.name }),
       conceptId: firstLevel1Concept.id,
       conceptName: firstLevel1Concept.name,
     };
@@ -494,7 +495,7 @@ export const ConceptDetailPage: React.FC = () => {
     nextConcept,
     seedConceptCta,
     lessonPanel,
-    backLabel: 'Back to Concepts',
+    backLabel: t('concept.backToConcepts'),
     user: templateUser,
     navigationItems,
   };

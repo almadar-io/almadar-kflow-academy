@@ -12,7 +12,7 @@
 
 import React, { useMemo, useState, useEffect, useRef, useCallback } from 'react';
 import { AppLayoutTemplate } from '../AppLayoutTemplate';
-import { Badge, Button, Card, Modal, Spinner, Typography, useEventBus } from '@almadar/ui';
+import { Badge, Button, Card, Modal, Spinner, Typography, useEventBus, useTranslate } from '@almadar/ui';
 import type { DisplayStateProps } from '@almadar/ui';
 import { ConceptCard } from '../../organisms/ConceptCard';
 import { TreeMap, TreeMapNode } from '../../organisms/TreeMap';
@@ -68,6 +68,7 @@ function isEntityProps(props: FocusModeTemplateProps): props is FocusModeTemplat
 
 export const FocusModeTemplate: React.FC<FocusModeTemplateProps> = (props) => {
   const { emit } = useEventBus();
+  const { t } = useTranslate();
 
   // Resolve data from either entity or flat props
   const entityMode = isEntityProps(props);
@@ -332,7 +333,7 @@ export const FocusModeTemplate: React.FC<FocusModeTemplateProps> = (props) => {
       {isLoadingNextLevel && (
         <ConceptLoader
           size="lg"
-          text="Generating next level concepts..."
+          text={t('learning.generatingNextLevelConcepts')}
           streamContent={nextLevelStreamContent || ''}
           goal={goal?.description}
         />
@@ -356,7 +357,7 @@ export const FocusModeTemplate: React.FC<FocusModeTemplateProps> = (props) => {
                 <button
                   onClick={() => setShowGoalModal(true)}
                   className="p-1.5 rounded-full hover:bg-surface-hover transition-colors"
-                  title="View goal details"
+                  title={t('learning.viewGoalDetails')}
                 >
                   <Info size={20} className="text-muted-foreground" />
                 </button>
@@ -375,11 +376,11 @@ export const FocusModeTemplate: React.FC<FocusModeTemplateProps> = (props) => {
                     <span className="hidden sm:inline">•</span>
                   </>
                 )}
-                <span>Level {selectedLevelNumber} of {totalLevels}</span>
+                <span>{t('learning.levelOf', { number: String(selectedLevelNumber), total: String(totalLevels) })}</span>
                 <span className="hidden sm:inline">•</span>
-                <span>{lessonsGenerated}/{totalConcepts} lessons</span>
+                <span>{t('learning.lessonsCount', { generated: String(lessonsGenerated), total: String(totalConcepts) })}</span>
                 <span className="hidden sm:inline">•</span>
-                <span>{progressPercentage}% Complete</span>
+                <span>{t('learning.percentComplete', { percent: String(progressPercentage) })}</span>
               </div>
               <div className="mt-4 w-48 sm:w-64 mx-auto h-1.5 bg-muted rounded-full overflow-hidden">
                 <div
@@ -407,7 +408,7 @@ export const FocusModeTemplate: React.FC<FocusModeTemplateProps> = (props) => {
                   onClick={() => handleConceptClick(seedConcept.id)}
                   iconRight={ArrowRight}
                 >
-                  Explore Concept
+                  {t('learning.exploreConcept')}
                 </Button>
               </div>
             </Card>
@@ -450,14 +451,14 @@ export const FocusModeTemplate: React.FC<FocusModeTemplateProps> = (props) => {
                               isSelected && "text-primary",
                               !isSelected && "text-muted-foreground"
                             )}>
-                              L{level.number}
+                              {t('learning.levelN', { number: String(level.number) })}
                             </span>
                             {level.concepts.length > 0 && (
                               <span className={cn(
                                 "text-[9px] sm:text-[10px] font-medium hidden sm:block",
                                 isSelected ? "text-primary" : "text-muted-foreground"
                               )}>
-                                {level.concepts.length} {level.concepts.length === 1 ? 'concept' : 'concepts'}
+                                {t('learning.conceptCount', { count: String(level.concepts.length) })}
                               </span>
                             )}
                           </div>
@@ -483,16 +484,16 @@ export const FocusModeTemplate: React.FC<FocusModeTemplateProps> = (props) => {
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-2">
                     <Badge variant="primary">
-                      Level {selectedLevel.number}
+                      {t('learning.levelN', { number: String(selectedLevel.number) })}
                     </Badge>
                     {selectedLevel.completed && (
                       <Badge variant="success" className="bg-green-500">
-                        Complete
+                        {t('learning.complete')}
                       </Badge>
                     )}
                     {selectedLevel.id === currentLevel?.id && !selectedLevel.completed && (
                       <Badge variant="default" className="bg-surface text-primary border-primary">
-                        Current
+                        {t('learning.current')}
                       </Badge>
                     )}
                   </div>
@@ -525,7 +526,7 @@ export const FocusModeTemplate: React.FC<FocusModeTemplateProps> = (props) => {
                         ? "bg-primary text-primary-foreground"
                         : "text-muted-foreground hover:bg-surface-hover"
                     )}
-                    title="List view"
+                    title={t('learning.listView')}
                   >
                     <List size={18} />
                   </button>
@@ -537,7 +538,7 @@ export const FocusModeTemplate: React.FC<FocusModeTemplateProps> = (props) => {
                         ? "bg-primary text-primary-foreground"
                         : "text-muted-foreground hover:bg-surface-hover"
                     )}
-                    title="Mindmap view"
+                    title={t('learning.mindmapView')}
                   >
                     <GitBranch size={18} />
                   </button>
@@ -573,7 +574,7 @@ export const FocusModeTemplate: React.FC<FocusModeTemplateProps> = (props) => {
                             onClick={() => handleConceptClick(concept.id)}
                             operations={isCurrent && !isLastInLevel1 ? [
                               {
-                                label: hasLesson ? 'Continue Learning' : 'Begin Learning Journey',
+                                label: hasLesson ? t('learning.continueLearning') : t('learning.beginLearningJourney'),
                                 icon: BookOpen,
                                 onClick: () => handleConceptClick(concept.id),
                                 variant: 'primary'
@@ -590,7 +591,7 @@ export const FocusModeTemplate: React.FC<FocusModeTemplateProps> = (props) => {
                   ) : (
                     <div className="text-center py-12 text-muted-foreground">
                       <Typography variant="body">
-                        No concepts in this level yet
+                        {t('learning.noConceptsInLevel')}
                       </Typography>
                     </div>
                   )}
@@ -600,10 +601,10 @@ export const FocusModeTemplate: React.FC<FocusModeTemplateProps> = (props) => {
                     <Card className="mt-3 sm:mt-6 p-3 sm:p-4 md:p-6 bg-surface border-2 border-primary">
                       <div className="text-center mb-4">
                         <Typography variant="h3" className="mb-2 text-foreground">
-                          🎉 Level {selectedLevel.number} Complete!
+                          🎉 {t('learning.levelComplete', { number: String(selectedLevel.number) })}
                         </Typography>
                         <Typography variant="body" color="muted" className="text-base">
-                          You've mastered all the foundational concepts. What would you like to do next?
+                          {t('learning.masteredFoundationQuestion')}
                         </Typography>
                       </div>
                       <div className="flex flex-col sm:flex-row gap-3 mt-6">
@@ -618,7 +619,7 @@ export const FocusModeTemplate: React.FC<FocusModeTemplateProps> = (props) => {
                             className="font-semibold shadow-lg hover:shadow-xl transition-all duration-200 px-6 py-3 rounded-lg flex-1"
                             iconRight={ArrowRight}
                           >
-                            Continue to Level {nextLevel.number}
+                            {t('learning.continueToLevel', { number: String(nextLevel.number) })}
                           </Button>
                         ) : (
                           <Button
@@ -642,10 +643,10 @@ export const FocusModeTemplate: React.FC<FocusModeTemplateProps> = (props) => {
                             {isLoadingNextLevel ? (
                               <>
                                 <Loader2 className="animate-spin mr-2" size={18} />
-                                Generating Next Level...
+                                {t('learning.generatingNextLevel')}
                               </>
                             ) : (
-                              'Generate Next Level'
+                              t('learning.generateNextLevel')
                             )}
                           </Button>
                         )}
@@ -672,10 +673,10 @@ export const FocusModeTemplate: React.FC<FocusModeTemplateProps> = (props) => {
                             {isGeneratingLayerPractice ? (
                               <>
                                 <Loader2 className="animate-spin mr-2" size={18} />
-                                Generating Summary...
+                                {t('learning.generatingSummary')}
                               </>
                             ) : (
-                              'View Level Summary'
+                              t('learning.viewLevelSummary')
                             )}
                           </Button>
                         )}
@@ -701,7 +702,7 @@ export const FocusModeTemplate: React.FC<FocusModeTemplateProps> = (props) => {
                   ) : (
                     <div className="flex items-center justify-center h-full text-muted-foreground">
                       <Typography variant="body">
-                        No concepts to display
+                        {t('learning.noConceptsToDisplay')}
                       </Typography>
                     </div>
                   )}
@@ -720,12 +721,12 @@ export const FocusModeTemplate: React.FC<FocusModeTemplateProps> = (props) => {
                       <Check size={24} className="text-white" />
                     </div>
                     <Typography variant="h3" className="mb-2">
-                      Level {selectedLevel.number} Complete!
+                      {t('learning.levelComplete', { number: String(selectedLevel.number) })}
                     </Typography>
                     <Typography variant="body" color="muted" className="mb-6">
                       {nextLevel
-                        ? `Ready to move on to ${nextLevel.name}?`
-                        : 'Ready to explore more concepts?'
+                        ? t('learning.readyToMoveOn', { name: nextLevel.name })
+                        : t('learning.readyToExploreMore')
                       }
                     </Typography>
                   </>
@@ -735,10 +736,10 @@ export const FocusModeTemplate: React.FC<FocusModeTemplateProps> = (props) => {
                       <Sparkles size={24} className="text-primary-foreground" />
                     </div>
                     <Typography variant="h3" className="mb-2">
-                      Explore More Concepts
+                      {t('learning.exploreMoreConcepts')}
                     </Typography>
                     <Typography variant="body" color="muted" className="mb-6">
-                      Generate the next level of concepts to continue your learning journey.
+                      {t('learning.generateNextLevelDesc')}
                     </Typography>
                   </>
                 )}
@@ -755,11 +756,11 @@ export const FocusModeTemplate: React.FC<FocusModeTemplateProps> = (props) => {
                   {isLoadingNextLevel ? (
                     <>
                       <Loader2 size={16} className="inline mr-2 animate-spin" />
-                      Loading...
+                      {t('learning.loading')}
                     </>
                   ) : (
                     <>
-                      {nextLevel ? `Continue to ${nextLevel.name}` : 'Load Next Level'}
+                      {nextLevel ? t('learning.continueTo', { name: nextLevel.name }) : t('learning.loadNextLevel')}
                     </>
                   )}
                 </Button>
@@ -773,7 +774,7 @@ export const FocusModeTemplate: React.FC<FocusModeTemplateProps> = (props) => {
       <Modal
         isOpen={showGoalModal}
         onClose={() => setShowGoalModal(false)}
-        title="Learning Goal"
+        title={t('knowledge.learningGoal')}
         size="md"
       >
         <div className="space-y-6">
@@ -791,20 +792,20 @@ export const FocusModeTemplate: React.FC<FocusModeTemplateProps> = (props) => {
           )}
           <div className="bg-muted rounded-lg p-4">
             <Typography variant="h4" className="text-sm font-semibold mb-3 text-foreground">
-              Progress
+              {t('concept.progress')}
             </Typography>
             <div className="grid grid-cols-2 gap-4">
               <div className="text-center">
                 <div className="text-2xl font-bold text-primary">
                   {lessonsGenerated}/{totalConcepts}
                 </div>
-                <div className="text-xs text-muted-foreground">Lessons Generated</div>
+                <div className="text-xs text-muted-foreground">{t('learning.lessonsGenerated')}</div>
               </div>
               <div className="text-center">
                 <div className="text-2xl font-bold text-primary">
                   {progressPercentage}%
                 </div>
-                <div className="text-xs text-muted-foreground">Complete</div>
+                <div className="text-xs text-muted-foreground">{t('learning.done')}</div>
               </div>
             </div>
             <div className="mt-3 h-2 bg-muted rounded-full overflow-hidden">
@@ -817,7 +818,7 @@ export const FocusModeTemplate: React.FC<FocusModeTemplateProps> = (props) => {
           {goal?.milestones && goal.milestones.length > 0 && (
             <div>
               <Typography variant="h4" className="text-sm font-semibold mb-3 text-foreground">
-                Milestones
+                {t('learning.milestones')}
               </Typography>
               <div className="space-y-3">
                 {goal.milestones.map((milestone) => {
@@ -848,12 +849,12 @@ export const FocusModeTemplate: React.FC<FocusModeTemplateProps> = (props) => {
                           </Typography>
                           {isCurrentMilestone && (
                             <Badge variant="primary" size="sm" className="text-xs">
-                              Current
+                              {t('learning.current')}
                             </Badge>
                           )}
                           {isPastMilestone && (
                             <Badge variant="success" size="sm" className="text-xs">
-                              Done
+                              {t('learning.done')}
                             </Badge>
                           )}
                         </div>
@@ -875,7 +876,7 @@ export const FocusModeTemplate: React.FC<FocusModeTemplateProps> = (props) => {
               size="sm"
               onClick={() => setShowGoalModal(false)}
             >
-              Close
+              {t('learning.close')}
             </Button>
           </div>
         </div>
@@ -888,7 +889,7 @@ export const FocusModeTemplate: React.FC<FocusModeTemplateProps> = (props) => {
           setShowReviewModal(false);
           setReviewLevelNumber(null);
         }}
-        title={`Level ${reviewLevelNumber} Summary`}
+        title={t('learning.levelSummary', { number: String(reviewLevelNumber ?? '') })}
         size="lg"
       >
         {(() => {
@@ -903,10 +904,10 @@ export const FocusModeTemplate: React.FC<FocusModeTemplateProps> = (props) => {
                   </div>
                   <div>
                     <Typography variant="h4" className="font-semibold">
-                      Level {reviewLevelNumber} Summary
+                      {t('learning.levelSummary', { number: String(reviewLevelNumber ?? '') })}
                     </Typography>
                     <Typography variant="small" color="muted">
-                      See how the concepts you learned achieve the milestone
+                      {t('learning.levelSummarySubtitle')}
                     </Typography>
                   </div>
                 </div>
@@ -931,7 +932,7 @@ export const FocusModeTemplate: React.FC<FocusModeTemplateProps> = (props) => {
                 {reviewLevel && reviewLevel.concepts.length > 0 && (
                   <div className="mt-3">
                     <Typography variant="small" className="font-semibold text-muted-foreground mb-2">
-                      Concepts Covered ({reviewLevel.concepts.length})
+                      {t('learning.conceptsCovered', { count: String(reviewLevel.concepts.length) })}
                     </Typography>
                     <div className="flex flex-wrap gap-2">
                       {reviewLevel.concepts.map((concept) => (
@@ -956,10 +957,10 @@ export const FocusModeTemplate: React.FC<FocusModeTemplateProps> = (props) => {
                   <div className="flex flex-col items-center justify-center py-12">
                     <Spinner size="lg" className="mb-4" />
                     <Typography variant="body" color="muted">
-                      Generating your level summary...
+                      {t('learning.generatingLevelSummary')}
                     </Typography>
                     <Typography variant="small" color="muted" className="mt-2 text-center max-w-sm">
-                      Creating a summary of concepts learned and how they help achieve the milestone
+                      {t('learning.generatingSummaryDesc')}
                     </Typography>
                   </div>
                 ) : layerPracticeStreamContent ? (
@@ -982,7 +983,7 @@ export const FocusModeTemplate: React.FC<FocusModeTemplateProps> = (props) => {
                   <div className="flex flex-col items-center justify-center py-12 text-center">
                     <GraduationCap size={48} className="text-muted-foreground mb-4" />
                     <Typography variant="body" color="muted" className="max-w-sm mb-4">
-                      Generate a summary to see how the concepts you learned work together to achieve the milestone
+                      {t('learning.generateSummaryPrompt')}
                     </Typography>
                     <Button
                       variant="primary"
@@ -1000,7 +1001,7 @@ export const FocusModeTemplate: React.FC<FocusModeTemplateProps> = (props) => {
                       iconRight={GraduationCap}
                       className=""
                     >
-                      Generate Summary
+                      {t('learning.generateSummary')}
                     </Button>
                   </div>
                 )}
@@ -1022,7 +1023,7 @@ export const FocusModeTemplate: React.FC<FocusModeTemplateProps> = (props) => {
                       }}
                       className="text-muted-foreground hover:text-foreground"
                     >
-                      Regenerate
+                      {t('learning.regenerate')}
                     </Button>
                   )}
                 </div>
@@ -1034,7 +1035,7 @@ export const FocusModeTemplate: React.FC<FocusModeTemplateProps> = (props) => {
                     setReviewLevelNumber(null);
                   }}
                 >
-                  Close
+                  {t('learning.close')}
                 </Button>
               </div>
             </div>

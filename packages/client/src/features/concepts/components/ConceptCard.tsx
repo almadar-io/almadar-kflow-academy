@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Concept } from '../types';
-import { Menu, MenuItem } from '@almadar/ui';
+import { Menu, MenuItem, useTranslate } from '@almadar/ui';
 import { MoreVertical, Trash2, GraduationCap, Upload } from 'lucide-react';
 import { ConfirmDialog } from '@almadar/ui';
 import { PlacementTest } from '../../learning/components/PlacementTest';
@@ -42,6 +42,7 @@ const ConceptCard: React.FC<ConceptCardProps> = ({
   onShowPlacementTest,
   onPlacementTestComplete,
 }) => {
+  const { t } = useTranslate();
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [showPlacementTest, setShowPlacementTest] = useState(false);
 
@@ -76,7 +77,7 @@ const ConceptCard: React.FC<ConceptCardProps> = ({
       >
         {/* Menu Button */}
         {graphId && (
-          <div 
+          <div
             className="absolute top-3 right-3 menu-trigger isolate z-40"
             onClick={(e) => e.stopPropagation()}
           >
@@ -90,9 +91,9 @@ const ConceptCard: React.FC<ConceptCardProps> = ({
                 </button>
               }
               items={[
-                ...(graphId && onPublishCourse ? [{ id: 'publish', label: 'Publish Course', onClick: () => onPublishCourse(graphId), icon: Upload } satisfies MenuItem] : []),
-                ...(graphId && onNavigateToMentor ? [{ id: 'mentor', label: 'Mentor Mode', onClick: () => onNavigateToMentor(graphId), icon: GraduationCap } satisfies MenuItem] : []),
-                ...(graphId && onDelete ? [{ id: 'delete', label: 'Delete', onClick: () => setShowDeleteDialog(true), icon: Trash2, variant: 'danger' as const } satisfies MenuItem] : []),
+                ...(graphId && onPublishCourse ? [{ id: 'publish', label: t('concept.publishCourse'), onClick: () => onPublishCourse(graphId), icon: Upload } satisfies MenuItem] : []),
+                ...(graphId && onNavigateToMentor ? [{ id: 'mentor', label: t('concept.mentorMode'), onClick: () => onNavigateToMentor(graphId), icon: GraduationCap } satisfies MenuItem] : []),
+                ...(graphId && onDelete ? [{ id: 'delete', label: t('concept.delete'), onClick: () => setShowDeleteDialog(true), icon: Trash2, variant: 'danger' as const } satisfies MenuItem] : []),
               ]}
               position="bottom-right"
             />
@@ -114,12 +115,12 @@ const ConceptCard: React.FC<ConceptCardProps> = ({
         <div className="flex flex-wrap items-center gap-2">
           {conceptCount !== undefined && (
             <span className="px-3 py-1 bg-indigo-50 text-indigo-700 rounded-full text-xs font-semibold">
-              {conceptCount} concept{conceptCount === 1 ? '' : 's'}
+              {t('dashboard.concepts', { count: conceptCount })}
             </span>
           )}
           {levelCount !== undefined && (
             <span className="px-3 py-1 bg-purple-50 text-purple-700 rounded-full text-xs font-semibold">
-              {levelCount} level{levelCount === 1 ? '' : 's'}
+              {t('dashboard.levels', { count: levelCount })}
             </span>
           )}
         </div>
@@ -132,10 +133,10 @@ const ConceptCard: React.FC<ConceptCardProps> = ({
           isOpen={showDeleteDialog}
           onClose={() => setShowDeleteDialog(false)}
           onConfirm={handleConfirmDelete}
-          title="Delete Learning Path"
-          message={`Are you sure you want to delete "${concept.name}"? This action cannot be undone.`}
-          confirmLabel="Delete"
-          cancelLabel="Cancel"
+          title={t('concept.deleteLearningPath')}
+          message={t('concept.deleteConfirmMessage', { name: concept.name })}
+          confirmLabel={t('concept.delete')}
+          cancelLabel={t('learningGoal.cancel')}
           isLoading={isDeleting}
           variant="danger"
         />
@@ -146,7 +147,7 @@ const ConceptCard: React.FC<ConceptCardProps> = ({
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-card rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto">
             <div className="p-4 border-b border-border flex justify-between items-center">
-              <h2 className="text-xl font-bold text-foreground">Placement Test</h2>
+              <h2 className="text-xl font-bold text-foreground">{t('concept.placementTest')}</h2>
               <button
                 onClick={() => {
                   setShowPlacementTest(false);
@@ -179,4 +180,3 @@ const ConceptCard: React.FC<ConceptCardProps> = ({
 };
 
 export default ConceptCard;
-
