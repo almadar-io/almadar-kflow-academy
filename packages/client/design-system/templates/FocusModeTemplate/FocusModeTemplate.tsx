@@ -649,7 +649,7 @@ export const FocusModeTemplate: React.FC<FocusModeTemplateProps> = (props) => {
                             )}
                           </Button>
                         )}
-                        {(selectedLevel.review !== undefined || isGeneratingLayerPractice) && (
+                        {(entityMode || selectedLevel.review !== undefined || isGeneratingLayerPractice || flatProps?.onGenerateLayerPractice !== undefined) && (
                           <Button
                             variant="secondary"
                             size="md"

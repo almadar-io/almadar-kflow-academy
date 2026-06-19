@@ -1,15 +1,14 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router';
 import LandingPage from '../pages/LandingPage';
-import { ConceptListPageContainer, ConceptDetailPageContainer } from '../features/concepts/containers';
-import { LearnPageContainer } from '../features/learning/containers';
-import { DashboardPageContainer } from '../features/dashboard/containers';
-import {
-  StoryCatalogPageContainer,
-  StoryPlayPageContainer,
-  SeriesViewPageContainer,
-  ExplorePageContainer,
-} from '../features/stories/containers';
+import { ConceptsPage } from '../pages/ConceptsPage';
+import { ConceptDetailPage } from '../pages/ConceptDetailPage';
+import { LearnPage } from '../pages/LearnPage';
+import { DashboardPage } from '../pages/DashboardPage';
+import { StoryCatalogPage } from '../pages/StoryCatalogPage';
+import { StoryPlayPage } from '../pages/StoryPlayPage';
+import { SeriesViewPage } from '../pages/SeriesViewPage';
+import { ExplorePage } from '../pages/ExplorePage';
 import { Login, ProtectedRoute } from '../features/auth';
 import { useAuthContext } from '../features/auth/AuthContext';
 import { Spinner } from '@almadar/ui';
@@ -47,26 +46,26 @@ const AppRouter: React.FC = () => {
         <Route path="/login" element={<Login />} />
 
         {/* Public story routes (no auth required, with app layout) */}
-        <Route path="/stories" element={<AppLayout><StoryCatalogPageContainer /></AppLayout>} />
-        <Route path="/stories/:storyId" element={<AppLayout><StoryPlayPageContainer /></AppLayout>} />
-        <Route path="/series/:seriesId" element={<AppLayout><SeriesViewPageContainer /></AppLayout>} />
-        <Route path="/explore" element={<AppLayout><ExplorePageContainer /></AppLayout>} />
+        <Route path="/stories" element={<AppLayout><StoryCatalogPage /></AppLayout>} />
+        <Route path="/stories/:storyId" element={<AppLayout><StoryPlayPage /></AppLayout>} />
+        <Route path="/series/:seriesId" element={<AppLayout><SeriesViewPage /></AppLayout>} />
+        <Route path="/explore" element={<AppLayout><ExplorePage /></AppLayout>} />
 
         {/* Protected routes */}
         <Route path="/home" element={
-          <ProtectedRoute><DashboardPageContainer /></ProtectedRoute>
+          <ProtectedRoute><DashboardPage /></ProtectedRoute>
         } />
         <Route path="/learn" element={
-          <ProtectedRoute><LearnPageContainer /></ProtectedRoute>
+          <ProtectedRoute><LearnPage /></ProtectedRoute>
         } />
         <Route path="/concepts/:graphId" element={
-          <ProtectedRoute><ConceptListPageContainer /></ProtectedRoute>
+          <ProtectedRoute><ConceptsPage /></ProtectedRoute>
         } />
         <Route path="/concepts/:graphId/concept/:conceptId/prerequisite/:prereqId" element={
-          <ProtectedRoute><ConceptDetailPageContainer /></ProtectedRoute>
+          <ProtectedRoute><ConceptDetailPage /></ProtectedRoute>
         } />
         <Route path="/concepts/:graphId/concept/:conceptId" element={
-          <ProtectedRoute><ConceptDetailPageContainer /></ProtectedRoute>
+          <ProtectedRoute><ConceptDetailPage /></ProtectedRoute>
         } />
 
         <Route path="*" element={<Navigate to="/" replace />} />
