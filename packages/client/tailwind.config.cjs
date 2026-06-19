@@ -8,7 +8,35 @@ module.exports = {
   theme: {
     extend: {
       colors: {
+        // Semantic tokens mapped to the kflow theme CSS variables (theme-aware: light + dark).
+        // Prefer these (bg-background, text-foreground, bg-card, border-border, bg-primary,
+        // text-primary-foreground, bg-muted, …) over hard-coded scales so surfaces follow the theme.
+        background: 'var(--color-background)',
+        foreground: 'var(--color-foreground)',
+        card: {
+          DEFAULT: 'var(--color-card)',
+          foreground: 'var(--color-card-foreground)',
+        },
+        surface: 'var(--color-surface)',
+        muted: {
+          DEFAULT: 'var(--color-muted)',
+          foreground: 'var(--color-muted-foreground)',
+        },
+        accent: {
+          DEFAULT: 'var(--color-accent)',
+          foreground: 'var(--color-accent-foreground)',
+        },
+        secondary: {
+          DEFAULT: 'var(--color-secondary)',
+          foreground: 'var(--color-secondary-foreground)',
+        },
+        border: 'var(--color-border)',
+        input: 'var(--color-input)',
+        ring: 'var(--color-ring)',
         primary: {
+          DEFAULT: 'var(--color-primary)',
+          foreground: 'var(--color-primary-foreground)',
+          hover: 'var(--color-primary-hover)',
           50: '#f0f9ff',
           100: '#e0f2fe',
           200: '#bae6fd',
@@ -48,6 +76,8 @@ module.exports = {
         },
         // Semantic colors for learning app
         success: {
+          DEFAULT: 'var(--color-success)',
+          foreground: 'var(--color-success-foreground)',
           50: '#f0fdf4',
           100: '#dcfce7',
           200: '#bbf7d0',
@@ -60,6 +90,8 @@ module.exports = {
           900: '#14532d',
         },
         warning: {
+          DEFAULT: 'var(--color-warning)',
+          foreground: 'var(--color-warning-foreground)',
           50: '#fffbeb',
           100: '#fef3c7',
           200: '#fde68a',
@@ -72,6 +104,8 @@ module.exports = {
           900: '#78350f',
         },
         error: {
+          DEFAULT: 'var(--color-error)',
+          foreground: 'var(--color-error-foreground)',
           50: '#fef2f2',
           100: '#fee2e2',
           200: '#fecaca',
@@ -118,18 +152,22 @@ module.exports = {
         bold: '700',
       },
       borderRadius: {
-        sm: '0.25rem',   // 4px
-        md: '0.5rem',    // 8px
-        lg: '0.75rem',   // 12px
-        xl: '1rem',      // 16px
-        '2xl': '1.5rem', // 24px
+        sm: 'var(--radius-sm)',
+        md: 'var(--radius-md)',
+        lg: 'var(--radius-lg)',
+        xl: 'var(--radius-xl)',
+        '2xl': 'var(--radius-xl)',
+        full: 'var(--radius-full)',
       },
       boxShadow: {
-        sm: '0 1px 2px 0 rgb(0 0 0 / 0.05)',
-        md: '0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)',
-        lg: '0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)',
-        xl: '0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1)',
-        '2xl': '0 25px 50px -12px rgb(0 0 0 / 0.25)',
+        sm: 'var(--shadow-sm)',
+        md: 'var(--shadow-main)',
+        lg: 'var(--shadow-lg)',
+        xl: 'var(--shadow-lg)',
+        '2xl': 'var(--shadow-lg)',
+        hover: 'var(--shadow-hover)',
+        active: 'var(--shadow-active)',
+        inner: 'var(--shadow-inner)',
       },
       animation: {
         'spin': 'spin 1s linear infinite',
