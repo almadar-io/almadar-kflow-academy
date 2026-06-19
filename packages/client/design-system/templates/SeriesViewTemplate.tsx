@@ -11,7 +11,7 @@ import { SeriesViewBoard } from '../organisms/SeriesViewBoard';
 import type { SeriesViewEntity } from '../organisms/SeriesViewBoard';
 import { LoadingState, type DisplayStateProps } from '@almadar/ui';
 import type { StoriesNavUser } from '../molecules/StoriesNavHeader';
-import type { KnowledgeDomainType, SeriesStatus } from '../types/knowledge';
+import type { KnowledgeDomainType, SeriesStatus, Season } from '../types/knowledge';
 
 export interface SeriesViewTemplateEntity extends SeriesViewEntity {
   shell: { activeRoute: 'series'; user?: StoriesNavUser };
@@ -28,7 +28,7 @@ interface SeriesRecordLike {
   domain?: string;
   tags?: string[];
   coverImage?: string;
-  seasons?: unknown[];
+  seasons?: Season[];
   status?: string;
   subscriberCount?: number;
   rating?: number;

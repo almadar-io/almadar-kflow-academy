@@ -17,29 +17,10 @@ import type { Concept } from '../features/concepts/types';
 import type { ConceptDisplay } from '../features/knowledge-graph/api/types';
 import type { LearningGoal } from '../features/learning/goalApi';
 import { getConceptRouteId } from '../features/concepts/utils/graphHelpers';
+import { convertConceptDisplayToConcept } from '../features/concepts/utils/convertConceptDisplay';
 import { FocusModeTemplate } from '@design-system/templates/FocusModeTemplate';
 import type { FocusModeEntity } from '@design-system/templates/FocusModeTemplate';
 import type { LearnGoal, LearnLevel, LearnConcept } from '@design-system/templates/LearnTemplates/types';
-
-const convertConceptDisplayToConcept = (display: ConceptDisplay): Concept => ({
-  id: display.id,
-  name: display.name,
-  description: display.description,
-  layer: display.layer,
-  isSeed: display.isSeed,
-  sequence: display.sequence,
-  parents: display.parents,
-  children: display.children,
-  prerequisites: display.prerequisites,
-  lesson: display.properties.lesson,
-  goal: display.properties.goal,
-  difficulty: display.properties.difficulty,
-  focus: display.properties.focus,
-  flash: display.properties.flash,
-  questions: display.properties.questions,
-  notes: display.properties.notes,
-  userProgress: display.properties.userProgress,
-});
 
 export const ConceptsPage: React.FC = () => {
   const { graphId } = useParams<{ graphId: string }>();
@@ -99,7 +80,7 @@ export const ConceptsPage: React.FC = () => {
       description: goal.description,
       type: goal.type || 'skill',
       target: goal.target || '',
-      estimatedTime: (goal as LearningGoal).estimatedTime ?? undefined,
+      estimatedTime: undefined,
       milestones: graphSummary.graphSummary.milestones || [],
       createdAt: Date.now(),
       updatedAt: Date.now(),

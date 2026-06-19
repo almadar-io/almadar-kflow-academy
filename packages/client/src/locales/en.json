@@ -387,6 +387,14 @@
   "learn.subtitle": "Explore knowledge through structured learning paths",
   "learn.title": "Learning Paths",
 
+  "annotation.answer": "Answer:",
+  "annotation.context": "Context:",
+  "annotation.created": "Created: {date}",
+  "annotation.delete": "Delete",
+  "annotation.question": "Question:",
+  "annotation.titleNote": "Note",
+  "annotation.titleQuestion": "Question & Answer",
+
   "lesson.bilingual": "Bilingual",
   "lesson.retryTranslation": "Retry",
   "lesson.translating": "Translating..."

@@ -14,9 +14,9 @@ import { useAuthContext } from '../features/auth/AuthContext';
 import { useNavigateEvent } from '../hooks/useNavigateEvent';
 import { getNavigationItems, getUserForTemplate, mainNavItems } from '../config/navigation';
 import type { Concept, BloomLevel } from '../features/concepts/types';
-import type { ConceptDisplay } from '../features/knowledge-graph/api/types';
 import type { QuestionAnswerItem, NoteItem, AnnotationType } from '../features/knowledge-graph/types';
-import { useEventBus, Modal, Typography, Button, MarkdownContent } from '@almadar/ui';
+import { convertConceptDisplayToConcept } from '../features/concepts/utils/convertConceptDisplay';
+import { useEventBus } from '@almadar/ui';
 import { LearnConceptDetailTemplate } from '@design-system/templates/LearnConceptDetailTemplate';
 import type { ConceptDetailTemplateEntity } from '@design-system/templates/LearnConceptDetailTemplate';
 import { LessonPanel } from '@design-system/organisms/LessonPanel';
@@ -25,31 +25,8 @@ import type { SelectionInfo } from '@design-system/organisms/AnnotatedLessonCont
 import { QuestionWidget } from '@design-system/organisms/QuestionWidget';
 import type { QuestionAnswerDisplay } from '@design-system/organisms/QuestionWidget';
 import { NotesWidget } from '@design-system/organisms/NotesWidget';
-import { ConceptDescription } from '@design-system/molecules/ConceptDescription';
-import { ConceptMetaTags } from '@design-system/molecules/ConceptMetaTags';
-import { cn } from '../utils/theme';
-
-const noop = () => {};
-
-const convertConceptDisplayToConcept = (display: ConceptDisplay): Concept => ({
-  id: display.id,
-  name: display.name,
-  description: display.description,
-  layer: display.layer,
-  isSeed: display.isSeed,
-  sequence: display.sequence,
-  parents: display.parents,
-  children: display.children,
-  prerequisites: display.prerequisites,
-  lesson: display.properties?.lesson,
-  goal: display.properties?.goal,
-  difficulty: display.properties?.difficulty,
-  focus: display.properties?.focus,
-  flash: display.properties?.flash,
-  questions: display.properties?.questions,
-  notes: display.properties?.notes,
-  userProgress: display.properties?.userProgress,
-});
+import { AnnotationViewModal } from '@design-system/organisms/AnnotationViewModal';
+import type { AnnotationEntity } from '@design-system/organisms/AnnotationViewModal';
 
 export const ConceptDetailPage: React.FC = () => {
   const { graphId, conceptId } = useParams<{ graphId: string; conceptId: string }>();
@@ -433,11 +410,19 @@ export const ConceptDetailPage: React.FC = () => {
       if (payload?.index !== undefined && payload?.level) markBloomQuestionAnswered(payload.index, payload.level);
     });
     const unsubNavigateBack = on('UI:NAVIGATE_BACK', () => { handleBack(); });
+    const unsubAnnotationDelete = on('UI:ANNOTATION_DELETE', (event) => {
+      const payload = event.payload as { annotationId?: string; type?: AnnotationType } | undefined;
+      if (!payload?.annotationId || !payload?.type) return;
+      if (payload.type === 'question') handleDeleteQuestion(payload.annotationId);
+      else handleDeleteNote(payload.annotationId);
+    });
+    const unsubAnnotationClose = on('UI:ANNOTATION_CLOSE', () => { setViewAnnotation(null); });
     return () => {
       unsubGenerate(); unsubEdit(); unsubCancelEdit(); unsubSave(); unsubViewPrereq();
       unsubSelectQ(); unsubSelectN(); unsubAnnotation(); unsubPrev(); unsubNext();
       unsubAddNote(); unsubDeleteNote(); unsubSubmitQ(); unsubAsk();
       unsubSaveActivation(); unsubSaveReflection(); unsubAnswerBloom(); unsubNavigateBack();
+      unsubAnnotationDelete(); unsubAnnotationClose();
     };
   }, [
     on, handleGenerateLesson, handleSaveLesson, handleNavigateToPrerequisite,
@@ -445,6 +430,7 @@ export const ConceptDetailPage: React.FC = () => {
     handleNavigateToPrevious, handleNavigateToNext, handleAddNote, handleDeleteNote,
     handleSubmitQuestion, sendEvent, lessonQuestions, lessonNotes, showQuestionWidget,
     saveActivationResponse, saveReflectionNote, markBloomQuestionAnswered, handleBack,
+    handleDeleteQuestion,
   ]);
 
   const lessonPrerequisites = useMemo(() => {
@@ -542,76 +528,9 @@ export const ConceptDetailPage: React.FC = () => {
       />
 
       {/* View Annotation Modal */}
-      <Modal
-        isOpen={viewAnnotation !== null}
-        onClose={() => setViewAnnotation(null)}
-        title={viewAnnotation?.type === 'question' ? 'Question & Answer' : 'Note'}
-        size="lg"
-      >
-        {viewAnnotation && (
-          <div className="space-y-4">
-            {viewAnnotation.annotation.selectedText && (
-              <div className={cn(
-                "border-l-4 p-3 rounded-r-md",
-                viewAnnotation.type === 'question'
-                  ? "bg-blue-50 dark:bg-blue-900/20 border-blue-500"
-                  : "bg-yellow-50 dark:bg-yellow-900/20 border-yellow-500"
-              )}>
-                <Typography variant="small" color="muted" className="text-xs mb-1">
-                  Context:
-                </Typography>
-                <Typography variant="body" className="text-sm italic">
-                  "{viewAnnotation.annotation.selectedText}"
-                </Typography>
-              </div>
-            )}
-            {viewAnnotation.type === 'question' && 'question' in viewAnnotation.annotation ? (
-              <div className="space-y-4">
-                <div>
-                  <Typography variant="small" className="font-semibold text-blue-600 dark:text-blue-400 mb-1">
-                    Question:
-                  </Typography>
-                  <Typography variant="body">
-                    {(viewAnnotation.annotation as QuestionAnswerItem).question}
-                  </Typography>
-                </div>
-                <div>
-                  <Typography variant="small" className="font-semibold text-green-600 dark:text-green-400 mb-1">
-                    Answer:
-                  </Typography>
-                  <div className="prose dark:prose-invert max-w-none">
-                    <MarkdownContent content={(viewAnnotation.annotation as QuestionAnswerItem).answer} />
-                  </div>
-                </div>
-              </div>
-            ) : (
-              <div>
-                <Typography variant="body">
-                  {(viewAnnotation.annotation as NoteItem).text}
-                </Typography>
-              </div>
-            )}
-            <div className="flex items-center justify-between pt-4 border-t border-gray-200 dark:border-gray-700">
-              <Typography variant="small" color="muted" className="text-xs">
-                Created: {new Date(viewAnnotation.annotation.timestamp).toLocaleString()}
-              </Typography>
-              <Button
-                variant="danger"
-                size="sm"
-                onClick={() => {
-                  if (viewAnnotation.type === 'question') {
-                    handleDeleteQuestion(viewAnnotation.annotation.id);
-                  } else {
-                    handleDeleteNote(viewAnnotation.annotation.id);
-                  }
-                }}
-              >
-                Delete
-              </Button>
-            </div>
-          </div>
-        )}
-      </Modal>
+      <AnnotationViewModal
+        entity={viewAnnotation ? ({ ...viewAnnotation, isOpen: true } satisfies AnnotationEntity) : null}
+      />
 
       <LearnConceptDetailTemplate
         entity={entity}
