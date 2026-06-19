@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { Concept, ConceptGraph } from '../types';
 import { useTranslate } from '@almadar/ui';
 import ConceptName from './ConceptName';
-import { ConceptDescription } from '@design-system/molecules/ConceptDescription';
+import { ConceptDescription } from '@design-system/organisms/ConceptDescription';
 import ConceptParents from './ConceptParents';
 import { Layers, Loader2, Minus, Plus, ChevronDown, ChevronRight, Target, Info, BookOpen } from 'lucide-react';
 import { useConceptLevels } from '../hooks/useConceptLevels';

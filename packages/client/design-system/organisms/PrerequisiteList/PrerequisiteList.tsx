@@ -8,7 +8,7 @@
 import React, { useMemo } from 'react';
 import { Concept, ConceptGraph } from '@features/concepts/types';
 import { checkPrerequisitesExist } from '@features/concepts/utils/prerequisites';
-import { PrerequisiteItem } from '../../molecules/PrerequisiteItem';
+import { PrerequisiteItem } from '../PrerequisiteItem';
 
 export interface PrerequisiteListProps {
   /**

@@ -1,24 +1,26 @@
-/**
- * KnowledgeNodeCard — Card showing a concept: title, domain badge, depth, child count, notes preview.
- *
- * Events Emitted:
- * - UI:SELECT_NODE — When the card is clicked
- *
- * entityAware: true
- */
-
 import React from "react";
 import {
+  Badge,
+  Box,
   Card,
+  Icon,
+  ProgressBar,
   Typography,
   HStack,
   VStack,
   useEventBus,
 } from "@almadar/ui";
-import { DomainBadge } from "../atoms/DomainBadge";
-import { NodeTypeIcon } from "../atoms/NodeTypeIcon";
-import { DepthIndicator } from "../atoms/DepthIndicator";
-import type { KnowledgeNode } from "../types/knowledge";
+import { cn } from "@almadar/ui";
+import { BookOpen, ExternalLink, Network } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
+import type { KnowledgeNode, KnowledgeNodeType, KnowledgeDomainType } from "../../types/knowledge";
+import { DOMAIN_COLORS, DOMAIN_LABELS } from "../../utils/knowledgeConstants";
+
+const NODE_TYPE_ICONS: Record<KnowledgeNodeType, LucideIcon> = {
+  concept: BookOpen,
+  resource: ExternalLink,
+  root: Network,
+};
 
 export interface KnowledgeNodeCardProps {
   node: KnowledgeNode;
@@ -37,6 +39,9 @@ export const KnowledgeNodeCard: React.FC<KnowledgeNodeCardProps> = ({
     if (selectNodeEvent) emit(`UI:${selectNodeEvent}`, { nodeId: node.id });
   };
 
+  const domainColors = DOMAIN_COLORS[node.domain] ?? DOMAIN_COLORS.formal;
+  const domainLabel = DOMAIN_LABELS[node.domain] ?? node.domain;
+
   return (
     <Card
       className={className}
@@ -45,11 +50,16 @@ export const KnowledgeNodeCard: React.FC<KnowledgeNodeCardProps> = ({
     >
       <VStack gap="sm" className="p-3">
         <HStack gap="sm" align="center">
-          <NodeTypeIcon nodeType={node.nodeType} size="sm" />
+          <Icon icon={NODE_TYPE_ICONS[node.nodeType]} size="sm" />
           <Typography variant="label" size="sm" truncate className="flex-1">
             {node.title}
           </Typography>
-          <DomainBadge domain={node.domain} size="sm" />
+          <Badge
+            size="sm"
+            className={cn(domainColors.bg, domainColors.text, `border ${domainColors.border}`)}
+          >
+            {domainLabel}
+          </Badge>
         </HStack>
 
         {node.description && (
@@ -59,7 +69,14 @@ export const KnowledgeNodeCard: React.FC<KnowledgeNodeCardProps> = ({
         )}
 
         <HStack gap="md" align="center">
-          <DepthIndicator depth={node.depth} />
+          <ProgressBar
+            value={node.depth}
+            max={11}
+            progressType="stepped"
+            steps={12}
+            variant="primary"
+            label={`Depth ${node.depth}`}
+          />
           {node.childIds.length > 0 && (
             <Typography variant="body" size="xs" color="muted">
               {node.childIds.length} children

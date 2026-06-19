@@ -24,7 +24,7 @@
 import React, { useState, useEffect } from 'react';
 import type { LucideIcon } from 'lucide-react';
 import { Avatar, Header, Sidebar, ThemeToggle, useEventBus } from '@almadar/ui';
-import { ProfilePopup } from '../../molecules/ProfilePopup/ProfilePopup';
+import { ProfilePopup } from '../../organisms/ProfilePopup/ProfilePopup';
 import { cn } from '@utils/theme';
 import type { UiSidebarCollapsePayload } from '@app/uiEvents';
 

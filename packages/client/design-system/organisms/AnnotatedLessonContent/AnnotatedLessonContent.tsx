@@ -7,7 +7,7 @@
  */
 
 import React, { useRef, useCallback, useEffect, useMemo } from 'react';
-import { SelectionToolbar, SelectionInfo } from '../../molecules/SelectionToolbar';
+import { SelectionToolbar, SelectionInfo } from '../SelectionToolbar';
 import { SegmentRenderer, parseLessonSegments } from '../LessonSegments';
 import { InteractiveOrbitalPanel } from '../InteractiveOrbitalPanel';
 import { useRunCodeSimulation } from '@features/learning/hooks/useRunCodeSimulation';
@@ -72,7 +72,7 @@ export interface AnnotatedLessonContentProps {
 }
 
 // Re-export SelectionInfo for container use
-export type { SelectionInfo } from '../../molecules/SelectionToolbar';
+export type { SelectionInfo } from '../SelectionToolbar';
 
 /**
  * AnnotatedLessonContent component - Dumb component that renders and triggers callbacks

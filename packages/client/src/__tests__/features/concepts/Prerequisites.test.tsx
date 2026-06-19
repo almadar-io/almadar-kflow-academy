@@ -6,7 +6,7 @@ import { renderWithProviders, resetAllMocks } from '../../testUtils.helper';
  * These components have been migrated to the component library.
  */
 import { PrerequisiteList } from '../../../components/organisms/PrerequisiteList';
-import { PrerequisiteItem } from '../../../components/molecules/PrerequisiteItem';
+import { PrerequisiteItem } from '@design-system/organisms/PrerequisiteItem';
 import { PrerequisitesDisplay } from '../../../components/organisms/PrerequisitesDisplay';
 import { Concept, ConceptGraph } from '../../../features/concepts/types';
 

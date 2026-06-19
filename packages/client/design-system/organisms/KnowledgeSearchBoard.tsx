@@ -21,11 +21,11 @@ import {
   useTranslate,
   type DisplayStateProps,
 } from "@almadar/ui";
+import { Badge, cn } from "@almadar/ui";
 import { Search } from "lucide-react";
 import type { KnowledgeNode, KnowledgeDomainType } from "../types/knowledge";
-import { KnowledgeNodeCard } from "../molecules/KnowledgeNodeCard";
-import { DomainBadge } from "../atoms/DomainBadge";
-import { DOMAIN_LABELS } from "../utils/knowledgeConstants";
+import { KnowledgeNodeCard } from "./KnowledgeNodeCard";
+import { DOMAIN_COLORS, DOMAIN_LABELS } from "../utils/knowledgeConstants";
 
 type DomainFilter = "all" | KnowledgeDomainType;
 
@@ -143,7 +143,14 @@ export function KnowledgeSearchBoard({
               onClick={handleFilterClick}
             >
               <HStack gap="xs" align="center">
-                {key !== "all" && <DomainBadge domain={key} size="sm" />}
+                {key !== "all" && (
+                  <Badge
+                    size="sm"
+                    className={cn(DOMAIN_COLORS[key].bg, DOMAIN_COLORS[key].text, `border ${DOMAIN_COLORS[key].border}`)}
+                  >
+                    {DOMAIN_LABELS[key]}
+                  </Badge>
+                )}
                 {key === "all" ? label : ""}
                 <Typography variant="body" size="xs">
                   ({domainCounts[key]})
