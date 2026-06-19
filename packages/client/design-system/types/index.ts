@@ -2,6 +2,18 @@
  * Common types for kflow design-system client
  */
 
+// Learner entity slices for the assembler→template contract.
+export type {
+  ConceptBrowseEntity,
+  ConceptDetailEntity,
+  LessonViewerEntity,
+  GraphNavigatorEntity,
+  DashboardEntity,
+  StoryCatalogEntity,
+  StoryPlayEntity,
+  SeriesViewEntity,
+} from "./entities";
+
 export interface FlashCard {
   id?: string;
   front: string;

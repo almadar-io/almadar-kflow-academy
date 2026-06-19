@@ -13,8 +13,9 @@
     "test": "jest --config jest.config.cjs"
   },
   "dependencies": {
+    "@almadar/core": "^10.3.0",
     "@almadar/syntax": "^1.4.0",
-    "@almadar/ui": "^5.33.1",
+    "@almadar/ui": "^5.34.0",
     "@apollo/client": "^3.14.0",
     "@kflow-academy/shared": "*",
     "@react-three/drei": "^10.7.7",
