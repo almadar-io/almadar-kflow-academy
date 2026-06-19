@@ -4,9 +4,6 @@ export * from './markdown';
 // Learning science components
 export * from './learning';
 
-// Mindmap components
-export * from './MindMapNode';
-
 // Notes components
 export * from './NoteContent';
 
@@ -16,9 +13,6 @@ export * from './NoteContent';
 export * from './StreamingDisplay';
 
 // Concept components
-
-// Layer navigation
-export * from './LayerNavigator';
 
 // Knowledge molecules
 export * from './KnowledgeNodeCard';

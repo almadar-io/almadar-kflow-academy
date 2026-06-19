@@ -9,9 +9,6 @@ export type {
   LessonViewerEntity,
   GraphNavigatorEntity,
   DashboardEntity,
-  StoryCatalogEntity,
-  StoryPlayEntity,
-  SeriesViewEntity,
 } from "./entities";
 
 export interface FlashCard {
@@ -22,10 +19,6 @@ export interface FlashCard {
 
 // Knowledge system types
 export type {
-  // Story types
-  StorySummary,
-  StoryBridge,
-  UserStoryProgress,
   // Domain & node types
   KnowledgeDomainType,
   KnowledgeNodeType,

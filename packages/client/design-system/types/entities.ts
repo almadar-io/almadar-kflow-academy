@@ -14,11 +14,6 @@ import type {
   KnowledgeSubject,
   LearningProgress,
   NextSuggestion,
-  StorySummary,
-  SeriesSummary,
-  Series,
-  UserStoryProgress,
-  SeriesProgress,
 } from './knowledge';
 
 export interface ConceptBrowseEntity {
@@ -47,17 +42,3 @@ export interface DashboardEntity {
   suggestions?: NextSuggestion[];
 }
 
-export interface StoryCatalogEntity {
-  stories: StorySummary[];
-  series?: SeriesSummary[];
-}
-
-export interface StoryPlayEntity {
-  story: StorySummary;
-  progress?: UserStoryProgress;
-}
-
-export interface SeriesViewEntity {
-  series: Series;
-  progress?: SeriesProgress;
-}

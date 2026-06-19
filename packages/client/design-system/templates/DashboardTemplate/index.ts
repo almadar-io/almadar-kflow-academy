@@ -1,3 +1,2 @@
-export { DashboardTemplate } from './DashboardTemplate';
-export type { DashboardTemplateProps, DashboardStat, DashboardActivity } from './DashboardTemplate';
-
+export { DashboardBoardTemplate } from './DashboardBoardTemplate';
+export type { DashboardBoardTemplateEntity } from './DashboardBoardTemplate';

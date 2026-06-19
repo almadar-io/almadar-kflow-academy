@@ -18,29 +18,9 @@
       "importPath": "@kflow/design-system/organisms/FlashCardStack",
       "category": "learning"
     },
-    "force-graph": {
-      "component": "ForceDirectedGraph",
-      "importPath": "@kflow/design-system/organisms/ForceDirectedGraph",
-      "category": "visualization"
-    },
-    "knowledge-graph": {
-      "component": "ForceDirectedGraph",
-      "importPath": "@kflow/design-system/organisms/ForceDirectedGraph",
-      "category": "visualization"
-    },
     "graph-legend": {
       "component": "GraphLegend",
       "importPath": "@kflow/design-system/molecules/GraphLegend",
-      "category": "visualization"
-    },
-    "mindmap-canvas": {
-      "component": "MindMapCanvas",
-      "importPath": "@kflow/design-system/organisms/MindMapCanvas",
-      "category": "visualization"
-    },
-    "mindmap-node": {
-      "component": "MindMapNode",
-      "importPath": "@kflow/design-system/molecules/MindMapNode",
       "category": "visualization"
     },
     "segment-renderer": {
@@ -97,11 +77,6 @@
       "component": "NoteContent",
       "importPath": "@kflow/design-system/molecules/NoteContent",
       "category": "notes"
-    },
-    "layer-navigator": {
-      "component": "LayerNavigator",
-      "importPath": "@kflow/design-system/molecules/LayerNavigator",
-      "category": "navigation"
     },
     "learning-goal": {
       "component": "LearningGoalDisplay",

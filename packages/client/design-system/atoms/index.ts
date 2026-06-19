@@ -1,6 +1,3 @@
-// Mindmap atoms
-export * from './MindMapConnections';
-
 // Knowledge atoms
 export * from './DomainBadge';
 export * from './DepthIndicator';
