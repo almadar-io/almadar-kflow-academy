@@ -223,7 +223,7 @@ export const NotesWidget: React.FC<NotesWidgetProps> = ({
       {showFloatingButton && (
         <button
           onClick={handleOpen}
-          className="fixed bottom-6 right-32 z-50 p-4 bg-green-600 dark:bg-green-500 text-white rounded-full shadow-lg hover:bg-green-700 dark:hover:bg-green-600 transition-all duration-200 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
+          className="fixed bottom-6 right-32 z-50 p-4 bg-success text-success-foreground rounded-full shadow-lg hover:bg-success/90 transition-all duration-200 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-[var(--color-success)] focus:ring-offset-2"
           aria-label="Add or edit notes"
           title="Add or edit notes for this lesson"
         >
@@ -250,11 +250,11 @@ export const NotesWidget: React.FC<NotesWidgetProps> = ({
 
           {/* Selected Text Display */}
           {preservedSelectedText && preservedSelectedText.trim() && (
-            <div className="bg-green-50 dark:bg-green-900/20 border-l-4 border-green-500 dark:border-green-400 p-3 rounded-r-md">
-              <Typography variant="small" className="text-green-700 dark:text-green-300 mb-1 font-medium">
+            <div className="bg-[var(--color-success)]/10 border-l-4 border-[var(--color-success)] p-3 rounded-r-md">
+              <Typography variant="small" className="text-[var(--color-success)] mb-1 font-medium">
                 Selected text:
               </Typography>
-              <Typography variant="body" className="text-gray-700 dark:text-gray-300 italic break-words">
+              <Typography variant="body" className="text-[var(--color-foreground)] italic break-words">
                 "{preservedSelectedText}"
               </Typography>
             </div>
@@ -269,7 +269,7 @@ export const NotesWidget: React.FC<NotesWidgetProps> = ({
               onKeyDown={handleKeyDown}
               placeholder="Add a new note... (Ctrl+Enter to save)"
               rows={4}
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent resize-y min-h-[80px]"
+              className="w-full px-3 py-2 border border-border rounded-md bg-card text-foreground placeholder:text-[var(--color-placeholder)] focus:outline-none focus:ring-2 focus:ring-[var(--color-success)] focus:border-transparent resize-y min-h-[80px]"
               disabled={!!editingNoteId}
             />
             <Button
@@ -292,7 +292,7 @@ export const NotesWidget: React.FC<NotesWidgetProps> = ({
               {notes.map((note) => (
                 <div
                   key={note.id}
-                  className="p-3 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                  className="p-3 border border-border rounded-lg hover:bg-surface-hover transition-colors"
                 >
                   {editingNoteId === note.id ? (
                     <div className="flex flex-col gap-2">
@@ -302,7 +302,7 @@ export const NotesWidget: React.FC<NotesWidgetProps> = ({
                         onChange={(e) => setEditingText(e.target.value)}
                         onKeyDown={handleKeyDown}
                         rows={3}
-                        className="w-full px-2 py-1 border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-green-500 resize-y min-h-[60px]"
+                        className="w-full px-2 py-1 border border-border rounded bg-card text-foreground focus:outline-none focus:ring-2 focus:ring-[var(--color-success)] resize-y min-h-[60px]"
                         placeholder="Edit note... (Ctrl+Enter to save)"
                       />
                       <div className="flex gap-2 justify-end">
@@ -333,14 +333,14 @@ export const NotesWidget: React.FC<NotesWidgetProps> = ({
                         <div className="flex gap-1">
                           <button
                             onClick={() => handleStartEdit(note.id, note.text)}
-                            className="p-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+                            className="p-1 text-muted-foreground hover:text-foreground transition-colors"
                             aria-label="Edit note"
                           >
                             <Edit2 size={14} />
                           </button>
                           <button
                             onClick={() => handleDeleteNote(note.id)}
-                            className="p-1 text-gray-400 hover:text-red-600 dark:hover:text-red-400 transition-colors"
+                            className="p-1 text-muted-foreground hover:text-error transition-colors"
                             aria-label="Delete note"
                           >
                             <Trash2 size={14} />
@@ -348,12 +348,12 @@ export const NotesWidget: React.FC<NotesWidgetProps> = ({
                         </div>
                       </div>
                       {note.selectedText && (
-                        <Typography variant="small" className="mt-2 text-gray-500 dark:text-gray-400 italic bg-gray-50 dark:bg-gray-800 p-2 rounded">
+                        <Typography variant="small" className="mt-2 text-muted-foreground italic bg-surface p-2 rounded">
                           Context: "{note.selectedText}"
                         </Typography>
                       )}
                       {note.timestamp && (
-                        <Typography variant="small" className="mt-1 text-gray-400 dark:text-gray-500">
+                        <Typography variant="small" className="mt-1 text-muted-foreground">
                           {new Date(note.timestamp).toLocaleString()}
                         </Typography>
                       )}
@@ -366,7 +366,7 @@ export const NotesWidget: React.FC<NotesWidgetProps> = ({
 
           {/* Empty State */}
           {notes.length === 0 && (
-            <div className="text-center py-8 text-gray-500 dark:text-gray-400">
+            <div className="text-center py-8 text-muted-foreground">
               <StickyNote size={48} className="mx-auto mb-2 opacity-50" />
               <Typography variant="body">No notes yet. Add your first note above!</Typography>
             </div>

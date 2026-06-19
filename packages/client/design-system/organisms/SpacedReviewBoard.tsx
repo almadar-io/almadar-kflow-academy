@@ -144,7 +144,7 @@ export function SpacedReviewBoard({
             {!showAnswer && (
               <Button
                 variant="primary"
-                className="px-6 py-3 bg-indigo-600 text-white font-medium rounded-lg hover:bg-indigo-700"
+                className="px-6 py-3 bg-primary text-primary-foreground font-medium rounded-lg hover:bg-primary/90"
                 onClick={handleShowAnswer}
               >
                 {t('review.showAnswer')}

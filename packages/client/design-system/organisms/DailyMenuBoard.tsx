@@ -170,7 +170,7 @@ export function DailyMenuBoard({
                 </VStack>
                 <Button
                   variant="primary"
-                  className="px-6 py-3 bg-indigo-600 text-white font-medium rounded-lg hover:bg-indigo-700"
+                  className="px-6 py-3 font-medium rounded-lg"
                   onClick={handleStartReview}
                 >
                   {t('daily.startReview')}
@@ -184,7 +184,7 @@ export function DailyMenuBoard({
             <HStack gap="sm" wrap>
               <Button
                 variant="secondary"
-                className="px-4 py-2 bg-gray-100 text-[var(--color-foreground)] rounded-lg hover:bg-gray-200 flex items-center gap-2"
+                className="px-4 py-2 rounded-lg flex items-center gap-2"
                 onClick={handleOpenExplorer}
               >
                 <Compass size={16} />
@@ -192,7 +192,7 @@ export function DailyMenuBoard({
               </Button>
               <Button
                 variant="secondary"
-                className="px-4 py-2 bg-gray-100 text-[var(--color-foreground)] rounded-lg hover:bg-gray-200 flex items-center gap-2"
+                className="px-4 py-2 rounded-lg flex items-center gap-2"
                 onClick={handleOpenGraph}
               >
                 <GitBranch size={16} />
@@ -200,7 +200,7 @@ export function DailyMenuBoard({
               </Button>
               <Button
                 variant="secondary"
-                className="px-4 py-2 bg-gray-100 text-[var(--color-foreground)] rounded-lg hover:bg-gray-200 flex items-center gap-2"
+                className="px-4 py-2 rounded-lg flex items-center gap-2"
                 onClick={handleOpenWorldMap}
               >
                 <Map size={16} />

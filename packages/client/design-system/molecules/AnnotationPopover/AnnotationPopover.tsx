@@ -103,9 +103,9 @@ export const AnnotationPopover: React.FC<AnnotationPopoverProps> = ({
     <div
       className={cn(
         'fixed z-[9999] w-80 max-w-[90vw]',
-        'bg-white dark:bg-gray-800',
+        'bg-card',
         'rounded-lg shadow-xl',
-        'border border-gray-200 dark:border-gray-700',
+        'border border-border',
         'animate-in fade-in-0 zoom-in-95 duration-150',
         className
       )}
@@ -119,15 +119,15 @@ export const AnnotationPopover: React.FC<AnnotationPopoverProps> = ({
       {/* Header */}
       <div className={cn(
         'flex items-center justify-between px-3 py-2 border-b',
-        isQuestionType 
-          ? 'bg-blue-50 dark:bg-blue-900/20 border-blue-100 dark:border-blue-800' 
-          : 'bg-yellow-50 dark:bg-yellow-900/20 border-yellow-100 dark:border-yellow-800'
+        isQuestionType
+          ? 'bg-info/10 border-info/20'
+          : 'bg-warning/10 border-warning/20'
       )}>
         <div className="flex items-center gap-2">
           {isQuestionType ? (
-            <MessageCircleQuestion size={16} className="text-blue-600 dark:text-blue-400" />
+            <MessageCircleQuestion size={16} className="text-info" />
           ) : (
-            <StickyNote size={16} className="text-yellow-600 dark:text-yellow-400" />
+            <StickyNote size={16} className="text-warning" />
           )}
           <Typography variant="small" className="font-semibold">
             {isQuestionType ? 'Question' : 'Note'}
@@ -149,7 +149,7 @@ export const AnnotationPopover: React.FC<AnnotationPopoverProps> = ({
       <div className="p-3 space-y-3">
         {/* Selected text context */}
         {annotation.selectedText && (
-          <div className="bg-gray-50 dark:bg-gray-900/50 rounded-md p-2 border-l-2 border-gray-300 dark:border-gray-600">
+          <div className="bg-muted rounded-md p-2 border-l-2 border-border">
             <Typography variant="small" color="muted" className="text-xs italic">
               "{annotation.selectedText.length > 80 
                 ? annotation.selectedText.substring(0, 80) + '...' 
@@ -162,7 +162,7 @@ export const AnnotationPopover: React.FC<AnnotationPopoverProps> = ({
         <div>
           {isQuestionType ? (
             <>
-              <Typography variant="small" className="font-medium text-blue-700 dark:text-blue-300 mb-1">
+              <Typography variant="small" className="font-medium text-info mb-1">
                 Q:
               </Typography>
               <Typography variant="body" className="text-sm mb-2">
@@ -170,7 +170,7 @@ export const AnnotationPopover: React.FC<AnnotationPopoverProps> = ({
               </Typography>
               {truncatedAnswer && (
                 <>
-                  <Typography variant="small" className="font-medium text-green-700 dark:text-green-300 mb-1">
+                  <Typography variant="small" className="font-medium text-success mb-1">
                     A:
                   </Typography>
                   <Typography variant="body" color="muted" className="text-sm">
@@ -199,7 +199,7 @@ export const AnnotationPopover: React.FC<AnnotationPopoverProps> = ({
       </div>
 
       {/* Actions */}
-      <div className="flex items-center justify-between px-3 py-2 border-t border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50 rounded-b-lg">
+      <div className="flex items-center justify-between px-3 py-2 border-t border-border bg-muted rounded-b-lg">
         <div className="flex items-center gap-1">
           {onEdit && (
             <Button
@@ -207,7 +207,7 @@ export const AnnotationPopover: React.FC<AnnotationPopoverProps> = ({
               size="sm"
               icon={Edit2}
               onClick={onEdit}
-              className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 p-1.5"
+              className="text-muted-foreground hover:text-foreground p-1.5"
               title="Edit"
             >
               <span className="sr-only">Edit</span>
@@ -219,7 +219,7 @@ export const AnnotationPopover: React.FC<AnnotationPopoverProps> = ({
               size="sm"
               icon={Trash2}
               onClick={onDelete}
-              className="text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 p-1.5"
+              className="text-error hover:text-error/80 p-1.5"
               title="Delete"
             >
               <span className="sr-only">Delete</span>

@@ -120,7 +120,7 @@ export const InteractiveOrbitalPanel: React.FC<InteractiveOrbitalPanelProps> = (
         {error && (
           <HStack
             gap="sm"
-            className="p-3 rounded-lg bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-200"
+            className="p-3 rounded-lg bg-error/10 text-error"
           >
             <AlertCircle size={18} />
             <Typography variant="small">{error}</Typography>
@@ -128,7 +128,7 @@ export const InteractiveOrbitalPanel: React.FC<InteractiveOrbitalPanelProps> = (
         )}
 
         {schema && (
-          <Box className="border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
+          <Box className="border border-border rounded-lg overflow-hidden">
             <OrbitalPreview schema={schema} />
           </Box>
         )}
@@ -166,7 +166,7 @@ const OrbitalPreview: React.FC<{ schema: OrbitalSchema }> = ({ schema }) => {
   if (!Component) {
     return (
       <Box className="h-96 flex items-center justify-center">
-        <Loader2 size={24} className="animate-spin text-gray-400" />
+        <Loader2 size={24} className="animate-spin text-muted-foreground" />
       </Box>
     );
   }

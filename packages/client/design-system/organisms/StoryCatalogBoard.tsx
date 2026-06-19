@@ -99,10 +99,10 @@ export function StoryCatalogBoard({
   return (
     <Box className={className}>
       <VStack gap="sm" className="mb-6">
-        <Typography variant="h1" weight="bold" className="text-gray-900 dark:text-white">
+        <Typography variant="h1" weight="bold" className="text-foreground">
           {t('catalog.title')}
         </Typography>
-        <Typography variant="body" className="text-gray-500 dark:text-gray-400">
+        <Typography variant="body" className="text-muted-foreground">
           {t('catalog.subtitle')}
         </Typography>
       </VStack>

@@ -52,7 +52,7 @@ const ConceptName: React.FC<ConceptNameProps> = ({
         <input
           ref={(el) => { if (concept.id) nameInputRefs.current[concept.id] = el; }}
           type="text"
-          className="w-full px-3 py-2 border-2 border-blue-500 dark:border-blue-400 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-800 transition-all duration-200 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+          className="w-full px-3 py-2 border-2 border-primary rounded-md focus:outline-none focus:ring-2 focus:ring-primary/30 transition-all duration-200 bg-background text-foreground"
           value={editValues.name}
           onChange={handleNameChange}
           onBlur={onCancelEdit}
@@ -68,7 +68,7 @@ const ConceptName: React.FC<ConceptNameProps> = ({
   return (
     <div className={`flex items-center gap-3 ${className}`}>
       <h4 
-        className="flex-1 text-lg font-semibold text-indigo-600 dark:text-indigo-300 hover:text-indigo-700 dark:hover:text-indigo-200 underline underline-offset-4 decoration-transparent hover:decoration-indigo-600 dark:hover:decoration-indigo-400 px-2 py-1 rounded cursor-pointer transition-all duration-200"
+        className="flex-1 text-lg font-semibold text-primary hover:text-primary/80 underline underline-offset-4 decoration-transparent hover:decoration-primary px-2 py-1 rounded cursor-pointer transition-all duration-200"
         onClick={handleClick}
         title="View concept details"
         role="button"

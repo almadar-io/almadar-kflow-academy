@@ -262,7 +262,7 @@ export const LessonPanel: React.FC<LessonPanelProps> = ({
               <SegmentRenderer segments={parsedSegments} />
             ) : renderedLesson ? (
               <div
-                className="prose dark:prose-invert max-w-none prose-gray dark:prose-invert prose-headings:text-gray-900 dark:prose-headings:text-white prose-p:text-gray-700 dark:prose-p:text-gray-200 prose-a:text-indigo-600 dark:prose-a:text-indigo-400 prose-strong:text-gray-900 dark:prose-strong:text-white prose-li:text-gray-700 dark:prose-li:text-gray-200 prose-code:text-gray-900 dark:prose-code:text-gray-200 prose-pre:text-gray-900 dark:prose-pre:text-gray-200 prose-blockquote:text-gray-700 dark:prose-blockquote:text-gray-300"
+                className="prose max-w-none prose-headings:text-[var(--color-foreground)] prose-p:text-[var(--color-foreground)] prose-a:text-[var(--color-primary)] prose-strong:text-[var(--color-foreground)] prose-li:text-[var(--color-foreground)] prose-code:text-[var(--color-foreground)] prose-pre:text-[var(--color-foreground)] prose-blockquote:text-[var(--color-muted-foreground)]"
                 dangerouslySetInnerHTML={{ __html: renderedLesson }}
               />
             ) : null}
@@ -271,7 +271,7 @@ export const LessonPanel: React.FC<LessonPanelProps> = ({
 
         {/* Start Learning Button - Inviting single button when no lesson exists */}
         {showGenerationButtons && !conceptHasLesson && onGenerateLesson && (
-          <div className="border-t border-gray-200 dark:border-gray-700 pt-8 flex justify-center">
+          <div className="border-t border-border pt-8 flex justify-center">
             <button
               onClick={() => onGenerateLesson(false)}
               disabled={isGenerating}

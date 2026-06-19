@@ -138,7 +138,7 @@ export const StreamingDisplay = ({
     <VStack gap="md" className={`w-full max-w-2xl mx-auto ${className}`}>
       {/* Goal Information Card */}
       {hasGoalInfo && (
-        <Card className="border border-gray-200">
+        <Card className="border border-border">
           <VStack gap="sm">
             {parsedData.title && (
               <Typography variant="h3">
@@ -223,7 +223,7 @@ export const StreamingDisplay = ({
 
       {/* Loading State */}
       {!hasData && (
-        <Card className="border border-gray-200">
+        <Card className="border border-border">
           <VStack gap="sm" align="center" className="py-8 text-[var(--color-muted-foreground)]">
             <Spinner size="md" />
             <Typography variant="small">{loadingTitle}</Typography>

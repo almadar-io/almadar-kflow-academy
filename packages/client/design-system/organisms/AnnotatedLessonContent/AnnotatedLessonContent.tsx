@@ -180,8 +180,8 @@ export const AnnotatedLessonContent: React.FC<AnnotatedLessonContentProps> = ({
               span.dataset.highlightType = annotation.type;
               span.dataset.annotationId = annotation.id;
               span.className = annotation.type === 'question'
-                ? 'bg-blue-100 dark:bg-blue-900/40 hover:bg-blue-200 dark:hover:bg-blue-800/50 cursor-pointer rounded-sm transition-colors'
-                : 'bg-yellow-100 dark:bg-yellow-900/40 hover:bg-yellow-200 dark:hover:bg-yellow-800/50 cursor-pointer rounded-sm transition-colors';
+                ? 'bg-info/15 hover:bg-info/25 cursor-pointer rounded-sm transition-colors'
+                : 'bg-warning/15 hover:bg-warning/25 cursor-pointer rounded-sm transition-colors';
               span.textContent = match;
               span.onclick = (e) => handleHighlightClick(annotation.type, annotation.id, e as MouseEvent);
               
@@ -217,7 +217,7 @@ export const AnnotatedLessonContent: React.FC<AnnotatedLessonContentProps> = ({
       {/* Lesson Content with highlighting */}
       <div 
         ref={containerRef}
-        className="prose dark:prose-invert max-w-none"
+        className="prose max-w-none"
       >
         <SegmentRenderer
           segments={segments}

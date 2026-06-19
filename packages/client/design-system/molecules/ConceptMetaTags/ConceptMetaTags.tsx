@@ -61,14 +61,14 @@ export const ConceptMetaTags: React.FC<ConceptMetaTagsProps> = ({
 
     {parents.length > 0 && (
       <div className="flex flex-wrap gap-2 items-center">
-        <span className="text-sm text-gray-600 dark:text-gray-400 font-medium">Parents:</span>
+        <span className="text-sm text-muted-foreground font-medium">Parents:</span>
         {parents.map(parent => (
           <Button
             key={parent}
             variant="ghost"
             size="sm"
             onClick={() => onNavigateToParent(parent)}
-            className="px-2 py-1 bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-300 rounded-full text-xs font-medium hover:bg-purple-200 dark:hover:bg-purple-900/50"
+            className="px-2 py-1 bg-accent/15 text-accent rounded-full text-xs font-medium hover:bg-accent/25"
           >
             ← {parent}
           </Button>

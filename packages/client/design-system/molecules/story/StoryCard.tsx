@@ -49,7 +49,7 @@ export const StoryCard: React.FC<StoryCardProps> = ({
 
   return (
     <Card
-      className={`p-5 cursor-pointer bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-sm hover:border-indigo-400 dark:hover:border-indigo-500 hover:shadow-md transition-all ${className ?? ''}`}
+      className={`p-5 cursor-pointer bg-card border border-border rounded-xl shadow-sm hover:border-primary/50 hover:shadow-md transition-all ${className ?? ''}`}
       onClick={() => onClick?.(story.id)}
     >
       <VStack gap="sm">
@@ -61,18 +61,18 @@ export const StoryCard: React.FC<StoryCardProps> = ({
           />
         )}
 
-        <Typography variant="body" weight="bold" className="text-gray-900 dark:text-white">
+        <Typography variant="body" weight="bold" className="text-foreground">
           {story.title}
         </Typography>
 
-        <Typography variant="caption" className="text-gray-500 dark:text-gray-400 line-clamp-2">
+        <Typography variant="caption" className="text-muted-foreground line-clamp-2">
           {story.teaser}
         </Typography>
 
         <HStack gap="md" align="center" className="mt-2">
           <HStack gap="xs" align="center">
-            <Icon icon={Clock} size="xs" className="text-gray-400 dark:text-gray-500" />
-            <Typography variant="caption" className="text-gray-500 dark:text-gray-400">
+            <Icon icon={Clock} size="xs" className="text-muted-foreground" />
+            <Typography variant="caption" className="text-muted-foreground">
               {t('story.duration', { minutes: String(story.duration) })}
             </Typography>
           </HStack>
@@ -80,7 +80,7 @@ export const StoryCard: React.FC<StoryCardProps> = ({
           {story.rating !== undefined && (
             <HStack gap="xs" align="center">
               <Icon icon={Star} size="xs" className="text-yellow-500" />
-              <Typography variant="caption" className="text-gray-500 dark:text-gray-400">
+              <Typography variant="caption" className="text-muted-foreground">
                 {story.rating.toFixed(1)}
               </Typography>
             </HStack>
@@ -88,8 +88,8 @@ export const StoryCard: React.FC<StoryCardProps> = ({
 
           {story.playCount !== undefined && (
             <HStack gap="xs" align="center">
-              <Icon icon={Users} size="xs" className="text-gray-400 dark:text-gray-500" />
-              <Typography variant="caption" className="text-gray-500 dark:text-gray-400">
+              <Icon icon={Users} size="xs" className="text-muted-foreground" />
+              <Typography variant="caption" className="text-muted-foreground">
                 {story.playCount.toLocaleString()}
               </Typography>
             </HStack>

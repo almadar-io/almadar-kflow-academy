@@ -52,7 +52,7 @@ const ConceptViewHeader: React.FC<ConceptViewHeaderProps> = ({
       <div className="concept-view-header__main flex items-start gap-3 min-w-0 flex-1">
         <button
           onClick={onBack}
-          className="concept-view-header__back inline-flex items-center rounded-md px-2 py-1 text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors flex-shrink-0"
+          className="concept-view-header__back inline-flex items-center rounded-md px-2 py-1 text-muted-foreground hover:text-foreground hover:bg-surface-hover transition-colors flex-shrink-0"
           title="Back"
           type="button"
         >
@@ -61,14 +61,14 @@ const ConceptViewHeader: React.FC<ConceptViewHeaderProps> = ({
         <div className="flex flex-col min-w-0 flex-1">
           <div className="concept-view-header__title-row mb-1 flex items-center gap-3 flex-wrap">
             <h2
-              className="concept-view-header__title text-lg sm:text-xl font-bold text-gray-900 dark:text-white truncate min-w-0"
+              className="concept-view-header__title text-lg sm:text-xl font-bold text-foreground truncate min-w-0"
               title={title}
             >
               {title}
             </h2>
           </div>
           {subtitle && (
-            <p className="concept-view-header__subtitle text-gray-500 dark:text-gray-400 text-sm">
+            <p className="concept-view-header__subtitle text-muted-foreground text-sm">
               {subtitle}
             </p>
           )}
@@ -99,8 +99,8 @@ const ConceptViewHeader: React.FC<ConceptViewHeaderProps> = ({
                     key={option.mode}
                     type="button"
                     className={`w-full sm:w-auto inline-flex items-center justify-center gap-2 px-3 py-2 text-sm font-medium rounded-md transition-all duration-200 ${isActive
-                      ? 'bg-indigo-100 dark:bg-indigo-900/50 text-indigo-700 dark:text-indigo-300 shadow-sm'
-                      : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-gray-200'
+                      ? 'bg-indigo-100 text-indigo-700 shadow-sm'
+                      : 'text-muted-foreground hover:bg-surface-hover hover:text-foreground'
                       } ${option.disabled ? 'opacity-50 cursor-not-allowed hover:bg-transparent hover:text-gray-600' : ''}`}
                     onClick={() => {
                       if (!option.disabled) {
@@ -124,7 +124,7 @@ const ConceptViewHeader: React.FC<ConceptViewHeaderProps> = ({
   );
 
   return (
-    <header className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 sticky top-0 z-40 shadow-sm transition-all duration-200">
+    <header className="bg-card border-b border-border sticky top-0 z-40 shadow-sm transition-all duration-200">
       <div className="max-w-full mx-auto px-4 sm:px-6 lg:px-8 py-4">
         {renderHeaderContent()}
       </div>

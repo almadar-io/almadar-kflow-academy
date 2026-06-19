@@ -149,7 +149,7 @@ export const OperationPanel: React.FC<OperationPanelProps> = ({
 
         {/* Loading State */}
         {isExecuting && streamingProgress === undefined && (
-          <div className="flex items-center gap-3 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
+          <div className="flex items-center gap-3 p-4 bg-surface rounded-lg">
             <Spinner size="md" />
             <Typography variant="body" color="secondary">
               {executingOp?.label || 'Processing...'}
@@ -183,7 +183,7 @@ export const OperationPanel: React.FC<OperationPanelProps> = ({
                 title="Operation Result"
                 size="lg"
               >
-                <pre className="p-4 bg-gray-100 dark:bg-gray-800 rounded-lg overflow-auto max-h-96">
+                <pre className="p-4 bg-surface rounded-lg overflow-auto max-h-96">
                   {JSON.stringify(result.data, null, 2)}
                 </pre>
               </Modal>
@@ -196,8 +196,8 @@ export const OperationPanel: React.FC<OperationPanelProps> = ({
           <div className={cn(
             'p-4 rounded-lg border',
             result.success
-              ? 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800'
-              : 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800'
+              ? 'bg-success/10 border-[var(--color-success)]/30'
+              : 'bg-error/10 border-[var(--color-error)]/30'
           )}>
             <div className="flex items-center gap-2 mb-2">
               <Badge variant={result.success ? 'success' : 'danger'} size="sm">

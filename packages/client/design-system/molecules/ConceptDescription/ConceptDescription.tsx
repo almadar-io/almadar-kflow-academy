@@ -105,7 +105,7 @@ export const ConceptDescription: React.FC<ConceptDescriptionProps> = ({
           onClick={(e) => e.stopPropagation()}
           placeholder="Enter concept description..."
           rows={4}
-          className="border-2 border-blue-500 dark:border-blue-400 focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-800 resize-none"
+          className="border-2 border-primary focus:ring-2 focus:ring-primary/20 resize-none"
           style={{ minHeight: '100px' }}
         />
       </div>
@@ -114,7 +114,7 @@ export const ConceptDescription: React.FC<ConceptDescriptionProps> = ({
 
   return (
     <div
-      className={`hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 px-2 py-1 rounded cursor-pointer transition-all duration-200 ${className}`}
+      className={`hover:text-primary hover:bg-surface-hover px-2 py-1 rounded cursor-pointer transition-all duration-200 ${className}`}
       style={{ minHeight: '24px' }}
       onClick={handleClick}
       title="Click to edit description"

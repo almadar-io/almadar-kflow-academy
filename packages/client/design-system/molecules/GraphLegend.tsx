@@ -62,7 +62,7 @@ export const GraphLegend = ({
   return (
     <VStack
       gap="sm"
-      className={`p-3 bg-white rounded-lg shadow-sm border border-gray-200 ${className}`}
+      className={`p-3 bg-card rounded-lg shadow-sm border border-border ${className}`}
     >
       {title && (
         <Typography variant="small" className="text-sm font-semibold text-[var(--color-foreground)]">{title}</Typography>

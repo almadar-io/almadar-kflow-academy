@@ -114,24 +114,24 @@ export const EnhancedStatsCards: React.FC<EnhancedStatsCardsProps> = ({
       label: mainStats.learningStreak === 1 ? 'Day Streak' : 'Day Streak',
       value: mainStats.learningStreak.toString(),
       icon: Flame,
-      color: 'text-orange-500',
-      bg: 'bg-orange-100 dark:bg-orange-900/30',
+      color: 'text-[var(--color-warning)]',
+      bg: 'bg-[var(--color-warning)]/10',
       tooltip: 'Consecutive days you\'ve studied. Keep it going!',
     },
     {
       label: mainStats.conceptsMastered === 1 ? 'Concept Mastered' : 'Concepts Mastered',
       value: mainStats.conceptsMastered.toString(),
       icon: Trophy,
-      color: 'text-yellow-500',
-      bg: 'bg-yellow-100 dark:bg-yellow-900/30',
+      color: 'text-[var(--color-warning)]',
+      bg: 'bg-[var(--color-warning)]/10',
       tooltip: 'Concepts you\'ve fully mastered by completing lessons, answering questions, and reflecting on your learning.',
     },
     {
       label: mainStats.activeCourses === 1 ? 'Active Course' : 'Active Courses',
       value: mainStats.activeCourses.toString(),
       icon: BookOpen,
-      color: 'text-blue-500',
-      bg: 'bg-blue-100 dark:bg-blue-900/30',
+      color: 'text-info',
+      bg: 'bg-info/10',
       tooltip: 'Courses you\'re currently enrolled in and haven\'t completed yet.',
     },
   ] : [];
@@ -142,16 +142,16 @@ export const EnhancedStatsCards: React.FC<EnhancedStatsCardsProps> = ({
       label: 'Lessons Completed',
       value: detailedStats.lessonsCompleted.toString(),
       icon: CheckCircle,
-      color: 'text-green-500',
-      bg: 'bg-green-100 dark:bg-green-900/30',
+      color: 'text-success',
+      bg: 'bg-success/10',
       tooltip: 'Total number of lessons you\'ve completed across all courses.',
     },
     {
       label: 'Courses Completed',
       value: detailedStats.coursesCompleted.toString(),
       icon: GraduationCap,
-      color: 'text-purple-500',
-      bg: 'bg-purple-100 dark:bg-purple-900/30',
+      color: 'text-accent',
+      bg: 'bg-accent/10',
       tooltip: 'Total number of courses you\'ve fully completed.',
     },
   ] : [];
@@ -162,10 +162,10 @@ export const EnhancedStatsCards: React.FC<EnhancedStatsCardsProps> = ({
         {Array.from({ length: 3 }).map((_, index) => (
           <Card key={index} loading>
             <div className="flex items-center gap-4">
-              <div className="p-3 rounded-lg bg-gray-100 dark:bg-gray-700 animate-pulse w-12 h-12" />
+              <div className="p-3 rounded-lg bg-muted animate-pulse w-12 h-12" />
               <div className="flex-1">
-                <div className="h-8 bg-gray-100 dark:bg-gray-700 rounded animate-pulse mb-2 w-16" />
-                <div className="h-4 bg-gray-100 dark:bg-gray-700 rounded animate-pulse w-24" />
+                <div className="h-8 bg-muted rounded animate-pulse mb-2 w-16" />
+                <div className="h-4 bg-muted rounded animate-pulse w-24" />
               </div>
             </div>
           </Card>
@@ -201,7 +201,7 @@ export const EnhancedStatsCards: React.FC<EnhancedStatsCardsProps> = ({
             />
             <Tooltip content={stat.tooltip} position="top">
               <div className="absolute right-4 top-4 z-10">
-                <Icon icon={Info} size="sm" className="text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 cursor-help transition-colors" />
+                <Icon icon={Info} size="sm" className="text-muted-foreground hover:text-foreground cursor-help transition-colors" />
               </div>
             </Tooltip>
           </div>
@@ -246,7 +246,7 @@ export const EnhancedStatsCards: React.FC<EnhancedStatsCardsProps> = ({
                 />
                 <Tooltip content={stat.tooltip} position="top">
                   <div className="absolute right-4 top-4 z-10">
-                    <Icon icon={Info} size="sm" className="text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 cursor-help transition-colors" />
+                    <Icon icon={Info} size="sm" className="text-muted-foreground hover:text-foreground cursor-help transition-colors" />
                   </div>
                 </Tooltip>
               </div>

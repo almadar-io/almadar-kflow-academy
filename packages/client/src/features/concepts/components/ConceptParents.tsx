@@ -27,7 +27,7 @@ const ConceptParents: React.FC<ConceptParentsProps> = ({
         <button
           key={parentName}
           onClick={(e) => handleParentClick(parentName, e)}
-          className="px-2 py-1 bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-300 rounded-full text-xs font-medium hover:bg-purple-200 dark:hover:bg-purple-900/50 transition-colors duration-200"
+          className="px-2 py-1 bg-purple-100 text-purple-800 rounded-full text-xs font-medium hover:bg-purple-200 transition-colors duration-200"
           title={`Navigate to ${parentName}`}
         >
           ← {parentName}

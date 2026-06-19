@@ -94,9 +94,9 @@ export const RecommendationsCard: React.FC<RecommendationsCardProps> = ({
 
   return (
     <Card className={className}>
-      <CardHeader className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+      <CardHeader className="px-6 py-4 border-b border-border">
         <div className="flex items-center gap-2">
-          <div className="p-2 bg-purple-100 dark:bg-purple-900/30 rounded-lg text-purple-600 dark:text-purple-400">
+          <div className="p-2 bg-accent/20 rounded-lg text-accent">
             <Icon icon={Sparkles} size="md" />
           </div>
           <Typography variant="h6">Recommended for You</Typography>
@@ -114,18 +114,18 @@ export const RecommendationsCard: React.FC<RecommendationsCardProps> = ({
                 key={course.id}
                 onClick={() => handleCourseClick(course.id)}
                 className={cn(
-                  'flex items-center justify-between p-3 rounded-lg border border-gray-200 dark:border-gray-700',
-                  'hover:border-indigo-300 dark:hover:border-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-900/20',
+                  'flex items-center justify-between p-3 rounded-lg border border-border',
+                  'hover:border-primary/50 hover:bg-primary/10',
                   'transition-colors cursor-pointer group',
                   onCourseClick && 'cursor-pointer'
                 )}
               >
                 <div className="flex items-center gap-3 flex-1 min-w-0">
-                  <div className="p-2 bg-indigo-100 dark:bg-indigo-900/30 rounded-lg text-indigo-600 dark:text-indigo-400 flex-shrink-0">
+                  <div className="p-2 bg-primary/10 rounded-lg text-primary flex-shrink-0">
                     <Icon icon={BookOpen} size="sm" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <Typography variant="body" className="font-medium truncate group-hover:text-indigo-600 dark:group-hover:text-indigo-400">
+                    <Typography variant="body" className="font-medium truncate group-hover:text-primary">
                       {course.title || course.seedConceptName || `Course ${course.id}`}
                     </Typography>
                     {course.description && (
@@ -135,7 +135,7 @@ export const RecommendationsCard: React.FC<RecommendationsCardProps> = ({
                     )}
                   </div>
                 </div>
-                <Icon icon={ArrowRight} size="sm" className="text-gray-400 dark:text-gray-500 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 flex-shrink-0 ml-2" />
+                <Icon icon={ArrowRight} size="sm" className="text-muted-foreground group-hover:text-primary flex-shrink-0 ml-2" />
               </div>
             ))}
           </div>
@@ -154,18 +154,18 @@ export const RecommendationsCard: React.FC<RecommendationsCardProps> = ({
                 key={course.id}
                 onClick={() => handleCourseClick(course.id)}
                 className={cn(
-                  'flex items-center justify-between p-3 rounded-lg border border-gray-200 dark:border-gray-700',
-                  'hover:border-indigo-300 dark:hover:border-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-900/20',
+                  'flex items-center justify-between p-3 rounded-lg border border-border',
+                  'hover:border-primary/50 hover:bg-primary/10',
                   'transition-colors cursor-pointer group',
                   onCourseClick && 'cursor-pointer'
                 )}
               >
                 <div className="flex items-center gap-3 flex-1 min-w-0">
-                  <div className="p-2 bg-purple-100 dark:bg-purple-900/30 rounded-lg text-purple-600 dark:text-purple-400 flex-shrink-0">
+                  <div className="p-2 bg-accent/20 rounded-lg text-accent flex-shrink-0">
                     <Icon icon={BookOpen} size="sm" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <Typography variant="body" className="font-medium truncate group-hover:text-indigo-600 dark:group-hover:text-indigo-400">
+                    <Typography variant="body" className="font-medium truncate group-hover:text-primary">
                       {course.title || course.seedConceptName || `Course ${course.id}`}
                     </Typography>
                     {course.description && (
@@ -175,7 +175,7 @@ export const RecommendationsCard: React.FC<RecommendationsCardProps> = ({
                     )}
                   </div>
                 </div>
-                <Icon icon={ArrowRight} size="sm" className="text-gray-400 dark:text-gray-500 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 flex-shrink-0 ml-2" />
+                <Icon icon={ArrowRight} size="sm" className="text-muted-foreground group-hover:text-primary flex-shrink-0 ml-2" />
               </div>
             ))}
           </div>

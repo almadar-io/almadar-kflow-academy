@@ -74,7 +74,7 @@ const FlashCardsDisplay: React.FC<FlashCardsDisplayProps> = ({
   return (
     <div className="mt-8">
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
+        <h3 className="text-xl font-semibold text-foreground">
           Flash Cards
         </h3>
         <div className="flex items-center gap-2">
@@ -100,7 +100,7 @@ const FlashCardsDisplay: React.FC<FlashCardsDisplayProps> = ({
               {onEdit && (
                 <button
                   onClick={onEdit}
-                  className="inline-flex items-center gap-1 px-3 py-1.5 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700"
+                  className="inline-flex items-center gap-1 px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground border border-border rounded-lg hover:bg-surface-hover"
                 >
                   <Edit2 size={14} />
                   Edit
@@ -108,7 +108,7 @@ const FlashCardsDisplay: React.FC<FlashCardsDisplayProps> = ({
               )}
               <button
                 onClick={handleReset}
-                className="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 flex items-center gap-1"
+                className="text-sm text-muted-foreground hover:text-foreground flex items-center gap-1"
               >
                 <RotateCcw size={14} />
                 Reset All
@@ -120,7 +120,7 @@ const FlashCardsDisplay: React.FC<FlashCardsDisplayProps> = ({
 
       {/* Horizontal scrollable container */}
       <div className="relative">
-        <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-600 scrollbar-track-transparent">
+        <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-thin scrollbar-thumb-border scrollbar-track-transparent">
           {isEditing ? (
             <>
               {editCards.map((card, index) => (
@@ -128,33 +128,33 @@ const FlashCardsDisplay: React.FC<FlashCardsDisplayProps> = ({
                   key={index}
                   className="flex-shrink-0 w-80"
                 >
-                  <div className="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg p-4 shadow-lg">
+                  <div className="bg-card border border-border rounded-lg p-4 shadow-lg">
                     <div className="flex items-center justify-between mb-3">
-                      <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Card {index + 1}</span>
+                      <span className="text-sm font-medium text-foreground">Card {index + 1}</span>
                       <button
                         onClick={() => handleRemoveCard(index)}
-                        className="text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300"
+                        className="text-error hover:text-error/80"
                       >
                         <Trash2 size={16} />
                       </button>
                     </div>
                     <div className="space-y-3">
                       <div>
-                        <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Question</label>
+                        <label className="block text-xs font-medium text-muted-foreground mb-1">Question</label>
                         <textarea
                           value={card.front}
                           onChange={(e) => handleCardChange(index, 'front', e.target.value)}
-                          className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm resize-none"
+                          className="w-full p-2 border border-border rounded bg-background text-foreground text-sm resize-none"
                           rows={3}
                           placeholder="Enter question..."
                         />
                       </div>
                       <div>
-                        <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Answer</label>
+                        <label className="block text-xs font-medium text-muted-foreground mb-1">Answer</label>
                         <textarea
                           value={card.back}
                           onChange={(e) => handleCardChange(index, 'back', e.target.value)}
-                          className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm resize-none"
+                          className="w-full p-2 border border-border rounded bg-background text-foreground text-sm resize-none"
                           rows={3}
                           placeholder="Enter answer..."
                         />
@@ -166,7 +166,7 @@ const FlashCardsDisplay: React.FC<FlashCardsDisplayProps> = ({
               <div className="flex-shrink-0 w-80">
                 <button
                   onClick={handleAddCard}
-                  className="w-full h-64 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg flex flex-col items-center justify-center text-gray-500 dark:text-gray-400 hover:border-gray-400 dark:hover:border-gray-500 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+                  className="w-full h-64 border-2 border-dashed border-border rounded-lg flex flex-col items-center justify-center text-muted-foreground hover:border-border/70 hover:text-foreground transition-colors"
                 >
                   <Plus size={32} />
                   <span className="mt-2 text-sm">Add Card</span>
@@ -225,7 +225,7 @@ const FlashCardsDisplay: React.FC<FlashCardsDisplayProps> = ({
         </div>
       </div>
 
-      <p className="text-xs text-gray-500 dark:text-gray-400 mt-2 text-center">
+      <p className="text-xs text-muted-foreground mt-2 text-center">
         Click on a card to flip it • {flashCards.length} card{flashCards.length !== 1 ? 's' : ''}
       </p>
     </div>

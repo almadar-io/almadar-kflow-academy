@@ -96,10 +96,10 @@ const ConceptLoader: React.FC<ConceptLoaderProps> = ({
   const spinner = (
     <div className="flex flex-col items-center space-y-4">
       <div
-        className={`animate-spin rounded-full border-4 border-indigo-200 dark:border-indigo-800 border-t-indigo-600 dark:border-t-indigo-400 ${sizeClasses[size]}`}
+        className={`animate-spin rounded-full border-4 border-indigo-200 border-t-indigo-600 ${sizeClasses[size]}`}
       />
       {text && (
-        <p className={`text-gray-600 dark:text-gray-300 font-medium text-center ${textSizes[size]}`}>{text}</p>
+        <p className={`text-muted-foreground font-medium text-center ${textSizes[size]}`}>{text}</p>
       )}
     </div>
   );
@@ -107,13 +107,13 @@ const ConceptLoader: React.FC<ConceptLoaderProps> = ({
   const progressBar =
     typeof progress === 'number' ? (
       <div className="w-full">
-        <div className="flex justify-between text-xs font-semibold text-indigo-400 dark:text-indigo-300 mb-2">
+        <div className="flex justify-between text-xs font-semibold text-indigo-400 mb-2">
           <span>Progress</span>
           <span>{Math.min(progress, 100)}%</span>
         </div>
-        <div className="w-full bg-indigo-100 dark:bg-indigo-900/30 rounded-full h-2 overflow-hidden">
+        <div className="w-full bg-indigo-100 rounded-full h-2 overflow-hidden">
           <div
-            className="h-full bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-400 dark:from-indigo-400 dark:via-purple-400 dark:to-pink-400 transition-all duration-300 ease-out"
+            className="h-full bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-400 transition-all duration-300 ease-out"
             style={{ width: `${Math.min(progress, 100)}%` }}
           />
         </div>
@@ -127,7 +127,7 @@ const ConceptLoader: React.FC<ConceptLoaderProps> = ({
         <div className="w-full">
           {/* Learning Goal Section */}
           {extractedGoal && (
-            <div className="mb-6 p-4 bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 dark:from-indigo-900/20 dark:via-purple-900/20 dark:to-pink-900/20 border border-indigo-200 dark:border-indigo-700 rounded-xl shadow-sm">
+            <div className="mb-6 p-4 bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 border border-indigo-200 rounded-xl shadow-sm">
               <div className="flex items-start gap-3">
                 <div className="flex-shrink-0 mt-0.5">
                   <div className="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-sm">
@@ -136,20 +136,20 @@ const ConceptLoader: React.FC<ConceptLoaderProps> = ({
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-2">
-                    <h4 className="text-sm font-semibold text-gray-900 dark:text-gray-100">Learning Goal</h4>
-                    <span className="text-xs text-indigo-500 dark:text-indigo-400 font-medium">Level Target</span>
+                    <h4 className="text-sm font-semibold text-foreground">Learning Goal</h4>
+                    <span className="text-xs text-indigo-500 font-medium">Level Target</span>
                   </div>
-                  <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">{extractedGoal}</p>
+                  <p className="text-sm text-foreground leading-relaxed">{extractedGoal}</p>
                 </div>
               </div>
             </div>
           )}
           
           <div className="flex items-center justify-between mb-3">
-            <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wide">
+            <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
               Generating Concepts
             </h3>
-            <span className="text-xs text-gray-400 dark:text-gray-500">{parsedConcepts.length}</span>
+            <span className="text-xs text-muted-foreground">{parsedConcepts.length}</span>
           </div>
           <div
             ref={scrollContainerRef}
@@ -162,28 +162,28 @@ const ConceptLoader: React.FC<ConceptLoaderProps> = ({
             {parsedConcepts.map((concept, index) => (
               <div
                 key={`${concept.name}-${index}`}
-                className="bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-indigo-900/20 dark:to-purple-900/20 border border-indigo-200 dark:border-indigo-700 rounded-xl p-4 shadow-sm hover:shadow-md transition-all duration-200"
+                className="bg-gradient-to-br from-indigo-50 to-purple-50 border border-indigo-200 rounded-xl p-4 shadow-sm hover:shadow-md transition-all duration-200"
               >
                 <div className="flex items-start gap-3">
-                  <div className="flex-shrink-0 w-8 h-8 rounded-full bg-indigo-500 dark:bg-indigo-600 text-white flex items-center justify-center font-semibold text-sm">
+                  <div className="flex-shrink-0 w-8 h-8 rounded-full bg-indigo-500 text-white flex items-center justify-center font-semibold text-sm">
                     {index + 1}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <h4 className="text-base font-bold text-indigo-700 dark:text-indigo-300 mb-2">
+                    <h4 className="text-base font-bold text-indigo-700 mb-2">
                       {concept.name}
                     </h4>
                     {concept.description && (
-                      <p className="text-sm text-gray-600 dark:text-gray-300 leading-relaxed mb-2">
+                      <p className="text-sm text-muted-foreground leading-relaxed mb-2">
                         {concept.description}
                       </p>
                     )}
                     {concept.parents.length > 0 && (
                       <div className="flex flex-wrap gap-2 mt-2">
-                        <span className="text-xs font-medium text-gray-500 dark:text-gray-400">Prerequisites:</span>
+                        <span className="text-xs font-medium text-muted-foreground">Prerequisites:</span>
                         {concept.parents.map((parent, i) => (
                           <span
                             key={i}
-                            className="inline-flex items-center px-2 py-1 rounded-md bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 text-xs font-medium"
+                            className="inline-flex items-center px-2 py-1 rounded-md bg-indigo-100 text-indigo-700 text-xs font-medium"
                           >
                             {parent}
                           </span>
@@ -204,18 +204,18 @@ const ConceptLoader: React.FC<ConceptLoaderProps> = ({
       return (
         <div className="w-full">
           <div className="flex items-center justify-between mb-3">
-            <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wide">Previous Lessons</h3>
-            <span className="text-xs text-gray-400 dark:text-gray-500">{lessons.length}</span>
+            <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">Previous Lessons</h3>
+            <span className="text-xs text-muted-foreground">{lessons.length}</span>
           </div>
           <div className="overflow-x-auto pb-2 -mx-2">
             <div className="flex gap-4 px-2 min-w-max">
               {lessons.map(lesson => (
                 <article
                   key={lesson.id}
-                  className="w-64 flex-shrink-0 bg-white dark:bg-gray-800 border border-indigo-100 dark:border-indigo-800 rounded-xl shadow-sm hover:shadow-md transition-shadow duration-200 p-4"
+                  className="w-64 flex-shrink-0 bg-card border border-indigo-100 rounded-xl shadow-sm hover:shadow-md transition-shadow duration-200 p-4"
                 >
-                  <h4 className="text-sm font-semibold text-indigo-700 dark:text-indigo-300 mb-2 line-clamp-2">{lesson.title}</h4>
-                  <p className="text-xs text-gray-500 dark:text-gray-400 leading-relaxed line-clamp-5">
+                  <h4 className="text-sm font-semibold text-indigo-700 mb-2 line-clamp-2">{lesson.title}</h4>
+                  <p className="text-xs text-muted-foreground leading-relaxed line-clamp-5">
                     {lesson.content.trim().length > 0
                       ? lesson.content.replace(/\s+/g, ' ').slice(0, 220) +
                         (lesson.content.length > 220 ? '…' : '')
@@ -230,7 +230,7 @@ const ConceptLoader: React.FC<ConceptLoaderProps> = ({
     }
 
     return (
-      <div className="w-full text-center text-sm text-indigo-600 dark:text-indigo-400 font-medium bg-indigo-50 dark:bg-indigo-900/20 border border-indigo-100 dark:border-indigo-800 rounded-xl py-3 px-4">
+      <div className="w-full text-center text-sm text-primary font-medium bg-indigo-50 border border-indigo-100 rounded-xl py-3 px-4">
         {emptyLessonsText}
       </div>
     );
@@ -240,11 +240,11 @@ const ConceptLoader: React.FC<ConceptLoaderProps> = ({
 
   return (
     <div
-      className={`fixed inset-0 z-[99999] flex items-center justify-center bg-gradient-to-br from-indigo-950/80 via-purple-900/70 to-slate-900/80 dark:from-indigo-950/90 dark:via-purple-950/90 dark:to-slate-950/90 backdrop-blur ${
+      className={`fixed inset-0 z-[99999] flex items-center justify-center bg-gradient-to-br from-indigo-950/80 via-purple-900/70 to-slate-900/80 backdrop-blur ${
         className ?? ''
       }`}
     >
-      <div className="w-full max-w-3xl bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded-2xl shadow-xl border border-indigo-100 dark:border-indigo-800 p-6 sm:p-8 space-y-6">
+      <div className="w-full max-w-3xl bg-card text-foreground rounded-2xl shadow-xl border border-indigo-100 p-6 sm:p-8 space-y-6">
         {spinner}
         {progressBar}
         {lessonGallery}

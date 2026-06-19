@@ -218,7 +218,7 @@ export function KnowledgeChallengeBoard({
             <Button
               size="sm"
               variant="secondary"
-              className="px-4 py-2 bg-gray-100 text-[var(--color-foreground)] rounded-lg hover:bg-gray-200 flex items-center gap-2"
+              className="px-4 py-2 rounded-lg flex items-center gap-2"
               onClick={handleHint}
               disabled={currentHintsUsed >= challenge.hints.length}
             >

@@ -662,10 +662,10 @@ export const TreeMap: React.FC<TreeMapProps> = ({
   // Empty state
   if (!data) {
     return (
-      <div 
+      <div
         className={cn(
           'flex items-center justify-center h-full min-h-[400px]',
-          'bg-gray-50 dark:bg-gray-900 rounded-lg',
+          'bg-surface rounded-lg',
           className
         )}
       >
@@ -679,8 +679,8 @@ export const TreeMap: React.FC<TreeMapProps> = ({
       ref={containerRef}
       className={cn(
         'relative w-full h-full min-h-[400px] overflow-hidden',
-        'bg-gray-50 dark:bg-gray-900 rounded-lg',
-        'border border-gray-200 dark:border-gray-700',
+        'bg-surface rounded-lg',
+        'border border-border',
         isDragging ? 'cursor-grabbing' : 'cursor-grab',
         enableKeyboardNavigation && 'focus:outline-none',
         className
@@ -763,9 +763,8 @@ export const TreeMap: React.FC<TreeMapProps> = ({
                 key={index}
                 d={`M ${fromCenterX} ${fromCenterY} Q ${midX} ${fromCenterY} ${midX} ${midY} Q ${midX} ${toCenterY} ${toCenterX} ${toCenterY}`}
                 fill="none"
-                stroke="#94a3b8"
+                stroke="var(--color-border)"
                 strokeWidth="2"
-                className="dark:stroke-gray-600"
               />
             );
           })}
@@ -784,10 +783,10 @@ export const TreeMap: React.FC<TreeMapProps> = ({
               className={cn(
                 'absolute transition-shadow duration-200',
                 'rounded-lg shadow-md cursor-pointer',
-                'bg-white dark:bg-gray-800',
+                'bg-card',
                 'border-2',
                 isSelected
-                  ? 'ring-2 ring-offset-2 ring-indigo-500 dark:ring-offset-gray-900'
+                  ? 'ring-2 ring-offset-2 ring-primary'
                   : 'hover:shadow-lg'
               )}
               style={{
@@ -819,12 +818,12 @@ export const TreeMap: React.FC<TreeMapProps> = ({
                 {collapsible && hasChildren && (
                   <button
                     onClick={(e) => handleToggleExpand(node, e)}
-                    className="mr-2 p-1 rounded hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                    className="mr-2 p-1 rounded hover:bg-surface-hover transition-colors"
                   >
                     {isExpanded ? (
-                      <ChevronDown className="w-4 h-4 text-gray-500" />
+                      <ChevronDown className="w-4 h-4 text-muted-foreground" />
                     ) : (
-                      <ChevronRight className="w-4 h-4 text-gray-500" />
+                      <ChevronRight className="w-4 h-4 text-muted-foreground" />
                     )}
                   </button>
                 )}

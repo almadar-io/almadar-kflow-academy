@@ -106,7 +106,7 @@ export const GoalReview: React.FC<GoalReviewProps> = ({
     return (
       <div className="space-y-4 relative">
         {/* Vertical Line for Timeline Effect */}
-        <div className="absolute left-[19px] top-4 bottom-4 w-0.5 bg-gray-200 dark:bg-gray-700 -z-10" />
+        <div className="absolute left-[19px] top-4 bottom-4 w-0.5 bg-border -z-10" />
 
         {goal.milestones.map((milestone, index) => {
           const isLast = index === goal.milestones!.length - 1;
@@ -114,14 +114,14 @@ export const GoalReview: React.FC<GoalReviewProps> = ({
           return (
             <div key={milestone.id} className="group relative flex gap-4">
               {/* Icon/Status Indicator */}
-              <div className="flex-shrink-0 w-10 h-10 rounded-full border-4 flex items-center justify-center bg-white dark:bg-gray-800 border-indigo-100 dark:border-indigo-900/30 text-indigo-600 dark:text-indigo-400 transition-colors duration-300">
-                <Circle size={16} className="fill-indigo-50 dark:fill-indigo-900/20" />
+              <div className="flex-shrink-0 w-10 h-10 rounded-full border-4 flex items-center justify-center bg-card border-primary/20 text-primary transition-colors duration-300">
+                <Circle size={16} className="fill-primary/5" />
               </div>
 
               {/* Content Card */}
-              <div className="flex-1 min-w-0 rounded-xl border border-indigo-200 dark:border-indigo-800 bg-white dark:bg-gray-800 shadow-sm p-4 transition-all duration-200">
+              <div className="flex-1 min-w-0 rounded-xl border border-primary/20 bg-card shadow-sm p-4 transition-all duration-200">
                 <div className="flex items-start justify-between gap-4 mb-2">
-                  <Typography variant="h6" className="font-semibold text-gray-900 dark:text-white">
+                  <Typography variant="h6" className="font-semibold text-foreground">
                     {milestone.title}
                   </Typography>
                 </div>
@@ -142,7 +142,7 @@ export const GoalReview: React.FC<GoalReviewProps> = ({
   return (
     <div className={cn('w-full', className)}>
       <Card>
-        <CardHeader className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+        <CardHeader className="px-6 py-4 border-b border-border">
           <div className="flex flex-col sm:flex-row justify-between items-start gap-4">
             <Typography variant="h5" className="text-xl sm:text-2xl font-bold">
               Review Your Learning Goal
@@ -281,7 +281,7 @@ export const GoalReview: React.FC<GoalReviewProps> = ({
             </>
           )}
         </div>
-        <CardFooter className="px-6 py-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50">
+        <CardFooter className="px-6 py-4 border-t border-border bg-surface">
           <div className="flex justify-end gap-4">
             <Button
               variant="primary"

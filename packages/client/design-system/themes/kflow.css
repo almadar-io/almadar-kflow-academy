@@ -54,9 +54,17 @@
     --color-card: #ffffff;
     --color-card-foreground: #0f172a;
     --color-surface: #eff6ff;
+    --color-surface-hover: #dbeafe;
     --color-border: rgba(37, 99, 235, 0.2);
+    --color-border-hover: rgba(37, 99, 235, 0.35);
     --color-input: rgba(37, 99, 235, 0.12);
     --color-ring: #2563eb;
+    --color-placeholder: #94a3b8;
+
+    /* Table / data-surface tokens (consumed by @almadar/ui DataGrid) */
+    --color-table-header: #eff6ff;
+    --color-table-border: rgba(37, 99, 235, 0.15);
+    --color-table-row-hover: rgba(37, 99, 235, 0.06);
 
     /* Semantic colors */
     --color-error: #dc2626;
@@ -152,9 +160,17 @@
     --color-card: #131d33;
     --color-card-foreground: #e2e8f0;
     --color-surface: #172033;
+    --color-surface-hover: #1e3050;
     --color-border: rgba(59, 130, 246, 0.25);
+    --color-border-hover: rgba(59, 130, 246, 0.45);
     --color-input: rgba(59, 130, 246, 0.2);
     --color-ring: #3b82f6;
+    --color-placeholder: #64748b;
+
+    /* Table / data-surface tokens (consumed by @almadar/ui DataGrid) */
+    --color-table-header: #172033;
+    --color-table-border: rgba(148, 163, 184, 0.18);
+    --color-table-row-hover: rgba(59, 130, 246, 0.1);
 
     /* Semantic colors */
     --color-error: #f87171;

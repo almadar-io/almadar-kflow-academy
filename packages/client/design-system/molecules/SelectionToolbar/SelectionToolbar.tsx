@@ -286,7 +286,7 @@ export const SelectionToolbar: React.FC<SelectionToolbarProps> = ({
         className={cn(
           'fixed top-0 left-0 right-0 z-[9999]',
           'flex items-center justify-between px-3 py-2',
-          'bg-indigo-600 dark:bg-indigo-700',
+          'bg-primary',
           'shadow-lg',
           'animate-in slide-in-from-top duration-200',
           className
@@ -343,9 +343,9 @@ export const SelectionToolbar: React.FC<SelectionToolbarProps> = ({
       ref={toolbarRef}
       className={cn(
         'fixed z-[9999] flex items-center gap-1 p-1.5',
-        'bg-white dark:bg-gray-800',
+        'bg-card',
         'rounded-lg shadow-lg',
-        'border border-gray-200 dark:border-gray-700',
+        'border border-border',
         'animate-in fade-in-0 zoom-in-95 duration-150',
         className
       )}
@@ -361,7 +361,7 @@ export const SelectionToolbar: React.FC<SelectionToolbarProps> = ({
           size="sm"
           icon={MessageCircleQuestion}
           onClick={handleAskQuestion}
-          className="text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/30"
+          className="text-info hover:bg-info/10"
           title="Ask a question about this text"
         >
           <span className="hidden sm:inline">Ask Question</span>
@@ -374,21 +374,21 @@ export const SelectionToolbar: React.FC<SelectionToolbarProps> = ({
           size="sm"
           icon={StickyNote}
           onClick={handleAddNote}
-          className="text-yellow-600 dark:text-yellow-400 hover:bg-yellow-50 dark:hover:bg-yellow-900/30"
+          className="text-warning hover:bg-warning/10"
           title="Add a note about this text"
         >
           <span className="hidden sm:inline">Add Note</span>
         </Button>
       )}
       
-      <div className="w-px h-6 bg-gray-200 dark:bg-gray-700 mx-1" />
+      <div className="w-px h-6 bg-border mx-1" />
       
       <Button
         variant="ghost"
         size="sm"
         icon={X}
         onClick={handleClose}
-        className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 p-1"
+        className="text-muted-foreground hover:text-foreground p-1"
         title="Close"
       >
         <span className="sr-only">Close</span>

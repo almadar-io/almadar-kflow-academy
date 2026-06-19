@@ -137,14 +137,14 @@ export function KnowledgeBattleBoard({
                   <HStack gap="sm">
                     <Button
                       variant="primary"
-                      className="px-6 py-3 bg-indigo-600 text-white font-medium rounded-lg hover:bg-indigo-700"
+                      className="px-6 py-3 font-medium rounded-lg"
                       onClick={handleAnswerCorrect}
                     >
                       {t('battle.answerCorrectly')}
                     </Button>
                     <Button
                       variant="secondary"
-                      className="px-4 py-2 bg-gray-100 text-[var(--color-foreground)] rounded-lg hover:bg-gray-200"
+                      className="px-4 py-2 rounded-lg"
                       onClick={handleAnswerWrong}
                     >
                       {t('battle.wrongAnswer')}
@@ -172,7 +172,7 @@ export function KnowledgeBattleBoard({
                 )}
                 <Button
                   variant="primary"
-                  className="px-6 py-3 bg-indigo-600 text-white font-medium rounded-lg hover:bg-indigo-700"
+                  className="px-6 py-3 font-medium rounded-lg"
                   onClick={handleComplete}
                 >
                   {phase === 'victory' ? t('battle.claimReward') : t('battle.tryAgain')}

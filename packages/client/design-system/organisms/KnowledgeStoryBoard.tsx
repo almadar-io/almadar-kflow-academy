@@ -460,7 +460,7 @@ export function KnowledgeStoryBoard({
             />
             {battleDefeated && (
               <HStack gap="sm" justify="center" className="py-4">
-                <Typography variant="body" className="text-red-400">
+                <Typography variant="body" className="text-error">
                   {t('story.battleDefeat')}
                 </Typography>
                 <Button variant="secondary" size="md" onClick={handleRetryGame}>

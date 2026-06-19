@@ -102,7 +102,7 @@ export function KnowledgeWorldMapBoard({
                 <Card
                   key={region.id}
                   data-entity-row={region.id}
-                  className={`cursor-pointer transition-all ${isCurrent ? 'ring-2 ring-indigo-500' : ''} ${!region.unlocked ? 'opacity-50' : ''}`}
+                  className={`cursor-pointer transition-all ${isCurrent ? 'ring-2 ring-primary' : ''} ${!region.unlocked ? 'opacity-50' : ''}`}
                   onClick={handleRegionClick}
                 >
                   <HStack justify="between" align="center">
@@ -183,7 +183,7 @@ export function KnowledgeWorldMapBoard({
                           <Button
                             size="sm"
                             variant="primary"
-                            className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 flex items-center gap-2"
+                            className="px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 flex items-center gap-2"
                             onClick={handleStart}
                           >
                             <Sword size={14} />
@@ -209,7 +209,7 @@ export function KnowledgeWorldMapBoard({
                         data-entity-row={adj.id}
                         size="sm"
                         variant="secondary"
-                        className="px-4 py-2 bg-gray-100 text-[var(--color-foreground)] rounded-lg hover:bg-gray-200"
+                        className="px-4 py-2 bg-surface text-[var(--color-foreground)] rounded-lg hover:bg-surface-hover"
                         disabled={!adj.unlocked}
                         onClick={handleNav}
                       >

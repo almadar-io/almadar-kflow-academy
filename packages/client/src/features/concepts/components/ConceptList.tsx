@@ -81,10 +81,10 @@ const ConceptListItem: React.FC<ConceptListItemProps & { itemRef?: React.RefObje
 
   const cardBaseClasses = 'p-4 border rounded-lg mb-3 transition-all duration-200 cursor-pointer';
   const cardStateClasses = isSelected
-    ? 'border-indigo-500 dark:border-indigo-600 bg-indigo-50 dark:bg-indigo-900/30 shadow-md'
+    ? 'border-indigo-500 bg-indigo-50 shadow-md'
     : hasLesson
-      ? 'border-emerald-400 dark:border-emerald-600 bg-emerald-50/70 dark:bg-emerald-900/20 hover:border-emerald-500 dark:hover:border-emerald-500 hover:shadow-md'
-      : 'border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 hover:border-gray-300 dark:hover:border-gray-600 hover:shadow-sm';
+      ? 'border-emerald-400 bg-emerald-50/70 hover:border-emerald-500 hover:shadow-md'
+      : 'border-border bg-card hover:border-border hover:shadow-sm';
 
   return (
     <div>
@@ -127,7 +127,7 @@ const ConceptListItem: React.FC<ConceptListItemProps & { itemRef?: React.RefObje
         )}
         {hasLesson && (
           <div
-            className={`mt-3 text-xs font-semibold uppercase tracking-wide ${isSelected ? 'text-indigo-600 dark:text-indigo-400' : 'text-emerald-600 dark:text-emerald-400'
+            className={`mt-3 text-xs font-semibold uppercase tracking-wide ${isSelected ? 'text-indigo-600' : 'text-emerald-600'
               }`}
           >
             Lesson Available
@@ -231,8 +231,8 @@ interface ConceptListProps {
 }
 
 const ConceptListEmptyState: React.FC = () => (
-  <div className="text-center py-12 bg-gray-50 dark:bg-gray-800 rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-700">
-    <p className="text-gray-500 dark:text-gray-400 text-lg mb-4">No concepts yet</p>
+  <div className="text-center py-12 bg-muted rounded-lg border-2 border-dashed border-border">
+    <p className="text-muted-foreground text-lg mb-4">No concepts yet</p>
   </div>
 );
 
@@ -278,26 +278,26 @@ const ConceptLevelSection: React.FC<ConceptLevelSectionProps> = ({
 
   return (
     <div className="space-y-3" ref={sectionRef}>
-      <div className="flex items-center justify-between border-b border-gray-200 dark:border-gray-700 pb-3">
+      <div className="flex items-center justify-between border-b border-border pb-3">
         <button
           type="button"
           onClick={onToggle}
-          className="flex items-center gap-3 text-left text-xl font-semibold text-gray-900 dark:text-gray-100 focus:outline-none flex-1"
+          className="flex items-center gap-3 text-left text-xl font-semibold text-foreground focus:outline-none flex-1"
         >
-          <span className="flex h-9 w-9 items-center justify-center rounded-full bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 flex-shrink-0">
+          <span className="flex h-9 w-9 items-center justify-center rounded-full bg-indigo-100 text-indigo-700 flex-shrink-0">
             {isExpanded ? <Minus size={18} /> : <Plus size={18} />}
           </span>
           <span className="flex items-center gap-2">
             <Layers size={20} className="text-indigo-600" />
             <span>Level {level + 1}</span>
-            <span className="text-sm font-normal text-gray-500">
+            <span className="text-sm font-normal text-muted-foreground">
               ({concepts.length} concept{concepts.length !== 1 ? 's' : ''})
             </span>
           </span>
         </button>
       </div>
       {goal && isGoalExpanded && (
-        <div className="w-full mb-1 p-4 bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 dark:from-indigo-900/20 dark:via-purple-900/20 dark:to-pink-900/20 border border-indigo-200 dark:border-indigo-700 rounded-lg shadow-sm">
+        <div className="w-full mb-1 p-4 bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 border border-indigo-200 rounded-lg shadow-sm">
           <div className="flex items-start gap-3">
             <div className="flex-shrink-0 mt-0.5">
               <div className="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-sm">
@@ -306,10 +306,10 @@ const ConceptLevelSection: React.FC<ConceptLevelSectionProps> = ({
             </div>
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2 mb-2">
-                <h4 className="text-sm font-semibold text-gray-900 dark:text-gray-100">Learning Goal</h4>
-                <Info size={14} className="text-indigo-500 dark:text-indigo-400 flex-shrink-0" />
+                <h4 className="text-sm font-semibold text-foreground">Learning Goal</h4>
+                <Info size={14} className="text-indigo-500 flex-shrink-0" />
               </div>
-              <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">{goal}</p>
+              <p className="text-sm text-foreground leading-relaxed">{goal}</p>
             </div>
           </div>
         </div>
@@ -340,14 +340,14 @@ const ConceptLevelSection: React.FC<ConceptLevelSectionProps> = ({
             
             return (
               <>
-                <div className="pt-3 mt-3 border-t border-gray-200 dark:border-gray-700">
+                <div className="pt-3 mt-3 border-t border-border">
                   <button
                     type="button"
                     onClick={(e) => {
                       e.stopPropagation();
                       setIsPracticeModalOpen(true);
                     }}
-                    className="w-full flex items-center justify-center gap-2 px-4 py-3 text-sm font-semibold text-white bg-indigo-600 dark:bg-indigo-500 hover:bg-indigo-700 dark:hover:bg-indigo-600 active:bg-indigo-800 dark:active:bg-indigo-700 rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 shadow-sm hover:shadow-md cursor-pointer"
+                    className="w-full flex items-center justify-center gap-2 px-4 py-3 text-sm font-semibold text-primary-foreground bg-primary hover:bg-primary/90 active:bg-primary/80 rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 shadow-sm hover:shadow-md cursor-pointer"
                   >
                     <BookOpen size={16} />
                     <span>Level {level + 1} Final Review</span>
@@ -438,11 +438,11 @@ const ConceptList: React.FC<ConceptListProps> = ({
       )}
 
       {levels.length > 0 && (
-        <div className="flex justify-center pt-4 border-t border-gray-200 dark:border-gray-700">
+        <div className="flex justify-center pt-4 border-t border-border">
           <button
             onClick={onLoadMoreLayers}
             disabled={isLoading}
-            className="inline-flex items-center gap-2 px-6 py-3 bg-indigo-600 dark:bg-indigo-500 text-white rounded-lg hover:bg-indigo-700 dark:hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors duration-200 font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+            className="inline-flex items-center gap-2 px-6 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-colors duration-200 font-medium disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isLoading ? (
               <>

@@ -410,11 +410,11 @@ export function applyHighlightingToDOM(
     const firstChunk = chunks[0];
     let highlightClass = '';
     if (firstChunk.hasQuestion && firstChunk.hasNote) {
-      highlightClass = 'bg-gradient-to-r from-indigo-200/20 via-purple-200/20 to-green-200/20 dark:from-indigo-800/20 dark:via-purple-800/20 dark:to-green-800/20 px-0.5 py-0.5 rounded-sm cursor-pointer';
+      highlightClass = 'bg-accent/20 px-0.5 py-0.5 rounded-sm cursor-pointer';
     } else if (firstChunk.hasQuestion) {
-      highlightClass = 'bg-indigo-200/20 dark:bg-indigo-800/20 px-0.5 py-0.5 rounded-sm cursor-pointer';
+      highlightClass = 'bg-info/20 px-0.5 py-0.5 rounded-sm cursor-pointer';
     } else if (firstChunk.hasNote) {
-      highlightClass = 'bg-green-200/20 dark:bg-green-800/20 px-0.5 py-0.5 rounded-sm cursor-help';
+      highlightClass = 'bg-success/20 px-0.5 py-0.5 rounded-sm cursor-help';
     }
 
     // Apply highlighting for each chunk (all matches in all blocks)

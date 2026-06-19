@@ -53,8 +53,8 @@ export function AnnotationViewModal({ entity }: AnnotationViewModalProps): React
           <Box
             className={
               isQuestion
-                ? 'border-l-4 p-3 rounded-r-md bg-blue-50 dark:bg-blue-900/20 border-blue-500'
-                : 'border-l-4 p-3 rounded-r-md bg-yellow-50 dark:bg-yellow-900/20 border-yellow-500'
+                ? 'border-l-4 p-3 rounded-r-md bg-info/10 border-info'
+                : 'border-l-4 p-3 rounded-r-md bg-warning/10 border-warning'
             }
           >
             <Typography variant="small" color="muted">
@@ -69,16 +69,16 @@ export function AnnotationViewModal({ entity }: AnnotationViewModalProps): React
         {qa && (
           <VStack gap="md">
             <VStack gap="xs">
-              <Typography variant="small" className="font-semibold text-blue-600 dark:text-blue-400">
+              <Typography variant="small" className="font-semibold text-info">
                 {t('annotation.question')}
               </Typography>
               <Typography variant="body">{qa.question}</Typography>
             </VStack>
             <VStack gap="xs">
-              <Typography variant="small" className="font-semibold text-green-600 dark:text-green-400">
+              <Typography variant="small" className="font-semibold text-success">
                 {t('annotation.answer')}
               </Typography>
-              <Box className="prose dark:prose-invert max-w-none">
+              <Box className="prose max-w-none">
                 <MarkdownContent content={qa.answer} />
               </Box>
             </VStack>
@@ -89,7 +89,7 @@ export function AnnotationViewModal({ entity }: AnnotationViewModalProps): React
           <Typography variant="body">{note.text}</Typography>
         )}
 
-        <HStack className="pt-4 border-t border-gray-200 dark:border-gray-700 justify-between">
+        <HStack className="pt-4 border-t border-border justify-between">
           <Typography variant="small" color="muted">
             {t('annotation.created', { date: new Date(annotation.timestamp).toLocaleString() })}
           </Typography>

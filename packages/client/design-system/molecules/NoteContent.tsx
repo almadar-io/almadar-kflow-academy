@@ -130,7 +130,7 @@ export const NoteContent = ({
           onKeyDown={handleKeyDown}
           rows={rows}
           placeholder={placeholder}
-          className="w-full border-2 border-blue-500 focus:ring-2 focus:ring-blue-200"
+          className="w-full border-2 border-primary focus:ring-2 focus:ring-primary/20"
         />
         <Typography variant="small" className="text-[var(--color-muted-foreground)] mt-1">
           Ctrl+Enter to save, Esc to cancel
@@ -148,7 +148,7 @@ export const NoteContent = ({
 
   return (
     <Box
-      className={`cursor-pointer hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded px-2 py-1 transition-colors ${className || ""}`}
+      className={`cursor-pointer hover:bg-surface-hover rounded px-2 py-1 transition-colors ${className || ""}`}
       onClick={handleStartEditing}
       title="Click to edit content"
     >

@@ -128,10 +128,10 @@ export const AchievementsCard: React.FC<AchievementsCardProps> = ({
 
   return (
     <Card className={className}>
-      <CardHeader className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+      <CardHeader className="px-6 py-4 border-b border-border">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <div className="p-2 bg-yellow-100 dark:bg-yellow-900/30 rounded-lg text-yellow-600 dark:text-yellow-400">
+            <div className="p-2 bg-[var(--color-warning)]/10 rounded-lg text-[var(--color-warning)]">
               <Icon icon={Award} size="md" />
             </div>
             <Typography variant="h6">Achievements</Typography>
@@ -164,13 +164,13 @@ export const AchievementsCard: React.FC<AchievementsCardProps> = ({
                 className={cn(
                   'relative p-4 rounded-lg border-2 transition-all',
                   isUnlocked
-                    ? 'border-yellow-300 dark:border-yellow-600 bg-yellow-50 dark:bg-yellow-900/20'
-                    : 'border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-700/50 opacity-60'
+                    ? 'border-[var(--color-warning)]/50 bg-[var(--color-warning)]/5'
+                    : 'border-border bg-surface opacity-60'
                 )}
               >
                 {!isUnlocked && (
                   <div className="absolute top-2 right-2">
-                    <Icon icon={Lock} size="sm" color="text-gray-400 dark:text-gray-500" />
+                    <Icon icon={Lock} size="sm" color="text-muted-foreground" />
                   </div>
                 )}
                 <div className="text-center">
@@ -180,8 +180,8 @@ export const AchievementsCard: React.FC<AchievementsCardProps> = ({
                     className={cn(
                       'text-xs font-semibold mb-1',
                       isUnlocked
-                        ? 'text-gray-900 dark:text-white'
-                        : 'text-gray-500 dark:text-gray-400'
+                        ? 'text-foreground'
+                        : 'text-muted-foreground'
                     )}
                   >
                     {achievement.name}

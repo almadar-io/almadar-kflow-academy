@@ -103,7 +103,7 @@ const FlashCardsDisplay = ({
                 onClick={handleSave}
                 variant="primary"
                 size="sm"
-                className="inline-flex items-center gap-1 bg-green-600 hover:bg-green-700"
+                className="inline-flex items-center gap-1"
               >
                 <Check size={16} />
                 {t('flashcard.save')}
@@ -147,7 +147,7 @@ const FlashCardsDisplay = ({
 
       {/* Horizontal scrollable container */}
       <Box className="relative">
-        <HStack gap="md" className="overflow-x-auto pb-4 scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-600 scrollbar-track-transparent">
+        <HStack gap="md" className="overflow-x-auto pb-4 scrollbar-thin scrollbar-thumb-[var(--color-border)] scrollbar-track-transparent">
           {isEditing ? (
             <>
               {editCards.map((card, index) => {
@@ -157,14 +157,14 @@ const FlashCardsDisplay = ({
                   key={index}
                   className="flex-shrink-0 w-80"
                 >
-                  <Box className="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg p-4 shadow-lg">
+                  <Box className="bg-card border border-border rounded-lg p-4 shadow-lg">
                     <HStack justify="between" align="center" className="mb-3">
                       <Typography variant="small" className="font-medium text-[var(--color-foreground)]">{t('flashcard.cardNumber', { number: index + 1 })}</Typography>
                       <Button
                         onClick={handleRemove}
                         variant="secondary"
                         size="sm"
-                        className="text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 p-0"
+                        className="text-error hover:text-error/80 p-0"
                       >
                         <Trash2 size={16} />
                       </Button>
@@ -175,7 +175,7 @@ const FlashCardsDisplay = ({
                         <Textarea
                           value={card.front}
                           onChange={(e) => handleCardChange(index, 'front', e.target.value)}
-                          className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-[var(--color-foreground)] text-sm resize-none"
+                          className="w-full p-2 border border-border rounded bg-card text-[var(--color-foreground)] text-sm resize-none"
                           rows={3}
                           placeholder={t('flashcard.enterQuestion')}
                         />
@@ -185,7 +185,7 @@ const FlashCardsDisplay = ({
                         <Textarea
                           value={card.back}
                           onChange={(e) => handleCardChange(index, 'back', e.target.value)}
-                          className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-[var(--color-foreground)] text-sm resize-none"
+                          className="w-full p-2 border border-border rounded bg-card text-[var(--color-foreground)] text-sm resize-none"
                           rows={3}
                           placeholder={t('flashcard.enterAnswer')}
                         />
@@ -199,7 +199,7 @@ const FlashCardsDisplay = ({
                 <Button
                   onClick={handleAddCard}
                   variant="secondary"
-                  className="w-full h-64 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg flex flex-col items-center justify-center text-[var(--color-muted-foreground)] hover:border-gray-400 dark:hover:border-gray-500 hover:text-[var(--color-foreground)] transition-colors"
+                  className="w-full h-64 border-2 border-dashed border-border rounded-lg flex flex-col items-center justify-center text-[var(--color-muted-foreground)] hover:border-border-hover hover:text-[var(--color-foreground)] transition-colors"
                 >
                   <Plus size={32} />
                   <Typography variant="small" className="mt-2">{t('flashcard.addCard')}</Typography>
@@ -232,8 +232,8 @@ const FlashCardsDisplay = ({
                         transform: 'rotateY(0deg)',
                       }}
                     >
-                      <VStack gap="sm" align="center" justify="center" className="bg-gradient-to-br from-indigo-500 to-purple-600 text-white rounded-lg w-full h-full p-6">
-                        <Typography variant="small" className="text-indigo-100 font-medium">{t('flashcard.question')}</Typography>
+                      <VStack gap="sm" align="center" justify="center" className="bg-gradient-to-br from-primary to-accent text-primary-foreground rounded-lg w-full h-full p-6">
+                        <Typography variant="small" className="text-primary-foreground/70 font-medium">{t('flashcard.question')}</Typography>
                         <Typography variant="body" className="text-lg font-medium text-center">{card.front}</Typography>
                       </VStack>
                     </Box>
@@ -246,8 +246,8 @@ const FlashCardsDisplay = ({
                         transform: 'rotateY(180deg)',
                       }}
                     >
-                      <VStack gap="sm" align="center" justify="center" className="bg-gradient-to-br from-purple-500 to-pink-600 text-white rounded-lg w-full h-full p-6">
-                        <Typography variant="small" className="text-purple-100 font-medium">{t('flashcard.answer')}</Typography>
+                      <VStack gap="sm" align="center" justify="center" className="bg-gradient-to-br from-accent to-primary text-accent-foreground rounded-lg w-full h-full p-6">
+                        <Typography variant="small" className="text-accent-foreground/70 font-medium">{t('flashcard.answer')}</Typography>
                         <Typography variant="body" className="text-base text-center leading-relaxed">{card.back}</Typography>
                       </VStack>
                     </Box>

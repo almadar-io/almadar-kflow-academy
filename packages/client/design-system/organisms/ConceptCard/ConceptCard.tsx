@@ -167,13 +167,13 @@ export const ConceptCard: React.FC<ConceptCardProps> = ({
       className={cn(
         'transition-all duration-200',
         // Highlighted state (lesson ready)
-        isHighlighted && !isCurrent && !isCompleted && 'border-l-4 border-l-emerald-500 bg-emerald-50/50 dark:bg-emerald-900/10',
+        isHighlighted && !isCurrent && !isCompleted && 'border-l-4 border-l-success bg-success/5',
         // Current/active state
-        isCurrent && !isCompleted && 'ring-2 ring-indigo-500 border-l-4 border-l-indigo-500 bg-indigo-50 dark:bg-indigo-900/20',
+        isCurrent && !isCompleted && 'ring-2 ring-primary border-l-4 border-l-primary bg-primary/5',
         // Completed state
         isCompleted && 'opacity-60',
         // Default non-highlighted state
-        !isHighlighted && !isCurrent && !isCompleted && 'border-l-4 border-l-gray-200 dark:border-l-gray-700',
+        !isHighlighted && !isCurrent && !isCompleted && 'border-l-4 border-l-border',
         className
       )}
       onClick={onClick}
@@ -193,7 +193,7 @@ export const ConceptCard: React.FC<ConceptCardProps> = ({
               <Icon
                 icon={expanded ? ChevronDown : ChevronRight}
                 size="sm"
-                className="text-gray-500 dark:text-gray-400"
+                className="text-muted-foreground"
               />
             </button>
           )}
@@ -202,10 +202,10 @@ export const ConceptCard: React.FC<ConceptCardProps> = ({
           {!avatar && !icon && (
             <div className={cn(
               "flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center",
-              isCompleted && "bg-green-500 text-white",
-              isCurrent && !isCompleted && "bg-indigo-500 text-white",
-              isHighlighted && !isCompleted && !isCurrent && "bg-emerald-500 text-white",
-              !isHighlighted && !isCompleted && !isCurrent && "bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-400"
+              isCompleted && "bg-success text-success-foreground",
+              isCurrent && !isCompleted && "bg-primary text-primary-foreground",
+              isHighlighted && !isCompleted && !isCurrent && "bg-success text-success-foreground",
+              !isHighlighted && !isCompleted && !isCurrent && "bg-muted text-muted-foreground"
             )}>
               {isCompleted ? (
                 <Check size={18} />
@@ -238,12 +238,12 @@ export const ConceptCard: React.FC<ConceptCardProps> = ({
                 {name}
               </Typography>
               {!hideLessonBadge && isHighlighted && !isCompleted && (
-                <Badge variant="success" size="sm" className="bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400 text-xs">
+                <Badge variant="success" size="sm" className="bg-success/10 text-success text-xs">
                   Lesson Ready
                 </Badge>
               )}
               {!hideLessonBadge && !isHighlighted && !isCompleted && (
-                <Badge variant="default" size="sm" className="bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400 text-xs">
+                <Badge variant="default" size="sm" className="bg-muted text-muted-foreground text-xs">
                   No Lesson
                 </Badge>
               )}
@@ -256,7 +256,7 @@ export const ConceptCard: React.FC<ConceptCardProps> = ({
             {/* Prerequisites displayed under description - more prominent */}
             {prerequisites && prerequisites.length > 0 && (
               <div className="flex flex-wrap items-center gap-2 mt-2 mb-1">
-                <Typography variant="small" weight="semibold" className="text-xs text-indigo-600 dark:text-indigo-400">
+                <Typography variant="small" weight="semibold" className="text-xs text-primary">
                   Prerequisites:
                 </Typography>
                 {prerequisites.map((prereq, idx) => (
@@ -273,7 +273,7 @@ export const ConceptCard: React.FC<ConceptCardProps> = ({
                   Parents:
                 </Typography>
                 {parents.map((parent, idx) => (
-                  <Badge key={idx} variant="default" size="sm" className="bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300">
+                  <Badge key={idx} variant="default" size="sm" className="bg-muted text-foreground">
                     {parent}
                   </Badge>
                 ))}
@@ -311,7 +311,7 @@ export const ConceptCard: React.FC<ConceptCardProps> = ({
 
         {/* Children */}
         {hasChildren && expanded && Array.isArray(childConcepts) && (
-          <div className="pl-6 border-l-2 border-gray-200 dark:border-gray-700 space-y-2 mt-3">
+          <div className="pl-6 border-l-2 border-border space-y-2 mt-3">
             {childConcepts
               .filter((child): child is ConceptCardProps => 
                 child != null && 

@@ -71,7 +71,7 @@ const ConceptCard: React.FC<ConceptCardProps> = ({
   return (
     <>
       <div
-        className="relative p-6 bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 hover:shadow-md hover:border-indigo-300 dark:hover:border-indigo-600 transition-all duration-200 cursor-pointer"
+        className="relative p-6 bg-card rounded-lg shadow-sm border border-border hover:shadow-md hover:border-indigo-300 transition-all duration-200 cursor-pointer"
         onClick={handleCardClick}
       >
         {/* Menu Button */}
@@ -84,7 +84,7 @@ const ConceptCard: React.FC<ConceptCardProps> = ({
               trigger={
                 <button
                   type="button"
-                  className="p-1.5 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors duration-200"
+                  className="p-1.5 text-muted-foreground hover:text-foreground hover:bg-surface-hover rounded-lg transition-colors duration-200"
                 >
                   <MoreVertical size={18} />
                 </button>
@@ -99,26 +99,26 @@ const ConceptCard: React.FC<ConceptCardProps> = ({
           </div>
         )}
 
-      <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-2 line-clamp-2 flex items-center gap-2">
+      <h3 className="text-xl font-semibold text-foreground mb-2 line-clamp-2 flex items-center gap-2">
         {showMentorIcon && (
-          <div className="flex-shrink-0 p-1.5 bg-purple-100 dark:bg-purple-900/30 rounded-lg">
-            <GraduationCap size={16} className="text-purple-600 dark:text-purple-400" />
+          <div className="flex-shrink-0 p-1.5 bg-purple-100 rounded-lg">
+            <GraduationCap size={16} className="text-purple-600" />
           </div>
         )}
         <span>{concept.name}</span>
       </h3>
-      <p className="text-gray-600 dark:text-gray-400 text-sm mb-4 line-clamp-3">
+      <p className="text-muted-foreground text-sm mb-4 line-clamp-3">
         {concept.description}
       </p>
       <div className="flex items-center justify-between gap-3">
         <div className="flex flex-wrap items-center gap-2">
           {conceptCount !== undefined && (
-            <span className="px-3 py-1 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 rounded-full text-xs font-semibold">
+            <span className="px-3 py-1 bg-indigo-50 text-indigo-700 rounded-full text-xs font-semibold">
               {conceptCount} concept{conceptCount === 1 ? '' : 's'}
             </span>
           )}
           {levelCount !== undefined && (
-            <span className="px-3 py-1 bg-purple-50 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 rounded-full text-xs font-semibold">
+            <span className="px-3 py-1 bg-purple-50 text-purple-700 rounded-full text-xs font-semibold">
               {levelCount} level{levelCount === 1 ? '' : 's'}
             </span>
           )}
@@ -144,15 +144,15 @@ const ConceptCard: React.FC<ConceptCardProps> = ({
       {/* Placement Test Modal */}
       {showPlacementTest && goal && graphId && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white dark:bg-gray-800 rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto">
-            <div className="p-4 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
-              <h2 className="text-xl font-bold text-gray-800 dark:text-white">Placement Test</h2>
+          <div className="bg-card rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="p-4 border-b border-border flex justify-between items-center">
+              <h2 className="text-xl font-bold text-foreground">Placement Test</h2>
               <button
                 onClick={() => {
                   setShowPlacementTest(false);
                   onPlacementTestComplete?.();
                 }}
-                className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+                className="text-muted-foreground hover:text-foreground"
               >
                 ✕
               </button>
