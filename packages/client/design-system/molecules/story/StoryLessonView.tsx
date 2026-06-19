@@ -219,9 +219,9 @@ export const StoryLessonQuizView: React.FC<StoryLessonQuizViewProps> = ({
                 let optionStyle: string;
                 if (hasAnswered) {
                   if (i === tryItCorrectIndex) {
-                    optionStyle = 'border-green-500 bg-green-500/20';
+                    optionStyle = 'border-success bg-surface';
                   } else if (i === selectedAnswer) {
-                    optionStyle = 'border-red-500 bg-red-500/20';
+                    optionStyle = 'border-error bg-surface';
                   } else {
                     optionStyle = hasImage
                       ? 'border-white/20 opacity-50'

@@ -11,7 +11,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
   const { user, loading } = useAuthContext();
 
   if (loading) {
-    return <Spinner className="min-h-screen bg-gray-50" />;
+    return <Spinner className="min-h-screen bg-background" />;
   }
 
   if (!user) {

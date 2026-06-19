@@ -131,7 +131,7 @@ export const AchievementsCard: React.FC<AchievementsCardProps> = ({
       <CardHeader className="px-6 py-4 border-b border-border">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <div className="p-2 bg-[var(--color-warning)]/10 rounded-lg text-[var(--color-warning)]">
+            <div className="p-2 bg-surface rounded-lg text-[var(--color-warning)]">
               <Icon icon={Award} size="md" />
             </div>
             <Typography variant="h6">Achievements</Typography>
@@ -164,7 +164,7 @@ export const AchievementsCard: React.FC<AchievementsCardProps> = ({
                 className={cn(
                   'relative p-4 rounded-lg border-2 transition-all',
                   isUnlocked
-                    ? 'border-[var(--color-warning)]/50 bg-[var(--color-warning)]/5'
+                    ? 'border-[var(--color-warning)] bg-surface'
                     : 'border-border bg-surface opacity-60'
                 )}
               >

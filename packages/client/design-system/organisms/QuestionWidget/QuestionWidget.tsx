@@ -197,7 +197,7 @@ export const QuestionWidget: React.FC<QuestionWidgetProps> = ({
       {showFloatingButton && onOpen && (
         <button
           onClick={onOpen}
-          className="fixed bottom-6 right-6 z-50 p-4 bg-primary text-primary-foreground rounded-full shadow-lg hover:bg-primary/90 transition-all duration-200 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] focus:ring-offset-2"
+          className="fixed bottom-6 right-6 z-50 p-4 bg-primary text-primary-foreground rounded-full shadow-lg hover:bg-primary-hover transition-all duration-200 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
           aria-label="Ask a question"
           title="Ask a question about this lesson"
         >
@@ -218,7 +218,7 @@ export const QuestionWidget: React.FC<QuestionWidgetProps> = ({
         <div className="space-y-4">
           {/* Selected Text Display */}
           {selectedText && (
-            <div className="bg-primary/10 border-l-4 border-primary p-3 rounded-r-md">
+            <div className="bg-surface border-l-4 border-primary p-3 rounded-r-md">
               <Typography variant="small" className="text-primary mb-1 font-medium">
                 Selected text:
               </Typography>
@@ -328,7 +328,7 @@ export const QuestionWidget: React.FC<QuestionWidgetProps> = ({
 
           {/* Error Display */}
           {error && (
-            <div className="bg-error/10 border border-[var(--color-error)]/30 rounded-md p-3">
+            <div className="bg-surface border border-error rounded-md p-3">
               <Typography variant="body" className="text-error">
                 {error}
               </Typography>

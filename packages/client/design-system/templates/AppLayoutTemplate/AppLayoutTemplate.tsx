@@ -211,7 +211,7 @@ export const AppLayoutTemplate: React.FC<AppLayoutTemplateProps> = ({
               size="sm"
             />
             {sidebarOpen && (
-              <span className="text-sm text-gray-600 dark:text-gray-400 truncate max-w-[120px]">
+              <span className="text-sm text-muted-foreground truncate max-w-[120px]">
                 {user.name}
               </span>
             )}
@@ -234,7 +234,7 @@ export const AppLayoutTemplate: React.FC<AppLayoutTemplateProps> = ({
           trigger={
             <button
               type="button"
-              className="w-8 h-8 rounded-full bg-indigo-100 dark:bg-indigo-900 flex items-center justify-center text-indigo-700 dark:text-indigo-300 font-bold text-xs hover:ring-2 hover:ring-indigo-300 dark:hover:ring-indigo-700 transition-all cursor-pointer"
+              className="w-8 h-8 rounded-full bg-accent flex items-center justify-center text-accent-foreground font-bold text-xs hover:ring-2 hover:ring-border transition-all cursor-pointer"
             >
               {user.avatar ? (
                 <Avatar src={user.avatar} initials={userInitials} size="sm" />
@@ -249,7 +249,7 @@ export const AppLayoutTemplate: React.FC<AppLayoutTemplateProps> = ({
   );
 
   return (
-    <div className={cn('min-h-screen bg-gray-50 dark:bg-gray-900 flex', className)}>
+    <div className={cn('min-h-screen bg-background flex', className)}>
       {/* Mobile Overlay */}
       {!hideSidebar && mobileSidebarOpen && (
         <div
@@ -316,7 +316,7 @@ export const AppLayoutTemplate: React.FC<AppLayoutTemplateProps> = ({
         <main className="flex-1 overflow-auto">
           {/* Custom page header (desktop) */}
           {pageHeader && (
-            <header className="hidden lg:block sticky top-0 z-20 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 shadow-sm">
+            <header className="hidden lg:block sticky top-0 z-20 bg-card border-b border-border shadow-sm">
               <div className="px-6 lg:px-8">
                 <div className="flex items-center justify-between h-14">
                   {pageHeader}

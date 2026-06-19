@@ -361,7 +361,7 @@ export const SelectionToolbar: React.FC<SelectionToolbarProps> = ({
           size="sm"
           icon={MessageCircleQuestion}
           onClick={handleAskQuestion}
-          className="text-info hover:bg-info/10"
+          className="text-info hover:bg-surface-hover"
           title="Ask a question about this text"
         >
           <span className="hidden sm:inline">Ask Question</span>
@@ -374,7 +374,7 @@ export const SelectionToolbar: React.FC<SelectionToolbarProps> = ({
           size="sm"
           icon={StickyNote}
           onClick={handleAddNote}
-          className="text-warning hover:bg-warning/10"
+          className="text-warning hover:bg-surface-hover"
           title="Add a note about this text"
         >
           <span className="hidden sm:inline">Add Note</span>

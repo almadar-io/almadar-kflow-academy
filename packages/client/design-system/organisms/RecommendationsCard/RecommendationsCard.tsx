@@ -96,7 +96,7 @@ export const RecommendationsCard: React.FC<RecommendationsCardProps> = ({
     <Card className={className}>
       <CardHeader className="px-6 py-4 border-b border-border">
         <div className="flex items-center gap-2">
-          <div className="p-2 bg-accent/20 rounded-lg text-accent">
+          <div className="p-2 bg-surface rounded-lg text-accent">
             <Icon icon={Sparkles} size="md" />
           </div>
           <Typography variant="h6">Recommended for You</Typography>
@@ -115,13 +115,13 @@ export const RecommendationsCard: React.FC<RecommendationsCardProps> = ({
                 onClick={() => handleCourseClick(course.id)}
                 className={cn(
                   'flex items-center justify-between p-3 rounded-lg border border-border',
-                  'hover:border-primary/50 hover:bg-primary/10',
+                  'hover:border-primary hover:bg-surface-hover',
                   'transition-colors cursor-pointer group',
                   onCourseClick && 'cursor-pointer'
                 )}
               >
                 <div className="flex items-center gap-3 flex-1 min-w-0">
-                  <div className="p-2 bg-primary/10 rounded-lg text-primary flex-shrink-0">
+                  <div className="p-2 bg-surface rounded-lg text-primary flex-shrink-0">
                     <Icon icon={BookOpen} size="sm" />
                   </div>
                   <div className="flex-1 min-w-0">
@@ -155,13 +155,13 @@ export const RecommendationsCard: React.FC<RecommendationsCardProps> = ({
                 onClick={() => handleCourseClick(course.id)}
                 className={cn(
                   'flex items-center justify-between p-3 rounded-lg border border-border',
-                  'hover:border-primary/50 hover:bg-primary/10',
+                  'hover:border-primary hover:bg-surface-hover',
                   'transition-colors cursor-pointer group',
                   onCourseClick && 'cursor-pointer'
                 )}
               >
                 <div className="flex items-center gap-3 flex-1 min-w-0">
-                  <div className="p-2 bg-accent/20 rounded-lg text-accent flex-shrink-0">
+                  <div className="p-2 bg-surface rounded-lg text-accent flex-shrink-0">
                     <Icon icon={BookOpen} size="sm" />
                   </div>
                   <div className="flex-1 min-w-0">

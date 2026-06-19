@@ -133,7 +133,7 @@ const FlashCardsDisplay: React.FC<FlashCardsDisplayProps> = ({
                       <span className="text-sm font-medium text-foreground">Card {index + 1}</span>
                       <button
                         onClick={() => handleRemoveCard(index)}
-                        className="text-error hover:text-error/80"
+                        className="text-error hover:text-error"
                       >
                         <Trash2 size={16} />
                       </button>
@@ -166,7 +166,7 @@ const FlashCardsDisplay: React.FC<FlashCardsDisplayProps> = ({
               <div className="flex-shrink-0 w-80">
                 <button
                   onClick={handleAddCard}
-                  className="w-full h-64 border-2 border-dashed border-border rounded-lg flex flex-col items-center justify-center text-muted-foreground hover:border-border/70 hover:text-foreground transition-colors"
+                  className="w-full h-64 border-2 border-dashed border-border rounded-lg flex flex-col items-center justify-center text-muted-foreground hover:border-border hover:text-foreground transition-colors"
                 >
                   <Plus size={32} />
                   <span className="mt-2 text-sm">Add Card</span>

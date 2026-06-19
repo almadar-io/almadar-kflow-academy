@@ -180,8 +180,8 @@ export const AnnotatedLessonContent: React.FC<AnnotatedLessonContentProps> = ({
               span.dataset.highlightType = annotation.type;
               span.dataset.annotationId = annotation.id;
               span.className = annotation.type === 'question'
-                ? 'bg-info/15 hover:bg-info/25 cursor-pointer rounded-sm transition-colors'
-                : 'bg-warning/15 hover:bg-warning/25 cursor-pointer rounded-sm transition-colors';
+                ? 'bg-surface hover:bg-surface-hover cursor-pointer rounded-sm transition-colors'
+                : 'bg-surface hover:bg-surface-hover cursor-pointer rounded-sm transition-colors';
               span.textContent = match;
               span.onclick = (e) => handleHighlightClick(annotation.type, annotation.id, e as MouseEvent);
               

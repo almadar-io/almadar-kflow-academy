@@ -95,25 +95,25 @@ export const HighlightedSegmentRenderer: React.FC<HighlightedSegmentRendererProp
         {selectedQuestion && (
           <div className="space-y-4">
             {selectedQuestion.selectedText && (
-              <div className="bg-indigo-50 dark:bg-indigo-900/20 border-l-4 border-indigo-500 dark:border-indigo-400 p-3 rounded-r-md">
-                <p className="text-xs font-medium text-indigo-700 dark:text-indigo-300 mb-1">
+              <div className="bg-surface border-l-4 border-info p-3 rounded-r-md">
+                <p className="text-xs font-medium text-info mb-1">
                   Context:
                 </p>
-                <p className="text-sm text-gray-700 dark:text-gray-300 italic">
+                <p className="text-sm text-muted-foreground italic">
                   "{selectedQuestion.selectedText}"
                 </p>
               </div>
             )}
             <div>
-              <h4 className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-2">
+              <h4 className="text-sm font-semibold text-foreground mb-2">
                 Answer:
               </h4>
-              <div className="prose dark:prose-invert max-w-none">
+              <div className="prose max-w-none">
                 <SegmentRenderer segments={questionAnswerSegments} />
               </div>
             </div>
             {selectedQuestion.timestamp && (
-              <div className="text-xs text-gray-400 dark:text-gray-500">
+              <div className="text-xs text-muted-foreground">
                 {new Date(selectedQuestion.timestamp).toLocaleString()}
               </div>
             )}

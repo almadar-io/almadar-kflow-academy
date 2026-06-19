@@ -120,8 +120,8 @@ export const AnnotationPopover: React.FC<AnnotationPopoverProps> = ({
       <div className={cn(
         'flex items-center justify-between px-3 py-2 border-b',
         isQuestionType
-          ? 'bg-info/10 border-info/20'
-          : 'bg-warning/10 border-warning/20'
+          ? 'bg-surface border-info'
+          : 'bg-surface border-warning'
       )}>
         <div className="flex items-center gap-2">
           {isQuestionType ? (
@@ -219,7 +219,7 @@ export const AnnotationPopover: React.FC<AnnotationPopoverProps> = ({
               size="sm"
               icon={Trash2}
               onClick={onDelete}
-              className="text-error hover:text-error/80 p-1.5"
+              className="text-error hover:text-error p-1.5"
               title="Delete"
             >
               <span className="sr-only">Delete</span>

@@ -53,8 +53,8 @@ export function AnnotationViewModal({ entity }: AnnotationViewModalProps): React
           <Box
             className={
               isQuestion
-                ? 'border-l-4 p-3 rounded-r-md bg-info/10 border-info'
-                : 'border-l-4 p-3 rounded-r-md bg-warning/10 border-warning'
+                ? 'border-l-4 p-3 rounded-r-md bg-surface border-info'
+                : 'border-l-4 p-3 rounded-r-md bg-surface border-warning'
             }
           >
             <Typography variant="small" color="muted">

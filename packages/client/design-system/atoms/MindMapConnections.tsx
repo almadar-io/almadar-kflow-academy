@@ -35,7 +35,7 @@ export const MindMapConnections = ({
   connections,
   zoom = 1,
   pan = { x: 0, y: 0 },
-  strokeColor = "#94a3b8",
+  strokeColor = "var(--color-border)",
   strokeWidth = 2,
   className,
 }: MindMapConnectionsProps) => {

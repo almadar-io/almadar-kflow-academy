@@ -24,7 +24,7 @@ const HomeRoute: React.FC = () => {
 
   if (loading) {
     return (
-      <Spinner className="min-h-screen bg-gray-50 dark:bg-gray-900" />
+      <Spinner className="min-h-screen bg-background" />
     );
   }
 

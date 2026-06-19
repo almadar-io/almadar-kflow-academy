@@ -130,7 +130,7 @@ export const NoteContent = ({
           onKeyDown={handleKeyDown}
           rows={rows}
           placeholder={placeholder}
-          className="w-full border-2 border-primary focus:ring-2 focus:ring-primary/20"
+          className="w-full border-2 border-primary focus:ring-2 focus:ring-primary"
         />
         <Typography variant="small" className="text-[var(--color-muted-foreground)] mt-1">
           Ctrl+Enter to save, Esc to cancel

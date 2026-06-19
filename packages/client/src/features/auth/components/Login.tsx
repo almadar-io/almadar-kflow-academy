@@ -116,10 +116,10 @@ const Login: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-8 shadow-lg">
+    <div className="min-h-screen flex items-center justify-center bg-background py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-md w-full space-y-8 bg-card border border-border rounded-xl p-8 shadow-lg">
         <div>
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900 dark:text-gray-100">
+          <h2 className="mt-6 text-center text-3xl font-extrabold text-foreground">
             {completingEmailLink 
               ? 'Complete sign-in' 
               : isSignUp 
@@ -133,7 +133,7 @@ const Login: React.FC = () => {
           {completingEmailLink && (
             <form onSubmit={handleCompleteEmailLink} className="space-y-4">
               <div>
-                <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
+                <p className="text-sm text-muted-foreground mb-3">
                   Please enter your email address to complete sign-in.
                 </p>
                 <label htmlFor="email-completion" className="sr-only">
@@ -147,13 +147,13 @@ const Login: React.FC = () => {
                   required
                   value={emailForLinkCompletion}
                   onChange={(e) => setEmailForLinkCompletion(e.target.value)}
-                  className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-700 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm transition-colors duration-200"
+                  className="appearance-none rounded-md relative block w-full px-3 py-2 border border-border placeholder:text-[var(--color-placeholder)] text-foreground bg-card focus:outline-none focus:ring-primary focus:border-primary focus:z-10 sm:text-sm transition-colors duration-200"
                   placeholder="Enter your email"
                 />
               </div>
 
               {error && (
-                <div className="text-red-600 dark:text-red-300 text-sm text-center bg-red-50 dark:bg-red-900/20 p-3 rounded-md border border-red-200 dark:border-red-800">
+                <div className="text-error text-sm text-center bg-surface p-3 rounded-md border border-error">
                   {error}
                 </div>
               )}
@@ -161,7 +161,7 @@ const Login: React.FC = () => {
               <button
                 type="submit"
                 disabled={loading || !emailForLinkCompletion.trim()}
-                className="group relative w-full flex justify-center items-center gap-2 py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800 disabled:opacity-50 transition-colors duration-200"
+                className="group relative w-full flex justify-center items-center gap-2 py-2 px-4 border border-transparent text-sm font-medium rounded-md text-primary-foreground bg-primary hover:bg-primary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary disabled:opacity-50 transition-colors duration-200"
               >
                 {loading ? 'Signing in...' : 'Complete sign-in'}
               </button>
@@ -176,7 +176,7 @@ const Login: React.FC = () => {
                 <button
                   onClick={handleGoogleSignIn}
                   disabled={loading}
-                  className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800 disabled:opacity-50 transition-colors duration-200"
+                  className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-primary-foreground bg-primary hover:bg-primary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary disabled:opacity-50 transition-colors duration-200"
                 >
                   {loading ? 'Signing in...' : 'Sign in with Google'}
                 </button>
@@ -185,10 +185,10 @@ const Login: React.FC = () => {
               {/* Divider */}
               <div className="relative">
                 <div className="absolute inset-0 flex items-center">
-                  <div className="w-full border-t border-gray-300 dark:border-gray-700" />
+                  <div className="w-full border-t border-border" />
                 </div>
                 <div className="relative flex justify-center text-sm">
-                  <span className="px-2 bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-400">Or sign in with email</span>
+                  <span className="px-2 bg-card text-muted-foreground">Or sign in with email</span>
                 </div>
               </div>
 
@@ -205,7 +205,7 @@ const Login: React.FC = () => {
                     name="displayName"
                     type="text"
                     required={isSignUp}
-                    className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-700 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm transition-colors duration-200"
+                    className="appearance-none rounded-md relative block w-full px-3 py-2 border border-border placeholder:text-[var(--color-placeholder)] text-foreground bg-card focus:outline-none focus:ring-primary focus:border-primary focus:z-10 sm:text-sm transition-colors duration-200"
                     placeholder="Display Name"
                     value={displayName}
                     onChange={(e) => setDisplayName(e.target.value)}
@@ -248,7 +248,7 @@ const Login: React.FC = () => {
               </div>
 
               {error && (
-                <div className="text-red-600 dark:text-red-300 text-sm text-center bg-red-50 dark:bg-red-900/20 p-3 rounded-md border border-red-200 dark:border-red-800">
+                <div className="text-error text-sm text-center bg-surface p-3 rounded-md border border-error">
                   {error}
                 </div>
               )}
@@ -257,7 +257,7 @@ const Login: React.FC = () => {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800 disabled:opacity-50 transition-colors duration-200"
+                  className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-primary-foreground bg-primary hover:bg-primary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary disabled:opacity-50 transition-colors duration-200"
                 >
                   {loading ? 'Processing...' : (isSignUp ? 'Sign Up' : 'Sign In')}
                 </button>
@@ -267,7 +267,7 @@ const Login: React.FC = () => {
                 <div className="text-center mt-4">
                   <button
                     onClick={() => setIsSignUp(!isSignUp)}
-                    className="text-indigo-600 dark:text-indigo-400 hover:text-indigo-500 dark:hover:text-indigo-300 transition-colors duration-200 font-medium text-sm"
+                    className="text-primary hover:text-primary transition-colors duration-200 font-medium text-sm"
                   >
                     {isSignUp ? 'Already have an account? Sign in' : "Don't have an account? Sign up"}
                   </button>

@@ -114,12 +114,12 @@ export const GoalReview: React.FC<GoalReviewProps> = ({
           return (
             <div key={milestone.id} className="group relative flex gap-4">
               {/* Icon/Status Indicator */}
-              <div className="flex-shrink-0 w-10 h-10 rounded-full border-4 flex items-center justify-center bg-card border-primary/20 text-primary transition-colors duration-300">
-                <Circle size={16} className="fill-primary/5" />
+              <div className="flex-shrink-0 w-10 h-10 rounded-full border-4 flex items-center justify-center bg-card border-primary text-primary transition-colors duration-300">
+                <Circle size={16} className="fill-surface" />
               </div>
 
               {/* Content Card */}
-              <div className="flex-1 min-w-0 rounded-xl border border-primary/20 bg-card shadow-sm p-4 transition-all duration-200">
+              <div className="flex-1 min-w-0 rounded-xl border border-primary bg-card shadow-sm p-4 transition-all duration-200">
                 <div className="flex items-start justify-between gap-4 mb-2">
                   <Typography variant="h6" className="font-semibold text-foreground">
                     {milestone.title}

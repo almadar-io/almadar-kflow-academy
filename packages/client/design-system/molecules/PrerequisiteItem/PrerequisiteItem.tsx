@@ -67,11 +67,11 @@ export const PrerequisiteItem: React.FC<PrerequisiteItemProps> = ({
 
   const containerClasses = isMissing
     ? isList
-      ? 'group relative flex items-center justify-between gap-3 p-3 rounded-lg shadow-sm hover:shadow-md transition-all bg-warning/5 border border-warning/30 hover:border-warning/50'
-      : 'flex items-center justify-between gap-3 bg-card rounded-lg p-3 border border-warning/30 shadow-sm hover:shadow-md transition-shadow'
+      ? 'group relative flex items-center justify-between gap-3 p-3 rounded-lg shadow-sm hover:shadow-md transition-all bg-surface border border-warning hover:border-warning'
+      : 'flex items-center justify-between gap-3 bg-card rounded-lg p-3 border border-warning shadow-sm hover:shadow-md transition-shadow'
     : isList
-      ? 'group relative flex items-center justify-between gap-3 p-3 rounded-lg shadow-sm hover:shadow-md transition-all bg-success/5 border border-success/30 hover:border-success/50'
-      : 'flex items-center justify-between gap-3 bg-card rounded-lg p-3 border border-success/30 shadow-sm hover:shadow-md transition-shadow';
+      ? 'group relative flex items-center justify-between gap-3 p-3 rounded-lg shadow-sm hover:shadow-md transition-all bg-surface border border-success hover:border-success'
+      : 'flex items-center justify-between gap-3 bg-card rounded-lg p-3 border border-success shadow-sm hover:shadow-md transition-shadow';
 
   return (
     <div className={`${containerClasses} ${className}`}>
@@ -121,7 +121,7 @@ export const PrerequisiteItem: React.FC<PrerequisiteItemProps> = ({
             size="sm"
             onClick={() => onAdd(name)}
             icon={Plus}
-            className="text-warning hover:bg-warning/10"
+            className="text-warning hover:bg-surface-hover"
             aria-label="Add prerequisite"
           >
             <span className="sr-only">Add prerequisite</span>
@@ -133,7 +133,7 @@ export const PrerequisiteItem: React.FC<PrerequisiteItemProps> = ({
             size="sm"
             onClick={() => onRemove(name)}
             icon={X}
-            className="text-error hover:bg-error/10"
+            className="text-error hover:bg-surface-hover"
             aria-label="Remove prerequisite"
           >
             <span className="sr-only">Remove prerequisite</span>

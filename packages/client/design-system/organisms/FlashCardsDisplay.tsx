@@ -164,7 +164,7 @@ const FlashCardsDisplay = ({
                         onClick={handleRemove}
                         variant="secondary"
                         size="sm"
-                        className="text-error hover:text-error/80 p-0"
+                        className="text-error hover:text-error p-0"
                       >
                         <Trash2 size={16} />
                       </Button>

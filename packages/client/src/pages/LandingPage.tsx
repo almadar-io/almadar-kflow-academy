@@ -55,18 +55,18 @@ const LandingPage: React.FC = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 dark:from-gray-900 dark:via-indigo-950 dark:to-gray-900">
+    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-background to-purple-50">
       {/* Header */}
-      <header className="border-b border-gray-200 dark:border-gray-800 bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm sticky top-0 z-50">
+      <header className="border-b border-border bg-card backdrop-blur-sm sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <img src={logoWhite} alt="KFlow logo" className="h-8 w-auto brightness-0 invert" />
-              <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">KFlow</h1>
+              <h1 className="text-2xl font-bold text-foreground">KFlow</h1>
             </div>
             <button
               onClick={() => navigate('/login')}
-              className="px-6 py-2 bg-indigo-600 dark:bg-indigo-500 text-white rounded-lg font-medium hover:bg-indigo-700 dark:hover:bg-indigo-600 transition-all duration-200 shadow-sm hover:shadow-md"
+              className="px-6 py-2 bg-primary text-primary-foreground rounded-lg font-medium hover:bg-primary transition-all duration-200 shadow-sm hover:shadow-md"
             >
               Get Started
             </button>
@@ -77,21 +77,21 @@ const LandingPage: React.FC = () => {
       {/* Hero Section */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 lg:py-32">
         <div className="text-center">
-          <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-gray-900 dark:text-gray-100 mb-6 leading-tight">
+          <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-foreground mb-6 leading-tight">
             Stop learning in isolation.
             <br />
-            <span className="bg-gradient-to-r from-indigo-600 to-purple-600 dark:from-indigo-400 dark:to-purple-400 bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
               Start building knowledge that connects.
             </span>
           </h1>
-          <p className="text-xl md:text-2xl text-gray-600 dark:text-gray-300 mb-8 max-w-3xl mx-auto leading-relaxed">
+          <p className="text-xl md:text-2xl text-muted-foreground mb-8 max-w-3xl mx-auto leading-relaxed">
             KFlow creates personalized, structured learning paths that adapt to your level and goals. 
             Instead of random tutorials, get a complete knowledge graph tailored just for you.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
             <button
               onClick={() => navigate('/login')}
-              className="group px-8 py-4 bg-indigo-600 dark:bg-indigo-500 text-white rounded-lg font-semibold text-lg hover:bg-indigo-700 dark:hover:bg-indigo-600 transition-all duration-200 shadow-lg hover:shadow-xl flex items-center gap-2"
+              className="group px-8 py-4 bg-primary text-primary-foreground rounded-lg font-semibold text-lg hover:bg-primary transition-all duration-200 shadow-lg hover:shadow-xl flex items-center gap-2"
             >
               Start Learning Free
               <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
@@ -101,7 +101,7 @@ const LandingPage: React.FC = () => {
                 const featuresSection = document.getElementById('features');
                 featuresSection?.scrollIntoView({ behavior: 'smooth' });
               }}
-              className="px-8 py-4 border-2 border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 rounded-lg font-semibold text-lg hover:border-indigo-500 dark:hover:border-indigo-500 hover:text-indigo-600 dark:hover:text-indigo-400 transition-all duration-200"
+              className="px-8 py-4 border-2 border-border text-foreground rounded-lg font-semibold text-lg hover:border-primary hover:text-primary transition-all duration-200"
             >
               Learn More
             </button>
@@ -112,83 +112,83 @@ const LandingPage: React.FC = () => {
       {/* Screenshots Section -->
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
         <div className="text-center mb-16">
-          <h2 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-gray-100 mb-4">
+          <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
             See KFlow in action
           </h2>
-          <p className="text-xl text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
+          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
             Experience the power of structured, AI-powered learning
           </p>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
-          <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4 shadow-lg hover:shadow-xl transition-shadow">
+          <div className="bg-card rounded-xl border border-border p-4 shadow-lg hover:shadow-xl transition-shadow">
             <img 
               src={screenshot1} 
               alt="Create learning path" 
               className="w-full h-auto rounded-lg"
             />
-            <p className="text-center text-sm text-gray-600 dark:text-gray-400 mt-3">
+            <p className="text-center text-sm text-muted-foreground mt-3">
               Create your personalized learning path
             </p>
           </div>
-          <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4 shadow-lg hover:shadow-xl transition-shadow">
+          <div className="bg-card rounded-xl border border-border p-4 shadow-lg hover:shadow-xl transition-shadow">
             <img 
               src={screenshot2} 
               alt="AI generating concepts" 
               className="w-full h-auto rounded-lg"
             />
-            <p className="text-center text-sm text-gray-600 dark:text-gray-400 mt-3">
+            <p className="text-center text-sm text-muted-foreground mt-3">
               Watch AI generate concepts in real-time
             </p>
           </div>
-          <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4 shadow-lg hover:shadow-xl transition-shadow">
+          <div className="bg-card rounded-xl border border-border p-4 shadow-lg hover:shadow-xl transition-shadow">
             <img 
               src={screenshot3} 
               alt="Concepts list view" 
               className="w-full h-auto rounded-lg"
             />
-            <p className="text-center text-sm text-gray-600 dark:text-gray-400 mt-3">
+            <p className="text-center text-sm text-muted-foreground mt-3">
               Explore concepts organized by levels
             </p>
           </div>
-          <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4 shadow-lg hover:shadow-xl transition-shadow">
+          <div className="bg-card rounded-xl border border-border p-4 shadow-lg hover:shadow-xl transition-shadow">
             <img 
               src={screenshot5} 
               alt="Concept detail with lesson" 
               className="w-full h-auto rounded-lg"
             />
-            <p className="text-center text-sm text-gray-600 dark:text-gray-400 mt-3">
+            <p className="text-center text-sm text-muted-foreground mt-3">
               Access comprehensive lessons with examples
             </p>
           </div>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4 shadow-lg hover:shadow-xl transition-shadow">
+          <div className="bg-card rounded-xl border border-border p-4 shadow-lg hover:shadow-xl transition-shadow">
             <img 
               src={screenshot6} 
               alt="Mindmap visualization" 
               className="w-full h-auto rounded-lg"
             />
-            <p className="text-center text-sm text-gray-600 dark:text-gray-400 mt-3">
+            <p className="text-center text-sm text-muted-foreground mt-3">
               Visualize knowledge connections
             </p>
           </div>
-          <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4 shadow-lg hover:shadow-xl transition-shadow">
+          <div className="bg-card rounded-xl border border-border p-4 shadow-lg hover:shadow-xl transition-shadow">
             <img 
               src={screenshot7} 
               alt="Final review" 
               className="w-full h-auto rounded-lg"
             />
-            <p className="text-center text-sm text-gray-600 dark:text-gray-400 mt-3">
+            <p className="text-center text-sm text-muted-foreground mt-3">
               Comprehensive level reviews
             </p>
           </div>
-          <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4 shadow-lg hover:shadow-xl transition-shadow">
+          <div className="bg-card rounded-xl border border-border p-4 shadow-lg hover:shadow-xl transition-shadow">
             <img 
               src={screenshot4} 
               alt="Concept home page" 
               className="w-full h-auto rounded-lg"
             />
-            <p className="text-center text-sm text-gray-600 dark:text-gray-400 mt-3">
+            <p className="text-center text-sm text-muted-foreground mt-3">
               Navigate your learning journey
             </p>
           </div>
@@ -198,10 +198,10 @@ const LandingPage: React.FC = () => {
       {/* Features Section */}
       <section id="features" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
         <div className="text-center mb-16">
-          <h2 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-gray-100 mb-4">
+          <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
             Everything you need to learn effectively
           </h2>
-          <p className="text-xl text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
+          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
             Powerful features designed to make learning structured, engaging, and effective
           </p>
         </div>
@@ -209,15 +209,15 @@ const LandingPage: React.FC = () => {
           {features.map((feature, index) => (
             <div
               key={index}
-              className="group p-6 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 hover:border-indigo-300 dark:hover:border-indigo-600 transition-all duration-200 hover:shadow-lg"
+              className="group p-6 bg-card rounded-xl border border-border hover:border-primary transition-all duration-200 hover:shadow-lg"
             >
-              <div className="w-12 h-12 bg-indigo-100 dark:bg-indigo-900/30 rounded-lg flex items-center justify-center mb-4 group-hover:bg-indigo-600 dark:group-hover:bg-indigo-500 transition-colors">
-                <feature.icon className="w-6 h-6 text-indigo-600 dark:text-indigo-400 group-hover:text-white transition-colors" />
+              <div className="w-12 h-12 bg-surface rounded-lg flex items-center justify-center mb-4 group-hover:bg-primary transition-colors">
+                <feature.icon className="w-6 h-6 text-primary group-hover:text-primary-foreground transition-colors" />
               </div>
-              <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-2">
+              <h3 className="text-xl font-semibold text-foreground mb-2">
                 {feature.title}
               </h3>
-              <p className="text-gray-600 dark:text-gray-400">
+              <p className="text-muted-foreground">
                 {feature.description}
               </p>
             </div>
@@ -226,12 +226,12 @@ const LandingPage: React.FC = () => {
       </section>
 
       {/* How It Works Section */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 bg-white dark:bg-gray-800 rounded-3xl my-20">
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 bg-card rounded-3xl my-20">
         <div className="text-center mb-16">
-          <h2 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-gray-100 mb-4">
+          <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
             How it works
           </h2>
-          <p className="text-xl text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
+          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
             Get started in minutes and begin your structured learning journey
           </p>
         </div>
@@ -246,10 +246,10 @@ const LandingPage: React.FC = () => {
               <div className="w-16 h-16 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-full flex items-center justify-center text-white text-2xl font-bold mx-auto mb-4 shadow-lg">
                 {item.step}
               </div>
-              <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-2">
+              <h3 className="text-xl font-semibold text-foreground mb-2">
                 {item.title}
               </h3>
-              <p className="text-gray-600 dark:text-gray-400">
+              <p className="text-muted-foreground">
                 {item.description}
               </p>
             </div>
@@ -260,7 +260,7 @@ const LandingPage: React.FC = () => {
       {/* Use Cases Section */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
         <div className="text-center mb-12">
-          <h2 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-gray-100 mb-4">
+          <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
             Perfect for
           </h2>
         </div>
@@ -268,10 +268,10 @@ const LandingPage: React.FC = () => {
           {useCases.map((useCase, index) => (
             <div
               key={index}
-              className="flex flex-col items-center p-6 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 hover:border-indigo-300 dark:hover:border-indigo-600 transition-all duration-200"
+              className="flex flex-col items-center p-6 bg-card rounded-xl border border-border hover:border-primary transition-all duration-200"
             >
-              <useCase.icon className="w-10 h-10 text-indigo-600 dark:text-indigo-400 mb-3" />
-              <p className="text-gray-700 dark:text-gray-300 font-medium text-center">
+              <useCase.icon className="w-10 h-10 text-primary mb-3" />
+              <p className="text-foreground font-medium text-center">
                 {useCase.text}
               </p>
             </div>
@@ -282,7 +282,7 @@ const LandingPage: React.FC = () => {
 
       {/* CTA Section */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-        <div className="bg-gradient-to-br from-indigo-600 to-purple-600 dark:from-indigo-700 dark:to-purple-700 rounded-3xl p-12 md:p-16 text-center text-white shadow-2xl">
+        <div className="bg-gradient-to-br from-indigo-600 to-purple-600 rounded-3xl p-12 md:p-16 text-center text-white shadow-2xl">
           <h2 className="text-4xl md:text-5xl font-bold mb-4">
             Ready to transform your learning?
           </h2>
@@ -291,7 +291,7 @@ const LandingPage: React.FC = () => {
           </p>
           <button
             onClick={() => navigate('/login')}
-            className="group px-8 py-4 bg-white text-indigo-600 rounded-lg font-semibold text-lg hover:bg-gray-100 transition-all duration-200 shadow-lg hover:shadow-xl flex items-center gap-2 mx-auto"
+            className="group px-8 py-4 bg-card text-primary rounded-lg font-semibold text-lg hover:bg-surface-hover transition-all duration-200 shadow-lg hover:shadow-xl flex items-center gap-2 mx-auto"
           >
             Get Started Free
             <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
@@ -300,16 +300,16 @@ const LandingPage: React.FC = () => {
       </section>
 
       {/* Footer */}
-      <footer className="border-t border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 py-8">
+      <footer className="border-t border-border bg-card py-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col md:flex-row justify-between items-center">
             <div className="flex items-center gap-3 mb-4 md:mb-0">
               <img src={logoWhite} alt="KFlow logo" className="h-6 w-auto brightness-0 invert" />
-              <span className="text-gray-600 dark:text-gray-400">© 2024 KFlow. All rights reserved.</span>
+              <span className="text-muted-foreground">© 2024 KFlow. All rights reserved.</span>
             </div>
             <button
               onClick={() => navigate('/login')}
-              className="text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 font-medium transition-colors"
+              className="text-primary hover:text-primary font-medium transition-colors"
             >
               Sign In
             </button>

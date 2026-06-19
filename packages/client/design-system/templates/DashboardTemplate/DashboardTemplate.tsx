@@ -286,7 +286,7 @@ export const DashboardTemplate: React.FC<DashboardTemplateProps> = ({
                     {activities.map((activity) => (
                       <div
                         key={activity.id}
-                        className="flex items-start gap-3 pb-3 border-b border-gray-100 dark:border-gray-700 last:border-0 last:pb-0"
+                        className="flex items-start gap-3 pb-3 border-b border-border last:border-0 last:pb-0"
                       >
                         <div className="flex-1 min-w-0">
                           <Typography variant="body" weight="medium" className="truncate">

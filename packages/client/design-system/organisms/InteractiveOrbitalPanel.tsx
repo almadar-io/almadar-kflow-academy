@@ -120,7 +120,7 @@ export const InteractiveOrbitalPanel: React.FC<InteractiveOrbitalPanelProps> = (
         {error && (
           <HStack
             gap="sm"
-            className="p-3 rounded-lg bg-error/10 text-error"
+            className="p-3 rounded-lg bg-surface text-error"
           >
             <AlertCircle size={18} />
             <Typography variant="small">{error}</Typography>

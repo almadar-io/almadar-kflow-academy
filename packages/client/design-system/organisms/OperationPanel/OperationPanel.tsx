@@ -196,8 +196,8 @@ export const OperationPanel: React.FC<OperationPanelProps> = ({
           <div className={cn(
             'p-4 rounded-lg border',
             result.success
-              ? 'bg-success/10 border-[var(--color-success)]/30'
-              : 'bg-error/10 border-[var(--color-error)]/30'
+              ? 'bg-surface border-success'
+              : 'bg-surface border-error'
           )}>
             <div className="flex items-center gap-2 mb-2">
               <Badge variant={result.success ? 'success' : 'danger'} size="sm">

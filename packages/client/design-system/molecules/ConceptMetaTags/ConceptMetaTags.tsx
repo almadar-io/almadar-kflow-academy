@@ -68,7 +68,7 @@ export const ConceptMetaTags: React.FC<ConceptMetaTagsProps> = ({
             variant="ghost"
             size="sm"
             onClick={() => onNavigateToParent(parent)}
-            className="px-2 py-1 bg-accent/15 text-accent rounded-full text-xs font-medium hover:bg-accent/25"
+            className="px-2 py-1 bg-surface text-accent rounded-full text-xs font-medium hover:bg-surface-hover"
           >
             ← {parent}
           </Button>

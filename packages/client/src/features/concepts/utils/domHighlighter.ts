@@ -410,11 +410,11 @@ export function applyHighlightingToDOM(
     const firstChunk = chunks[0];
     let highlightClass = '';
     if (firstChunk.hasQuestion && firstChunk.hasNote) {
-      highlightClass = 'bg-accent/20 px-0.5 py-0.5 rounded-sm cursor-pointer';
+      highlightClass = 'bg-surface-hover px-0.5 py-0.5 rounded-sm cursor-pointer';
     } else if (firstChunk.hasQuestion) {
-      highlightClass = 'bg-info/20 px-0.5 py-0.5 rounded-sm cursor-pointer';
+      highlightClass = 'bg-surface-hover px-0.5 py-0.5 rounded-sm cursor-pointer';
     } else if (firstChunk.hasNote) {
-      highlightClass = 'bg-success/20 px-0.5 py-0.5 rounded-sm cursor-help';
+      highlightClass = 'bg-surface-hover px-0.5 py-0.5 rounded-sm cursor-help';
     }
 
     // Apply highlighting for each chunk (all matches in all blocks)

@@ -58,7 +58,7 @@ export const EnhancedStatsCards: React.FC = () => {
       value: stats.learningStreak.toString(), 
       icon: Flame, 
       color: 'text-orange-500', 
-      bg: 'bg-orange-100 dark:bg-orange-900/30',
+      bg: 'bg-surface',
       tooltip: 'Consecutive days you\'ve studied. Keep it going!'
     },
     { 
@@ -66,7 +66,7 @@ export const EnhancedStatsCards: React.FC = () => {
       value: stats.conceptsMastered.toString(), 
       icon: Trophy, 
       color: 'text-yellow-500', 
-      bg: 'bg-yellow-100 dark:bg-yellow-900/30',
+      bg: 'bg-surface',
       tooltip: 'Concepts you\'ve fully mastered by completing lessons, answering questions, and reflecting on your learning.'
     },
     { 
@@ -74,7 +74,7 @@ export const EnhancedStatsCards: React.FC = () => {
       value: stats.activeCourses.toString(), 
       icon: BookOpen, 
       color: 'text-blue-500', 
-      bg: 'bg-blue-100 dark:bg-blue-900/30',
+      bg: 'bg-surface',
       tooltip: 'Courses you\'re currently enrolled in and haven\'t completed yet.'
     },
   ];
@@ -86,7 +86,7 @@ export const EnhancedStatsCards: React.FC = () => {
       value: detailedStats.lessonsCompleted.toString(), 
       icon: CheckCircle, 
       color: 'text-green-500', 
-      bg: 'bg-green-100 dark:bg-green-900/30',
+      bg: 'bg-surface',
       tooltip: 'Total number of lessons you\'ve completed across all courses.'
     },
     { 

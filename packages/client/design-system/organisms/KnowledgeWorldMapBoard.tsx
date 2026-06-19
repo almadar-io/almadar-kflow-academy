@@ -183,7 +183,7 @@ export function KnowledgeWorldMapBoard({
                           <Button
                             size="sm"
                             variant="primary"
-                            className="px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 flex items-center gap-2"
+                            className="px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary-hover flex items-center gap-2"
                             onClick={handleStart}
                           >
                             <Sword size={14} />

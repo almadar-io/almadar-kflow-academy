@@ -34,8 +34,8 @@ export const AchievementsCard: React.FC = () => {
 
   if (isLoading) {
     return (
-      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
-        <div className="flex items-center justify-center gap-3 text-gray-500 dark:text-gray-400">
+      <div className="bg-card rounded-xl shadow-sm border border-border p-6">
+        <div className="flex items-center justify-center gap-3 text-muted-foreground">
           <Loader2 className="animate-spin" size={20} />
           <span>Loading achievements...</span>
         </div>
@@ -45,8 +45,8 @@ export const AchievementsCard: React.FC = () => {
 
   if (error) {
     return (
-      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-red-200 dark:border-red-800 p-6">
-        <div className="text-red-600 dark:text-red-400 text-sm">
+      <div className="bg-card rounded-xl shadow-sm border border-error p-6">
+        <div className="text-error text-sm">
           Error loading achievements: {error}
         </div>
       </div>
@@ -67,15 +67,15 @@ export const AchievementsCard: React.FC = () => {
   const displayAchievements = isExpanded ? achievements : unlockedAchievements;
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
+    <div className="bg-card rounded-xl shadow-sm border border-border p-6">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
-          <div className="p-2 bg-yellow-100 dark:bg-yellow-900/30 rounded-lg text-yellow-600 dark:text-yellow-400">
+          <div className="p-2 bg-surface rounded-lg text-warning">
             <Award size={20} />
           </div>
-          <h3 className="text-lg font-bold text-gray-900 dark:text-white">Achievements</h3>
+          <h3 className="text-lg font-bold text-foreground">Achievements</h3>
           {hasUnlocked && (
-            <span className="text-sm text-gray-500 dark:text-gray-400">
+            <span className="text-sm text-muted-foreground">
               ({unlockedAchievements.length}/{achievements.length})
             </span>
           )}
@@ -83,7 +83,7 @@ export const AchievementsCard: React.FC = () => {
         {hasLocked && (
           <button
             onClick={() => setIsExpanded(!isExpanded)}
-            className="text-sm text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 font-medium flex items-center gap-1"
+            className="text-sm text-primary hover:text-primary font-medium flex items-center gap-1"
           >
             {isExpanded ? (
               <>
@@ -109,13 +109,13 @@ export const AchievementsCard: React.FC = () => {
                 key={achievement.id}
                 className={`relative p-4 rounded-lg border-2 transition-all ${
                   isUnlocked
-                    ? 'border-yellow-300 dark:border-yellow-600 bg-yellow-50 dark:bg-yellow-900/20'
-                    : 'border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-700/50 opacity-60'
+                    ? 'border-warning bg-surface'
+                    : 'border-border bg-surface opacity-60'
                 }`}
               >
                 {!isUnlocked && (
                   <div className="absolute top-2 right-2">
-                    <Lock size={14} className="text-gray-400 dark:text-gray-500" />
+                    <Lock size={14} className="text-muted-foreground" />
                   </div>
                 )}
                 <div className="text-center">
@@ -123,24 +123,24 @@ export const AchievementsCard: React.FC = () => {
                   <div
                     className={`text-xs font-semibold mb-1 ${
                       isUnlocked
-                        ? 'text-gray-900 dark:text-white'
-                        : 'text-gray-500 dark:text-gray-400'
+                        ? 'text-foreground'
+                        : 'text-muted-foreground'
                     }`}
                   >
                     {achievement.name}
                   </div>
-                  <div className="text-xs text-gray-500 dark:text-gray-400 line-clamp-2">
+                  <div className="text-xs text-muted-foreground line-clamp-2">
                     {achievement.description}
                   </div>
                   {!isUnlocked && achievement.progress !== undefined && (
                     <div className="mt-2">
-                      <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-1.5">
+                      <div className="w-full bg-surface rounded-full h-1.5">
                         <div
-                          className="bg-indigo-600 dark:bg-indigo-500 h-1.5 rounded-full transition-all"
+                          className="bg-primary h-1.5 rounded-full transition-all"
                           style={{ width: `${Math.min(100, achievement.progress)}%` }}
                         />
                       </div>
-                      <div className="text-xs text-gray-400 dark:text-gray-500 mt-1">
+                      <div className="text-xs text-muted-foreground mt-1">
                         {Math.round(achievement.progress)}%
                       </div>
                     </div>
@@ -153,7 +153,7 @@ export const AchievementsCard: React.FC = () => {
       ) : (
         <div className="text-center py-8">
           <div className="text-4xl mb-2">🎯</div>
-          <p className="text-sm text-gray-500 dark:text-gray-400">
+          <p className="text-sm text-muted-foreground">
             Complete lessons and courses to unlock achievements!
           </p>
         </div>

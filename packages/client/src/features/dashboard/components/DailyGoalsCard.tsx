@@ -9,8 +9,8 @@ export const DailyGoalsCard: React.FC = () => {
 
   if (isLoading) {
     return (
-      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
-        <div className="flex items-center justify-center gap-3 text-gray-500 dark:text-gray-400">
+      <div className="bg-card rounded-xl shadow-sm border border-border p-6">
+        <div className="flex items-center justify-center gap-3 text-muted-foreground">
           <Loader2 className="animate-spin" size={20} />
           <span>Loading daily goals...</span>
         </div>
@@ -20,8 +20,8 @@ export const DailyGoalsCard: React.FC = () => {
 
   if (error) {
     return (
-      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-red-200 dark:border-red-800 p-6">
-        <div className="text-red-600 dark:text-red-400 text-sm">
+      <div className="bg-card rounded-xl shadow-sm border border-error p-6">
+        <div className="text-error text-sm">
           Error loading daily goals: {error}
         </div>
       </div>
@@ -60,13 +60,13 @@ export const DailyGoalsCard: React.FC = () => {
   };
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
+    <div className="bg-card rounded-xl shadow-sm border border-border p-6">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
-          <div className="p-2 bg-indigo-100 dark:bg-indigo-900/30 rounded-lg text-indigo-600 dark:text-indigo-400">
+          <div className="p-2 bg-surface rounded-lg text-primary">
             <Target size={20} />
           </div>
-          <h3 className="text-lg font-bold text-gray-900 dark:text-white">Daily Goal</h3>
+          <h3 className="text-lg font-bold text-foreground">Daily Goal</h3>
         </div>
         {!isEditing && (
           <button
@@ -74,7 +74,7 @@ export const DailyGoalsCard: React.FC = () => {
               setTempGoal(goal);
               setIsEditing(true);
             }}
-            className="text-sm text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 font-medium"
+            className="text-sm text-primary hover:text-primary font-medium"
           >
             Edit
           </button>
@@ -84,7 +84,7 @@ export const DailyGoalsCard: React.FC = () => {
       {/* Goal Input */}
       {isEditing ? (
         <div className="mb-4 flex items-center gap-2">
-          <label className="text-sm text-gray-600 dark:text-gray-400">
+          <label className="text-sm text-muted-foreground">
             Complete
           </label>
           <input
@@ -93,24 +93,24 @@ export const DailyGoalsCard: React.FC = () => {
             max="10"
             value={tempGoal}
             onChange={(e) => setTempGoal(Math.max(1, Math.min(10, parseInt(e.target.value) || 1)))}
-            className="w-16 px-2 py-1 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm"
+            className="w-16 px-2 py-1 border border-border rounded-lg bg-card text-foreground text-sm"
             disabled={isUpdating}
           />
-          <label className="text-sm text-gray-600 dark:text-gray-400">
+          <label className="text-sm text-muted-foreground">
             lessons today
           </label>
           <div className="flex gap-2 ml-auto">
             <button
               onClick={handleSaveGoal}
               disabled={isUpdating}
-              className="px-3 py-1 bg-indigo-600 dark:bg-indigo-500 text-white rounded-lg hover:bg-indigo-700 dark:hover:bg-indigo-600 transition-colors text-sm font-medium disabled:opacity-50"
+              className="px-3 py-1 bg-primary text-primary-foreground rounded-lg hover:bg-primary transition-colors text-sm font-medium disabled:opacity-50"
             >
               {isUpdating ? 'Saving...' : 'Save'}
             </button>
             <button
               onClick={handleCancel}
               disabled={isUpdating}
-              className="px-3 py-1 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors text-sm font-medium disabled:opacity-50"
+              className="px-3 py-1 bg-surface text-foreground rounded-lg hover:bg-surface-hover transition-colors text-sm font-medium disabled:opacity-50"
             >
               Cancel
             </button>
@@ -118,8 +118,8 @@ export const DailyGoalsCard: React.FC = () => {
         </div>
       ) : (
         <div className="mb-4">
-          <div className="text-sm text-gray-600 dark:text-gray-400 mb-2">
-            Goal: Complete <span className="font-semibold text-gray-900 dark:text-white">{goal}</span> lessons today
+          <div className="text-sm text-muted-foreground mb-2">
+            Goal: Complete <span className="font-semibold text-foreground">{goal}</span> lessons today
           </div>
         </div>
       )}
@@ -127,16 +127,16 @@ export const DailyGoalsCard: React.FC = () => {
       {/* Progress Bar */}
       <div className="mb-4">
         <div className="flex items-center justify-between mb-2">
-          <span className="text-2xl font-bold text-gray-900 dark:text-white">
+          <span className="text-2xl font-bold text-foreground">
             {completed} / {goal}
           </span>
-          <span className="text-sm text-gray-500 dark:text-gray-400">
+          <span className="text-sm text-muted-foreground">
             {progressPercentage}%
           </span>
         </div>
-        <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3 overflow-hidden">
+        <div className="w-full bg-surface rounded-full h-3 overflow-hidden">
           <div
-            className="h-full bg-indigo-600 dark:bg-indigo-500 transition-all duration-300 rounded-full"
+            className="h-full bg-primary transition-all duration-300 rounded-full"
             style={{ width: `${Math.min(100, progressPercentage)}%` }}
           />
         </div>
@@ -144,22 +144,22 @@ export const DailyGoalsCard: React.FC = () => {
 
       {/* Motivational Message */}
       <div className="mb-4">
-        <p className="text-sm text-gray-600 dark:text-gray-400 italic">
+        <p className="text-sm text-muted-foreground italic">
           {getMotivationalMessage()}
         </p>
       </div>
 
       {/* Today's Activities */}
       {activities.length > 0 && (
-        <div className="border-t border-gray-200 dark:border-gray-700 pt-4">
-          <h4 className="text-sm font-semibold text-gray-900 dark:text-white mb-2">
+        <div className="border-t border-border pt-4">
+          <h4 className="text-sm font-semibold text-foreground mb-2">
             Today's Activities
           </h4>
           <div className="space-y-2">
             {activities.slice(0, 5).map((activity, index) => (
               <div
                 key={`${activity.type}-${activity.resourceId}-${index}`}
-                className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400"
+                className="flex items-center gap-2 text-sm text-muted-foreground"
               >
                 {activity.type === 'lesson_completed' ? (
                   <CheckCircle size={16} className="text-green-500" />
@@ -170,7 +170,7 @@ export const DailyGoalsCard: React.FC = () => {
               </div>
             ))}
             {activities.length > 5 && (
-              <div className="text-xs text-gray-500 dark:text-gray-500">
+              <div className="text-xs text-muted-foreground">
                 +{activities.length - 5} more
               </div>
             )}
@@ -179,8 +179,8 @@ export const DailyGoalsCard: React.FC = () => {
       )}
 
       {activities.length === 0 && (
-        <div className="border-t border-gray-200 dark:border-gray-700 pt-4">
-          <p className="text-sm text-gray-500 dark:text-gray-500 text-center">
+        <div className="border-t border-border pt-4">
+          <p className="text-sm text-muted-foreground text-center">
             No activities yet today. Start learning to track your progress!
           </p>
         </div>

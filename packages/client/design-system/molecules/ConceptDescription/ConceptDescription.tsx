@@ -105,7 +105,7 @@ export const ConceptDescription: React.FC<ConceptDescriptionProps> = ({
           onClick={(e) => e.stopPropagation()}
           placeholder="Enter concept description..."
           rows={4}
-          className="border-2 border-primary focus:ring-2 focus:ring-primary/20 resize-none"
+          className="border-2 border-primary focus:ring-2 focus:ring-primary resize-none"
           style={{ minHeight: '100px' }}
         />
       </div>

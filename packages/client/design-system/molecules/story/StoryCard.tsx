@@ -49,7 +49,7 @@ export const StoryCard: React.FC<StoryCardProps> = ({
 
   return (
     <Card
-      className={`p-5 cursor-pointer bg-card border border-border rounded-xl shadow-sm hover:border-primary/50 hover:shadow-md transition-all ${className ?? ''}`}
+      className={`p-5 cursor-pointer bg-card border border-border rounded-xl shadow-sm hover:border-primary hover:shadow-md transition-all ${className ?? ''}`}
       onClick={() => onClick?.(story.id)}
     >
       <VStack gap="sm">

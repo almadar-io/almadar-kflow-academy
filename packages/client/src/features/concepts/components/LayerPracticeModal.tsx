@@ -106,7 +106,7 @@ const LayerPracticeModal: React.FC<LayerPracticeModalProps> = ({
 
             {/* Error State */}
             {error && (
-              <div className="p-4 bg-error/10 border border-error/30 rounded-lg">
+              <div className="p-4 bg-surface border border-error rounded-lg">
                 <p className="text-sm text-error">{error}</p>
                 <button
                   onClick={loadPractice}

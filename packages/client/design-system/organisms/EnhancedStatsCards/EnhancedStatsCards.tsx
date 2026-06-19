@@ -115,7 +115,7 @@ export const EnhancedStatsCards: React.FC<EnhancedStatsCardsProps> = ({
       value: mainStats.learningStreak.toString(),
       icon: Flame,
       color: 'text-[var(--color-warning)]',
-      bg: 'bg-[var(--color-warning)]/10',
+      bg: 'bg-surface',
       tooltip: 'Consecutive days you\'ve studied. Keep it going!',
     },
     {
@@ -123,7 +123,7 @@ export const EnhancedStatsCards: React.FC<EnhancedStatsCardsProps> = ({
       value: mainStats.conceptsMastered.toString(),
       icon: Trophy,
       color: 'text-[var(--color-warning)]',
-      bg: 'bg-[var(--color-warning)]/10',
+      bg: 'bg-surface',
       tooltip: 'Concepts you\'ve fully mastered by completing lessons, answering questions, and reflecting on your learning.',
     },
     {
@@ -131,7 +131,7 @@ export const EnhancedStatsCards: React.FC<EnhancedStatsCardsProps> = ({
       value: mainStats.activeCourses.toString(),
       icon: BookOpen,
       color: 'text-info',
-      bg: 'bg-info/10',
+      bg: 'bg-surface',
       tooltip: 'Courses you\'re currently enrolled in and haven\'t completed yet.',
     },
   ] : [];
@@ -143,7 +143,7 @@ export const EnhancedStatsCards: React.FC<EnhancedStatsCardsProps> = ({
       value: detailedStats.lessonsCompleted.toString(),
       icon: CheckCircle,
       color: 'text-success',
-      bg: 'bg-success/10',
+      bg: 'bg-surface',
       tooltip: 'Total number of lessons you\'ve completed across all courses.',
     },
     {
@@ -151,7 +151,7 @@ export const EnhancedStatsCards: React.FC<EnhancedStatsCardsProps> = ({
       value: detailedStats.coursesCompleted.toString(),
       icon: GraduationCap,
       color: 'text-accent',
-      bg: 'bg-accent/10',
+      bg: 'bg-surface',
       tooltip: 'Total number of courses you\'ve fully completed.',
     },
   ] : [];

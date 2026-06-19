@@ -81,9 +81,9 @@ const ConceptListItem: React.FC<ConceptListItemProps & { itemRef?: React.RefObje
 
   const cardBaseClasses = 'p-4 border rounded-lg mb-3 transition-all duration-200 cursor-pointer';
   const cardStateClasses = isSelected
-    ? 'border-indigo-500 bg-indigo-50 shadow-md'
+    ? 'border-primary bg-surface-hover shadow-md'
     : hasLesson
-      ? 'border-emerald-400 bg-emerald-50/70 hover:border-emerald-500 hover:shadow-md'
+      ? 'border-success bg-surface hover:border-success hover:shadow-md'
       : 'border-border bg-card hover:border-border hover:shadow-sm';
 
   return (
@@ -347,7 +347,7 @@ const ConceptLevelSection: React.FC<ConceptLevelSectionProps> = ({
                       e.stopPropagation();
                       setIsPracticeModalOpen(true);
                     }}
-                    className="w-full flex items-center justify-center gap-2 px-4 py-3 text-sm font-semibold text-primary-foreground bg-primary hover:bg-primary/90 active:bg-primary/80 rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 shadow-sm hover:shadow-md cursor-pointer"
+                    className="w-full flex items-center justify-center gap-2 px-4 py-3 text-sm font-semibold text-primary-foreground bg-primary hover:bg-primary active:bg-primary rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 shadow-sm hover:shadow-md cursor-pointer"
                   >
                     <BookOpen size={16} />
                     <span>Level {level + 1} Final Review</span>
@@ -442,7 +442,7 @@ const ConceptList: React.FC<ConceptListProps> = ({
           <button
             onClick={onLoadMoreLayers}
             disabled={isLoading}
-            className="inline-flex items-center gap-2 px-6 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-colors duration-200 font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+            className="inline-flex items-center gap-2 px-6 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-colors duration-200 font-medium disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isLoading ? (
               <>

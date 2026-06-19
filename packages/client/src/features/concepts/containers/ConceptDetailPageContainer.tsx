@@ -779,8 +779,8 @@ const ConceptDetailPageContainer: React.FC = () => {
               <div className={cn(
                 "border-l-4 p-3 rounded-r-md",
                 viewAnnotation.type === 'question'
-                  ? "bg-blue-50 dark:bg-blue-900/20 border-blue-500"
-                  : "bg-yellow-50 dark:bg-yellow-900/20 border-yellow-500"
+                  ? "bg-surface border-info"
+                  : "bg-surface border-warning"
               )}>
                 <Typography variant="small" color="muted" className="text-xs mb-1">
                   Context:
@@ -795,7 +795,7 @@ const ConceptDetailPageContainer: React.FC = () => {
             {viewAnnotation.type === 'question' && 'question' in viewAnnotation.annotation ? (
               <div className="space-y-4">
                 <div>
-                  <Typography variant="small" className="font-semibold text-blue-600 dark:text-blue-400 mb-1">
+                  <Typography variant="small" className="font-semibold text-info mb-1">
                     Question:
                   </Typography>
                   <Typography variant="body">
@@ -803,10 +803,10 @@ const ConceptDetailPageContainer: React.FC = () => {
                   </Typography>
                 </div>
                 <div>
-                  <Typography variant="small" className="font-semibold text-green-600 dark:text-green-400 mb-1">
+                  <Typography variant="small" className="font-semibold text-success mb-1">
                     Answer:
                   </Typography>
-                  <div className="prose dark:prose-invert max-w-none">
+                  <div className="prose max-w-none">
                     <MarkdownContent content={(viewAnnotation.annotation as QuestionAnswerItem).answer} />
                   </div>
                 </div>
@@ -820,7 +820,7 @@ const ConceptDetailPageContainer: React.FC = () => {
             )}
 
             {/* Timestamp and Delete */}
-            <div className="flex items-center justify-between pt-4 border-t border-gray-200 dark:border-gray-700">
+            <div className="flex items-center justify-between pt-4 border-t border-border">
               <Typography variant="small" color="muted" className="text-xs">
                 Created: {new Date(viewAnnotation.annotation.timestamp).toLocaleString()}
               </Typography>

@@ -58,7 +58,7 @@ export const ProgressCard: React.FC<ProgressCardProps> = ({
       <div className="flex items-start gap-4">
         {icon && (
           <div className="flex-shrink-0">
-            <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center">
+            <div className="w-12 h-12 rounded-lg bg-surface flex items-center justify-center">
               <Icon icon={icon} size="lg" color="text-primary" />
             </div>
           </div>

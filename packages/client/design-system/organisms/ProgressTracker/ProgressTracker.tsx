@@ -140,7 +140,7 @@ export const ProgressTracker: React.FC<ProgressTrackerProps> = ({
 
         {/* Current Lesson */}
         {currentLesson && (
-          <div className="p-4 bg-primary/10 rounded-lg border border-primary/30">
+          <div className="p-4 bg-surface rounded-lg border border-primary">
             <div className="flex items-center gap-2 mb-2">
               <Icon icon={Play} size="sm" className="text-primary" />
               <Typography variant="small" weight="semibold" className="text-[var(--color-foreground)]">
@@ -194,8 +194,8 @@ export const ProgressTracker: React.FC<ProgressTrackerProps> = ({
                 className={cn(
                   'flex items-center justify-between p-3 rounded-lg border',
                   'hover:bg-surface-hover',
-                  lesson.status === 'current' && 'bg-primary/10 border-primary/30',
-                  lesson.status === 'completed' && 'bg-success/10 border-[var(--color-success)]/30',
+                  lesson.status === 'current' && 'bg-surface border-primary',
+                  lesson.status === 'completed' && 'bg-surface border-success',
                   lesson.status === 'locked' && 'opacity-50'
                 )}
               >

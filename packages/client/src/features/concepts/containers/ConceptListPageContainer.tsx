@@ -798,8 +798,8 @@ const ConceptListPageContainer: React.FC = () => {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto mb-4"></div>
-          <p className="text-gray-600 dark:text-gray-400">Loading learning path...</p>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Loading learning path...</p>
         </div>
       </div>
     );
@@ -809,7 +809,7 @@ const ConceptListPageContainer: React.FC = () => {
   return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center">
-          <p className="text-red-600 dark:text-red-400 mb-4">Error: {error}</p>
+          <p className="text-error mb-4">Error: {error}</p>
           <Button onClick={() => window.location.reload()}>Retry</Button>
         </div>
       </div>

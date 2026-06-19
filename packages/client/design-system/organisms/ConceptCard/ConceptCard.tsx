@@ -167,9 +167,9 @@ export const ConceptCard: React.FC<ConceptCardProps> = ({
       className={cn(
         'transition-all duration-200',
         // Highlighted state (lesson ready)
-        isHighlighted && !isCurrent && !isCompleted && 'border-l-4 border-l-success bg-success/5',
+        isHighlighted && !isCurrent && !isCompleted && 'border-l-4 border-l-success bg-surface',
         // Current/active state
-        isCurrent && !isCompleted && 'ring-2 ring-primary border-l-4 border-l-primary bg-primary/5',
+        isCurrent && !isCompleted && 'ring-2 ring-primary border-l-4 border-l-primary bg-surface',
         // Completed state
         isCompleted && 'opacity-60',
         // Default non-highlighted state
@@ -238,7 +238,7 @@ export const ConceptCard: React.FC<ConceptCardProps> = ({
                 {name}
               </Typography>
               {!hideLessonBadge && isHighlighted && !isCompleted && (
-                <Badge variant="success" size="sm" className="bg-success/10 text-success text-xs">
+                <Badge variant="success" size="sm" className="bg-surface text-success text-xs">
                   Lesson Ready
                 </Badge>
               )}

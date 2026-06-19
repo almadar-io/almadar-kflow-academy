@@ -355,20 +355,20 @@ export const FocusModeTemplate: React.FC<FocusModeTemplateProps> = (props) => {
                 </Typography>
                 <button
                   onClick={() => setShowGoalModal(true)}
-                  className="p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                  className="p-1.5 rounded-full hover:bg-surface-hover transition-colors"
                   title="View goal details"
                 >
-                  <Info size={20} className="text-gray-500 dark:text-gray-400" />
+                  <Info size={20} className="text-muted-foreground" />
                 </button>
               </div>
-              <div className="flex items-center justify-center gap-2 sm:gap-4 text-xs sm:text-sm text-gray-600 dark:text-gray-400 flex-wrap">
+              <div className="flex items-center justify-center gap-2 sm:gap-4 text-xs sm:text-sm text-muted-foreground flex-wrap">
                 {goal.assessedLevel && (
                   <>
                     <span className={cn(
                       "px-2 py-0.5 rounded-full text-xs font-medium capitalize",
-                      goal.assessedLevel === 'beginner' && "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400",
-                      goal.assessedLevel === 'intermediate' && "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400",
-                      goal.assessedLevel === 'advanced' && "bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400"
+                      goal.assessedLevel === 'beginner' && "bg-surface text-success",
+                      goal.assessedLevel === 'intermediate' && "bg-surface text-primary",
+                      goal.assessedLevel === 'advanced' && "bg-surface text-accent"
                     )}>
                       {goal.assessedLevel}
                     </span>
@@ -381,9 +381,9 @@ export const FocusModeTemplate: React.FC<FocusModeTemplateProps> = (props) => {
                 <span className="hidden sm:inline">•</span>
                 <span>{progressPercentage}% Complete</span>
               </div>
-              <div className="mt-4 w-48 sm:w-64 mx-auto h-1.5 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+              <div className="mt-4 w-48 sm:w-64 mx-auto h-1.5 bg-muted rounded-full overflow-hidden">
                 <div
-                  className="h-full bg-indigo-600 transition-all duration-500"
+                  className="h-full bg-primary transition-all duration-500"
                   style={{ width: `${progressPercentage}%` }}
                 />
               </div>
@@ -392,7 +392,7 @@ export const FocusModeTemplate: React.FC<FocusModeTemplateProps> = (props) => {
 
           {/* Seed Concept Card */}
           {seedConcept && (
-            <Card className="w-full md:max-w-2xl p-3 sm:p-4 md:p-6 mb-3 sm:mb-6 md:mb-8 border-2 border-purple-200 dark:border-purple-800 bg-purple-50 dark:bg-purple-900/20">
+            <Card className="w-full md:max-w-2xl p-3 sm:p-4 md:p-6 mb-3 sm:mb-6 md:mb-8 border-2 border-border bg-surface">
               <div className="text-center">
                 <Typography variant="h2" className="mb-2">
                   {seedConcept.name}
@@ -427,16 +427,16 @@ export const FocusModeTemplate: React.FC<FocusModeTemplateProps> = (props) => {
                           onClick={() => handleLevelSelect(level.id)}
                           className={cn(
                             "flex flex-col items-center gap-1 sm:gap-2 px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg transition-all min-w-[56px] sm:min-w-[70px] flex-shrink-0",
-                            "hover:bg-gray-100 dark:hover:bg-gray-700",
-                            isSelected && "bg-indigo-100 dark:bg-indigo-900/30 ring-2 ring-indigo-500 shadow-sm"
+                            "hover:bg-surface-hover",
+                            isSelected && "bg-surface ring-2 ring-primary shadow-sm"
                           )}
                           title={level.name}
                         >
                           <div className={cn(
                             "w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center text-xs sm:text-sm font-bold transition-all",
-                            isCompleted && "bg-green-500 text-white shadow-md",
-                            isSelected && !isCompleted && "bg-indigo-500 text-white shadow-md",
-                            !isSelected && !isCompleted && "bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-400"
+                            isCompleted && "bg-success text-white shadow-md",
+                            isSelected && !isCompleted && "bg-primary text-primary-foreground shadow-md",
+                            !isSelected && !isCompleted && "bg-muted text-muted-foreground"
                           )}>
                             {isCompleted ? (
                               <Check size={14} className="sm:w-[18px] sm:h-[18px]" />
@@ -447,15 +447,15 @@ export const FocusModeTemplate: React.FC<FocusModeTemplateProps> = (props) => {
                           <div className="flex flex-col items-center gap-0.5">
                             <span className={cn(
                               "text-[10px] sm:text-xs font-semibold whitespace-nowrap",
-                              isSelected && "text-indigo-600 dark:text-indigo-400",
-                              !isSelected && "text-gray-600 dark:text-gray-400"
+                              isSelected && "text-primary",
+                              !isSelected && "text-muted-foreground"
                             )}>
                               L{level.number}
                             </span>
                             {level.concepts.length > 0 && (
                               <span className={cn(
                                 "text-[9px] sm:text-[10px] font-medium hidden sm:block",
-                                isSelected ? "text-indigo-500 dark:text-indigo-400" : "text-gray-500 dark:text-gray-500"
+                                isSelected ? "text-primary" : "text-muted-foreground"
                               )}>
                                 {level.concepts.length} {level.concepts.length === 1 ? 'concept' : 'concepts'}
                               </span>
@@ -465,7 +465,7 @@ export const FocusModeTemplate: React.FC<FocusModeTemplateProps> = (props) => {
                         {index < levels.length - 1 && (
                           <div className={cn(
                             "flex-shrink-0 w-3 sm:w-6 h-0.5 transition-colors",
-                            isCompleted ? "bg-green-500" : "bg-gray-300 dark:bg-gray-600"
+                            isCompleted ? "bg-success" : "bg-border"
                           )} />
                         )}
                       </React.Fragment>
@@ -491,7 +491,7 @@ export const FocusModeTemplate: React.FC<FocusModeTemplateProps> = (props) => {
                       </Badge>
                     )}
                     {selectedLevel.id === currentLevel?.id && !selectedLevel.completed && (
-                      <Badge variant="default" className="bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300">
+                      <Badge variant="default" className="bg-surface text-primary border-primary">
                         Current
                       </Badge>
                     )}
@@ -503,8 +503,8 @@ export const FocusModeTemplate: React.FC<FocusModeTemplateProps> = (props) => {
                     const levelMilestone = getMilestoneForLevel(selectedLevel.number);
                     return levelMilestone ? (
                       <div className="flex items-center gap-2 mt-2">
-                        <Flag size={14} className="text-indigo-500 flex-shrink-0" />
-                        <Typography variant="small" className="text-indigo-600 dark:text-indigo-400 font-medium">
+                        <Flag size={14} className="text-primary flex-shrink-0" />
+                        <Typography variant="small" className="text-primary font-medium">
                           {levelMilestone.title}
                         </Typography>
                       </div>
@@ -522,8 +522,8 @@ export const FocusModeTemplate: React.FC<FocusModeTemplateProps> = (props) => {
                     className={cn(
                       "p-2 rounded-md transition-colors",
                       viewMode === 'list'
-                        ? "bg-indigo-600 text-white"
-                        : "text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700"
+                        ? "bg-primary text-primary-foreground"
+                        : "text-muted-foreground hover:bg-surface-hover"
                     )}
                     title="List view"
                   >
@@ -534,8 +534,8 @@ export const FocusModeTemplate: React.FC<FocusModeTemplateProps> = (props) => {
                     className={cn(
                       "p-2 rounded-md transition-colors",
                       viewMode === 'mindmap'
-                        ? "bg-indigo-600 text-white"
-                        : "text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700"
+                        ? "bg-primary text-primary-foreground"
+                        : "text-muted-foreground hover:bg-surface-hover"
                     )}
                     title="Mindmap view"
                   >
@@ -588,7 +588,7 @@ export const FocusModeTemplate: React.FC<FocusModeTemplateProps> = (props) => {
                       );
                     })
                   ) : (
-                    <div className="text-center py-12 text-gray-500 dark:text-gray-400">
+                    <div className="text-center py-12 text-muted-foreground">
                       <Typography variant="body">
                         No concepts in this level yet
                       </Typography>
@@ -597,9 +597,9 @@ export const FocusModeTemplate: React.FC<FocusModeTemplateProps> = (props) => {
 
                   {/* Level Completion Decision Card */}
                   {selectedLevel.concepts.length > 0 && (
-                    <Card className="mt-3 sm:mt-6 p-3 sm:p-4 md:p-6 bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-indigo-900/20 dark:to-purple-900/20 border-2 border-indigo-200 dark:border-indigo-800">
+                    <Card className="mt-3 sm:mt-6 p-3 sm:p-4 md:p-6 bg-surface border-2 border-primary">
                       <div className="text-center mb-4">
-                        <Typography variant="h3" className="mb-2 text-indigo-900 dark:text-indigo-100">
+                        <Typography variant="h3" className="mb-2 text-foreground">
                           🎉 Level {selectedLevel.number} Complete!
                         </Typography>
                         <Typography variant="body" color="muted" className="text-base">
@@ -615,7 +615,7 @@ export const FocusModeTemplate: React.FC<FocusModeTemplateProps> = (props) => {
                               e.stopPropagation();
                               handleLevelSelect(nextLevel.id);
                             }}
-                            className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-200 px-6 py-3 rounded-lg flex-1"
+                            className="font-semibold shadow-lg hover:shadow-xl transition-all duration-200 px-6 py-3 rounded-lg flex-1"
                             iconRight={ArrowRight}
                           >
                             Continue to Level {nextLevel.number}
@@ -636,7 +636,7 @@ export const FocusModeTemplate: React.FC<FocusModeTemplateProps> = (props) => {
                               }
                             }}
                             disabled={isLoadingNextLevel}
-                            className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-200 px-6 py-3 rounded-lg flex-1"
+                            className="font-semibold shadow-lg hover:shadow-xl transition-all duration-200 px-6 py-3 rounded-lg flex-1"
                             iconRight={ArrowRight}
                           >
                             {isLoadingNextLevel ? (
@@ -666,7 +666,7 @@ export const FocusModeTemplate: React.FC<FocusModeTemplateProps> = (props) => {
                               }
                             }}
                             disabled={isGeneratingLayerPractice}
-                            className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-200 px-6 py-3 rounded-lg flex-1"
+                            className="font-semibold shadow-lg hover:shadow-xl transition-all duration-200 px-6 py-3 rounded-lg flex-1"
                             iconRight={GraduationCap}
                           >
                             {isGeneratingLayerPractice ? (
@@ -684,7 +684,7 @@ export const FocusModeTemplate: React.FC<FocusModeTemplateProps> = (props) => {
                   )}
                 </div>
               ) : (
-                <div className="h-[500px] border border-gray-200 dark:border-gray-700 rounded-lg">
+                <div className="h-[500px] border border-border rounded-lg">
                   {mindmapData ? (
                     <TreeMap
                       data={mindmapData}
@@ -699,7 +699,7 @@ export const FocusModeTemplate: React.FC<FocusModeTemplateProps> = (props) => {
                       }}
                     />
                   ) : (
-                    <div className="flex items-center justify-center h-full text-gray-500 dark:text-gray-400">
+                    <div className="flex items-center justify-center h-full text-muted-foreground">
                       <Typography variant="body">
                         No concepts to display
                       </Typography>
@@ -712,11 +712,11 @@ export const FocusModeTemplate: React.FC<FocusModeTemplateProps> = (props) => {
 
           {/* Load Next Level Button */}
           {selectedLevel && (isSelectedLevelComplete || !nextLevel) && (
-            <Card className="w-full md:max-w-2xl p-3 sm:p-4 md:p-6 mb-3 sm:mb-4 border-2 border-indigo-200 dark:border-indigo-800 bg-indigo-50 dark:bg-indigo-900/20">
+            <Card className="w-full md:max-w-2xl p-3 sm:p-4 md:p-6 mb-3 sm:mb-4 border-2 border-primary bg-surface">
               <div className="text-center">
                 {isSelectedLevelComplete ? (
                   <>
-                    <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-green-500 mb-4">
+                    <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-success mb-4">
                       <Check size={24} className="text-white" />
                     </div>
                     <Typography variant="h3" className="mb-2">
@@ -731,8 +731,8 @@ export const FocusModeTemplate: React.FC<FocusModeTemplateProps> = (props) => {
                   </>
                 ) : (
                   <>
-                    <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-indigo-500 mb-4">
-                      <Sparkles size={24} className="text-white" />
+                    <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-primary mb-4">
+                      <Sparkles size={24} className="text-primary-foreground" />
                     </div>
                     <Typography variant="h3" className="mb-2">
                       Explore More Concepts
@@ -789,34 +789,34 @@ export const FocusModeTemplate: React.FC<FocusModeTemplateProps> = (props) => {
               )}
             </div>
           )}
-          <div className="bg-gray-50 dark:bg-gray-800/50 rounded-lg p-4">
-            <Typography variant="h4" className="text-sm font-semibold mb-3 text-gray-700 dark:text-gray-300">
+          <div className="bg-muted rounded-lg p-4">
+            <Typography variant="h4" className="text-sm font-semibold mb-3 text-foreground">
               Progress
             </Typography>
             <div className="grid grid-cols-2 gap-4">
               <div className="text-center">
-                <div className="text-2xl font-bold text-indigo-600 dark:text-indigo-400">
+                <div className="text-2xl font-bold text-primary">
                   {lessonsGenerated}/{totalConcepts}
                 </div>
-                <div className="text-xs text-gray-500 dark:text-gray-400">Lessons Generated</div>
+                <div className="text-xs text-muted-foreground">Lessons Generated</div>
               </div>
               <div className="text-center">
-                <div className="text-2xl font-bold text-indigo-600 dark:text-indigo-400">
+                <div className="text-2xl font-bold text-primary">
                   {progressPercentage}%
                 </div>
-                <div className="text-xs text-gray-500 dark:text-gray-400">Complete</div>
+                <div className="text-xs text-muted-foreground">Complete</div>
               </div>
             </div>
-            <div className="mt-3 h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+            <div className="mt-3 h-2 bg-muted rounded-full overflow-hidden">
               <div
-                className="h-full bg-indigo-600 transition-all duration-500"
+                className="h-full bg-primary transition-all duration-500"
                 style={{ width: `${progressPercentage}%` }}
               />
             </div>
           </div>
           {goal?.milestones && goal.milestones.length > 0 && (
             <div>
-              <Typography variant="h4" className="text-sm font-semibold mb-3 text-gray-700 dark:text-gray-300">
+              <Typography variant="h4" className="text-sm font-semibold mb-3 text-foreground">
                 Milestones
               </Typography>
               <div className="space-y-3">
@@ -828,16 +828,16 @@ export const FocusModeTemplate: React.FC<FocusModeTemplateProps> = (props) => {
                       key={milestone.id}
                       className={cn(
                         "flex items-start gap-3 p-3 rounded-lg border transition-colors",
-                        isCurrentMilestone && "border-indigo-300 dark:border-indigo-700 bg-indigo-50 dark:bg-indigo-900/20",
-                        isPastMilestone && "border-green-200 dark:border-green-800 bg-green-50 dark:bg-green-900/10 opacity-75",
-                        !isCurrentMilestone && !isPastMilestone && "border-gray-200 dark:border-gray-700"
+                        isCurrentMilestone && "border-primary bg-surface",
+                        isPastMilestone && "border-border bg-surface opacity-75",
+                        !isCurrentMilestone && !isPastMilestone && "border-border"
                       )}
                     >
                       <div className={cn(
                         "flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold",
-                        isCurrentMilestone && "bg-indigo-500 text-white",
-                        isPastMilestone && "bg-green-500 text-white",
-                        !isCurrentMilestone && !isPastMilestone && "bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-400"
+                        isCurrentMilestone && "bg-primary text-primary-foreground",
+                        isPastMilestone && "bg-success text-white",
+                        !isCurrentMilestone && !isPastMilestone && "bg-muted text-muted-foreground"
                       )}>
                         {isPastMilestone ? <Check size={16} /> : milestone.levelNumber}
                       </div>
@@ -852,7 +852,7 @@ export const FocusModeTemplate: React.FC<FocusModeTemplateProps> = (props) => {
                             </Badge>
                           )}
                           {isPastMilestone && (
-                            <Badge variant="success" size="sm" className="text-xs bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400">
+                            <Badge variant="success" size="sm" className="text-xs">
                               Done
                             </Badge>
                           )}
@@ -896,7 +896,7 @@ export const FocusModeTemplate: React.FC<FocusModeTemplateProps> = (props) => {
           const reviewMilestone = reviewLevelNumber ? getMilestoneForLevel(reviewLevelNumber) : null;
           return (
             <div className="space-y-4">
-              <div className="pb-4 border-b border-gray-200 dark:border-gray-700">
+              <div className="pb-4 border-b border-border">
                 <div className="flex items-center gap-3 mb-3">
                   <div className="flex items-center justify-center w-10 h-10 rounded-full bg-gradient-to-br from-green-500 to-emerald-600">
                     <GraduationCap size={20} className="text-white" />
@@ -911,14 +911,14 @@ export const FocusModeTemplate: React.FC<FocusModeTemplateProps> = (props) => {
                   </div>
                 </div>
                 {reviewMilestone && (
-                  <div className="bg-indigo-50 dark:bg-indigo-900/20 rounded-lg p-3 mt-3">
+                  <div className="bg-surface rounded-lg p-3 mt-3 border border-primary">
                     <div className="flex items-center gap-2 mb-1">
-                      <Flag size={14} className="text-indigo-500" />
-                      <Typography variant="small" className="font-semibold text-indigo-700 dark:text-indigo-300">
+                      <Flag size={14} className="text-primary" />
+                      <Typography variant="small" className="font-semibold text-primary">
                         Milestone
                       </Typography>
                     </div>
-                    <Typography variant="body" className="text-indigo-900 dark:text-indigo-100">
+                    <Typography variant="body" className="text-foreground">
                       {reviewMilestone.title}
                     </Typography>
                     {reviewMilestone.description && (
@@ -930,7 +930,7 @@ export const FocusModeTemplate: React.FC<FocusModeTemplateProps> = (props) => {
                 )}
                 {reviewLevel && reviewLevel.concepts.length > 0 && (
                   <div className="mt-3">
-                    <Typography variant="small" className="font-semibold text-gray-600 dark:text-gray-400 mb-2">
+                    <Typography variant="small" className="font-semibold text-muted-foreground mb-2">
                       Concepts Covered ({reviewLevel.concepts.length})
                     </Typography>
                     <div className="flex flex-wrap gap-2">
@@ -940,8 +940,8 @@ export const FocusModeTemplate: React.FC<FocusModeTemplateProps> = (props) => {
                           variant={concept.hasLesson ? "success" : "default"}
                           size="sm"
                           className={concept.hasLesson
-                            ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400"
-                            : "bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400"
+                            ? "bg-surface text-success border-border"
+                            : "bg-muted text-muted-foreground"
                           }
                         >
                           {concept.name}
@@ -963,7 +963,7 @@ export const FocusModeTemplate: React.FC<FocusModeTemplateProps> = (props) => {
                     </Typography>
                   </div>
                 ) : layerPracticeStreamContent ? (
-                  <div className="prose dark:prose-invert max-w-none">
+                  <div className="prose max-w-none">
                     <LessonPanel
                       renderedLesson={layerPracticeStreamContent}
                       conceptHasLesson={true}
@@ -971,7 +971,7 @@ export const FocusModeTemplate: React.FC<FocusModeTemplateProps> = (props) => {
                     />
                   </div>
                 ) : reviewLevel?.review ? (
-                  <div className="prose dark:prose-invert max-w-none">
+                  <div className="prose max-w-none">
                     <LessonPanel
                       renderedLesson={reviewLevel.review}
                       conceptHasLesson={true}
@@ -980,7 +980,7 @@ export const FocusModeTemplate: React.FC<FocusModeTemplateProps> = (props) => {
                   </div>
                 ) : (
                   <div className="flex flex-col items-center justify-center py-12 text-center">
-                    <GraduationCap size={48} className="text-gray-300 dark:text-gray-600 mb-4" />
+                    <GraduationCap size={48} className="text-muted-foreground mb-4" />
                     <Typography variant="body" color="muted" className="max-w-sm mb-4">
                       Generate a summary to see how the concepts you learned work together to achieve the milestone
                     </Typography>
@@ -998,14 +998,14 @@ export const FocusModeTemplate: React.FC<FocusModeTemplateProps> = (props) => {
                       }}
                       disabled={isGeneratingLayerPractice}
                       iconRight={GraduationCap}
-                      className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700"
+                      className=""
                     >
                       Generate Summary
                     </Button>
                   </div>
                 )}
               </div>
-              <div className="flex justify-between items-center gap-3 pt-4 border-t border-gray-200 dark:border-gray-700">
+              <div className="flex justify-between items-center gap-3 pt-4 border-t border-border">
                 <div>
                   {reviewLevel?.review && !isGeneratingLayerPractice && (
                     <Button
@@ -1020,7 +1020,7 @@ export const FocusModeTemplate: React.FC<FocusModeTemplateProps> = (props) => {
                           }
                         }
                       }}
-                      className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+                      className="text-muted-foreground hover:text-foreground"
                     >
                       Regenerate
                     </Button>

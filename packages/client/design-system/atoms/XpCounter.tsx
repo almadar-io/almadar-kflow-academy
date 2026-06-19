@@ -25,7 +25,7 @@ export const XpCounter: React.FC<XpCounterProps> = ({
   const colors = domain ? DOMAIN_COLORS[domain] : undefined;
   return (
     <Box
-      className={`inline-flex items-center gap-1 ${colors?.bg ?? "bg-gray-100"} ${colors?.text ?? "text-gray-700"} rounded-md px-2 py-0.5 ${className ?? ""}`}
+      className={`inline-flex items-center gap-1 ${colors?.bg ?? "bg-surface"} ${colors?.text ?? "text-foreground"} rounded-md px-2 py-0.5 ${className ?? ""}`}
     >
       <Typography variant="label" size="sm" weight="bold">
         {xp.toLocaleString()}

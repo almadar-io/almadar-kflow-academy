@@ -32,13 +32,13 @@ const UserProfile: React.FC = () => {
   const userInfo = (
     <div className="flex items-center space-x-3">
       <div className="flex-shrink-0">
-        <User className="h-8 w-8 text-gray-400 dark:text-gray-500" />
+        <User className="h-8 w-8 text-muted-foreground" />
       </div>
       <div className="min-w-0 flex-1">
-        <p className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
+        <p className="text-sm font-medium text-foreground truncate">
           {user.displayName || 'User'}
         </p>
-        <p className="text-sm text-gray-500 dark:text-gray-400 truncate">
+        <p className="text-sm text-muted-foreground truncate">
           {user.email}
         </p>
       </div>
@@ -51,13 +51,13 @@ const UserProfile: React.FC = () => {
         <div className="flex items-center space-x-3 cursor-pointer hover:opacity-80 transition-opacity duration-200">
           {user.photoURL ? (
             <img
-              className="h-8 w-8 rounded-full ring-2 ring-gray-200 dark:ring-gray-700 shadow-sm"
+              className="h-8 w-8 rounded-full ring-2 ring-border shadow-sm"
               src={user.photoURL}
               alt={user.displayName || user.email || 'User'}
             />
           ) : (
-            <div className="h-8 w-8 rounded-full bg-gray-300 dark:bg-gray-600 flex items-center justify-center">
-              <User className="h-4 w-4 text-gray-600 dark:text-gray-300" />
+            <div className="h-8 w-8 rounded-full bg-surface flex items-center justify-center">
+              <User className="h-4 w-4 text-muted-foreground" />
             </div>
           )}
         </div>

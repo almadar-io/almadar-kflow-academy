@@ -147,7 +147,7 @@ export const MindMapCanvas = ({
       ref={containerRef}
       className={`flex-1 bg-[var(--color-surface)] rounded-lg transition-all duration-200 ${
         isFocused
-          ? "border-2 border-[var(--color-ring)] ring-2 ring-[var(--color-ring)]/20"
+          ? "border-2 border-[var(--color-ring)] ring-2 ring-[var(--color-ring)]"
           : "border border-[var(--color-border)]"
       } ${className || ""}`}
       tabIndex={0}
