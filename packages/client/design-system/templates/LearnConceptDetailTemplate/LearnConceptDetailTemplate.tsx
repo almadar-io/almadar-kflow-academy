@@ -1,133 +1,153 @@
 /**
  * LearnConceptDetailTemplate Component
- * 
+ *
  * Minimalist detail view for a single concept that complements FocusModeTemplate.
  * Ultra-clean design focused on reading and learning content.
  * Uses AppLayoutTemplate for consistent layout structure.
+ *
+ * Accepts either a flat `LearnConceptDetailTemplateProps` spread (legacy container usage)
+ * or a single `entity: ConceptDetailTemplateEntity` prop (page-assembler usage).
+ * When `entity` is provided the template emits `UI:PREVIOUS_CONCEPT`,
+ * `UI:NEXT_CONCEPT`, and `UI:NAVIGATE` events via `useEventBus`.
  */
 
 import React from 'react';
 import { AppLayoutTemplate } from '../AppLayoutTemplate';
-import { Badge, Button, Card, Typography } from '@almadar/ui';
-import { ConceptNavigation } from '../../molecules/ConceptNavigation';
-import { ArrowLeft, ChevronLeft, ChevronRight, ArrowRight, BookOpen, Loader2 } from 'lucide-react';
-import { cn } from '@utils/theme';
+import { Badge, Button, Card, Typography, useEventBus } from '@almadar/ui';
+import type { DisplayStateProps } from '@almadar/ui';
+import { ArrowLeft, ChevronLeft, ChevronRight, ArrowRight } from 'lucide-react';
+import type { LucideIcon } from 'lucide-react';
+
+/** Layout-only nav item shape used by this template. */
+export interface ConceptDetailNavItem {
+  id: string;
+  label: string;
+  icon?: LucideIcon;
+  href?: string;
+  onClick?: () => void;
+  badge?: string | number;
+  active?: boolean;
+}
+
+/** Concept summary shape passed to the template. */
+export interface TemplateConcept {
+  id: string;
+  name: string;
+  description?: string;
+  layer?: number;
+  isSeed?: boolean;
+}
+
+/** Seed concept call-to-action shape for entity mode. */
+export interface SeedConceptCta {
+  /** Button label */
+  label: string;
+  /** ID of the concept to navigate to on click */
+  conceptId: string;
+  /** Display name (used in aria / title) */
+  conceptName: string;
+}
+
+/**
+ * Typed entity shape for page-assembler usage.
+ * All data the template needs to render — no fetching, no callbacks.
+ */
+export interface ConceptDetailTemplateEntity {
+  concept?: TemplateConcept;
+  previousConcept?: { id: string; name: string };
+  nextConcept?: { id: string; name: string };
+  /** CTA shown on seed concepts to start Level 1. */
+  seedConceptCta?: SeedConceptCta;
+  /** Lesson panel JSX built by the page assembler. */
+  lessonPanel?: React.ReactNode;
+  backLabel?: string;
+  user?: { name: string; email?: string; avatar?: string };
+  navigationItems?: ConceptDetailNavItem[];
+}
+
+/** Props for entity-based (page-assembler) usage. */
+export interface LearnConceptDetailEntityProps extends DisplayStateProps {
+  entity: ConceptDetailTemplateEntity;
+}
 
 export interface LearnConceptDetailTemplateProps {
-  /**
-   * Concept information
-   */
-  concept?: {
-    id: string;
-    name: string;
-    description?: string;
-    layer?: number;
-    isSeed?: boolean;
-  };
-
-  /**
-   * Loading state
-   */
+  concept?: TemplateConcept;
   loading?: boolean;
-
-  /**
-   * Error message
-   */
   error?: string | null;
-
-  /**
-   * Back button handler
-   */
   onBack?: () => void;
-
-  /**
-   * Custom back button label
-   */
   backLabel?: string;
-
-  /**
-   * Lesson panel content (uses ConceptLessonPanel with segment renderers)
-   */
   lessonPanel?: React.ReactNode;
-
-  /**
-   * Previous concept for navigation
-   */
-  previousConcept?: {
-    id: string;
-    name: string;
-  };
-
-  /**
-   * Next concept for navigation
-   */
-  nextConcept?: {
-    id: string;
-    name: string;
-  };
-
-  /**
-   * Previous concept click handler
-   */
+  previousConcept?: { id: string; name: string };
+  nextConcept?: { id: string; name: string };
   onPreviousConceptClick?: (concept: { id: string; name: string }) => void;
-
-  /**
-   * Next concept click handler
-   */
   onNextConceptClick?: (concept: { id: string; name: string }) => void;
-
-  /**
-   * Action button for seed concept (e.g., "Go to First Concept in Next Level")
-   */
-  seedConceptAction?: {
-    label: string;
-    onClick: () => void;
-  };
-
-  /**
-   * AppLayout props
-   */
+  seedConceptAction?: { label: string; onClick: () => void };
   user?: { name: string; email?: string; avatar?: string };
-  navigationItems?: Array<{
-    id: string;
-    label: string;
-    icon?: any;
-    href?: string;
-    onClick?: () => void;
-    badge?: string | number;
-    active?: boolean;
-  }>;
+  navigationItems?: ConceptDetailNavItem[];
   /** @deprecated Handled by UIEventBridge */
   onLogout?: () => void;
   logo?: React.ReactNode;
   /** @deprecated Handled by UIEventBridge */
   onLogoClick?: () => void;
-
-  /**
-   * Additional CSS classes
-   */
   className?: string;
 }
 
-export const LearnConceptDetailTemplate: React.FC<LearnConceptDetailTemplateProps> = ({
-  concept,
-  loading = false,
-  error,
-  onBack,
-  backLabel = 'Back',
-  lessonPanel,
-  previousConcept,
-  nextConcept,
-  onPreviousConceptClick,
-  onNextConceptClick,
-  seedConceptAction,
-  user,
-  navigationItems,
-  onLogout,
-  logo,
-  onLogoClick,
-  className,
-}) => {
+type AllProps = LearnConceptDetailEntityProps | LearnConceptDetailTemplateProps;
+
+function isEntityProps(p: AllProps): p is LearnConceptDetailEntityProps {
+  return 'entity' in p && p.entity !== undefined;
+}
+
+export const LearnConceptDetailTemplate: React.FC<AllProps> = (props) => {
+  const { emit } = useEventBus();
+
+  const entityMode = isEntityProps(props);
+  const flat = entityMode ? undefined : (props as LearnConceptDetailTemplateProps);
+
+  const concept = entityMode ? props.entity.concept : flat?.concept;
+  const loading = entityMode ? (props as LearnConceptDetailEntityProps).isLoading ?? false : flat?.loading ?? false;
+  const error = entityMode ? ((props as LearnConceptDetailEntityProps).error?.message ?? null) : flat?.error ?? null;
+  const backLabel = entityMode ? (props.entity.backLabel ?? 'Back') : (flat?.backLabel ?? 'Back');
+  const lessonPanel = entityMode ? props.entity.lessonPanel : flat?.lessonPanel;
+  const previousConcept = entityMode ? props.entity.previousConcept : flat?.previousConcept;
+  const nextConcept = entityMode ? props.entity.nextConcept : flat?.nextConcept;
+  const user = entityMode ? props.entity.user : flat?.user;
+  const navigationItems = entityMode ? props.entity.navigationItems : flat?.navigationItems;
+  const logo = !entityMode ? flat?.logo : undefined;
+
+  const seedConceptAction = entityMode
+    ? (props.entity.seedConceptCta
+        ? {
+            label: props.entity.seedConceptCta.label,
+            onClick: () => emit('UI:NAVIGATE', { url: `/concepts/${props.entity.seedConceptCta?.conceptId}` }),
+          }
+        : undefined)
+    : flat?.seedConceptAction;
+
+  const handleBack = () => {
+    if (entityMode) {
+      emit('UI:NAVIGATE_BACK', {});
+    } else {
+      flat?.onBack?.();
+    }
+  };
+
+  const handlePrevious = (c: { id: string; name: string }) => {
+    if (entityMode) {
+      emit('UI:PREVIOUS_CONCEPT', { conceptId: c.id, name: c.name });
+    } else {
+      flat?.onPreviousConceptClick?.(c);
+    }
+  };
+
+  const handleNext = (c: { id: string; name: string }) => {
+    if (entityMode) {
+      emit('UI:NEXT_CONCEPT', { conceptId: c.id, name: c.name });
+    } else {
+      flat?.onNextConceptClick?.(c);
+    }
+  };
+
   if (loading) {
     return (
       <AppLayoutTemplate
@@ -162,11 +182,9 @@ export const LearnConceptDetailTemplate: React.FC<LearnConceptDetailTemplateProp
             <Typography variant="body" color="muted" className="mb-6">
               {error}
             </Typography>
-            {onBack && (
-              <Button variant="secondary" onClick={onBack} icon={ArrowLeft}>
-                {backLabel}
-              </Button>
-            )}
+            <Button variant="secondary" onClick={handleBack} icon={ArrowLeft}>
+              {backLabel}
+            </Button>
           </Card>
         </div>
       </AppLayoutTemplate>
@@ -183,18 +201,16 @@ export const LearnConceptDetailTemplate: React.FC<LearnConceptDetailTemplateProp
     >
       <div className="min-h-screen py-2 sm:py-4 md:py-8 px-1 sm:px-2 md:px-4">
         {/* Back Button */}
-        {onBack && (
-          <div className="mb-4 sm:mb-6 md:mb-8">
-            <Button
-              variant="secondary"
-              onClick={onBack}
-              icon={ArrowLeft}
-              size="sm"
-            >
-              {backLabel}
-            </Button>
-          </div>
-        )}
+        <div className="mb-4 sm:mb-6 md:mb-8">
+          <Button
+            variant="secondary"
+            onClick={handleBack}
+            icon={ArrowLeft}
+            size="sm"
+          >
+            {backLabel}
+          </Button>
+        </div>
 
         {/* Concept Header */}
         {concept && (
@@ -235,7 +251,7 @@ export const LearnConceptDetailTemplate: React.FC<LearnConceptDetailTemplateProp
           </div>
         )}
 
-        {/* Lesson Panel - Uses ConceptLessonPanel with segment renderers */}
+        {/* Lesson Panel */}
         {lessonPanel && (
           <div className="mb-4 sm:mb-6 md:mb-8">
             {lessonPanel}
@@ -248,7 +264,7 @@ export const LearnConceptDetailTemplate: React.FC<LearnConceptDetailTemplateProp
             {previousConcept ? (
               <Button
                 variant="secondary"
-                onClick={() => onPreviousConceptClick?.(previousConcept)}
+                onClick={() => handlePrevious(previousConcept)}
                 icon={ChevronLeft}
                 className="flex-1"
               >
@@ -260,11 +276,10 @@ export const LearnConceptDetailTemplate: React.FC<LearnConceptDetailTemplateProp
             ) : (
               <div className="flex-1" />
             )}
-            
             {nextConcept ? (
               <Button
                 variant="primary"
-                onClick={() => onNextConceptClick?.(nextConcept)}
+                onClick={() => handleNext(nextConcept)}
                 iconRight={ChevronRight}
                 className="flex-1"
               >
@@ -282,4 +297,3 @@ export const LearnConceptDetailTemplate: React.FC<LearnConceptDetailTemplateProp
     </AppLayoutTemplate>
   );
 };
-

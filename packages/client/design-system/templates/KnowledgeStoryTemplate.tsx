@@ -26,6 +26,7 @@ export const KnowledgeStoryTemplate = ({
   className,
 }: KnowledgeStoryTemplateProps) => {
   const resolved = (Array.isArray(entity) ? entity[0] : entity) as KnowledgeStoryEntity | undefined;
+  if (isLoading && !resolved) return <LoadingState />;
   if (!resolved) return null;
   return <KnowledgeStoryBoard entity={resolved} isLoading={isLoading} error={error} className={className} />;
 };
