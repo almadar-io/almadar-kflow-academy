@@ -1,7 +1,7 @@
 import { getFirestore } from '@almadar/server';
 import type { EnrollmentNodeProperties } from '@almadar-io/knowledge';
 import { hybridCache, CACHE_TTL } from "./cacheService";
-import { CACHE_KEYS, invalidateEnrollments } from "./cacheInvalidation";
+import { CACHE_KEYS } from "./cacheInvalidation";
 import { studentData } from "./studentDataAccess";
 import type { PublishedCourse } from "../types/publishing";
 import type { Enrollment, AssessmentStatus } from "@kflow-academy/shared";
@@ -26,17 +26,6 @@ function enrollmentNodeToEnrollment(graphId: string, node: EnrollmentNodePropert
     canSkipAhead: false,
     notificationEnabled: true,
   };
-}
-
-export async function enrollStudent(courseId: string, studentId: string): Promise<Enrollment> {
-  throw new Error(
-    "enrollStudent requires migration to graph-based publishing. " +
-      "Old Firestore course/module/lesson services have been removed."
-  );
-}
-
-export async function unenrollStudent(courseId: string, enrollmentId: string): Promise<void> {
-  await invalidateEnrollments(enrollmentId);
 }
 
 export async function getEnrollmentById(
@@ -111,27 +100,6 @@ export async function getEnrolledCoursesWithDetails(
 export async function getCourseEnrollment(courseId: string, studentId: string): Promise<Enrollment | null> {
   const enrollments = await getStudentEnrollments(studentId);
   return enrollments.find((e) => e.courseId === courseId) ?? null;
-}
-
-export async function updateProgress(courseId: string, enrollmentId: string, lessonId: string): Promise<Enrollment> {
-  const enrollment = await getEnrollment(courseId, enrollmentId);
-  if (!enrollment) throw new Error("Enrollment not found");
-
-  if (!enrollment.completedLessonIds.includes(lessonId)) {
-    enrollment.completedLessonIds.push(lessonId);
-  }
-  enrollment.currentLessonId = lessonId;
-
-  const studentId = (enrollment as { studentId?: string }).studentId;
-  if (studentId) {
-    await studentData.upsertEnrollment(studentId, enrollmentId, {
-      completedConceptIds: enrollment.completedLessonIds,
-      currentConceptId: enrollment.currentLessonId,
-    });
-  }
-
-  await invalidateEnrollments(enrollmentId);
-  return enrollment;
 }
 
 export async function updateEnrollmentsForCourse(mentorId: string, courseId: string): Promise<void> {
