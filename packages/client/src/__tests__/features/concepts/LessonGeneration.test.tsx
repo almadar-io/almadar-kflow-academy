@@ -46,8 +46,9 @@ jest.mock('../../../components/TextSelectionTooltip', () => {
   };
 });
 
-// Mock MarkdownRenderer components
-jest.mock('../../../features/concepts/components/MarkdownRenderer', () => {
+// Mock lesson-rendering primitives (sourced from @almadar/ui), preserving the rest of the package
+jest.mock('@almadar/ui', () => {
+  const actual = jest.requireActual('@almadar/ui');
   const mockParseLessonSegments = (lesson: string | undefined) => {
     if (!lesson) return [];
     // Simple mock that returns segments based on content
@@ -72,6 +73,7 @@ jest.mock('../../../features/concepts/components/MarkdownRenderer', () => {
   };
 
   return {
+    ...actual,
     parseLessonSegments: mockParseLessonSegments,
     SegmentRenderer: ({ segments = [] }: any) => {
       if (!segments || segments.length === 0) {

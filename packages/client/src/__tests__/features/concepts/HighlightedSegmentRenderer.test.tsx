@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, screen, waitFor, act } from '@testing-library/react';
 import { HighlightedSegmentRenderer } from '../../../features/concepts/components/HighlightedSegmentRenderer';
-import { Segment } from '../../../features/concepts/components/MarkdownRenderer';
+import type { LessonSegment as Segment } from '@almadar/ui';
 import { Concept, NoteItem, QuestionAnswer } from '../../../features/concepts/types';
 import { renderWithProviders } from '../../testUtils.helper';
 
@@ -11,9 +11,9 @@ jest.mock('rehype-raw', () => ({
   default: jest.fn(() => () => {}),
 }));
 
-// Mock SegmentRenderer
-jest.mock('../../../features/concepts/components/MarkdownRenderer', () => {
-  const actual = jest.requireActual('../../../features/concepts/components/MarkdownRenderer');
+// Mock SegmentRenderer (sourced from @almadar/ui), preserving the rest of the package
+jest.mock('@almadar/ui', () => {
+  const actual = jest.requireActual('@almadar/ui');
   const MockSegmentRenderer = jest.fn(({ segments }: { segments: Segment[] }) => {
     if (!segments || segments.length === 0) {
       return null; // SegmentRenderer returns null for empty segments

@@ -20,8 +20,9 @@ jest.mock('../../../features/concepts/hooks/useLayerPractice', () => ({
   useLayerPractice: (options: any) => mockUseLayerPractice(options),
 }));
 
-// Mock MarkdownRenderer
-jest.mock('../../../features/concepts/components/MarkdownRenderer', () => ({
+// Mock lesson-rendering primitives (sourced from @almadar/ui), preserving the rest of the package
+jest.mock('@almadar/ui', () => ({
+  ...jest.requireActual('@almadar/ui'),
   parseMarkdownWithCodeBlocks: (content: string) => {
     if (!content) return [];
     const segments: any[] = [];
