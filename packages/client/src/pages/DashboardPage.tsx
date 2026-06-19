@@ -10,7 +10,7 @@
 import React, { useEffect, useMemo } from 'react';
 import { useLocation } from 'react-router';
 import { useEventBus, useTranslate } from '@almadar/ui';
-import { Brain, BookOpen } from 'lucide-react';
+import { Brain } from 'lucide-react';
 import { DashboardBoardTemplate } from '@design-system/templates/DashboardTemplate/DashboardBoardTemplate';
 import type { DashboardBoardTemplateEntity } from '@design-system/templates/DashboardTemplate/DashboardBoardTemplate';
 import { useAuthContext } from '../features/auth/AuthContext';
@@ -38,7 +38,6 @@ export const DashboardPage: React.FC = () => {
     const unsubQuick = on('UI:QUICK_ACTION', (event) => {
       const actionId = event.payload?.actionId as string | undefined;
       if (actionId === 'createPath') navigate('/learn');
-      else if (actionId === 'browseStories') navigate('/stories');
     });
     const unsubActivity = on('UI:ACTIVITY_CLICK', (event) => {
       const activityId = event.payload?.activityId as string | undefined;
@@ -50,8 +49,6 @@ export const DashboardPage: React.FC = () => {
         if (matched.metadata.graphId) {
           navigate(`/concepts/${matched.metadata.graphId}/concept/${encodeURIComponent(matched.metadata.conceptId)}`);
         }
-      } else if (type === 'story_completed' && matched.metadata?.storyId) {
-        navigate(`/stories/${matched.metadata.storyId}`);
       }
     });
     const unsubPath = on('UI:LEARNING_PATH_CLICK', (event) => {
@@ -107,12 +104,10 @@ export const DashboardPage: React.FC = () => {
       { label: t('dashboard.stat.streak'), value: stats.learningStreak },
       { label: t('dashboard.stat.concepts'), value: stats.conceptsMastered },
     ],
-    jumpBackInStories: [],
     recentActivity,
     learningPaths,
     quickActions: [
       { id: 'createPath', label: t('dashboard.action.createPath'), icon: Brain },
-      { id: 'browseStories', label: t('dashboard.action.browseStories'), icon: BookOpen },
     ],
   };
 

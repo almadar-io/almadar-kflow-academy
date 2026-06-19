@@ -13,7 +13,6 @@ import {
   Box,
   VStack,
   HStack,
-  Button,
   Typography,
   ProgressBar,
   Container,
@@ -21,9 +20,8 @@ import {
   EmptyState,
   PageHeader,
   LoadingState,
-  useEventBus,
   useTranslate, DisplayStateProps } from "@almadar/ui";
-import { BookOpen, Sparkles } from "lucide-react";
+import { BookOpen } from "lucide-react";
 import type { KnowledgeDomain, KnowledgeSubject, KnowledgeDomainType, UserStoryProgress } from "../types/knowledge";
 import { DomainSummaryCard } from "../molecules/DomainSummaryCard";
 import { SubjectListItem } from "../molecules/SubjectListItem";
@@ -46,7 +44,6 @@ export function DomainExplorerBoard({
   selectSubjectEvent,
   className = "",
 }: DomainExplorerBoardProps): React.JSX.Element {
-  const { emit } = useEventBus();
   const { t } = useTranslate();
 
   const resolved = Array.isArray(entity) ? entity[0] : (entity as DomainExplorerEntity | undefined);
@@ -139,7 +136,6 @@ export function DomainExplorerBoard({
                 <VStack gap="xs">
                   {domainSubjects.map((subject) => {
                     const subProg = userProgress?.subjectProgress[subject.id];
-                    const handleGenerateStory = () => emit('UI:STORY_GENERATE_REQUEST', { topic: subject.name, domain: subject.domain });
                     return (
                       <VStack key={subject.id} gap="none" data-entity-row={subject.id}>
                         <SubjectListItem
@@ -160,20 +156,6 @@ export function DomainExplorerBoard({
                                 games: String(subProg.gamesPlayed),
                               })}
                             </Typography>
-                          </HStack>
-                        )}
-                        {subProg && subProg.total === 0 && (
-                          <HStack className="pl-10 pb-1">
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={handleGenerateStory}
-                            >
-                              <Sparkles size={14} />
-                              <Typography variant="caption">
-                                {t('explorer.generateStory')}
-                              </Typography>
-                            </Button>
                           </HStack>
                         )}
                       </VStack>

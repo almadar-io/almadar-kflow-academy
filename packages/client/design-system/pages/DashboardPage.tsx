@@ -64,7 +64,6 @@ export interface DashboardPageProps {
    */
   onJumpBackInClick?: (item: JumpBackInItem) => void;
   onCreateLearningPath?: () => void;
-  onBrowseStories?: () => void;
   onActivityClick?: (activity: RecentActivity) => void;
   
   /**
@@ -108,7 +107,6 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
   },
   onJumpBackInClick,
   onCreateLearningPath,
-  onBrowseStories,
   onActivityClick,
   user,
   navigationItems,
@@ -281,14 +279,11 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
               </div>
               <Typography variant="h4" className="mb-1">No active learning</Typography>
               <Typography variant="body" color="secondary" className="mb-4">
-                Start a new learning path or browse stories to begin.
+                Start a new learning path to begin.
               </Typography>
               <div className="flex gap-3 justify-center">
                 <Button variant="primary" onClick={onCreateLearningPath}>
                   New Learning Path
-                </Button>
-                <Button variant="success" onClick={onBrowseStories}>
-                  Browse Stories
                 </Button>
               </div>
             </div>

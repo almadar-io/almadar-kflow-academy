@@ -5,18 +5,13 @@ import { ConceptsPage } from '../pages/ConceptsPage';
 import { ConceptDetailPage } from '../pages/ConceptDetailPage';
 import { LearnPage } from '../pages/LearnPage';
 import { DashboardPage } from '../pages/DashboardPage';
-import { StoryCatalogPage } from '../pages/StoryCatalogPage';
-import { StoryPlayPage } from '../pages/StoryPlayPage';
-import { SeriesViewPage } from '../pages/SeriesViewPage';
-import { ExplorePage } from '../pages/ExplorePage';
 import { Login, ProtectedRoute } from '../features/auth';
 import { useAuthContext } from '../features/auth/AuthContext';
 import { Spinner } from '@almadar/ui';
-import { AppLayout } from '../app/AppLayout';
 import { NavigationHandler } from '../app/NavigationHandler';
 
 /**
- * App Router: Dashboard, Learn, and Stories pages
+ * App Router: Dashboard, Learn, and Concepts pages
  */
 
 const HomeRoute: React.FC = () => {
@@ -44,12 +39,6 @@ const AppRouter: React.FC = () => {
         {/* Public Routes (no auth required) */}
         <Route path="/" element={<HomeRoute />} />
         <Route path="/login" element={<Login />} />
-
-        {/* Public story routes (no auth required, with app layout) */}
-        <Route path="/stories" element={<AppLayout><StoryCatalogPage /></AppLayout>} />
-        <Route path="/stories/:storyId" element={<AppLayout><StoryPlayPage /></AppLayout>} />
-        <Route path="/series/:seriesId" element={<AppLayout><SeriesViewPage /></AppLayout>} />
-        <Route path="/explore" element={<AppLayout><ExplorePage /></AppLayout>} />
 
         {/* Protected routes */}
         <Route path="/home" element={

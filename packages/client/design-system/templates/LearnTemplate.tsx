@@ -49,8 +49,6 @@ export function LearnTemplate({
   const navItems = [
     { href: '/', label: t('nav.dashboard') },
     { href: '/learn', label: t('nav.learn') },
-    { href: '/stories', label: t('nav.stories') },
-    { href: '/explore', label: t('nav.explore') },
   ];
 
   const learnEntity: LearnEntity = isArray

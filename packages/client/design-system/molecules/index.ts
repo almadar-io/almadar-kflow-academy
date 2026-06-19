@@ -35,8 +35,3 @@ export * from './NextSuggestionCard';
 export * from './ReviewCard';
 export * from './SessionOverlay';
 
-// Navigation molecules
-export * from './StoriesNavHeader';
-
-// Story molecules
-export * from './story';

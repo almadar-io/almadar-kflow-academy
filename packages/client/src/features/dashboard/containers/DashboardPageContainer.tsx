@@ -29,9 +29,6 @@ const DashboardPageContainer: React.FC = () => {
     const unsubCreate = on('UI:CREATE_LEARNING_PATH', () => {
       navigate('/learn');
     });
-    const unsubBrowse = on('UI:BROWSE_STORIES', () => {
-      navigate('/stories');
-    });
     const unsubJump = on('UI:JUMP_BACK_IN_CLICK', (event) => {
       const payload = event.payload as { itemId: string; type: string; graphId?: string } | undefined;
       if (payload?.type === 'learningPath' && payload.graphId) {
@@ -45,13 +42,10 @@ const DashboardPageContainer: React.FC = () => {
         if (payload.graphId) {
           navigate(`/concepts/${payload.graphId}/concept/${encodeURIComponent(payload.conceptId)}`);
         }
-      } else if (payload.type === 'story_completed' && payload.storyId) {
-        navigate(`/stories/${payload.storyId}`);
-      }
+        }
     });
     return () => {
       unsubCreate();
-      unsubBrowse();
       unsubJump();
       unsubActivity();
     };
@@ -84,7 +78,6 @@ const DashboardPageContainer: React.FC = () => {
       formatTimestamp={formatTimestamp}
       onJumpBackInClick={handleJumpBackInClick}
       onCreateLearningPath={() => emit('UI:CREATE_LEARNING_PATH', {})}
-      onBrowseStories={() => emit('UI:BROWSE_STORIES', {})}
       onActivityClick={handleActivityClick}
       user={templateUser}
       navigationItems={navigationItems}

@@ -1,8 +1,7 @@
 /**
  * DashboardBoard Organism
  *
- * Dashboard layout with stats, jump-back-in stories, learning paths,
- * recent activity, quick actions, and optional recommendations/achievements.
+ * Dashboard layout with stats, learning paths, recent activity, and quick actions.
  *
  * Events Emitted:
  * - UI:QUICK_ACTION — user clicks a quick action, payload: { actionId }
@@ -10,7 +9,6 @@
  * - UI:LEARNING_PATH_CLICK — user clicks a learning path, payload: { pathId, graphId }
  * - UI:CREATE_LEARNING_PATH — user clicks create new path
  * - UI:DELETE_LEARNING_PATH — user clicks delete path, payload: { pathId }
- * - UI:STORY_SELECT — (via JumpBackInRow) user clicks a story
  */
 
 import React, { useCallback } from 'react';
@@ -39,8 +37,6 @@ import {
   useTranslate,
   type DisplayStateProps,
 } from '@almadar/ui';
-import { JumpBackInRow } from '../molecules/story/JumpBackInRow';
-import type { JumpBackInStory } from '../molecules/story/JumpBackInCard';
 
 export interface DashboardStat {
   label: string;
@@ -77,7 +73,6 @@ export interface DashboardQuickAction {
 export interface DashboardEntity {
   welcomeName: string;
   stats: DashboardStat[];
-  jumpBackInStories: JumpBackInStory[];
   recentActivity: DashboardActivity[];
   learningPaths: DashboardLearningPath[];
   quickActions: DashboardQuickAction[];
@@ -160,12 +155,6 @@ export function DashboardBoard({
             })}
           </SimpleGrid>
         )}
-
-        {/* Jump back in stories */}
-        <JumpBackInRow
-          stories={dash?.jumpBackInStories ?? []}
-          title={t('story.jumpBackIn')}
-        />
 
         {/* Quick actions */}
         {(dash?.quickActions?.length ?? 0) > 0 && (

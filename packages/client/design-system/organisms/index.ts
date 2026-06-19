@@ -31,11 +31,6 @@ export { KnowledgeBattleBoard, type KnowledgeBattleBoardProps, type KnowledgeBat
 export { KnowledgeWorldMapBoard, type KnowledgeWorldMapBoardProps, type KnowledgeWorldMapEntity } from './KnowledgeWorldMapBoard';
 export { PhysicsLabBoard, type PhysicsLabBoardProps, type PhysicsLabEntity } from './PhysicsLabBoard';
 
-// Story organisms
-export { KnowledgeStoryBoard, type KnowledgeStoryBoardProps, type KnowledgeStoryEntity } from './KnowledgeStoryBoard';
-export { StoryCatalogBoard, type StoryCatalogBoardProps, type StoryCatalogEntity } from './StoryCatalogBoard';
-export { SeriesViewBoard, type SeriesViewBoardProps, type SeriesViewEntity } from './SeriesViewBoard';
-
 // App shell organisms (Phase 2)
 export { AppShellBoard, type AppShellBoardProps, type AppShellEntity, type AppShellNavItem, type AppShellUser } from './AppShellBoard';
 export { DashboardBoard, type DashboardBoardProps, type DashboardEntity, type DashboardStat, type DashboardActivity, type DashboardLearningPath, type DashboardQuickAction } from './DashboardBoard';
