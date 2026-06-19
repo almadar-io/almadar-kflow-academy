@@ -2,10 +2,9 @@
  * LessonSegments — re-exports from @almadar/ui
  */
 
-export { CodeBlock } from '@design-system/molecules/markdown/CodeBlock';
-export type { CodeBlockProps } from '@design-system/molecules/markdown/CodeBlock';
-
 export {
+  CodeBlock,
+  type CodeBlockProps,
   MarkdownContent,
   type MarkdownContentProps,
   ActivationBlock,
@@ -21,10 +20,9 @@ export {
   parseLessonSegments,
   CodeRunnerPanel,
   type CodeSimulationOutput,
+  QuizBlock,
+  type QuizBlockProps,
 } from '@almadar/ui';
-
-export { QuizBlock } from '@design-system/molecules/learning/QuizBlock';
-export type { QuizBlockProps } from '@design-system/molecules/learning/QuizBlock';
 
 export { parseMarkdownWithCodeBlocks } from './utils';
 

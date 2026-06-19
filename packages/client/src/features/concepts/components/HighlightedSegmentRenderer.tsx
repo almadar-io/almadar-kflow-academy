@@ -1,8 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { SegmentRenderer, SegmentRendererProps, Segment, parseMarkdownWithCodeBlocks } from './MarkdownRenderer';
 import { extractHighlightChunks } from '../utils/textHighlighter';
 import { applyHighlightingToDOM } from '../utils/domHighlighter';
-import { Modal } from '@almadar/ui';
+import { Modal, SegmentRenderer, parseMarkdownWithCodeBlocks, type SegmentRendererProps, type LessonSegment } from '@almadar/ui';
 import { Concept, QuestionAnswer } from '../types';
 
 interface HighlightedSegmentRendererProps extends SegmentRendererProps {
@@ -20,7 +19,7 @@ export const HighlightedSegmentRenderer: React.FC<HighlightedSegmentRendererProp
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [selectedQuestion, setSelectedQuestion] = useState<QuestionAnswer | null>(null);
-  const [questionAnswerSegments, setQuestionAnswerSegments] = useState<Segment[]>([]);
+  const [questionAnswerSegments, setQuestionAnswerSegments] = useState<LessonSegment[]>([]);
 
   // Parse answer markdown when question is selected
   useEffect(() => {

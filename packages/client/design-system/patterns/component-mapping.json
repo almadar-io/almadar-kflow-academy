@@ -75,7 +75,7 @@
     },
     "code-block": {
       "component": "CodeBlock",
-      "importPath": "@kflow/design-system/molecules/markdown/CodeBlock",
+      "importPath": "@kflow/design-system/molecules/markdown",
       "category": "content"
     },
     "markdown-content": {

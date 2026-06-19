@@ -1,2 +1,1 @@
-export { QuizBlock } from "./QuizBlock";
-export type { QuizBlockProps } from "./QuizBlock";
+export { QuizBlock, type QuizBlockProps } from "@almadar/ui";

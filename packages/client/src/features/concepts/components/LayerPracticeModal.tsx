@@ -2,7 +2,7 @@ import React, { useRef, useMemo } from 'react';
 import { Loader2, BookOpen, CheckCircle2, X } from 'lucide-react';
 import { Concept, PracticeItem } from '../types';
 import { useLayerPractice } from '../hooks/useLayerPractice';
-import { parseMarkdownWithCodeBlocks, SegmentRenderer, Segment } from './MarkdownRenderer';
+import { parseMarkdownWithCodeBlocks, SegmentRenderer, type LessonSegment } from '@almadar/ui';
 
 interface LayerPracticeModalProps {
   isOpen: boolean;
@@ -44,7 +44,7 @@ const LayerPracticeModal: React.FC<LayerPracticeModalProps> = ({
   const displayContent = streamingContent || (items.length > 0 ? items[0]?.question : '');
   
   // Parse content into segments (markdown and code blocks)
-  const contentSegments = useMemo((): Segment[] => {
+  const contentSegments = useMemo((): LessonSegment[] => {
     if (!displayContent) return [];
     return parseMarkdownWithCodeBlocks(displayContent);
   }, [displayContent]);

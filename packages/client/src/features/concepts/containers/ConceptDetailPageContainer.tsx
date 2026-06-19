@@ -5,7 +5,6 @@ import { useConceptDetail } from '../../knowledge-graph/hooks/useConceptDetail';
 import { useGetGraph, useLessonAnnotations } from '../../knowledge-graph/hooks';
 import { setCurrentGraphId, selectGraphById } from '../../knowledge-graph/knowledgeGraphSlice';
 import { useExplainConcept } from '../../knowledge-graph/hooks/useExplainConcept';
-import { MarkdownContent } from '../components/MarkdownRenderer';
 import { useAnswerQuestion } from '../../knowledge-graph/hooks/useAnswerQuestion';
 import { useCustomOperation } from '../../knowledge-graph/hooks/useCustomOperation';
 import { useUserProgress } from '../hooks/useUserProgress';
@@ -23,7 +22,7 @@ import { NotesWidget } from '@design-system/organisms/NotesWidget';
 import { ConceptDescription } from '@design-system/molecules/ConceptDescription';
 import { ConceptMetaTags } from '@design-system/molecules/ConceptMetaTags';
 
-import { Button, Modal, Typography, useEventBus } from '@almadar/ui';
+import { Button, Modal, Typography, useEventBus, MarkdownContent } from '@almadar/ui';
 import { useNavigateEvent } from '../../../hooks/useNavigateEvent';
 import { useConceptsByLayer } from '../../knowledge-graph/hooks/useConceptsByLayer';
 import { useAuthContext } from '../../auth/AuthContext';
