@@ -21,6 +21,7 @@ import { setCurrentGraphId } from '../features/knowledge-graph/knowledgeGraphSli
 import { graphOperationsStreamingApi } from '../features/knowledge-graph/api/streaming';
 import { GoalForm } from '../features/learning/components/GoalForm';
 import { getNavigationItems, getUserForTemplate, mainNavItems } from '../config/navigation';
+import kflowLogo from '../assets/kflow-logo.svg';
 import { useNavigateEvent } from '../hooks/useNavigateEvent';
 import { auth } from '../config/firebase';
 import { apiClient } from '../services/apiClient';
@@ -169,6 +170,7 @@ export const LearnPage: React.FC = () => {
           active: item.active,
         })),
         user: templateUser,
+        logoSrc: kflowLogo,
         brandName: 'KFlow',
         activeRoute: location.pathname,
         theme: 'light',
@@ -182,7 +184,7 @@ export const LearnPage: React.FC = () => {
     showGoalForm || isExpanding ? (
       <Box className="fixed inset-0 z-50 flex items-center justify-center p-4">
         <Overlay />
-        <Card className="relative z-10 max-w-2xl w-full max-h-[90vh] overflow-y-auto p-6">
+        <Card className="relative z-50 max-w-2xl w-full max-h-[90vh] overflow-y-auto p-6">
           {isExpanding ? (
             <VStack gap="md" align="center" className="py-8">
               <Spinner size="lg" />

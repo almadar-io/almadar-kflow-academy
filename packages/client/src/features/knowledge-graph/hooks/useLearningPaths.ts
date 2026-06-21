@@ -26,7 +26,9 @@ export function useLearningPaths(options?: UseLearningPathsOptions) {
     queryKey: knowledgeGraphKeys.learningPaths(),
     queryFn: async () => {
       const response = await graphQueryApi.getLearningPaths();
-      return response.learningPaths;
+      return [...response.learningPaths].sort(
+        (a, b) => b.updatedAt - a.updatedAt
+      );
     },
     enabled: options?.enabled !== false,
     staleTime: options?.staleTime,

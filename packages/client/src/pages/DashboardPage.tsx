@@ -11,6 +11,7 @@ import React, { useEffect, useMemo } from 'react';
 import { useLocation } from 'react-router';
 import { useEventBus, useTranslate } from '@almadar/ui';
 import { Brain } from 'lucide-react';
+import kflowLogo from '../assets/kflow-logo.svg';
 import { DashboardBoardTemplate } from '@design-system/templates/DashboardTemplate/DashboardBoardTemplate';
 import type { DashboardBoardTemplateEntity } from '@design-system/templates/DashboardTemplate/DashboardBoardTemplate';
 import { useAuthContext } from '../features/auth/AuthContext';
@@ -121,6 +122,7 @@ export const DashboardPage: React.FC = () => {
         active: item.active,
       })),
       user: templateUser,
+      logoSrc: kflowLogo,
       brandName: 'KFlow',
       activeRoute: location.pathname,
       theme: 'light',

@@ -20,14 +20,11 @@ import {
   Sidebar,
   Header,
   Overlay,
-  Select,
   useEventBus,
   useEventListener,
-  useTranslate,
   cn,
   type SidebarItem,
   type DisplayStateProps,
-  type SelectOption,
 } from '@almadar/ui';
 import { useTheme } from '@almadar/ui/context';
 import { ProfilePopup } from './ProfilePopup/ProfilePopup';
@@ -88,7 +85,6 @@ export function AppShellBoard({
 }: AppShellBoardProps): React.JSX.Element {
   const app = (entity && typeof entity === 'object' && !Array.isArray(entity)) ? entity as AppShellEntity : undefined;
   const { emit } = useEventBus();
-  const { t } = useTranslate();
   const [collapsed, setCollapsed] = useState(app?.sidebarCollapsed ?? false);
   const [mobileOpen, setMobileOpen] = useState(false);
 
@@ -177,27 +173,8 @@ export function AppShellBoard({
     />
   ) : undefined;
 
-  const localeOptions: SelectOption[] = [
-    { value: 'en', label: t('locale.en') },
-    { value: 'ar', label: t('locale.ar') },
-    { value: 'sl', label: t('locale.sl') },
-  ];
-
-  const handleLocaleChange = useCallback((value: string | string[]) => {
-    const next = Array.isArray(value) ? value[0] : value;
-    emit('UI:SET_LOCALE', { locale: next });
-  }, [emit]);
-
   const footerContent = (
     <Box className="flex flex-col gap-2 w-full">
-      {!collapsed && (
-        <Select
-          options={localeOptions}
-          value={typeof window !== 'undefined' ? (localStorage.getItem('kflow-locale') ?? 'en') : 'en'}
-          onValueChange={handleLocaleChange}
-          className="w-full"
-        />
-      )}
       <ThemeToggleBridge />
     </Box>
   );

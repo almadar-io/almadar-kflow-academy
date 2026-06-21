@@ -8,6 +8,7 @@
 import {
   LayoutDashboard,
   Brain,
+  Settings,
   type LucideIcon,
 } from 'lucide-react';
 
@@ -25,6 +26,7 @@ export interface NavigationItem {
 export const mainNavItems: NavigationItem[] = [
   { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard, href: '/home' },
   { id: 'learn', label: 'Learn', icon: Brain, href: '/learn' },
+  { id: 'settings', label: 'Settings', icon: Settings, href: '/settings' },
 ];
 
 /**

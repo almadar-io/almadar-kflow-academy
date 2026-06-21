@@ -5,6 +5,7 @@ import { ConceptsPage } from '../pages/ConceptsPage';
 import { ConceptDetailPage } from '../pages/ConceptDetailPage';
 import { LearnPage } from '../pages/LearnPage';
 import { DashboardPage } from '../pages/DashboardPage';
+import { SettingsPage } from '../pages/SettingsPage';
 import { Login, ProtectedRoute } from '../features/auth';
 import { useAuthContext } from '../features/auth/AuthContext';
 import { Spinner } from '@almadar/ui';
@@ -55,6 +56,9 @@ const AppRouter: React.FC = () => {
         } />
         <Route path="/concepts/:graphId/concept/:conceptId" element={
           <ProtectedRoute><ConceptDetailPage /></ProtectedRoute>
+        } />
+        <Route path="/settings" element={
+          <ProtectedRoute><SettingsPage /></ProtectedRoute>
         } />
 
         <Route path="*" element={<Navigate to="/" replace />} />
