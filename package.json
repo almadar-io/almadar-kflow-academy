@@ -8,7 +8,7 @@
   "scripts": {
     "start": "node packages/server/dist/server.js",
     "dev": "concurrently -k -n server,client -c blue,green \"npm run dev:server\" \"npm run dev:client\"",
-    "dev:server": "npm run dev -w @kflow-academy/server",
+    "dev:server": "npm run build -w @kflow-academy/shared && npm run dev -w @kflow-academy/server",
     "dev:client": "npm run dev -w @kflow-academy/client",
     "build": "npm run build:server",
     "build:all": "npm run build --workspaces --if-present",
