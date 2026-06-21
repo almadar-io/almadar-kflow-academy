@@ -27,8 +27,36 @@ jest.unstable_mockModule('../../config/llmConfig', () => ({
   getLLMConfig: jest.fn(() => ({})),
 }));
 
-jest.unstable_mockModule('../../services/knowledgeGraphAccess/KnowledgeGraphAccessLayer', () => ({
-  KnowledgeGraphAccessLayer: jest.fn().mockImplementation(() => ({})),
+jest.unstable_mockModule('@almadar-io/knowledge/server', () => ({
+  KnowledgeGraphAccessLayer: jest.fn().mockImplementation(() => ({ clearCache: jest.fn() })),
+  createGetGraphHandler: jest.fn(() => jest.fn()),
+  createSaveGraphHandler: jest.fn(() => jest.fn()),
+  createGetNodesHandler: jest.fn(() => jest.fn()),
+  createGetNodeHandler: jest.fn(() => jest.fn()),
+  createCreateNodeHandler: jest.fn(() => jest.fn()),
+  createUpdateNodeHandler: jest.fn(() => jest.fn()),
+  createDeleteNodeHandler: jest.fn(() => jest.fn()),
+  createGetRelationshipsHandler: jest.fn(() => jest.fn()),
+  createGetNodeRelationshipsHandler: jest.fn(() => jest.fn()),
+  createCreateRelationshipHandler: jest.fn(() => jest.fn()),
+  createDeleteRelationshipHandler: jest.fn(() => jest.fn()),
+  createFindPathHandler: jest.fn(() => jest.fn()),
+  createTraverseHandler: jest.fn(() => jest.fn()),
+  createExtractSubgraphHandler: jest.fn(() => jest.fn()),
+  createFindNodesHandler: jest.fn(() => jest.fn()),
+  createApplyMutationsHandler: jest.fn(() => jest.fn()),
+  createValidateMutationsHandler: jest.fn(() => jest.fn()),
+  createGetLearningPathsHandler: jest.fn(() => jest.fn()),
+  createGetGraphSummaryHandler: jest.fn(() => jest.fn()),
+  createGetConceptsHandler: jest.fn(() => jest.fn()),
+  createGetConceptDetailHandler: jest.fn(() => jest.fn()),
+  createGetMindMapHandler: jest.fn(() => jest.fn()),
+  createExpansionHandler: jest.fn(() => jest.fn()),
+  createExplainConceptHandler: jest.fn(() => jest.fn()),
+  createAnswerQuestionHandler: jest.fn(() => jest.fn()),
+  createGenerateGoalHandler: jest.fn(() => jest.fn()),
+  createLayerPracticeHandler: jest.fn(() => jest.fn()),
+  createCustomOperationHandler: jest.fn(() => jest.fn()),
 }));
 
 // Load the routers after mocks are in place

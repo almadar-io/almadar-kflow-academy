@@ -1,40 +1,30 @@
-/**
- * Graph Operation Routes
- * 
- * REST API routes for graph operations (expansion, explanation, goals, etc.)
- */
-
 import { Router } from 'express';
 import { authenticateFirebase } from '@almadar/server';
-import { progressiveExpandHandler } from '../controllers/graphExpansionController';
 import {
-  explainConceptHandler,
-  answerQuestionHandler,
-} from '../controllers/graphExplanationController';
-import { generateGoalsHandler } from '../controllers/graphGoalController';
-import { generateLayerPracticeHandler } from '../controllers/graphLayerPracticeController';
-import { customOperationHandler } from '../controllers/graphCustomOperationController';
+  createExpansionHandler,
+  createExplainConceptHandler,
+  createAnswerQuestionHandler,
+  createGenerateGoalHandler,
+  createLayerPracticeHandler,
+  createCustomOperationHandler,
+} from '@almadar-io/knowledge/server';
+import {
+  generateGoalDeps,
+  expansionDeps,
+  explanationDeps,
+  layerPracticeDeps,
+  customOperationDeps,
+} from '../utils/graphHandlerDeps';
 
 const router = Router();
 
-// All routes require authentication
 router.use(authenticateFirebase);
 
-// Progressive expansion
-router.post('/:graphId/expand', progressiveExpandHandler);
-
-// Explanation operations
-router.post('/:graphId/explain', explainConceptHandler);
-router.post('/:graphId/answer-question', answerQuestionHandler);
-
-// Goal generation
-router.post('/:graphId/generate-goals', generateGoalsHandler);
-
-// Layer practice
-router.post('/:graphId/generate-layer-practice', generateLayerPracticeHandler);
-
-// Custom operation
-router.post('/:graphId/custom-operation', customOperationHandler);
+router.post('/:graphId/expand', createExpansionHandler(expansionDeps));
+router.post('/:graphId/explain', createExplainConceptHandler(explanationDeps));
+router.post('/:graphId/answer-question', createAnswerQuestionHandler(explanationDeps));
+router.post('/:graphId/generate-goals', createGenerateGoalHandler(generateGoalDeps));
+router.post('/:graphId/generate-layer-practice', createLayerPracticeHandler(layerPracticeDeps));
+router.post('/:graphId/custom-operation', createCustomOperationHandler(customOperationDeps));
 
 export default router;
-

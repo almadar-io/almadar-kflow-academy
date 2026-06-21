@@ -1,12 +1,3 @@
-/**
- * Knowledge Graph Access Routes
- * 
- * REST API routes for querying and mutating NodeBasedKnowledgeGraph
- * using the KnowledgeGraphAccessLayer.
- * 
- * Phase 2: REST API Endpoints
- */
-
 import { Router } from 'express';
 import { authenticateFirebase } from '@almadar/server';
 import {
@@ -17,62 +8,53 @@ import {
   validateExtractSubgraph,
 } from '../middlewares/validateKnowledgeGraphAccess';
 import {
-  getGraphHandler,
-  saveGraphHandler,
-  getNodesHandler,
-  getNodeHandler,
-  createNodeHandler,
-  updateNodeHandler,
-  deleteNodeHandler,
-  getRelationshipsHandler,
-  getNodeRelationshipsHandler,
-  createRelationshipHandler,
-  deleteRelationshipHandler,
-  findPathHandler,
-  traverseHandler,
-  extractSubgraphHandler,
-  findNodesHandler,
-} from '../controllers/knowledgeGraphAccessController';
-import {
-  applyMutationsHandler,
-  validateMutationsHandler,
-} from '../controllers/graphMutationController';
+  createGetGraphHandler,
+  createSaveGraphHandler,
+  createGetNodesHandler,
+  createGetNodeHandler,
+  createCreateNodeHandler,
+  createUpdateNodeHandler,
+  createDeleteNodeHandler,
+  createGetRelationshipsHandler,
+  createGetNodeRelationshipsHandler,
+  createCreateRelationshipHandler,
+  createDeleteRelationshipHandler,
+  createFindPathHandler,
+  createTraverseHandler,
+  createExtractSubgraphHandler,
+  createFindNodesHandler,
+  createApplyMutationsHandler,
+  createValidateMutationsHandler,
+} from '@almadar-io/knowledge/server';
+import { graphAccessDeps, graphMutationDeps } from '../utils/graphHandlerDeps';
 
 const router = Router();
 
-// All routes require authentication
 router.use(authenticateFirebase);
 
-// Apply graphId validation to all routes
 router.param('graphId', validateGraphId);
 router.param('nodeId', validateNodeId);
 
-// Graph-level operations
-router.get('/:graphId', getGraphHandler);
-router.put('/:graphId', saveGraphHandler);
+router.get('/:graphId', createGetGraphHandler(graphAccessDeps));
+router.put('/:graphId', createSaveGraphHandler(graphAccessDeps));
 
-// Node operations
-router.get('/:graphId/nodes', getNodesHandler); // Get all nodes or filter by type
-router.post('/:graphId/nodes/find', findNodesHandler); // Find nodes with predicate
-router.get('/:graphId/nodes/:nodeId', getNodeHandler); // Get single node
-router.post('/:graphId/nodes', validateCreateNode, createNodeHandler); // Create node
-router.put('/:graphId/nodes/:nodeId', updateNodeHandler); // Update node
-router.delete('/:graphId/nodes/:nodeId', deleteNodeHandler); // Delete node
+router.get('/:graphId/nodes', createGetNodesHandler(graphAccessDeps));
+router.post('/:graphId/nodes/find', createFindNodesHandler(graphAccessDeps));
+router.get('/:graphId/nodes/:nodeId', createGetNodeHandler(graphAccessDeps));
+router.post('/:graphId/nodes', validateCreateNode, createCreateNodeHandler(graphAccessDeps));
+router.put('/:graphId/nodes/:nodeId', createUpdateNodeHandler(graphAccessDeps));
+router.delete('/:graphId/nodes/:nodeId', createDeleteNodeHandler(graphAccessDeps));
 
-// Relationship operations
-router.get('/:graphId/relationships', getRelationshipsHandler); // Get all relationships
-router.get('/:graphId/nodes/:nodeId/relationships', getNodeRelationshipsHandler); // Get node's relationships
-router.post('/:graphId/relationships', validateCreateRelationship, createRelationshipHandler); // Create relationship
-router.delete('/:graphId/relationships/:relId', deleteRelationshipHandler); // Delete relationship
+router.get('/:graphId/relationships', createGetRelationshipsHandler(graphAccessDeps));
+router.get('/:graphId/nodes/:nodeId/relationships', createGetNodeRelationshipsHandler(graphAccessDeps));
+router.post('/:graphId/relationships', validateCreateRelationship, createCreateRelationshipHandler(graphAccessDeps));
+router.delete('/:graphId/relationships/:relId', createDeleteRelationshipHandler(graphAccessDeps));
 
-// Query operations
-router.get('/:graphId/path/:from/:to', findPathHandler); // Find path between nodes
-router.post('/:graphId/traverse/:startNodeId', traverseHandler); // Traverse from node
-router.post('/:graphId/subgraph', validateExtractSubgraph, extractSubgraphHandler); // Extract subgraph
+router.get('/:graphId/path/:from/:to', createFindPathHandler(graphAccessDeps));
+router.post('/:graphId/traverse/:startNodeId', createTraverseHandler(graphAccessDeps));
+router.post('/:graphId/subgraph', validateExtractSubgraph, createExtractSubgraphHandler(graphAccessDeps));
 
-// Direct mutation operations
-router.post('/:graphId/mutations', applyMutationsHandler); // Apply mutations
-router.post('/:graphId/mutations/validate', validateMutationsHandler); // Validate mutations
+router.post('/:graphId/mutations', createApplyMutationsHandler(graphMutationDeps));
+router.post('/:graphId/mutations/validate', createValidateMutationsHandler(graphMutationDeps));
 
 export default router;
-
