@@ -1,8 +1,8 @@
 import type {
   GraphNode,
   NodeType,
+  TypedNodeProperties,
   AssessmentNodeProperties,
-  AssessmentQuestionNodeProperties,
   TranslationNodeProperties,
   LanguageConfigNodeProperties,
   StudentNodeProperties,
@@ -13,11 +13,10 @@ import {
   generateNodeId,
 } from '@almadar-io/knowledge';
 
-// Bridge: package's createGraphNode uses Record<string,unknown> properties;
-// kflow factory helpers use concrete typed property interfaces that lack an index signature.
-// This wrapper keeps the one cast in one place.
+// Bridge: concrete property objects satisfy TypedNodeProperties at runtime but TS
+// can't verify the exact discriminated union branch here — single cast kept here.
 function makeGraphNode(id: string, type: NodeType, properties: object): GraphNode {
-  return _pkgCreateGraphNode(id, type, properties as Record<string, unknown>);
+  return _pkgCreateGraphNode(id, type, properties as TypedNodeProperties);
 }
 
 // Re-export all types and pure functions from the published package
@@ -41,21 +40,17 @@ export type {
   FlashCardNodeProperties,
   StoryNodeProperties,
   StoryStep,
-  SeriesNodeProperties,
-  SeasonNodeProperties,
-  EpisodeNodeProperties,
-  CourseVisibility,
-  CourseSettingsNodeProperties,
-  ModuleSettingsNodeProperties,
-  LessonSettingsNodeProperties,
-  AssessmentType,
+  CourseNodeProperties,
+  CourseModule,
+  ConceptRef,
   AssessmentNodeProperties,
-  QuestionType,
-  AssessmentQuestionNodeProperties,
   TranslationNodeProperties,
   LanguageConfigNodeProperties,
   StudentNodeProperties,
   ScheduleSlotNodeProperties,
+  ProgressNodeProperties,
+  EnrollmentNodeProperties,
+  AssessmentSubmissionNodeProperties,
   NodeTypeIndex,
   NodeBasedKnowledgeGraph,
   NodeIdContext,
@@ -73,10 +68,7 @@ export {
   createRelationship,
   generateRelationshipId,
   generateNodeId,
-  createCourseSettingsNode,
-  createModuleSettingsNode,
-  createLessonSettingsNode,
-  createPublishingRelationship,
+  createCourseNode,
   createEmptyNodeTypeIndex,
   validateGraph,
   toGraphologyGraph,
@@ -105,46 +97,15 @@ export function createAssessmentNode(
   index: number = 0
 ): GraphNode {
   const id = generateNodeId('Assessment', { conceptId, index });
-  const now = Date.now();
   const properties: AssessmentNodeProperties = {
     id,
     title: assessment.title || 'Assessment',
-    description: assessment.description,
-    type: assessment.type || 'quiz',
-    timeLimit: assessment.timeLimit,
-    passingScore: assessment.passingScore ?? 70,
-    maxAttempts: assessment.maxAttempts,
-    shuffleQuestions: assessment.shuffleQuestions ?? true,
-    shuffleAnswers: assessment.shuffleAnswers ?? true,
-    showCorrectAnswers: assessment.showCorrectAnswers ?? false,
-    showCorrectAnswersAfterSubmit: assessment.showCorrectAnswersAfterSubmit ?? true,
-    createdAt: assessment.createdAt || now,
-    updatedAt: assessment.updatedAt || now,
+    conceptRefs: assessment.conceptRefs ?? [],
+    questionIds: assessment.questionIds,
+    passThreshold: assessment.passThreshold,
+    grantsCredential: assessment.grantsCredential,
   };
   return makeGraphNode(id, 'Assessment', properties);
-}
-
-export function createAssessmentQuestionNode(
-  conceptId: string,
-  question: Partial<AssessmentQuestionNodeProperties>,
-  index: number
-): GraphNode {
-  const id = generateNodeId('AssessmentQuestion', { conceptId, index });
-  const now = Date.now();
-  const properties: AssessmentQuestionNodeProperties = {
-    id,
-    type: question.type || 'multiple_choice',
-    question: question.question || '',
-    options: question.options,
-    correctAnswer: question.correctAnswer || '',
-    explanation: question.explanation,
-    points: question.points ?? 1,
-    sequence: question.sequence ?? index,
-    hint: question.hint,
-    createdAt: question.createdAt || now,
-    updatedAt: question.updatedAt || now,
-  };
-  return makeGraphNode(id, 'AssessmentQuestion', properties);
 }
 
 export function createTranslationNode(
@@ -252,7 +213,7 @@ export function createScheduleSlotNode(
   const properties: ScheduleSlotNodeProperties = {
     id,
     studentUserId,
-    courseSettingsId: scheduleData.courseSettingsId,
+    courseId: scheduleData.courseId,
     dayOfWeek: scheduleData.dayOfWeek ?? 0,
     startTime: scheduleData.startTime || '',
     endTime: scheduleData.endTime || '',
@@ -265,4 +226,3 @@ export function createScheduleSlotNode(
   };
   return makeGraphNode(id, 'ScheduleSlot', properties);
 }
-

@@ -24,7 +24,7 @@ import type {
   RelationshipDirection,
   NodeBasedKnowledgeGraph,
 } from '../../types/nodeBasedKnowledgeGraph';
-import { createGraphNode, createRelationship } from '../../types/nodeBasedKnowledgeGraph';
+import { createGraphNode, createRelationship, propsToRecord } from '../../types/nodeBasedKnowledgeGraph';
 import { mutationResolvers } from './mutationResolvers';
 import { queryResolvers } from './queryResolvers';
 import { expansionResolvers } from './expansionResolvers';
@@ -108,7 +108,7 @@ export const resolvers: ResolverMap = {
           if (filter.type && node.type !== filter.type) return false;
           if (filter.properties) {
             for (const [key, value] of Object.entries(filter.properties)) {
-              if ((node.properties as Record<string, unknown>)[key] !== value) return false;
+              if ((propsToRecord(node.properties))[key] !== value) return false;
             }
           }
           return true;
@@ -138,7 +138,7 @@ export const resolvers: ResolverMap = {
         if (filter.type && node.type !== filter.type) return false;
         if (filter.properties) {
           for (const [key, value] of Object.entries(filter.properties)) {
-            if ((node.properties as Record<string, unknown>)[key] !== value) return false;
+            if ((propsToRecord(node.properties))[key] !== value) return false;
           }
         }
         return true;

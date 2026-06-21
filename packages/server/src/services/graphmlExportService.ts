@@ -11,6 +11,7 @@ import type {
   GraphNode,
   Relationship,
 } from '../types/nodeBasedKnowledgeGraph';
+import { propsToRecord } from '../types/nodeBasedKnowledgeGraph';
 import { getConnectedNodes } from '../utils/nodeBasedGraphQueries';
 import type { EnhancedConcept } from '../types/knowledgeGraph';
 import { str, optStr, optNum, bool } from '@almadar-io/knowledge';
@@ -359,7 +360,7 @@ function addNodeFromGraphNode(
   nodeKeys: Set<string>,
   simplified: boolean
 ): void {
-  const props = node.properties as Record<string, unknown>;
+  const props = propsToRecord(node.properties);
   const name = typeof props.name === 'string' ? props.name : undefined;
   const description = props.description != null ? String(props.description) : undefined;
   lines.push(`    <node id="${escapeXml(node.id)}">`);
@@ -420,7 +421,7 @@ function addNodeFromGraphNode(
  * Get a human-readable label for a node
  */
 function getNodeLabel(node: GraphNode): string {
-  const props = node.properties as Record<string, unknown>;
+  const props = propsToRecord(node.properties);
   const name = typeof props.name === 'string' ? props.name : undefined;
 
   switch (node.type) {

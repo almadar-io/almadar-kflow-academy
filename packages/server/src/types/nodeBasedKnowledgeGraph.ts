@@ -18,21 +18,17 @@ export type {
   FlashCardNodeProperties,
   StoryNodeProperties,
   StoryStep,
-  SeriesNodeProperties,
-  SeasonNodeProperties,
-  EpisodeNodeProperties,
-  CourseVisibility,
-  CourseSettingsNodeProperties,
-  ModuleSettingsNodeProperties,
-  LessonSettingsNodeProperties,
-  AssessmentType,
+  CourseNodeProperties,
+  CourseModule,
+  ConceptRef,
   AssessmentNodeProperties,
-  QuestionType,
-  AssessmentQuestionNodeProperties,
   TranslationNodeProperties,
   LanguageConfigNodeProperties,
   StudentNodeProperties,
   ScheduleSlotNodeProperties,
+  ProgressNodeProperties,
+  EnrollmentNodeProperties,
+  AssessmentSubmissionNodeProperties,
   NodeTypeIndex,
   NodeBasedKnowledgeGraph,
 } from '@kflow-academy/shared';
@@ -44,15 +40,23 @@ export {
   createRelationship,
   generateRelationshipId,
   generateNodeId,
-  createCourseSettingsNode,
-  createModuleSettingsNode,
-  createLessonSettingsNode,
+  createCourseNode,
   createAssessmentNode,
-  createAssessmentQuestionNode,
   createTranslationNode,
   createLanguageConfigNode,
-  createPublishingRelationship,
   createStudentNode,
   createScheduleSlotNode,
   createEmptyNodeTypeIndex,
 } from '@kflow-academy/shared';
+
+/**
+ * Narrow a typed node-property object to a generic record for dynamic key access /
+ * serialization. Interfaces have no implicit index signature, so direct assignment to
+ * Record<string, unknown> fails — build the record via Object.entries (no cast).
+ */
+export function propsToRecord(props: object): Record<string, unknown> {
+  const out: Record<string, unknown> = {};
+  const entries: Array<[string, unknown]> = Object.entries(props);
+  for (const [k, v] of entries) out[k] = v;
+  return out;
+}

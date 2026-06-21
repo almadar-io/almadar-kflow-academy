@@ -18,7 +18,7 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
-    "@almadar-io/knowledge": ">=0.2.1",
+    "@almadar-io/knowledge": ">=0.3.0",
     "@almadar/core": "^10.0.0"
   },
   "devDependencies": {

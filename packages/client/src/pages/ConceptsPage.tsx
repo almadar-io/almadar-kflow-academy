@@ -302,7 +302,7 @@ export const ConceptsPage: React.FC = () => {
     if (!graph?.nodes) return [];
     return Object.values(graph.nodes).map(node => ({
       id: node.id,
-      label: node.properties?.name || node.id,
+      label: typeof node.properties?.name === 'string' ? node.properties.name : node.id,
       layer: Number(node.properties?.layer ?? 0),
     }));
   }, [graph]);

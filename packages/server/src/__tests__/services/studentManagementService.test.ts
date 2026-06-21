@@ -195,18 +195,15 @@ describe('StudentManagementService', () => {
 
   describe('enrollStudentInCourse', () => {
     it('should enroll a student in a course', async () => {
-      const courseSettingsId = `course-settings-${mockGraphId}`;
+      const courseNodeId = `course-${mockGraphId}`;
       const studentNodeId = `student-${mockStudentUserId}`;
-      
-      const courseSettingsNode = createGraphNode(courseSettingsId, 'CourseSettings', {
-        id: courseSettingsId,
+
+      const courseNode = createGraphNode(courseNodeId, 'Course', {
+        id: courseNodeId,
         title: 'Test Course',
         description: 'Test Description',
-        visibility: 'private',
-        isPublished: true,
-        enrollmentEnabled: true,
-        enrolledStudentIds: [],
-        enrolledMentorId: mockMentorId,
+        modules: [],
+        publishStatus: 'published',
         createdAt: Date.now(),
         updatedAt: Date.now(),
       });
@@ -220,19 +217,19 @@ describe('StudentManagementService', () => {
         updatedAt: Date.now(),
       });
 
-      // Initial graph with course settings only
+      // Initial graph with course node only
       const initialGraph: NodeBasedKnowledgeGraph = {
         id: mockGraphId,
         seedConceptId: 'seed',
         createdAt: Date.now(),
         updatedAt: Date.now(),
         nodes: {
-          [courseSettingsId]: courseSettingsNode,
+          [courseNodeId]: courseNode,
         },
         relationships: [],
         nodeTypes: {
           ...createEmptyNodeTypeIndex(),
-          CourseSettings: [courseSettingsId],
+          Course: [courseNodeId],
         },
       };
 
@@ -249,16 +246,16 @@ describe('StudentManagementService', () => {
         },
       };
 
-      // Graph after course settings updated with enrolled student
+      // Graph after course updated with enrolled student
       const graphWithEnrollment: NodeBasedKnowledgeGraph = {
         ...graphWithStudent,
         nodes: {
           ...graphWithStudent.nodes,
-          [courseSettingsId]: {
-            ...courseSettingsNode,
+          [courseNodeId]: {
+            ...courseNode,
             properties: {
-              ...courseSettingsNode.properties,
-              enrolledStudentIds: [mockStudentUserId],
+              ...courseNode.properties,
+              enrollment: { enrolledAt: Date.now(), studentId: mockStudentUserId },
             },
           },
         },

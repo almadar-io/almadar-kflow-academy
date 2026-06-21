@@ -14,6 +14,7 @@ import type {
   NodeBasedKnowledgeGraph,
   GraphNode,
 } from '../types/nodeBasedKnowledgeGraph';
+import { propsToRecord } from '../types/nodeBasedKnowledgeGraph';
 import type {
   LearningPathSummary,
   GraphSummary,
@@ -553,7 +554,7 @@ export class GraphQueryService {
           relatedNodeId = direction === 'source' ? rel.target : rel.source;
         }
         const relatedNode = graph.nodes[relatedNodeId];
-        const rawProps = relatedNode?.properties as Record<string, unknown> | undefined;
+        const rawProps = relatedNode?.properties ? propsToRecord(relatedNode.properties) : undefined;
         const name = typeof rawProps?.name === 'string' ? rawProps.name : undefined;
         if (name) {
           names.add(name);
@@ -584,7 +585,7 @@ export class GraphQueryService {
         const relatedNodeId = direction === 'source' ? rel.target : rel.source;
         const relatedNode = graph.nodes[relatedNodeId];
         if (relatedNode) {
-          const rawProps = relatedNode.properties as Record<string, unknown>;
+          const rawProps = propsToRecord(relatedNode.properties);
           return {
             id: relatedNode.id,
             name: typeof rawProps.name === 'string' ? rawProps.name : '',
@@ -708,8 +709,8 @@ export class GraphQueryService {
 
     // Sort layers by number
     const sortedLayers = layerNodes.sort((a, b) => {
-      const aprop = a.properties as Record<string, unknown>;
-      const bprop = b.properties as Record<string, unknown>;
+      const aprop = propsToRecord(a.properties);
+      const bprop = propsToRecord(b.properties);
       const aNum = Number(aprop.number ?? aprop.layerNumber ?? 0);
       const bNum = Number(bprop.number ?? bprop.layerNumber ?? 0);
       return aNum - bNum;
@@ -857,8 +858,8 @@ export class GraphQueryService {
    */
   private sortConceptsBySequence(concepts: GraphNode[]): GraphNode[] {
     return concepts.sort((a, b) => {
-      const ap = a.properties as Record<string, unknown>;
-      const bp = b.properties as Record<string, unknown>;
+      const ap = propsToRecord(a.properties);
+      const bp = propsToRecord(b.properties);
       // First try sequence
       const aSeq = ap.sequence != null ? Number(ap.sequence) : undefined;
       const bSeq = bp.sequence != null ? Number(bp.sequence) : undefined;
@@ -946,7 +947,7 @@ export class GraphQueryService {
     parentId: string | undefined,
     expandAll: boolean
   ): MindMapNode {
-    const np = node.properties as Record<string, unknown>;
+    const np = propsToRecord(node.properties);
     // Extract title and content - use name property only
     const title = typeof np.name === 'string' ? np.name : node.id;
     const content = typeof np.description === 'string' ? np.description :

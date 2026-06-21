@@ -105,8 +105,8 @@ export interface MutationBatch {
  */
 export interface MutationContext {
   graphId: string;
-  seedConceptId: string;
-  targetNodeId?: string;      // Node being operated on
+  seedConceptId?: string;
+  targetNodeId?: string;
   existingNodes: Record<string, GraphNode>;
   existingRelationships: Relationship[];
 }

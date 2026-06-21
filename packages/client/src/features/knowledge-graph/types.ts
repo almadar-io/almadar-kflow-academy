@@ -1,7 +1,7 @@
 /**
  * Type Definitions for Knowledge Graph Access
- * 
- * Frontend types matching the backend NodeBasedKnowledgeGraph structure
+ *
+ * Frontend types matching the backend NodeBasedKnowledgeGraph structure (v0.3.0)
  */
 
 export type NodeType =
@@ -15,17 +15,20 @@ export type NodeType =
   | 'ConceptMetadata'
   | 'GraphMetadata'
   | 'FlashCard'
-  // Publishing/Course types
-  | 'CourseSettings'
-  | 'ModuleSettings'
-  | 'LessonSettings'
+  | 'Story'
+  | 'Course'
   | 'Assessment'
-  | 'AssessmentQuestion'
   | 'Translation'
   | 'LanguageConfig'
-  // Student management types
   | 'Student'
-  | 'ScheduleSlot';
+  | 'ScheduleSlot'
+  | 'Progress'
+  | 'Enrollment'
+  | 'AssessmentSubmission'
+  | 'Achievement'
+  | 'StudentPreferences'
+  | 'CourseCategory'
+  | 'CourseTemplate';
 
 export type RelationshipType =
   // Hierarchical
@@ -51,15 +54,19 @@ export type RelationshipType =
   // Metadata
   | 'hasGraphMetadata'
   | 'hasConceptMetadata'
-  // Publishing/Course relationships
-  | 'hasCourseSettings'
-  | 'hasModuleSettings'
-  | 'hasLessonSettings'
+  // Course/Story relationships
   | 'hasAssessment'
   | 'hasQuestion'
   | 'hasTranslation'
   | 'translationOf'
   | 'hasLanguageConfig'
+  | 'hasStory'
+  | 'hasProgress'
+  | 'forConcept'
+  | 'hasEnrollment'
+  | 'forCourse'
+  | 'explainsConcept'
+  | 'derivedFrom'
   // Student management relationships
   | 'hasEnrolledStudent'
   | 'belongsToStudent'
@@ -70,7 +77,7 @@ export type RelationshipDirection = 'forward' | 'backward' | 'bidirectional';
 export interface GraphNode {
   id: string;
   type: NodeType;
-  properties: Record<string, any>;
+  properties: Record<string, unknown>;
   createdAt: number;
   updatedAt: number;
 }
@@ -82,7 +89,7 @@ export interface Relationship {
   type: RelationshipType;
   direction: RelationshipDirection;
   strength?: number;
-  metadata?: Record<string, any>;
+  metadata?: Record<string, string | number | boolean | undefined>;
   createdAt: number;
 }
 
@@ -97,22 +104,25 @@ export interface NodeTypeIndex {
   ConceptMetadata: string[];
   GraphMetadata: string[];
   FlashCard: string[];
-  // Publishing/Course types (optional for backward compatibility)
-  CourseSettings?: string[];
-  ModuleSettings?: string[];
-  LessonSettings?: string[];
+  Story?: string[];
+  Course?: string[];
   Assessment?: string[];
-  AssessmentQuestion?: string[];
   Translation?: string[];
   LanguageConfig?: string[];
-  // Student management types
   Student?: string[];
   ScheduleSlot?: string[];
+  Progress?: string[];
+  Enrollment?: string[];
+  AssessmentSubmission?: string[];
+  Achievement?: string[];
+  StudentPreferences?: string[];
+  CourseCategory?: string[];
+  CourseTemplate?: string[];
 }
 
 export interface NodeBasedKnowledgeGraph {
   id: string;
-  seedConceptId: string;
+  seedConceptId?: string;
   createdAt: number;
   updatedAt: number;
   nodes: Record<string, GraphNode>;
@@ -122,7 +132,7 @@ export interface NodeBasedKnowledgeGraph {
 
 /**
  * Graph Mutation Types
- * 
+ *
  * Types for mutations that can be applied to the knowledge graph.
  * These match the backend mutation types.
  */
@@ -136,7 +146,7 @@ export interface CreateNodeMutation {
 export interface UpdateNodeMutation {
   type: 'update_node';
   nodeId: string;
-  properties: Partial<Record<string, any>>;
+  properties: Partial<Record<string, unknown>>;
   updateTimestamp?: boolean;
 }
 
@@ -187,7 +197,7 @@ export interface MutationError {
 
 /**
  * Lesson Annotation Types
- * 
+ *
  * Types for questions and notes attached to lesson content.
  */
 
@@ -218,4 +228,3 @@ export interface NoteItem {
  * Annotation highlight type for UI
  */
 export type AnnotationType = 'question' | 'note';
-
