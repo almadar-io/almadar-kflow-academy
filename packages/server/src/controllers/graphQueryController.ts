@@ -1,13 +1,11 @@
 /**
  * Graph Query Controller
- * 
- * REST API endpoints for optimized graph queries that return
- * pre-formatted, display-ready data for Mentor pages.
  */
 
 import type { Request, Response } from 'express';
 import { singleParam, singleQueryParam } from '../utils/httpParams';
-import { GraphQueryService } from '../services/graphQueryService';
+import { KnowledgeGraphAccessLayer, extractLearningPathSummary, extractGraphSummary, getConceptsByLayer, getConceptDetail, getMindMapStructure } from '@almadar-io/knowledge/server';
+import { getFirestore } from '@almadar/server';
 import type {
   LearningPathsSummaryResponse,
   GraphSummary,
@@ -16,22 +14,25 @@ import type {
 } from '../types/graphQueries';
 import { verifyGraphAccess } from '../utils/controllerHelpers';
 
-const queryService = new GraphQueryService();
+const accessLayer = new KnowledgeGraphAccessLayer();
 
-/**
- * Get user ID from authenticated request
- */
+async function getAllGraphIds(uid: string): Promise<string[]> {
+  const db = getFirestore();
+  const snapshot = await db
+    .collection('users')
+    .doc(uid)
+    .collection('knowledgeGraphs')
+    .select('id')
+    .get();
+  return snapshot.docs.map(doc => doc.id);
+}
+
 function getUserId(req: Request): string {
   const uid = req.firebaseUser?.uid;
-  if (!uid) {
-    throw new Error('Unauthorized');
-  }
+  if (!uid) throw new Error('Unauthorized');
   return uid;
 }
 
-/**
- * Error response type
- */
 interface ErrorResponse {
   error: string;
   details?: string;
@@ -39,17 +40,26 @@ interface ErrorResponse {
   graphId?: string | string[];
 }
 
-/**
- * Get all learning paths summary
- * GET /api/graph-queries/learning-paths
- */
 export async function getLearningPathsHandler(
   req: Request,
   res: Response<LearningPathsSummaryResponse | ErrorResponse>
 ): Promise<void> {
   try {
     const uid = getUserId(req);
-    const learningPaths = await queryService.getLearningPathsSummary(uid);
+    const graphIds = await getAllGraphIds(uid);
+    const settled = await Promise.all(
+      graphIds.map(async graphId => {
+        try {
+          const graph = await accessLayer.getGraph(uid, graphId);
+          return extractLearningPathSummary(graph);
+        } catch {
+          return null;
+        }
+      })
+    );
+    const learningPaths = settled
+      .filter((s): s is NonNullable<typeof s> => s !== null)
+      .sort((a, b) => b.updatedAt - a.updatedAt);
     res.json({ learningPaths });
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
@@ -57,10 +67,6 @@ export async function getLearningPathsHandler(
   }
 }
 
-/**
- * Get graph summary
- * GET /api/graph-queries/:graphId/summary
- */
 export async function getGraphSummaryHandler(
   req: Request,
   res: Response<GraphSummary | ErrorResponse>
@@ -68,25 +74,15 @@ export async function getGraphSummaryHandler(
   try {
     const uid = getUserId(req);
     const graphId = singleParam(req.params.graphId);
-    if (!graphId) {
-      res.status(400).json({ error: 'Graph ID is required' });
-      return;
-    }
-
-    // Verify graph ownership before read operations
+    if (!graphId) { res.status(400).json({ error: 'Graph ID is required' }); return; }
     await verifyGraphAccess(uid, graphId, 'read');
-
-    const summary = await queryService.getGraphSummary(uid, graphId);
+    const graph = await accessLayer.getGraph(uid, graphId);
+    const summary = extractGraphSummary(graph);
     res.json(summary);
   } catch (error: any) {
-    // Handle authorization errors
     if (error.name === 'AuthorizationError') {
       const statusCode = error.code === 'UNAUTHORIZED' ? 401 : error.code === 'NOT_FOUND' ? 404 : 403;
-      res.status(statusCode).json({
-        error: error.message,
-        code: error.code,
-        graphId: error.graphId,
-      });
+      res.status(statusCode).json({ error: error.message, code: error.code, graphId: error.graphId });
       return;
     }
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
@@ -98,10 +94,6 @@ export async function getGraphSummaryHandler(
   }
 }
 
-/**
- * Get concepts by layer
- * GET /api/graph-queries/:graphId/concepts
- */
 export async function getConceptsHandler(
   req: Request,
   res: Response<ConceptsByLayerResponse | ErrorResponse>
@@ -109,31 +101,17 @@ export async function getConceptsHandler(
   try {
     const uid = getUserId(req);
     const graphId = singleParam(req.params.graphId);
-    if (!graphId) {
-      res.status(400).json({ error: 'Graph ID is required' });
-      return;
-    }
-
-    // Verify graph ownership before read operations
+    if (!graphId) { res.status(400).json({ error: 'Graph ID is required' }); return; }
     await verifyGraphAccess(uid, graphId, 'read');
-
     const includeRelationships = req.query.includeRelationships !== 'false';
     const groupByLayer = req.query.groupByLayer !== 'false';
-
-    const response = await queryService.getConceptsByLayer(uid, graphId, {
-      includeRelationships,
-      groupByLayer,
-    });
+    const graph = await accessLayer.getGraph(uid, graphId);
+    const response = getConceptsByLayer(graph, { includeRelationships, groupByLayer });
     res.json(response);
   } catch (error: any) {
-    // Handle authorization errors
     if (error.name === 'AuthorizationError') {
       const statusCode = error.code === 'UNAUTHORIZED' ? 401 : error.code === 'NOT_FOUND' ? 404 : 403;
-      res.status(statusCode).json({
-        error: error.message,
-        code: error.code,
-        graphId: error.graphId,
-      });
+      res.status(statusCode).json({ error: error.message, code: error.code, graphId: error.graphId });
       return;
     }
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
@@ -145,10 +123,6 @@ export async function getConceptsHandler(
   }
 }
 
-/**
- * Get concept detail
- * GET /api/graph-queries/:graphId/concepts/:conceptId
- */
 export async function getMindMapHandler(
   req: Request,
   res: Response<import('../types/graphQueries').MindMapResponse | ErrorResponse>
@@ -157,45 +131,23 @@ export async function getMindMapHandler(
     const uid = getUserId(req);
     const graphId = singleParam(req.params.graphId);
     const expandAll = singleQueryParam(req.query.expandAll);
-
-    if (!graphId) {
-      res.status(400).json({ error: 'Graph ID is required' });
-      return;
-    }
-
-    // Verify graph ownership before read operations
+    if (!graphId) { res.status(400).json({ error: 'Graph ID is required' }); return; }
     await verifyGraphAccess(uid, graphId, 'read');
-
-    const result = await queryService.getMindMapStructure(uid, graphId, {
-      expandAll: expandAll === 'true',
-    });
-
+    const graph = await accessLayer.getGraph(uid, graphId);
+    const result = getMindMapStructure(graph, { expandAll: expandAll === 'true' });
     res.json(result);
   } catch (error: any) {
-    // Handle authorization errors
     if (error.name === 'AuthorizationError') {
       const statusCode = error.code === 'UNAUTHORIZED' ? 401 : error.code === 'NOT_FOUND' ? 404 : 403;
-      res.status(statusCode).json({
-        error: error.message,
-        code: error.code,
-        graphId: error.graphId,
-      });
+      res.status(statusCode).json({ error: error.message, code: error.code, graphId: error.graphId });
       return;
     }
     console.error('Error getting mindmap structure:', error);
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     if (errorMessage.includes('not found') || errorMessage.includes('Seed concept')) {
-      res.status(404).json({
-        error: errorMessage,
-        code: error.code,
-        graphId: req.params.graphId,
-      });
+      res.status(404).json({ error: errorMessage, code: error.code, graphId: req.params.graphId });
     } else {
-      res.status(500).json({
-        error: `Failed to get mindmap structure: ${errorMessage}`,
-        code: error.code,
-        graphId: req.params.graphId,
-      });
+      res.status(500).json({ error: `Failed to get mindmap structure: ${errorMessage}`, code: error.code, graphId: req.params.graphId });
     }
   }
 }
@@ -208,26 +160,15 @@ export async function getConceptDetailHandler(
     const uid = getUserId(req);
     const graphId = singleParam(req.params.graphId);
     const conceptId = singleParam(req.params.conceptId);
-
-    if (!graphId || !conceptId) {
-      res.status(400).json({ error: 'Graph ID and concept ID are required' });
-      return;
-    }
-
-    // Verify graph ownership before read operations
+    if (!graphId || !conceptId) { res.status(400).json({ error: 'Graph ID and concept ID are required' }); return; }
     await verifyGraphAccess(uid, graphId, 'read');
-
-    const detail = await queryService.getConceptDetail(uid, graphId, conceptId);
+    const graph = await accessLayer.getGraph(uid, graphId);
+    const detail = getConceptDetail(graph, conceptId);
     res.json(detail);
   } catch (error: any) {
-    // Handle authorization errors
     if (error.name === 'AuthorizationError') {
       const statusCode = error.code === 'UNAUTHORIZED' ? 401 : error.code === 'NOT_FOUND' ? 404 : 403;
-      res.status(statusCode).json({
-        error: error.message,
-        code: error.code,
-        graphId: error.graphId,
-      });
+      res.status(statusCode).json({ error: error.message, code: error.code, graphId: error.graphId });
       return;
     }
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
@@ -238,4 +179,3 @@ export async function getConceptDetailHandler(
     }
   }
 }
-

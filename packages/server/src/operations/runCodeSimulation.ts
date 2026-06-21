@@ -10,14 +10,21 @@ export interface RunCodeSimulationOptions {
   uid?: string;
 }
 
-function extractJson(content: string): unknown {
+interface SimulationJson {
+  stdout?: string;
+  stderr?: string;
+  exitCode?: number;
+  testResults?: Array<{ input?: string; expectedOutput?: string; actualOutput?: string; passed?: boolean }>;
+}
+
+function extractJson(content: string): SimulationJson {
   const trimmed = content.trim();
 
   // Try to find a JSON object wrapped in markdown code fences.
   const fencedMatch = trimmed.match(/```(?:json)?\s*([\s\S]*?)```/);
   if (fencedMatch) {
     try {
-      return JSON.parse(fencedMatch[1].trim());
+      return JSON.parse(fencedMatch[1].trim()) as SimulationJson;
     } catch {
       // Fall through to direct parse attempt.
     }
@@ -27,7 +34,7 @@ function extractJson(content: string): unknown {
   const objectMatch = trimmed.match(/\{[\s\S]*\}/);
   if (objectMatch) {
     try {
-      return JSON.parse(objectMatch[0]);
+      return JSON.parse(objectMatch[0]) as SimulationJson;
     } catch {
       // Fall through.
     }
@@ -37,7 +44,7 @@ function extractJson(content: string): unknown {
 }
 
 function normalizeTestResults(
-  raw: unknown,
+  raw: SimulationJson['testResults'],
   testCases: RunCodeSimulationRequest['testCases'],
 ): RunCodeSimulationTestResult[] {
   if (!Array.isArray(raw)) {
@@ -80,16 +87,10 @@ export async function runCodeSimulation(
 
   const parsed = extractJson(response.content);
 
-  if (parsed === null || typeof parsed !== 'object') {
-    throw new Error('LLM response was not a JSON object');
-  }
-
-  const result = parsed as Record<string, unknown>;
-
   return {
-    stdout: typeof result.stdout === 'string' ? result.stdout : '',
-    stderr: typeof result.stderr === 'string' ? result.stderr : '',
-    exitCode: typeof result.exitCode === 'number' ? result.exitCode : 1,
-    testResults: normalizeTestResults(result.testResults, testCases),
+    stdout: typeof parsed.stdout === 'string' ? parsed.stdout : '',
+    stderr: typeof parsed.stderr === 'string' ? parsed.stderr : '',
+    exitCode: typeof parsed.exitCode === 'number' ? parsed.exitCode : 1,
+    testResults: normalizeTestResults(parsed.testResults, testCases),
   };
 }

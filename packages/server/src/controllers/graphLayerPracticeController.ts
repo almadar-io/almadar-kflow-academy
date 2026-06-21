@@ -17,7 +17,7 @@ import {
   inferFocus,
   verifyGraphAccess,
 } from '../utils/controllerHelpers';
-import { handleGraphOperationStream } from '../utils/graphOperationStreamHandler';
+import { writeOperationStream, type LLMStreamChunk } from '@almadar-io/knowledge/server';
 import { parseGenerateLayerPracticeContent } from '../utils/graphOperationParsers';
 import type {
   GenerateLayerPracticeRequest,
@@ -140,11 +140,7 @@ export async function generateLayerPracticeHandler(
 
     // Handle streaming result
     if ('stream' in result) {
-      await handleGraphOperationStream(
-        result.stream,
-        req,
-        res,
-        {
+      await writeOperationStream(res, req, result.stream as AsyncGenerator<LLMStreamChunk>, {
           onComplete: async (fullContent: string) => {
             // Parse content and generate mutations
             const { mutations, parsedContent } = await parseGenerateLayerPracticeContent(
@@ -161,17 +157,15 @@ export async function generateLayerPracticeHandler(
             );
 
             // Save graph with version check (will merge if modified)
-            const savedGraph = await accessLayer.saveGraph(uid, updatedGraph, expectedVersion);
+            await accessLayer.saveGraph(uid, updatedGraph, expectedVersion);
 
             return {
               mutations,
               content: parsedContent,
-              graph: savedGraph,
             };
           },
           errorMessage: 'Failed to generate layer practice',
-        }
-      );
+        });
       return;
     }
 

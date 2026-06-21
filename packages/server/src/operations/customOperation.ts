@@ -2,6 +2,7 @@ import { Concept, OperationResult, ConceptGraph } from '../types/concept';
 import { customOperationSystemPrompt } from '../prompts';
 import { callLLM, extractJSONArray } from '../services/llm';
 import { validateConcept, normalizeConcept, validateConceptArray } from '../utils/validation';
+import type { LLMStreamChunk } from '@almadar/llm';
 
 interface LLMConceptItem {
   name?: string;
@@ -12,7 +13,7 @@ interface LLMConceptItem {
 }
 
 interface CustomOperationStreamResult {
-  stream: AsyncIterable<unknown>;
+  stream: AsyncIterable<LLMStreamChunk>;
   model?: string;
   prompt: string;
 }

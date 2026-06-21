@@ -1,4 +1,5 @@
 import { Concept, GraphDifficulty } from '../types/concept';
+import type { LLMStreamChunk } from '@almadar/llm';
 import { callLLM } from '../services/llm';
 import { validateConceptArray, validateConcept } from '../utils/validation';
 
@@ -21,7 +22,7 @@ export interface GenerateLayerPracticeResult {
 }
 
 export interface GenerateLayerPracticeStreamResult {
-  stream: AsyncIterable<unknown>;
+  stream: AsyncIterable<LLMStreamChunk>;
   model?: string;
 }
 

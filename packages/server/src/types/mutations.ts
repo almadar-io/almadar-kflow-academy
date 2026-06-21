@@ -7,6 +7,7 @@
 
 import type { GraphNode, Relationship, NodeType } from './nodeBasedKnowledgeGraph';
 
+
 /**
  * Create Node Mutation
  * 
@@ -26,7 +27,7 @@ export interface CreateNodeMutation {
 export interface UpdateNodeMutation {
   type: 'update_node';
   nodeId: string;
-  properties: Partial<Record<string, any>>;
+  properties: Partial<Record<string, string | number | boolean | null | string[] | object>>;
   updateTimestamp?: boolean;  // Update updatedAt (default: true)
 }
 

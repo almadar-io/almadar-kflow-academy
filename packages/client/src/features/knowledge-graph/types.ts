@@ -4,6 +4,8 @@
  * Frontend types matching the backend NodeBasedKnowledgeGraph structure (v0.3.0)
  */
 
+import type { JsonValue } from '@almadar-io/knowledge';
+
 export type NodeType =
   | 'Graph'
   | 'Concept'
@@ -77,7 +79,7 @@ export type RelationshipDirection = 'forward' | 'backward' | 'bidirectional';
 export interface GraphNode {
   id: string;
   type: NodeType;
-  properties: Record<string, unknown>;
+  properties: Record<string, JsonValue>;
   createdAt: number;
   updatedAt: number;
 }
@@ -146,7 +148,7 @@ export interface CreateNodeMutation {
 export interface UpdateNodeMutation {
   type: 'update_node';
   nodeId: string;
-  properties: Partial<Record<string, unknown>>;
+  properties: Partial<Record<string, JsonValue>>;
   updateTimestamp?: boolean;
 }
 

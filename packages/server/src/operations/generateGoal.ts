@@ -1,4 +1,5 @@
 import { callLLM } from '../services/llm';
+import type { LLMStreamChunk } from '@almadar/llm';
 import type {
   GenerateGoalOptions,
   GenerateGoalResult,
@@ -15,7 +16,7 @@ import { generateConceptId } from '../utils/uuid';
  */
 export async function generateGoal(
   options: GenerateGoalOptions
-): Promise<GenerateGoalResult | { stream: AsyncIterable<unknown>; model: string }> {
+): Promise<GenerateGoalResult | { stream: AsyncIterable<LLMStreamChunk>; model: string }> {
   const { anchorAnswer, questionAnswers, graphId, uid, manualGoal, stream } = options;
 
   if (!anchorAnswer || anchorAnswer.trim().length === 0) {
@@ -129,7 +130,7 @@ Return the JSON object with the goal structure.`;
     let milestoneData: {
       type?: string;
       target?: string;
-      milestones?: any[];
+      milestones?: Array<{ title?: string; description?: string; targetDate?: number; completed?: boolean }>;
     };
 
     try {
@@ -191,8 +192,8 @@ Return the JSON object with the goal structure.`;
       type: string;
       target: string;
       estimatedTime?: number;
-      milestones?: any[];
-      customMetadata?: Record<string, any>;
+      milestones?: Array<{ title?: string; description?: string; targetDate?: number; completed?: boolean }>;
+      customMetadata?: Record<string, string | number | boolean | null>;
     };
 
     try {

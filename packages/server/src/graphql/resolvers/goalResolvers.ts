@@ -28,7 +28,7 @@ export const goalResolvers = {
      * Generate goals - minimal input: anchorAnswer and questionAnswers
      */
     generateGoals: async (
-      _parent: unknown,
+      _parent: Record<string, never>,
       args: GenerateGoalsArgs,
       context: GraphQLContext
     ): Promise<GenerateGoalsResult> => {

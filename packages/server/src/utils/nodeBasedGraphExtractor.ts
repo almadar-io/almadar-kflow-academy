@@ -17,9 +17,16 @@ import {
   getNodesByType,
   getConnectedNodes,
   getLessonForConcept,
-  getMetadataForConcept,
   getFlashCardsForConcept,
-} from './nodeBasedGraphQueries';
+} from '@almadar-io/knowledge/server';
+
+function getMetadataForConcept(
+  graph: NodeBasedKnowledgeGraph,
+  conceptNodeId: string
+): GraphNode | undefined {
+  return getConnectedNodes(graph, conceptNodeId, 'hasMetadata', 'outgoing')
+    .filter((node) => node.type === 'ConceptMetadata')[0];
+}
 
 /**
  * Extract concepts and relationships from NodeBasedKnowledgeGraph

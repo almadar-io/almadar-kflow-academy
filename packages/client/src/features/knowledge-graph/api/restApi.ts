@@ -6,6 +6,7 @@
 
 import { apiClient } from '../../../services/apiClient';
 import { auth } from '../../../config/firebase';
+import type { JsonValue } from '@almadar-io/knowledge';
 import type {
   NodeBasedKnowledgeGraph,
   GraphNode,
@@ -68,11 +69,11 @@ export interface TraverseOptions {
 
 export interface CreateNodeInput {
   type: NodeType;
-  properties: Record<string, any>;
+  properties: Record<string, JsonValue>;
 }
 
 export interface UpdateNodeInput {
-  properties: Record<string, any>;
+  properties: Record<string, JsonValue>;
 }
 
 export interface CreateRelationshipInput {
@@ -81,7 +82,7 @@ export interface CreateRelationshipInput {
   type: RelationshipType;
   direction?: RelationshipDirection;
   strength?: number;
-  metadata?: any;
+  metadata?: Record<string, JsonValue>;
 }
 
 export interface DeleteNodeOptions {
@@ -191,7 +192,7 @@ export const knowledgeGraphRestApi = {
     });
   },
 
-  findNodes: async (graphId: string, filter: Record<string, any>): Promise<{ nodes: GraphNode[]; count: number }> => {
+  findNodes: async (graphId: string, filter: Record<string, JsonValue>): Promise<{ nodes: GraphNode[]; count: number }> => {
     validateGraphId(graphId, 'find nodes');
     const headers = await getAuthHeaders();
     return apiClient.fetch(`${BASE_PATH}/${graphId}/nodes/find`, {

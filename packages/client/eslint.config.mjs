@@ -31,6 +31,8 @@ export default [
     },
     rules: {
       'almadar/no-as-any': 'error',
+      'almadar/no-unknown-type': 'error',
+      'almadar/no-record-string-unknown': 'error',
       'almadar/no-use-navigate': 'error',
     },
   },

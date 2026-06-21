@@ -1,4 +1,5 @@
-import { GraphQueryService } from "./graphQueryService";
+import { KnowledgeGraphAccessLayer, extractLearningPathSummary } from '@almadar-io/knowledge/server';
+import { getFirestore } from '@almadar/server';
 import { getAllUserProgress } from "./userProgressService";
 import { hybridCache, CACHE_TTL } from "./cacheService";
 import { CACHE_KEYS } from "./cacheInvalidation";
@@ -35,18 +36,35 @@ export interface JumpBackInItem {
 export async function getJumpBackInItems(uid: string): Promise<JumpBackInItem[]> {
   const cacheKey = CACHE_KEYS.jumpBackIn(uid);
   const cached = await hybridCache.get<JumpBackInItem[]>(cacheKey);
-  if (cached) {
-    return cached;
-  }
+  if (cached) return cached;
 
   try {
-    const graphQueryService = new GraphQueryService();
-    const [learningPaths, allUserProgress] = await Promise.all([
-      graphQueryService.getLearningPathsSummary(uid),
+    const db = getFirestore();
+    const snapshot = await db
+      .collection('users')
+      .doc(uid)
+      .collection('knowledgeGraphs')
+      .select('id')
+      .get();
+    const graphIds: string[] = snapshot.docs.map((doc: import('firebase-admin/firestore').QueryDocumentSnapshot) => doc.id);
+    const accessLayer = new KnowledgeGraphAccessLayer();
+
+    const [graphSummaries, allUserProgress] = await Promise.all([
+      Promise.all(
+        graphIds.map(async (graphId) => {
+          try {
+            const graph = await accessLayer.getGraph(uid, graphId);
+            return extractLearningPathSummary(graph);
+          } catch {
+            return null;
+          }
+        })
+      ),
       getAllUserProgress(uid),
     ]);
 
-    // Map each graphId to the most recent lastStudied timestamp
+    const learningPaths = graphSummaries.filter((s): s is NonNullable<typeof s> => s !== null);
+
     const graphLastAccessed = new Map<string, number>();
     for (const progress of allUserProgress) {
       if (progress.graphId) {
@@ -60,7 +78,6 @@ export async function getJumpBackInItems(uid: string): Promise<JumpBackInItem[]>
     const items: JumpBackInItem[] = [];
     for (const path of learningPaths) {
       const lastAccessed = graphLastAccessed.get(path.id) || path.updatedAt || path.createdAt || 0;
-
       items.push({
         id: path.id,
         type: "learningPath",

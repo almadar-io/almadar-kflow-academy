@@ -78,9 +78,7 @@ export function inferLearningGoalFromGraph(
     estimatedTime: p.estimatedTime,
     assessedLevel: p.assessedLevel as 'beginner' | 'intermediate' | 'advanced' | undefined,
     placementTestId: p.placementTestId,
-    customMetadata: typeof p.customMetadata === 'object' && p.customMetadata !== null && !Array.isArray(p.customMetadata)
-      ? p.customMetadata as Record<string, unknown>
-      : undefined,
+    customMetadata: p.customMetadata ?? undefined,
     createdAt: p.createdAt || goalNodes[0].createdAt || Date.now(),
     updatedAt: p.updatedAt || goalNodes[0].updatedAt || Date.now(),
   };

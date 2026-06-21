@@ -8,6 +8,7 @@
  * - Use knowledge-graph hooks for all goal-related operations
  */
 
+import type { JsonValue } from '@almadar-io/knowledge';
 import { apiClient } from '../../services/apiClient';
 import { auth } from '../../config/firebase';
 import { parseIncrementalJSON } from '../../utils/jsonParser';
@@ -113,7 +114,7 @@ export interface LearningGoal {
   estimatedTime?: number;
   milestones?: Milestone[];
   shortTermGoals?: string[];
-  customMetadata?: Record<string, any>;
+  customMetadata?: Record<string, JsonValue>;
   assessedLevel?: 'beginner' | 'intermediate' | 'advanced';
   placementTestId?: string;
   createdAt: number;
@@ -130,7 +131,7 @@ export interface CreateGoalResponse {
  */
 export async function createGoal(
   request: CreateGoalRequest,
-  onStream?: (chunk: string, partialGoal: any) => void
+  onStream?: (chunk: string, partialGoal: Partial<LearningGoal>) => void
 ): Promise<CreateGoalResponse> {
   const headers = await withAuthHeaders();
   
@@ -154,7 +155,7 @@ export async function createGoal(
 async function handleStreamingGoalCreation(
   request: CreateGoalRequest,
   headers: HeadersInit,
-  onStream: (chunk: string, partialGoal: any) => void
+  onStream: (chunk: string, partialGoal: Partial<LearningGoal>) => void
 ): Promise<CreateGoalResponse> {
   const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
   
@@ -272,7 +273,7 @@ export interface CreateGraphWithGoalResponse {
  */
 export async function createGraphWithGoal(
   request: CreateGraphWithGoalRequest,
-  onStream?: (chunk: string, partialGoal: any) => void
+  onStream?: (chunk: string, partialGoal: Partial<LearningGoal>) => void
 ): Promise<CreateGraphWithGoalResponse> {
   const headers = await withAuthHeaders();
   
@@ -296,7 +297,7 @@ export async function createGraphWithGoal(
 async function handleStreamingGraphWithGoal(
   request: CreateGraphWithGoalRequest,
   headers: HeadersInit,
-  onStream: (chunk: string, partialGoal: any) => void
+  onStream: (chunk: string, partialGoal: Partial<LearningGoal>) => void
 ): Promise<CreateGraphWithGoalResponse> {
   const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
   
@@ -439,7 +440,7 @@ export interface UpdateGoalRequest {
   target?: string;
   estimatedTime?: number;
   milestones?: Milestone[];
-  customMetadata?: Record<string, any>;
+  customMetadata?: Record<string, JsonValue>;
   assessedLevel?: 'beginner' | 'intermediate' | 'advanced';
   placementTestId?: string;
 }

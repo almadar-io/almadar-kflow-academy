@@ -15,7 +15,7 @@ import {
   inferLearningGoalFromGraph,
   verifyGraphAccess,
 } from '../utils/controllerHelpers';
-import { handleGraphOperationStream } from '../utils/graphOperationStreamHandler';
+import { writeOperationStream, type LLMStreamChunk } from '@almadar-io/knowledge/server';
 import { parseExplainContent, parseAnswerQuestionContent } from '../utils/graphOperationParsers';
 import type {
   ExplainConceptRequest,
@@ -81,11 +81,7 @@ export async function explainConceptHandler(
 
     // Handle streaming result
     if ('stream' in result) {
-      await handleGraphOperationStream(
-        result.stream,
-        req,
-        res,
-        {
+      await writeOperationStream(res, req, result.stream as AsyncGenerator<LLMStreamChunk>, {
           onComplete: async (fullContent: string) => {
             // Parse content and generate mutations
             const { mutations, parsedContent } = await parseExplainContent(
@@ -102,17 +98,15 @@ export async function explainConceptHandler(
             );
 
             // Save graph with version check (will merge if modified)
-            const savedGraph = await accessLayer.saveGraph(uid, updatedGraph, expectedVersion);
+            await accessLayer.saveGraph(uid, updatedGraph, expectedVersion);
 
             return {
               mutations,
               content: parsedContent,
-              graph: savedGraph,
             };
           },
           errorMessage: 'Failed to explain concept',
-        }
-      );
+        });
       return;
     }
 
@@ -204,11 +198,7 @@ export async function answerQuestionHandler(
 
     // Handle streaming result
     if ('stream' in result) {
-      await handleGraphOperationStream(
-        result.stream,
-        req,
-        res,
-        {
+      await writeOperationStream(res, req, result.stream as AsyncGenerator<LLMStreamChunk>, {
           onComplete: async (fullContent: string) => {
             // Parse content (ephemeral - no mutations by default)
             const { mutations, parsedContent } = await parseAnswerQuestionContent(
@@ -223,20 +213,17 @@ export async function answerQuestionHandler(
             );
 
             // Save graph only if mutations were applied
-            let savedGraph = graph;
             if (mutations.mutations.length > 0) {
-              savedGraph = await accessLayer.saveGraph(uid, updatedGraph, expectedVersion);
+              await accessLayer.saveGraph(uid, updatedGraph, expectedVersion);
             }
 
             return {
               mutations,
               content: parsedContent,
-              graph: savedGraph,
             };
           },
           errorMessage: 'Failed to answer question',
-        }
-      );
+        });
       return;
     }
 

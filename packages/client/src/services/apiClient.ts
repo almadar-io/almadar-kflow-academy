@@ -34,7 +34,7 @@ const extractErrorMessage = async (response: Response): Promise<string> => {
 };
 
 // Helper to format error message for display
-export const formatErrorMessage = (error: unknown): string => {
+export const formatErrorMessage = (error: Error | string | object | null | undefined): string => {
   if (error instanceof Error) {
     let message = error.message;
     // Clean up technical error messages
@@ -54,7 +54,7 @@ export const formatErrorMessage = (error: unknown): string => {
  * Handle an error and show an alert if the global error handler is set
  * This can be used for streaming endpoints that don't go through apiClient.fetch()
  */
-export const handleApiError = (error: unknown): void => {
+export const handleApiError = (error: Error | string | object | null | undefined): void => {
   if (globalErrorHandler) {
     const errorMessage = formatErrorMessage(error);
     globalErrorHandler(errorMessage);

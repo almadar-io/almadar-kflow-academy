@@ -29,7 +29,7 @@ export const expansionResolvers = {
      * Progressive expansion - minimal input: only numConcepts (optional)
      */
     progressiveExpand: async (
-      _parent: unknown,
+      _parent: Record<string, never>,
       args: ProgressiveExpandArgs,
       context: GraphQLContext
     ): Promise<ProgressiveExpandResult> => {

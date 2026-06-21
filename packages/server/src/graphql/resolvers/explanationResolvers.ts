@@ -31,7 +31,7 @@ export const explanationResolvers = {
      * Explain concept - minimal input: only targetNodeId
      */
     explainConcept: async (
-      _parent: unknown,
+      _parent: Record<string, never>,
       args: ExplainConceptArgs,
       context: GraphQLContext
     ): Promise<ExplainConceptResult> => {
@@ -89,7 +89,7 @@ export const explanationResolvers = {
      * Answer question - minimal input: targetNodeId and question
      */
     answerQuestion: async (
-      _parent: unknown,
+      _parent: Record<string, never>,
       args: AnswerQuestionArgs,
       context: GraphQLContext
     ): Promise<AnswerQuestionResult> => {

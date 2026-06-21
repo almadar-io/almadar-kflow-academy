@@ -10,7 +10,6 @@
 import type { Request, Response } from 'express';
 import { singleParam, singleQueryParam } from '../utils/httpParams';
 import { KnowledgeGraphAccessLayer } from '@almadar-io/knowledge/server';
-import { GraphQueryService } from '../services/graphQueryService';
 import type {
   GraphNode,
   Relationship as NodeBasedRelationship,
@@ -20,7 +19,6 @@ import type {
 import { createGraphNode, createRelationship, propsToRecord } from '../types/nodeBasedKnowledgeGraph';
 
 const accessLayer = new KnowledgeGraphAccessLayer();
-const queryService = new GraphQueryService();
 
 /**
  * Get user ID from request
@@ -98,7 +96,6 @@ export async function saveGraphHandler(req: Request, res: Response): Promise<voi
     }
 
     const savedGraph = await accessLayer.saveGraph(uid, graph, expectedVersion);
-    await queryService.invalidateCache(uid, graphId);
     res.json({ success: true, graphId, graph: savedGraph });
   } catch (error: any) {
     if (error.message === 'Unauthorized') {
@@ -219,7 +216,6 @@ export async function createNodeHandler(req: Request, res: Response): Promise<vo
     const node = createGraphNode(nodeId, type as NodeType, properties);
 
     const createdNode = await accessLayer.createNode(uid, graphId, node);
-    await queryService.invalidateCache(uid, graphId);
     res.status(201).json(createdNode);
   } catch (error: any) {
     if (error.message === 'Unauthorized') {
@@ -255,7 +251,6 @@ export async function updateNodeHandler(req: Request, res: Response): Promise<vo
     }
 
     const updatedNode = await accessLayer.updateNode(uid, graphId, nodeId, updates);
-    await queryService.invalidateCache(uid, graphId);
     res.json(updatedNode);
   } catch (error: any) {
     if (error.message === 'Unauthorized') {
@@ -293,7 +288,6 @@ export async function deleteNodeHandler(req: Request, res: Response): Promise<vo
     await accessLayer.deleteNode(uid, graphId, nodeId, {
       cascade: cascade === 'true',
     });
-    await queryService.invalidateCache(uid, graphId);
     res.json({ success: true, nodeId });
   } catch (error: any) {
     if (error.message === 'Unauthorized') {
@@ -446,7 +440,6 @@ export async function createRelationshipHandler(req: Request, res: Response): Pr
     );
 
     const createdRel = await accessLayer.createRelationship(uid, graphId, relationship);
-    await queryService.invalidateCache(uid, graphId);
     res.status(201).json(createdRel);
   } catch (error: any) {
     if (error.message === 'Unauthorized') {
@@ -481,7 +474,6 @@ export async function deleteRelationshipHandler(req: Request, res: Response): Pr
     }
 
     await accessLayer.deleteRelationship(uid, graphId, relId);
-    await queryService.invalidateCache(uid, graphId);
     res.json({ success: true, relId });
   } catch (error: any) {
     if (error.message === 'Unauthorized') {
@@ -658,7 +650,7 @@ export async function findNodesHandler(req: Request, res: Response): Promise<voi
           const propKey = key.replace('properties.', '');
           if ((propsToRecord(node.properties))[propKey] !== value) return false;
         } else {
-          const nodeRecord: Record<string, unknown> = {
+          const nodeRecord: Record<string, string | number | undefined> = {
             id: node.id, createdAt: node.createdAt, updatedAt: node.updatedAt,
           };
           if (nodeRecord[key] !== value) return false;

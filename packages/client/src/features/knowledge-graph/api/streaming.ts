@@ -1,3 +1,4 @@
+import type { JsonValue } from '@almadar-io/knowledge';
 import { auth } from '../../../config/firebase';
 import type { GraphMutation, MutationBatch } from '../types';
 import type {
@@ -17,15 +18,15 @@ import type {
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
 
-export interface StreamingCallbacks<T = unknown> {
+export interface StreamingCallbacks<T = JsonValue> {
   onChunk?: (chunk: string) => void;
   onMutations?: (mutations: MutationBatch) => void;
-  onContent?: (content: unknown) => void;
+  onContent?: (content: JsonValue) => void;
   onError?: (error: string) => void;
   onDone?: (finalResult: T) => void;
 }
 
-export async function handleStreamingRequest<T, B extends object = Record<string, unknown>>(
+export async function handleStreamingRequest<T, B extends object = Record<string, JsonValue>>(
   endpoint: string,
   requestBody: B,
   callbacks: StreamingCallbacks<T>
@@ -35,7 +36,7 @@ export async function handleStreamingRequest<T, B extends object = Record<string
 
   const token = await user.getIdToken();
 
-  const { stream: _stream, ...bodyWithoutStream } = requestBody as Record<string, unknown>;
+  const { stream: _stream, ...bodyWithoutStream } = requestBody as Record<string, JsonValue>;
   const url = `${API_BASE_URL}${endpoint}${endpoint.includes('?') ? '&' : '?'}stream=true`;
 
   const response = await fetch(url, {
@@ -80,7 +81,7 @@ export async function handleStreamingRequest<T, B extends object = Record<string
         if (raw === '[DONE]') break;
 
         try {
-          const event = JSON.parse(raw) as { type: string; data?: Record<string, unknown>; timestamp?: number };
+          const event = JSON.parse(raw) as { type: string; data?: Record<string, JsonValue>; timestamp?: number };
           const data = event.data ?? {};
 
           if (event.type === 'error') {
@@ -94,7 +95,7 @@ export async function handleStreamingRequest<T, B extends object = Record<string
               ...data,
               mutations: {
                 mutations: accumulatedMutations,
-                metadata: (data.mutations as { metadata?: unknown } | undefined)?.metadata,
+                metadata: (data.mutations as { metadata?: JsonValue } | undefined)?.metadata,
               },
             } as T;
             callbacks.onDone?.(finalResult);
@@ -105,10 +106,13 @@ export async function handleStreamingRequest<T, B extends object = Record<string
             if (typeof data.content === 'string' && data.content) {
               callbacks.onChunk?.(data.content);
             }
-            if (data.mutations) {
-              const batch = data.mutations as MutationBatch;
-              accumulatedMutations.push(...batch.mutations);
-              callbacks.onMutations?.(batch);
+            if (data.mutations && typeof data.mutations === 'object' && !Array.isArray(data.mutations)) {
+              const rawBatch = data.mutations as { mutations?: GraphMutation[]; metadata?: MutationBatch['metadata'] };
+              if (Array.isArray(rawBatch.mutations)) {
+                const batch: MutationBatch = { mutations: rawBatch.mutations, metadata: rawBatch.metadata };
+                accumulatedMutations.push(...batch.mutations);
+                callbacks.onMutations?.(batch);
+              }
             }
             if (data.contentUpdate !== undefined) {
               callbacks.onContent?.(data.contentUpdate);

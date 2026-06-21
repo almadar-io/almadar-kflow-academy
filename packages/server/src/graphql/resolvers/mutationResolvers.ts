@@ -29,7 +29,7 @@ export const mutationResolvers = {
      * Apply mutations directly to graph
      */
     applyMutations: async (
-      _parent: unknown,
+      _parent: Record<string, never>,
       args: ApplyMutationsArgs,
       context: GraphQLContext
     ) => {
@@ -64,7 +64,7 @@ export const mutationResolvers = {
      * Validate mutations without applying
      */
     validateMutations: async (
-      _parent: unknown,
+      _parent: Record<string, never>,
       args: ValidateMutationsArgs,
       context: GraphQLContext
     ): Promise<MutationValidationResult> => {

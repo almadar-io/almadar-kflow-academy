@@ -30,7 +30,7 @@ export const customOperationResolvers = {
      * Custom operation - user-prompted modifications
      */
     customOperation: async (
-      _parent: unknown,
+      _parent: Record<string, never>,
       args: CustomOperationArgs,
       context: GraphQLContext
     ): Promise<CustomOperationResult> => {

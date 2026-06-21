@@ -17,11 +17,11 @@ export interface LayerDocument {
   createdAt: number;
 }
 
-const isFirestoreNotFoundError = (error: unknown) => {
-  if (!error || typeof error !== 'object') {
+const isFirestoreNotFoundError = (error: object | null | undefined): boolean => {
+  if (!error) {
     return false;
   }
-  
+
   const code = (error as { code?: number | string }).code;
   const message = (error as { message?: string }).message ?? '';
 
@@ -55,7 +55,7 @@ export const saveLayer = async (
     // Use layer number as document ID for easier querying
     await layersCollection(uid, graphId).doc(`layer-${layerData.layerNumber}`).set(payload);
   } catch (error) {
-    if (isFirestoreNotFoundError(error)) {
+    if (isFirestoreNotFoundError(typeof error === 'object' ? error : null)) {
       console.warn('Firestore database not found while saving layer.');
     }
     throw error;
@@ -77,7 +77,7 @@ export const getGraphLayers = async (
       return normalizeTimestamps(data);
     });
   } catch (error) {
-    if (isFirestoreNotFoundError(error)) {
+    if (isFirestoreNotFoundError(typeof error === 'object' ? error : null)) {
       console.warn('Firestore database not found while fetching layers.');
       return [];
     }
@@ -103,7 +103,7 @@ export const getLayerByNumber = async (
     const data = doc.data() as LayerDocument;
     return normalizeTimestamps(data);
   } catch (error) {
-    if (isFirestoreNotFoundError(error)) {
+    if (isFirestoreNotFoundError(typeof error === 'object' ? error : null)) {
       console.warn('Firestore database not found while fetching layer.');
       return null;
     }
@@ -112,13 +112,13 @@ export const getLayerByNumber = async (
 };
 
 const normalizeTimestamps = (data: LayerDocument): LayerDocument => {
-  const parseTimestamp = (value: unknown, fallback: number) => {
+  const parseTimestamp = (value: number | { toDate(): Date } | null | undefined, fallback: number) => {
     if (typeof value === 'number') {
       return value;
     }
 
     if (value && typeof value === 'object' && 'toDate' in value && typeof value.toDate === 'function') {
-      return (value.toDate() as Date).getTime();
+      return value.toDate().getTime();
     }
 
     return fallback;

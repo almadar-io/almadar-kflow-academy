@@ -15,6 +15,7 @@ import { useNavigateEvent } from '../hooks/useNavigateEvent';
 import { getNavigationItems, getUserForTemplate, mainNavItems } from '../config/navigation';
 import type { Concept, BloomLevel } from '../features/concepts/types';
 import type { QuestionAnswerItem, NoteItem, AnnotationType } from '../features/knowledge-graph/types';
+import type { JsonValue } from '@almadar-io/knowledge';
 import { convertConceptDisplayToConcept } from '../features/concepts/utils/convertConceptDisplay';
 import { useEventBus, useTranslate } from '@almadar/ui';
 import { LearnConceptDetailTemplate } from '@design-system/templates/LearnConceptDetailTemplate';
@@ -84,10 +85,12 @@ export const ConceptDetailPage: React.FC = () => {
     }
     if (!lessonId) return { lessonNodeId: undefined, lessonQuestions: [], lessonNotes: [] };
     const lessonNode = graph.nodes?.[lessonId];
+    const rawQ = lessonNode?.properties?.questions;
+    const rawN = lessonNode?.properties?.notes;
     return {
       lessonNodeId: lessonId,
-      lessonQuestions: (lessonNode?.properties?.questions as QuestionAnswerItem[]) || [],
-      lessonNotes: (lessonNode?.properties?.notes as NoteItem[]) || [],
+      lessonQuestions: Array.isArray(rawQ) ? (rawQ as (JsonValue & QuestionAnswerItem)[]) : [],
+      lessonNotes: Array.isArray(rawN) ? (rawN as (JsonValue & NoteItem)[]) : [],
     };
   }, [graph, conceptId]);
 

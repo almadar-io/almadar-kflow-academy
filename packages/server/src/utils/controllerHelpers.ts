@@ -11,7 +11,7 @@ import type { LearningGoal, Milestone } from '../types/goal';
 import type { GraphAccessLevel } from '../types/graphAuthorization';
 import { KnowledgeGraphAccessLayer } from '@almadar-io/knowledge/server';
 import { GraphAuthorizationService } from '../services/graphAuthorizationService';
-import { getNodesByType, getMilestonesForGoal } from './nodeBasedGraphQueries';
+import { getNodesByType, getMilestonesForGoal } from '@almadar-io/knowledge/server';
 
 const accessLayer = new KnowledgeGraphAccessLayer();
 const authorizationService = new GraphAuthorizationService();

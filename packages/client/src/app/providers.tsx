@@ -11,13 +11,14 @@ import { queryClient } from './queryClient';
 import { apolloClient } from '../features/knowledge-graph';
 import { AuthProvider } from '../features/auth';
 import ErrorHandlerInitializer from './ErrorHandlerInitializer';
+import type { JsonValue } from '@almadar-io/knowledge';
 import enMessagesRaw from '../locales/en.json';
 import arMessagesRaw from '../locales/ar.json';
 import slMessagesRaw from '../locales/sl.json';
 
 type SupportedLocale = 'en' | 'ar' | 'sl';
 
-function filterMessages(raw: Record<string, unknown>): Record<string, string> {
+function filterMessages(raw: Record<string, JsonValue>): Record<string, string> {
   const out: Record<string, string> = {};
   for (const [k, v] of Object.entries(raw)) {
     if (typeof v === 'string' && !k.startsWith('$')) out[k] = v;
@@ -26,9 +27,9 @@ function filterMessages(raw: Record<string, unknown>): Record<string, string> {
 }
 
 const messagesByLocale: Record<SupportedLocale, Record<string, string>> = {
-  en: filterMessages(enMessagesRaw as Record<string, unknown>),
-  ar: filterMessages(arMessagesRaw as Record<string, unknown>),
-  sl: filterMessages(slMessagesRaw as Record<string, unknown>),
+  en: filterMessages(enMessagesRaw as Record<string, JsonValue>),
+  ar: filterMessages(arMessagesRaw as Record<string, JsonValue>),
+  sl: filterMessages(slMessagesRaw as Record<string, JsonValue>),
 };
 
 const metaByLocale: Record<SupportedLocale, { direction: 'ltr' | 'rtl' }> = {

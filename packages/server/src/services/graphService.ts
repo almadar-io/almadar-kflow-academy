@@ -59,11 +59,11 @@ export interface UpsertConceptGraphPayload {
   name?: string; // Graph name (same as seed concept name)
 }
 
-const isFirestoreNotFoundError = (error: unknown) => {
-  if (!error || typeof error !== 'object') {
+const isFirestoreNotFoundError = (error: object | null | undefined): boolean => {
+  if (!error) {
     return false;
   }
-  
+
   const code = (error as { code?: number | string }).code;
   const message = (error as { message?: string }).message ?? '';
 
@@ -111,7 +111,7 @@ export const getUserGraphs = async (uid: string): Promise<StoredConceptGraph[]> 
 
     return graphs;
   } catch (error) {
-    if (isFirestoreNotFoundError(error)) {
+    if (isFirestoreNotFoundError(typeof error === 'object' ? error : null)) {
       console.warn('Firestore database not found. Ensure Firestore is enabled for this project.');
       return [];
     }
@@ -157,7 +157,7 @@ export const getUserGraphById = async (
       ...(layers && { layers }),
     };
   } catch (error) {
-    if (isFirestoreNotFoundError(error)) {
+    if (isFirestoreNotFoundError(typeof error === 'object' ? error : null)) {
       console.warn('Firestore database not found while fetching graph.');
       return null;
     }
@@ -213,7 +213,7 @@ export const upsertUserGraph = async (
     // which means deleted concepts wouldn't be removed
     await graphsCollection(uid).doc(graph.id).set(payload);
   } catch (error) {
-    if (isFirestoreNotFoundError(error)) {
+    if (isFirestoreNotFoundError(typeof error === 'object' ? error : null)) {
       console.warn('Firestore database not found while saving graph.');
     }
     throw error;
@@ -266,7 +266,7 @@ export const deleteUserGraph = async (
       await graphsCollection(uid).doc(graphId).delete();
     } catch (error) {
       // Don't fail if graph doesn't exist in this collection
-      if (!isFirestoreNotFoundError(error)) {
+      if (!isFirestoreNotFoundError(typeof error === 'object' ? error : null)) {
         console.warn(`Failed to delete graph from graphs collection: ${error}`);
       }
     }
@@ -294,7 +294,7 @@ export const deleteUserGraph = async (
       console.warn(`Failed to delete graph from knowledgeGraphs collection: ${error}`);
     }
   } catch (error) {
-    if (isFirestoreNotFoundError(error)) {
+    if (isFirestoreNotFoundError(typeof error === 'object' ? error : null)) {
       console.warn('Firestore database not found while deleting graph.');
       return;
     }
@@ -305,13 +305,13 @@ export const deleteUserGraph = async (
 const normalizeTimestamps = (
   data: Omit<StoredConceptGraph, 'id'>
 ): Omit<StoredConceptGraph, 'id'> => {
-  const parseTimestamp = (value: unknown, fallback: number) => {
+  const parseTimestamp = (value: number | { toDate(): Date } | null | undefined, fallback: number) => {
     if (typeof value === 'number') {
       return value;
     }
 
     if (value && typeof value === 'object' && 'toDate' in value && typeof value.toDate === 'function') {
-      return (value.toDate() as Date).getTime();
+      return value.toDate().getTime();
     }
 
     return fallback;

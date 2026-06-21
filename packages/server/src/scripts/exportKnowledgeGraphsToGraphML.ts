@@ -25,7 +25,7 @@ import * as fs from 'fs';
 import { getFirestore } from '@almadar/server';
 import { getUserGraphs } from '../services/graphService';
 import { convertStoredConceptGraphToNodeBased } from '@almadar-io/knowledge/server';
-import { exportToGraphML, type GraphMLExportOptions } from '../services/graphmlExportService';
+import { exportGraphML, type GraphMLExportOptions } from '@almadar-io/knowledge/server';
 import { getGoalsByGraphId } from '../services/goalService';
 import type { NodeBasedKnowledgeGraph } from '../types/nodeBasedKnowledgeGraph';
 
@@ -114,7 +114,7 @@ async function exportUserConceptGraphs(
         });
 
         // Export to GraphML (now accepts NodeBasedKnowledgeGraph directly)
-        const graphmlXml = exportToGraphML(conversionResult.nodeBasedGraph, exportOptions);
+        const graphmlXml = exportGraphML(conversionResult.nodeBasedGraph, exportOptions);
 
         // Save to file
         const filename = `${graph.id}.graphml`;
@@ -182,7 +182,7 @@ async function exportUserKnowledgeGraphs(
         console.log(`  Exporting KnowledgeGraph: ${graph.id}`);
         
         // Export to GraphML (graph is already in NodeBasedKnowledgeGraph format)
-        const graphmlXml = exportToGraphML(graph, exportOptions);
+        const graphmlXml = exportGraphML(graph, exportOptions);
 
         // Save to file
         const filename = `${graph.id}.graphml`;

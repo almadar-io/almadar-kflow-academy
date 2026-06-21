@@ -15,16 +15,16 @@
 
 import { initializeApp, cert } from 'firebase-admin/app';
 import { getFirestore } from 'firebase-admin/firestore';
-import type { StoryNodeProperties, StoryStep } from '@almadar-io/knowledge';
-import { propsToRecord } from '../types/nodeBasedKnowledgeGraph';
+import type { StoryNodeProperties, StoryStep, JsonValue } from '@almadar-io/knowledge';
+import { propsToRecord } from '@almadar-io/knowledge';
 
 interface RawNode {
   type: string;
-  properties?: Record<string, unknown>;
+  properties?: Record<string, JsonValue>;
 }
 interface RawGraphDoc {
   nodes?: Record<string, RawNode>;
-  relationships?: Array<Record<string, unknown>>;
+  relationships?: Array<Record<string, JsonValue>>;
   nodeTypes?: Record<string, string[]>;
 }
 

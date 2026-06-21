@@ -6,7 +6,7 @@ export interface ServerEventMessage {
   type: string;
   payload?: EventPayload;
   timestamp?: number;
-  source?: unknown;
+  source?: string;
 }
 
 export function useServerEvents(enabled = true) {

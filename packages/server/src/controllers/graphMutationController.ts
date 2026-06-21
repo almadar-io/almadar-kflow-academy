@@ -10,14 +10,12 @@
 import type { Request, Response } from 'express';
 import { GraphMutationService } from '../services/graphMutationService';
 import { KnowledgeGraphAccessLayer } from '@almadar-io/knowledge/server';
-import { GraphQueryService } from '../services/graphQueryService';
 import { GraphAuthorizationService } from '../services/graphAuthorizationService';
 import type { MutationBatch, MutationError } from '../types/mutations';
 import type { NodeBasedKnowledgeGraph } from '../types/nodeBasedKnowledgeGraph';
 
 const mutationService = new GraphMutationService();
 const accessLayer = new KnowledgeGraphAccessLayer();
-const queryService = new GraphQueryService();
 const authorizationService = new GraphAuthorizationService();
 
 /**
@@ -78,7 +76,6 @@ export async function applyMutationsHandler(
 
     // Save updated graph with version check (will merge if modified)
     const savedGraph = await accessLayer.saveGraph(uid, updatedGraph, expectedVersion);
-    await queryService.invalidateCache(uid, graphId);
 
     // Return updated graph (even if there were errors - client can check errors in response)
     res.json(savedGraph);

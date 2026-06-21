@@ -26,13 +26,16 @@ function applyMutation(
     case 'update_node': {
       const node = graph.nodes[mutation.nodeId];
       if (!node) return graph;
+      const merged = Object.fromEntries(
+        Object.entries({ ...node.properties, ...mutation.properties }).filter(([, v]) => v !== undefined)
+      ) as typeof node.properties;
       return {
         ...graph,
         nodes: {
           ...graph.nodes,
           [mutation.nodeId]: {
             ...node,
-            properties: { ...node.properties, ...mutation.properties },
+            properties: merged,
             updatedAt: mutation.updateTimestamp !== false ? Date.now() : node.updatedAt,
           },
         },

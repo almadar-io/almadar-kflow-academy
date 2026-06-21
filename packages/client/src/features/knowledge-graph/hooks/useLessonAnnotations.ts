@@ -6,6 +6,7 @@
  */
 
 import { useState, useCallback } from 'react';
+import type { JsonValue } from '@almadar-io/knowledge';
 import { graphOperationsApi } from '../api/graphOperationsApi';
 import type { QuestionAnswerItem, NoteItem, UpdateNodeMutation } from '../types';
 import { useAppDispatch } from '../../../app/hooks';
@@ -50,7 +51,7 @@ export function useLessonAnnotations(
    */
   const applyMutation = useCallback(async (
     lessonNodeId: string,
-    properties: Record<string, any>
+    properties: Record<string, object | JsonValue>
   ) => {
     if (!graphId) {
       throw new Error('Graph ID is required');
@@ -59,7 +60,7 @@ export function useLessonAnnotations(
     const mutation: UpdateNodeMutation = {
       type: 'update_node',
       nodeId: lessonNodeId,
-      properties,
+      properties: properties as Partial<Record<string, JsonValue>>,
     };
 
     const response = await graphOperationsApi.applyMutations(graphId, {

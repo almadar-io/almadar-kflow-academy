@@ -1,4 +1,4 @@
-import { ThunkAction } from '@reduxjs/toolkit';
+import { ThunkAction, type UnknownAction } from '@reduxjs/toolkit';
 import { RootState } from '../../app/store';
 import {
   replaceGraphs,
@@ -14,7 +14,7 @@ import { ensureSequenceForGraph, generateUUID } from './utils/graphHelpers';
 import { auth } from '../../config/firebase';
 import { Concept } from './types';
 
-type ConceptThunk = ThunkAction<Promise<void>, RootState, unknown, any>;
+type ConceptThunk = ThunkAction<Promise<void>, RootState, undefined, UnknownAction>;
 
 const pickDefaultGraphId = (graphs: ConceptGraph[], preferredId?: string | null): string | null => {
   if (!graphs.length) {

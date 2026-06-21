@@ -14,7 +14,7 @@ import {
   createMutationContext,
   inferLearningGoalFromGraph,
 } from '../utils/controllerHelpers';
-import { handleGraphOperationStream } from '../utils/graphOperationStreamHandler';
+import { writeOperationStream, type LLMStreamChunk } from '@almadar-io/knowledge/server';
 import { parseProgressiveExpandContent } from '../utils/graphOperationParsers';
 import { GraphAuthorizationService } from '../services/graphAuthorizationService';
 import type { ProgressiveExpandRequest, ProgressiveExpandResponse } from '../types/graphOperations';
@@ -64,11 +64,7 @@ export async function progressiveExpandHandler(
     // Handle streaming result
     if ('stream' in result) {
       // Stream content chunks and generate mutations after completion
-      await handleGraphOperationStream(
-        result.stream,
-        req,
-        res,
-        {
+      await writeOperationStream(res, req, result.stream as AsyncGenerator<LLMStreamChunk>, {
           onComplete: async (fullContent: string) => {
             // Parse content and generate mutations
             const { mutations, parsedContent } = await parseProgressiveExpandContent(
@@ -86,17 +82,15 @@ export async function progressiveExpandHandler(
             );
 
             // Save graph with version check (will merge if modified)
-            const savedGraph = await accessLayer.saveGraph(uid, updatedGraph, expectedVersion);
+            await accessLayer.saveGraph(uid, updatedGraph, expectedVersion);
 
             return {
               mutations,
               content: parsedContent,
-              graph: savedGraph,
             };
           },
           errorMessage: 'Failed to expand graph',
-        }
-      );
+        });
       return;
     }
 

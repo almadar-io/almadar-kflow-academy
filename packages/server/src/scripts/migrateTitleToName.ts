@@ -21,6 +21,7 @@ dotenv.config({ path: path.join(__dirname, '..', '..', '.env') });
 
 import { getFirestore } from '@almadar/server';
 import { getNodeBasedKnowledgeGraph, saveNodeBasedKnowledgeGraph } from '@almadar-io/knowledge/server';
+import { propsToRecord } from '@almadar-io/knowledge';
 
 interface MigrationStats {
   graphsProcessed: number;
@@ -64,8 +65,7 @@ async function migrateGraph(uid: string, graphId: string): Promise<{
     for (const goalId of goalNodeIds) {
       const goalNode = graph.nodes[goalId];
       if (goalNode && goalNode.type === 'LearningGoal') {
-        const propsUnknown: unknown = goalNode.properties;
-        const props = propsUnknown as Record<string, unknown>;
+        const props = propsToRecord(goalNode.properties);
         const propsTitle = typeof props.title === 'string' ? props.title : undefined;
         const propsName = typeof props.name === 'string' ? props.name : undefined;
 
@@ -91,8 +91,7 @@ async function migrateGraph(uid: string, graphId: string): Promise<{
     for (const milestoneId of milestoneNodeIds) {
       const milestoneNode = graph.nodes[milestoneId];
       if (milestoneNode && milestoneNode.type === 'Milestone') {
-        const propsUnknown: unknown = milestoneNode.properties;
-        const props = propsUnknown as Record<string, unknown>;
+        const props = propsToRecord(milestoneNode.properties);
         const propsTitle = typeof props.title === 'string' ? props.title : undefined;
         const propsName = typeof props.name === 'string' ? props.name : undefined;
 
@@ -118,13 +117,11 @@ async function migrateGraph(uid: string, graphId: string): Promise<{
     for (const layerId of layerNodeIds) {
       const layerNode = graph.nodes[layerId];
       if (layerNode && layerNode.type === 'Layer') {
-        const typedProps = layerNode.properties;
-        const mutablePropsUnknown: unknown = typedProps;
-        const mutableProps = mutablePropsUnknown as Record<string, unknown>;
+        const mutableProps = propsToRecord(layerNode.properties);
         let layerName: string | undefined;
         const propLevelName = typeof mutableProps.levelName === 'string' ? mutableProps.levelName : undefined;
-        const propName = typedProps.name;
-        const propGoal = typedProps.goal;
+        const propName = layerNode.properties.name;
+        const propGoal = layerNode.properties.goal;
 
         // Priority: levelName > goal > generate from layerNumber
         if (propLevelName && !propName) {
@@ -139,8 +136,8 @@ async function migrateGraph(uid: string, graphId: string): Promise<{
           layersMigrated++;
           graphModified = true;
           console.log(`  ✓ Migrated Layer ${layerId}: goal "${propGoal}" → name`);
-        } else if (!propName && !propLevelName && !propGoal && typedProps.layerNumber !== undefined) {
-          layerName = `Layer ${typedProps.layerNumber}`;
+        } else if (!propName && !propLevelName && !propGoal && layerNode.properties.layerNumber !== undefined) {
+          layerName = `Layer ${layerNode.properties.layerNumber}`;
           mutableProps.name = layerName;
           layersMigrated++;
           graphModified = true;

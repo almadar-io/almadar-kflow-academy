@@ -48,9 +48,17 @@ Requirements:
 - Return a valid, compilable OrbitalSchema.`;
 }
 
-interface SSEEvent {
-  type: string;
-  data?: Record<string, unknown>;
+type SSEEvent =
+  | { type: 'schema_update'; schema: OrbitalSchema }
+  | { type: 'complete'; schema?: OrbitalSchema; message?: string }
+  | { type: 'error'; error: string }
+  | { type: 'done' };
+
+interface RawSSEPayload {
+  type?: string;
+  schema?: OrbitalSchema;
+  message?: string;
+  error?: string;
 }
 
 function parseSSELine(line: string): SSEEvent | null {
@@ -59,11 +67,21 @@ function parseSSELine(line: string): SSEEvent | null {
   const payload = trimmed.slice('data:'.length).trim();
   if (payload === '[DONE]') return { type: 'done' };
   try {
-    const parsed = JSON.parse(payload) as Record<string, unknown>;
-    return {
-      type: typeof parsed.type === 'string' ? parsed.type : 'unknown',
-      data: parsed,
-    };
+    const raw = JSON.parse(payload) as RawSSEPayload;
+    const eventType = raw.type;
+    if (eventType === 'schema_update' && raw.schema) {
+      return { type: 'schema_update', schema: raw.schema };
+    }
+    if (eventType === 'complete') {
+      return { type: 'complete', schema: raw.schema, message: raw.message };
+    }
+    if (eventType === 'error') {
+      return { type: 'error', error: raw.error ?? 'Builder error' };
+    }
+    if (eventType === 'done') {
+      return { type: 'done' };
+    }
+    return null;
   } catch {
     return null;
   }
@@ -93,12 +111,12 @@ async function readSSESchema(
         const event = parseSSELine(line);
         if (!event) continue;
 
-        if (event.type === 'schema_update' && event.data?.schema) {
-          lastSchema = event.data.schema as OrbitalSchema;
+        if (event.type === 'schema_update') {
+          lastSchema = event.schema;
         }
 
         if (event.type === 'complete') {
-          const completeSchema = (event.data?.schema ?? lastSchema) as OrbitalSchema | null;
+          const completeSchema = event.schema ?? lastSchema;
           if (completeSchema) {
             return completeSchema;
           }
@@ -106,11 +124,7 @@ async function readSSESchema(
         }
 
         if (event.type === 'error') {
-          const message =
-            typeof event.data?.error === 'string'
-              ? event.data.error
-              : 'Builder generation failed';
-          throw new Error(message);
+          throw new Error(event.error || 'Builder generation failed');
         }
       }
     }

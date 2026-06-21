@@ -5,6 +5,7 @@
  */
 
 import { useState, useCallback, useRef } from 'react';
+import type { JsonValue } from '@almadar-io/knowledge';
 import { useAppDispatch } from '../../../app/hooks';
 import { setGraph } from '../knowledgeGraphSlice';
 import { knowledgeGraphRestApi } from '../api/restApi';
@@ -234,7 +235,7 @@ export const useFindNodes = () => {
   const [error, setError] = useState<Error | null>(null);
 
   const findNodes = useCallback(
-    async (graphId: string, filter: Record<string, any>): Promise<{ nodes: GraphNode[]; count: number } | null> => {
+    async (graphId: string, filter: Record<string, JsonValue>): Promise<{ nodes: GraphNode[]; count: number } | null> => {
       setLoading(true);
       setError(null);
       try {

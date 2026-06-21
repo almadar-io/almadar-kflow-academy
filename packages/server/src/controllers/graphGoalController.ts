@@ -5,6 +5,7 @@
  */
 
 import type { Request, Response } from 'express';
+import type { JsonObject } from '@almadar/core';
 import { GraphMutationService } from '../services/graphMutationService';
 import { KnowledgeGraphAccessLayer } from '@almadar-io/knowledge/server';
 import { generateGoals } from '@almadar-io/knowledge/server';
@@ -14,7 +15,7 @@ import {
   createMutationContext,
   verifyGraphAccess,
 } from '../utils/controllerHelpers';
-import { handleGraphOperationStream } from '../utils/graphOperationStreamHandler';
+import { writeOperationStream, type LLMStreamChunk } from '@almadar-io/knowledge/server';
 import { parseGenerateGoalsContent } from '../utils/graphOperationParsers';
 import type {
   GenerateGoalsRequest,
@@ -77,11 +78,7 @@ export async function generateGoalsHandler(
 
     // Handle streaming result
     if ('stream' in result) {
-      await handleGraphOperationStream(
-        result.stream,
-        req,
-        res,
-        {
+      await writeOperationStream(res, req, result.stream as AsyncGenerator<LLMStreamChunk>, {
           onComplete: async (fullContent: string) => {
             // Parse content and generate mutations
             const { mutations, parsedContent, seedConceptId } = await parseGenerateGoalsContent(
@@ -104,17 +101,15 @@ export async function generateGoalsHandler(
             }
 
             // Save graph with version check (will merge if modified)
-            const savedGraph = await accessLayer.saveGraph(uid, updatedGraph, expectedVersion);
+            await accessLayer.saveGraph(uid, updatedGraph, expectedVersion);
 
             return {
               mutations,
-              content: parsedContent,
-              graph: savedGraph,
+              content: JSON.parse(JSON.stringify(parsedContent)) as JsonObject,
             };
           },
           errorMessage: 'Failed to generate goals',
-        }
-      );
+        });
       return;
     }
 

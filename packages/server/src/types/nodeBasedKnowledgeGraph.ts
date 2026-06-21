@@ -51,12 +51,8 @@ export {
 
 /**
  * Narrow a typed node-property object to a generic record for dynamic key access /
- * serialization. Interfaces have no implicit index signature, so direct assignment to
- * Record<string, unknown> fails — build the record via Object.entries (no cast).
+ * serialization. Interfaces have no implicit index signature — use propsToRecord
+ * from @almadar-io/knowledge instead where possible; this thin shim is kept only for
+ * local migration scripts that cannot import from the package.
  */
-export function propsToRecord(props: object): Record<string, unknown> {
-  const out: Record<string, unknown> = {};
-  const entries: Array<[string, unknown]> = Object.entries(props);
-  for (const [k, v] of entries) out[k] = v;
-  return out;
-}
+export { propsToRecord } from '@almadar-io/knowledge';

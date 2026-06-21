@@ -19,7 +19,54 @@ import { getUserGraphById } from '../services/graphService';
 import { upsertUser } from '../services/userService';
 import { saveLayer, getLayerByNumber } from '../services/layerService';
 import { processPrerequisitesFromLesson } from '../utils/prerequisites';
-import { handleStreamResponse } from '../utils/streamHandler';
+import { setupSSE, sendSSEEvent, sendSSEDone, closeSSE } from '@almadar/server';
+type StreamChunk = { choices?: Array<{ delta?: { content?: string } }>; content?: string };
+
+async function streamToSSE<T extends object>(
+  stream: AsyncIterable<StreamChunk>,
+  req: import('express').Request,
+  res: import('express').Response,
+  options: {
+    onComplete?: (fullContent: string) => T | Promise<T> | undefined;
+    errorMessage?: string;
+  }
+): Promise<string> {
+  const { onComplete, errorMessage = 'Stream error' } = options;
+  setupSSE(res);
+  let fullContent = '';
+  let clientDisconnected = false;
+  const cleanup = () => { clientDisconnected = true; if (!res.writableEnded) res.end(); };
+  req.on('close', cleanup);
+  req.on('aborted', cleanup);
+  try {
+    for await (const chunk of stream) {
+      if (clientDisconnected) break;
+      const content = chunk.choices?.[0]?.delta?.content ?? chunk.content ?? '';
+      if (content) {
+        fullContent += content;
+        if (!clientDisconnected && !res.writableEnded) {
+          try { sendSSEEvent(res, { type: 'message', data: { content }, timestamp: Date.now() }); }
+          catch { clientDisconnected = true; break; }
+        }
+      }
+    }
+    if (!clientDisconnected && !res.writableEnded) {
+      const additionalData = onComplete ? await onComplete(fullContent) : undefined;
+      sendSSEEvent(res, { type: 'complete', data: { content: '', ...additionalData }, timestamp: Date.now() });
+      sendSSEDone(res);
+    }
+  } catch (streamError) {
+    if (!clientDisconnected && !res.writableEnded) {
+      try { sendSSEEvent(res, { type: 'error', data: { error: errorMessage }, timestamp: Date.now() }); }
+      catch { /* client gone */ }
+    }
+  } finally {
+    req.removeListener('close', cleanup);
+    req.removeListener('aborted', cleanup);
+    if (!res.writableEnded) closeSSE(res);
+  }
+  return fullContent;
+}
 import { getGoalsByGraphId, markMilestoneCompleted } from '../services/goalService';
 import type { LearningGoal } from '../types/goal';
 
@@ -317,7 +364,7 @@ export async function explainConcept(
     // Check if result is a stream
     if (result && typeof result === 'object' && 'stream' in result && result.stream) {
       const streamResult = result as ExplainStreamResult;
-      await handleStreamResponse(streamResult.stream, req, res, {
+      await streamToSSE(streamResult.stream, req, res, {
         onComplete: (fullContent) => {
           const prerequisites = processPrerequisitesFromLesson(fullContent, resolvedConcept, conceptGraph);
           return { prerequisites, prompt: streamResult.prompt };
@@ -499,11 +546,11 @@ export async function generateLayerPracticeHandler(
     // Check if result is a stream
     if (result && typeof result === 'object' && 'stream' in result && result.stream) {
       const streamResult = result as GenerateLayerPracticeStreamResult;
-      const stream = streamResult.stream as AsyncIterable<unknown>;
+      const stream = streamResult.stream as AsyncIterable<StreamChunk>;
       const model = streamResult.model || 'deepseek-chat';
       
       // Use reusable stream handler with onComplete to save the review
-      await handleStreamResponse(stream, req, res, {
+      await streamToSSE(stream, req, res, {
         onComplete: (fullContent: string) => {
           try {
             // Create practice item from the review content
@@ -656,10 +703,10 @@ export async function answerQuestionHandler(
 
     // Check if result is a stream
     if (result && typeof result === 'object' && 'stream' in result && result.stream) {
-      const stream = result.stream as AsyncIterable<unknown>;
+      const stream = result.stream as AsyncIterable<StreamChunk>;
       
       // Use reusable stream handler
-      await handleStreamResponse(stream, req, res, {
+      await streamToSSE(stream, req, res, {
         onComplete: (fullContent) => {
           return { answer: fullContent, model: result.model };
         },
@@ -727,10 +774,10 @@ export async function customOperationHandler(
 
     // Check if result is a stream
     if (result && typeof result === 'object' && 'stream' in result && result.stream) {
-      const stream = result.stream as AsyncIterable<unknown>;
+      const stream = result.stream as AsyncIterable<StreamChunk>;
       const model = (result as { model?: string }).model || 'deepseek-chat';
       
-      await handleStreamResponse(stream, req, res, {
+      await streamToSSE(stream, req, res, {
         onComplete: (fullContent: string) => {
           try {
             // Parse the JSON array from the streamed content

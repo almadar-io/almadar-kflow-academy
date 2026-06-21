@@ -5,6 +5,8 @@
  * Using factory pattern for type safety and consistency.
  */
 
+import type { JsonValue } from '@almadar-io/knowledge';
+
 export const knowledgeGraphKeys = {
   // Base keys
   all: ['knowledge-graph'] as const,
@@ -194,9 +196,9 @@ export const assessmentKeys = {
 };
 
 // Type helper for query key
-export type KnowledgeGraphQueryKey = readonly (string | Record<string, unknown>)[];
-export type PublishingQueryKey = readonly (string | Record<string, unknown>)[];
-export type EnrollmentQueryKey = readonly (string | Record<string, unknown>)[];
-export type TranslationQueryKey = readonly (string | Record<string, unknown>)[];
-export type AnalyticsQueryKey = readonly (string | Record<string, unknown>)[];
-export type AssessmentQueryKey = readonly (string | Record<string, unknown>)[];
+export type KnowledgeGraphQueryKey = readonly (string | Record<string, JsonValue>)[];
+export type PublishingQueryKey = readonly (string | Record<string, JsonValue>)[];
+export type EnrollmentQueryKey = readonly (string | Record<string, JsonValue>)[];
+export type TranslationQueryKey = readonly (string | Record<string, JsonValue>)[];
+export type AnalyticsQueryKey = readonly (string | Record<string, JsonValue>)[];
+export type AssessmentQueryKey = readonly (string | Record<string, JsonValue>)[];

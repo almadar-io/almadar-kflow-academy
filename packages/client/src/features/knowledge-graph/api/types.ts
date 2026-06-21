@@ -5,6 +5,7 @@
  * These types match the backend REST controller types.
  */
 
+import type { JsonValue } from '@almadar-io/knowledge';
 import type { NodeBasedKnowledgeGraph, GraphMutation, MutationBatch, MutationError } from '../types';
 import type { LearningGoal } from '../../../features/learning/goalApi';
 
@@ -207,7 +208,7 @@ export interface ConceptDisplay {
   parents: string[];
   children: string[];
   prerequisites: string[];
-  properties: Record<string, any>;
+  properties: Record<string, JsonValue>;
 }
 
 export interface ConceptsByLayerResponse {
@@ -281,7 +282,7 @@ export interface MindMapNode {
     sequence?: number;
     layerNumber?: number;
     goal?: string;
-    [key: string]: any;
+    [key: string]: JsonValue | undefined;
   };
 }
 

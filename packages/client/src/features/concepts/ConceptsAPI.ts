@@ -146,21 +146,21 @@ async function handleStreamingRequest<T>({
       body: JSON.stringify(requestBody),
     });
   } catch (error) {
-    handleApiError(error);
+    handleApiError(typeof error === "object" ? error : String(error));
     throw error;
   }
 
   if (!response.ok) {
     const errorMessage = await extractErrorMessageFromResponse(response);
     const error = new Error(errorMessage);
-    handleApiError(error);
+    handleApiError(typeof error === "object" ? error : String(error));
     throw error;
   }
 
   const reader = response.body?.getReader();
   if (!reader) {
     const error = new Error('Response body is not readable');
-    handleApiError(error);
+    handleApiError(typeof error === "object" ? error : String(error));
     throw error;
   }
 
@@ -186,7 +186,7 @@ async function handleStreamingRequest<T>({
             
             if (data.error) {
               const error = new Error(data.error);
-              handleApiError(error);
+              handleApiError(typeof error === "object" ? error : String(error));
               throw error;
             }
 
@@ -213,7 +213,7 @@ async function handleStreamingRequest<T>({
     }
   } catch (error) {
     // Handle errors during streaming (network disconnections, etc.)
-    handleApiError(error);
+    handleApiError(typeof error === "object" ? error : String(error));
     throw error;
   }
 

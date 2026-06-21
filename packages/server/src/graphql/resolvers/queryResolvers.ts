@@ -1,50 +1,62 @@
 /**
  * Graph Query Resolvers
- * 
- * GraphQL query resolvers for optimized graph queries that return
- * pre-formatted, display-ready data for Mentor pages.
  */
 
-import { GraphQueryService } from '../../services/graphQueryService';
+import { KnowledgeGraphAccessLayer, extractLearningPathSummary, extractGraphSummary, getConceptsByLayer, getConceptDetail } from '@almadar-io/knowledge/server';
+import { getFirestore } from '@almadar/server';
 import type { GraphQLContext } from '../types';
 import { getUserId, verifyGraphAccessForResolver } from './shared/resolverHelpers';
 
-const queryService = new GraphQueryService();
+const accessLayer = new KnowledgeGraphAccessLayer();
+
+async function getAllGraphIds(uid: string): Promise<string[]> {
+  const db = getFirestore();
+  const snapshot = await db
+    .collection('users')
+    .doc(uid)
+    .collection('knowledgeGraphs')
+    .select('id')
+    .get();
+  return snapshot.docs.map(doc => doc.id);
+}
 
 export const queryResolvers = {
   Query: {
-    /**
-     * Get all learning paths summary
-     */
     learningPaths: async (
-      _parent: unknown,
-      _args: unknown,
+      _parent: Record<string, never>,
+      _args: Record<string, never>,
       context: GraphQLContext
     ) => {
       const uid = getUserId(context);
-      return queryService.getLearningPathsSummary(uid);
+      const graphIds = await getAllGraphIds(uid);
+      const settled = await Promise.all(
+        graphIds.map(async graphId => {
+          try {
+            const graph = await accessLayer.getGraph(uid, graphId);
+            return extractLearningPathSummary(graph);
+          } catch {
+            return null;
+          }
+        })
+      );
+      return settled
+        .filter((s): s is NonNullable<typeof s> => s !== null)
+        .sort((a, b) => b.updatedAt - a.updatedAt);
     },
 
-    /**
-     * Get graph summary
-     */
     graphSummary: async (
-      _parent: unknown,
+      _parent: Record<string, never>,
       args: { graphId: string },
       context: GraphQLContext
     ) => {
-      // Verify graph ownership before read operations
       await verifyGraphAccessForResolver(context, args.graphId, 'read');
-      
       const uid = getUserId(context);
-      return queryService.getGraphSummary(uid, args.graphId);
+      const graph = await accessLayer.getGraph(uid, args.graphId);
+      return extractGraphSummary(graph);
     },
 
-    /**
-     * Get concepts by layer
-     */
     concepts: async (
-      _parent: unknown,
+      _parent: Record<string, never>,
       args: {
         graphId: string;
         includeRelationships?: boolean;
@@ -52,30 +64,24 @@ export const queryResolvers = {
       },
       context: GraphQLContext
     ) => {
-      // Verify graph ownership before read operations
       await verifyGraphAccessForResolver(context, args.graphId, 'read');
-      
       const uid = getUserId(context);
-      return queryService.getConceptsByLayer(uid, args.graphId, {
+      const graph = await accessLayer.getGraph(uid, args.graphId);
+      return getConceptsByLayer(graph, {
         includeRelationships: args.includeRelationships ?? true,
         groupByLayer: args.groupByLayer ?? true,
       });
     },
 
-    /**
-     * Get concept detail
-     */
     conceptDetail: async (
-      _parent: unknown,
+      _parent: Record<string, never>,
       args: { graphId: string; conceptId: string },
       context: GraphQLContext
     ) => {
-      // Verify graph ownership before read operations
       await verifyGraphAccessForResolver(context, args.graphId, 'read');
-      
       const uid = getUserId(context);
-      return queryService.getConceptDetail(uid, args.graphId, args.conceptId);
+      const graph = await accessLayer.getGraph(uid, args.graphId);
+      return getConceptDetail(graph, args.conceptId);
     },
   },
 };
-

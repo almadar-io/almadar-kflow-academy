@@ -1,3 +1,5 @@
+import type { JsonValue } from '@almadar-io/knowledge';
+
 declare module 'rehype-mathjax' {
   import type { Plugin } from 'unified';
 
@@ -5,8 +7,8 @@ declare module 'rehype-mathjax' {
     tex?: {
       packages?: string[];
     };
-    svg?: Record<string, unknown>;
-    chtml?: Record<string, unknown>;
+    svg?: Record<string, JsonValue>;
+    chtml?: Record<string, JsonValue>;
   }
 
   const rehypeMathjax: Plugin<[MathJaxOptions?]>;

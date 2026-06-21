@@ -83,7 +83,7 @@ export const layerPracticeResolvers = {
      * Generate layer practice - minimal input: targetNodeId (layer node) and layerNumber
      */
     generateLayerPractice: async (
-      _parent: unknown,
+      _parent: Record<string, never>,
       args: GenerateLayerPracticeArgs,
       context: GraphQLContext
     ): Promise<GenerateLayerPracticeResult> => {
