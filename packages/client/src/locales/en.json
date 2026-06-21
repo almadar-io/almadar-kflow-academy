@@ -361,6 +361,7 @@
   "dashboard.action.createPath": "Create Learning Path",
   "dashboard.concepts": "{{count}} concepts",
   "dashboard.createPath": "New Path",
+  "dashboard.knowledgeMap": "Your knowledge map",
   "dashboard.learningPaths": "Learning Paths",
   "dashboard.levels": "{{count}} levels",
   "dashboard.noPathsDesc": "Create your first learning path to start exploring.",

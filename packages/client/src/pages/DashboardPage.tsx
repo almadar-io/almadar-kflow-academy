@@ -4,7 +4,8 @@
  * Calls feature hooks, derives DashboardBoardTemplateEntity, mounts
  * DashboardBoardTemplate. All navigation and interaction handled via
  * the event bus (UI:QUICK_ACTION, UI:ACTIVITY_CLICK,
- * UI:LEARNING_PATH_CLICK, UI:CREATE_LEARNING_PATH, UI:DELETE_LEARNING_PATH).
+ * UI:LEARNING_PATH_CLICK, UI:CREATE_LEARNING_PATH, UI:DELETE_LEARNING_PATH,
+ * UI:KNOWLEDGE_NODE_CLICK).
  */
 
 import React, { useEffect, useMemo } from 'react';
@@ -18,9 +19,12 @@ import { useAuthContext } from '../features/auth/AuthContext';
 import { useRecentActivity } from '../features/dashboard/hooks/useRecentActivity';
 import { useJumpBackIn } from '../features/dashboard/hooks/useJumpBackIn';
 import { useDashboardStats } from '../features/dashboard/hooks';
+import { useLearningPaths } from '../features/knowledge-graph/hooks/useLearningPaths';
+import { useConceptsByLayer } from '../features/knowledge-graph/hooks/useConceptsByLayer';
 import { getNavigationItems, getUserForTemplate, mainNavItems } from '../config/navigation';
 import { useNavigateEvent } from '../hooks/useNavigateEvent';
-import type { DashboardEntity } from '@design-system/organisms/DashboardBoard';
+import type { DashboardEntity, DashboardKnowledgeMapNode } from '@design-system/organisms/DashboardBoard';
+import type { GraphViewEdge } from '@almadar/ui';
 
 export const DashboardPage: React.FC = () => {
   const { user } = useAuthContext();
@@ -32,6 +36,14 @@ export const DashboardPage: React.FC = () => {
   const { activity, isLoading: isLoadingActivity, formatTimestamp } = useRecentActivity(5);
   const { items: jumpBackInItems, isLoading: isLoadingJumpBackIn } = useJumpBackIn();
   const { stats, isLoading: isLoadingStats } = useDashboardStats();
+  const { learningPaths: pathSummaries } = useLearningPaths();
+
+  // Use the most recently updated learning path for the knowledge map
+  const primaryGraphId = pathSummaries[0]?.id ?? '';
+  const { concepts: mapConcepts } = useConceptsByLayer(primaryGraphId, {
+    includeRelationships: true,
+    enabled: !!primaryGraphId,
+  });
 
   const templateUser = getUserForTemplate(user);
 
@@ -59,11 +71,19 @@ export const DashboardPage: React.FC = () => {
     const unsubCreate = on('UI:CREATE_LEARNING_PATH', () => {
       navigate('/learn');
     });
+    const unsubKnowledgeNode = on('UI:KNOWLEDGE_NODE_CLICK', (event) => {
+      const nodeId = event.payload?.nodeId as string | undefined;
+      const graphId = event.payload?.graphId as string | undefined;
+      if (nodeId && graphId) {
+        navigate(`/concepts/${graphId}/concept/${encodeURIComponent(nodeId)}`);
+      }
+    });
     return () => {
       unsubQuick();
       unsubActivity();
       unsubPath();
       unsubCreate();
+      unsubKnowledgeNode();
     };
   }, [on, navigate, activity]);
 
@@ -99,6 +119,33 @@ export const DashboardPage: React.FC = () => {
     [activity, formatTimestamp]
   );
 
+  // Node cap: limit to 60 concepts so the graph stays readable
+  const NODE_CAP = 60;
+  const knowledgeMap = useMemo((): DashboardEntity['knowledgeMap'] => {
+    if (!primaryGraphId || mapConcepts.length === 0) return undefined;
+    const capped = mapConcepts.slice(0, NODE_CAP);
+    const cappedIds = new Set(capped.map(c => c.id));
+    const nodes: DashboardKnowledgeMapNode[] = capped.map(c => ({
+      id: c.id,
+      label: c.name,
+      graphId: primaryGraphId,
+      group: String(c.layer),
+    }));
+    const edgeSet = new Set<string>();
+    const edges: GraphViewEdge[] = [];
+    for (const c of capped) {
+      for (const childId of c.children) {
+        if (!cappedIds.has(childId)) continue;
+        const key = `${c.id}→${childId}`;
+        if (!edgeSet.has(key)) {
+          edgeSet.add(key);
+          edges.push({ source: c.id, target: childId });
+        }
+      }
+    }
+    return { nodes, edges, graphId: primaryGraphId };
+  }, [primaryGraphId, mapConcepts]);
+
   const dashboard: DashboardEntity = {
     welcomeName: user?.displayName?.split(' ')[0] ?? t('nav.user'),
     stats: [
@@ -110,6 +157,7 @@ export const DashboardPage: React.FC = () => {
     quickActions: [
       { id: 'createPath', label: t('dashboard.action.createPath'), icon: Brain },
     ],
+    knowledgeMap,
   };
 
   const entity: DashboardBoardTemplateEntity = {

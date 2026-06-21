@@ -361,6 +361,7 @@
   "dashboard.action.createPath": "إنشاء مسار تعلم",
   "dashboard.concepts": "{{count}} مفهوم",
   "dashboard.createPath": "مسار جديد",
+  "dashboard.knowledgeMap": "خريطة معرفتك",
   "dashboard.learningPaths": "مسارات التعلم",
   "dashboard.levels": "{{count}} مستويات",
   "dashboard.noPathsDesc": "أنشئ أول مسار تعلم لبدء الاستكشاف.",

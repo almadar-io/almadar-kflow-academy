@@ -9,6 +9,7 @@
  * - UI:LEARNING_PATH_CLICK — user clicks a learning path, payload: { pathId, graphId }
  * - UI:CREATE_LEARNING_PATH — user clicks create new path
  * - UI:DELETE_LEARNING_PATH — user clicks delete path, payload: { pathId }
+ * - UI:KNOWLEDGE_NODE_CLICK — user clicks a knowledge map node, payload: { nodeId, graphId }
  */
 
 import React, { useCallback } from 'react';
@@ -33,9 +34,12 @@ import {
   Container,
   Badge,
   EmptyState,
+  GraphView,
   useEventBus,
   useTranslate,
   type DisplayStateProps,
+  type GraphViewNode,
+  type GraphViewEdge,
 } from '@almadar/ui';
 
 export interface DashboardStat {
@@ -70,6 +74,10 @@ export interface DashboardQuickAction {
   description?: string;
 }
 
+export interface DashboardKnowledgeMapNode extends GraphViewNode {
+  graphId: string;
+}
+
 export interface DashboardEntity {
   welcomeName: string;
   stats: DashboardStat[];
@@ -78,6 +86,13 @@ export interface DashboardEntity {
   quickActions: DashboardQuickAction[];
   recommendations?: Array<{ id: string; title: string; type: string }>;
   achievements?: Array<{ id: string; title: string; earnedAt: string }>;
+  /** Pre-built knowledge map for the force-directed graph section */
+  knowledgeMap?: {
+    nodes: DashboardKnowledgeMapNode[];
+    edges: GraphViewEdge[];
+    /** The graphId these concepts belong to (for click navigation) */
+    graphId: string;
+  };
 }
 
 export interface DashboardBoardProps extends DisplayStateProps {
@@ -119,6 +134,11 @@ export function DashboardBoard({
 
   const handleDeletePath = useCallback((pathId: string) => {
     emit('UI:DELETE_LEARNING_PATH', { pathId });
+  }, [emit]);
+
+  const handleKnowledgeNodeClick = useCallback((node: GraphViewNode) => {
+    const mapNode = node as DashboardKnowledgeMapNode;
+    emit('UI:KNOWLEDGE_NODE_CLICK', { nodeId: mapNode.id, graphId: mapNode.graphId });
   }, [emit]);
 
   return (
@@ -262,6 +282,26 @@ export function DashboardBoard({
             />
           )}
         </VStack>
+
+        {/* Knowledge map */}
+        {dash?.knowledgeMap && dash.knowledgeMap.nodes.length > 0 && (
+          <VStack gap="sm">
+            <Typography variant="h3" className="text-lg font-semibold text-[var(--color-foreground)]">
+              {t('dashboard.knowledgeMap')}
+            </Typography>
+            <Box className="rounded-lg overflow-hidden border border-[var(--color-border)]">
+              <GraphView
+                nodes={dash.knowledgeMap.nodes}
+                edges={dash.knowledgeMap.edges}
+                height={340}
+                showLabels
+                zoomToFit
+                onNodeClick={handleKnowledgeNodeClick}
+                className="w-full"
+              />
+            </Box>
+          </VStack>
+        )}
 
         {/* Recent activity */}
         {(dash?.recentActivity?.length ?? 0) > 0 && (
