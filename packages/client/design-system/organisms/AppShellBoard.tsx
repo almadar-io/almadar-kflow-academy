@@ -14,14 +14,9 @@
 
 import React, { useState, useCallback, useEffect } from 'react';
 import type { LucideIcon } from 'lucide-react';
-import { LogOut } from 'lucide-react';
+import { Sun, Moon } from 'lucide-react';
 import {
   Box,
-  HStack,
-  Avatar,
-  Button,
-  Typography,
-  ThemeToggle,
   Sidebar,
   Header,
   Overlay,
@@ -34,6 +29,26 @@ import {
   type DisplayStateProps,
   type SelectOption,
 } from '@almadar/ui';
+import { useTheme } from '@almadar/ui/context';
+import { ProfilePopup } from './ProfilePopup/ProfilePopup';
+
+// ThemeToggleBridge reads from @almadar/ui/context (same instance as ThemeProvider
+// in providers.tsx) instead of the @almadar/ui components chunk's inlined context copy.
+function ThemeToggleBridge(): React.JSX.Element {
+  const { resolvedMode, toggleMode } = useTheme();
+  const isDark = resolvedMode === 'dark';
+  return (
+    <button
+      type="button"
+      onClick={toggleMode}
+      aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
+      title={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
+      className="inline-flex items-center justify-center p-2 text-[var(--color-foreground)] hover:bg-[var(--color-muted)] rounded-sm transition-colors"
+    >
+      {isDark ? <Sun size={20} /> : <Moon size={20} />}
+    </button>
+  );
+}
 
 export interface AppShellNavItem {
   id: string;
@@ -100,20 +115,12 @@ export function AppShellBoard({
     setMobileOpen(false);
   }, []));
 
-  const handleSignOut = useCallback(() => {
-    emit('UI:SIGN_OUT', {});
-  }, [emit]);
-
-  const handleUserMenu = useCallback(() => {
-    emit('UI:USER_MENU', {});
-  }, [emit]);
-
   const handleCloseMobileMenu = useCallback(() => {
     setMobileOpen(false);
   }, []);
 
   const handleLogoClick = useCallback(() => {
-    emit('UI:NAV_CLICK', { href: '/' });
+    emit('UI:LOGO_CLICK', {});
   }, [emit]);
 
   // Listen for logo click events from the Sidebar organism
@@ -128,31 +135,46 @@ export function AppShellBoard({
     onClick: () => handleNavClick(item.href),
   }));
 
+  const userInitials = app?.user?.name
+    ?.split(' ')
+    .map(n => n[0])
+    .join('')
+    .toUpperCase()
+    .slice(0, 2) ?? 'U';
+
   const userSection = app?.user ? (
-    <HStack gap="sm" align="center">
-      <Button
-        variant="ghost"
-        onClick={handleUserMenu}
-        className="p-0"
-      >
-        <Avatar
-          src={app?.user.avatar}
-          alt={app?.user.name}
-          size="sm"
-          initials={app?.user.name.charAt(0).toUpperCase()}
-        />
-      </Button>
-      {!collapsed && (
-        <Button
-          variant="ghost"
-          onClick={handleSignOut}
-          className="p-1.5 text-[var(--color-muted-foreground)] hover:text-[var(--color-foreground)]"
-          title={t('nav.signOut')}
+    <ProfilePopup
+      userName={app.user.name}
+      userEmail={app.user.email}
+      userAvatar={app.user.avatar}
+      trigger={
+        <button
+          type="button"
+          className={cn(
+            'flex items-center gap-2 cursor-pointer hover:opacity-80 transition-opacity',
+            !collapsed ? 'w-full text-left' : 'justify-center'
+          )}
         >
-          <LogOut size={16} />
-        </Button>
-      )}
-    </HStack>
+          {app.user.avatar ? (
+            <img
+              src={app.user.avatar}
+              alt={app.user.name}
+              className="h-8 w-8 rounded-full object-cover flex-shrink-0"
+            />
+          ) : (
+            <span className="h-8 w-8 rounded-full bg-primary flex items-center justify-center text-primary-foreground text-sm font-bold flex-shrink-0">
+              {userInitials}
+            </span>
+          )}
+          {!collapsed && (
+            <span className="text-sm text-[var(--color-muted-foreground)] truncate max-w-[120px]">
+              {app.user.name}
+            </span>
+          )}
+        </button>
+      }
+      position="top-right"
+    />
   ) : undefined;
 
   const localeOptions: SelectOption[] = [
@@ -176,7 +198,7 @@ export function AppShellBoard({
           className="w-full"
         />
       )}
-      <ThemeToggle />
+      <ThemeToggleBridge />
     </Box>
   );
 
@@ -226,12 +248,9 @@ export function AppShellBoard({
           logoSrc={app?.logoSrc}
           isMenuOpen={mobileOpen}
           onMenuToggle={() => setMobileOpen(!mobileOpen)}
-          userName={app?.user?.name}
-          userAvatar={app?.user ? { src: app?.user.avatar, alt: app?.user.name } : undefined}
-          onUserClick={app?.user ? handleUserMenu : undefined}
           onLogoClick={handleLogoClick}
           actions={
-            <ThemeToggle />
+            <ThemeToggleBridge />
           }
         />
 

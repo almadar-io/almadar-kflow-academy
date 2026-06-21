@@ -22,6 +22,13 @@ export function UIEventBridge() {
       }
     });
 
+    const unsubNavClick = on('UI:NAV_CLICK', (event) => {
+      const payload = event.payload as { href?: string } | undefined;
+      const href = payload?.href;
+      if (!href) return;
+      navigate(href);
+    });
+
     const unsubLogout = on('UI:LOGOUT', () => {
       signOut();
     });
@@ -33,6 +40,7 @@ export function UIEventBridge() {
 
     return () => {
       unsubNavigate();
+      unsubNavClick();
       unsubLogout();
       unsubLogoClick();
     };
