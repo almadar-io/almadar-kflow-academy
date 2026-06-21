@@ -35,7 +35,6 @@ export type {
 
 export {
   isNodeType,
-  getNodeProperties,
   createGraphNode,
   createRelationship,
   generateRelationshipId,

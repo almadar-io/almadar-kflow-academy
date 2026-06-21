@@ -81,16 +81,6 @@ export {
 
 // kflow-specific helpers not present in the package
 
-export function getNodeProperties<T extends NodeType>(
-  node: GraphNode,
-  type: T
-): unknown {
-  if (node.type !== type) {
-    throw new Error(`Node ${node.id} is not of type ${type}`);
-  }
-  return node.properties;
-}
-
 export function createAssessmentNode(
   conceptId: string,
   assessment: Partial<AssessmentNodeProperties>,
