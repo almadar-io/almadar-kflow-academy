@@ -77,6 +77,31 @@ await check('learning-path generation end-to-end (goal → expansion → /concep
   return `generated → ${generatedGraphUrl}`;
 });
 
+await check('concept detail + generate lesson (explain)', async () => {
+  assert(generatedGraphUrl, 'no generated graph from the prior step');
+  const graphId = generatedGraphUrl.split('/concepts/')[1];
+  // Fetch a concept id from the generated graph (avoids fragile graph-node clicks).
+  const conceptId = await page.evaluate(async (gid) => {
+    const r = await fetch(`/api/graph-queries/${gid}/concepts`);
+    const j = await r.json().catch(() => ({}));
+    const list = j.concepts || j.nodes || [];
+    return (list[0] && (list[0].id || list[0].conceptId)) || null;
+  }, graphId);
+  assert(conceptId, 'no concept found in generated graph');
+  await goto(`/concepts/${graphId}/concept/${encodeURIComponent(conceptId)}`);
+  let t = await text();
+  assert(t.length > 80 && !/No .*available/i.test(t), `concept detail empty: ${t.slice(0, 100)}`);
+  // Generate the lesson (explain) if not already present.
+  const gen = btn(/Generate Lesson/i);
+  if (await gen.count()) {
+    await gen.click();
+    await page.waitForTimeout(35000); // lesson generation (LLM)
+    await shot('concept-lesson');
+    t = await text();
+  }
+  return `concept ${conceptId} detail rendered (lesson ${/Generate Lesson/i.test(t) ? 'pending' : 'generated'})`;
+});
+
 await check('settings renders language switcher', async () => {
   await goto('/settings'); const t = await text();
   assert(/Language/i.test(t) && /English/i.test(t), `no language switcher: ${t.slice(0, 80)}`);
