@@ -112,7 +112,9 @@ export const graphQueryApi = {
       throw new Error('Concept ID is required for get concept detail');
     }
     const headers = await getAuthHeaders();
-    return apiClient.fetch(`${QUERY_BASE_PATH}/${graphId}/concepts/${conceptId}`, {
+    // Concept ids are the concept name (can contain '/', etc.), so encode the path segment —
+    // an unencoded slash splits the route and 404s. Links already encode; this was the one raw site.
+    return apiClient.fetch(`${QUERY_BASE_PATH}/${graphId}/concepts/${encodeURIComponent(conceptId)}`, {
       method: 'GET',
       headers,
     });
