@@ -5,7 +5,7 @@
  */
 
 import { KnowledgeGraphAccessLayer } from '../../services/knowledgeGraphAccess/KnowledgeGraphAccessLayer';
-import { GraphMutationService } from '../../services/graphMutationService';
+import { GraphMutationService } from '@almadar-io/knowledge/server';
 import type { NodeBasedKnowledgeGraph } from '../../types/nodeBasedKnowledgeGraph';
 import { createGraphNode, createRelationship } from '../../types/nodeBasedKnowledgeGraph';
 

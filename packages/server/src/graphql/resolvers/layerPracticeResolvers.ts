@@ -4,7 +4,7 @@
  * Resolvers for layer practice generation operations.
  */
 
-import { GraphMutationService } from '../../services/graphMutationService';
+import { GraphMutationService } from '@almadar-io/knowledge/server';
 import { KnowledgeGraphAccessLayer } from '@almadar-io/knowledge/server';
 import { generateLayerPractice } from '@almadar-io/knowledge/server';
 import type {

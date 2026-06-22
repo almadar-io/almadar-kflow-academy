@@ -4,7 +4,7 @@
  * Resolvers for custom operation (user-prompted modifications).
  */
 
-import { GraphMutationService } from '../../services/graphMutationService';
+import { GraphMutationService } from '@almadar-io/knowledge/server';
 import { KnowledgeGraphAccessLayer } from '@almadar-io/knowledge/server';
 import { customOperation } from '@almadar-io/knowledge/server';
 import type {

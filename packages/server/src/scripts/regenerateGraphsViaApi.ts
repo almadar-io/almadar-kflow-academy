@@ -22,7 +22,7 @@ import { getUserGraphs } from '../services/graphService';
 import { saveNodeBasedKnowledgeGraph } from '@almadar-io/knowledge/server';
 import { generateGoals } from '@almadar-io/knowledge/server';
 import { progressiveExpandMultipleFromText } from '@almadar-io/knowledge/server';
-import { GraphMutationService } from '../services/graphMutationService';
+import { GraphMutationService } from '@almadar-io/knowledge/server';
 import type { NodeBasedKnowledgeGraph, GraphNode, NodeTypeIndex } from '../types/nodeBasedKnowledgeGraph';
 import type { MutationContext } from '../types/mutations';
 import type { GraphDifficulty } from '../types/concept';

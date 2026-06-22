@@ -15,7 +15,7 @@ import {
   createMutationContext,
 } from '@almadar-io/knowledge/server';
 import type { NodeBasedKnowledgeGraph } from '../types/nodeBasedKnowledgeGraph';
-import { GraphMutationService } from '../services/graphMutationService';
+import { GraphMutationService } from '@almadar-io/knowledge/server';
 import { GraphAuthorizationService } from '../services/graphAuthorizationService';
 import {
   parseGenerateGoalsContent,

@@ -4,7 +4,7 @@
  * Resolvers for explanation and Q&A operations.
  */
 
-import { GraphMutationService } from '../../services/graphMutationService';
+import { GraphMutationService } from '@almadar-io/knowledge/server';
 import { KnowledgeGraphAccessLayer } from '@almadar-io/knowledge/server';
 import { explain, answerQuestion } from '@almadar-io/knowledge/server';
 import type {

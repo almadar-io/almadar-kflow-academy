@@ -5,7 +5,7 @@
  * Part of Phase 3: Mutation API Endpoints
  */
 
-import { GraphMutationService } from '../../services/graphMutationService';
+import { GraphMutationService } from '@almadar-io/knowledge/server';
 import { KnowledgeGraphAccessLayer } from '@almadar-io/knowledge/server';
 import type {
   GraphQLContext,

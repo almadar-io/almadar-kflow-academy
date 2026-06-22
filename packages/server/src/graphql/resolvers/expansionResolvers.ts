@@ -4,7 +4,7 @@
  * Resolvers for progressive expansion operations.
  */
 
-import { GraphMutationService } from '../../services/graphMutationService';
+import { GraphMutationService } from '@almadar-io/knowledge/server';
 import { KnowledgeGraphAccessLayer } from '@almadar-io/knowledge/server';
 import { progressiveExpandMultipleFromText } from '@almadar-io/knowledge/server';
 import type {

@@ -10,20 +10,18 @@ import { graphMutationDeps } from '../../utils/graphHandlerDeps';
 
 jest.mock('@almadar/server', () => ({
   getFirestore: jest.fn(() => ({
-    collection: jest.fn(() => ({ doc: jest.fn(() => ({ collection: jest.fn(() => ({ select: jest.fn(() => ({ get: jest.fn() })) })) })) }),
+    collection: jest.fn(() => ({ doc: jest.fn(() => ({ collection: jest.fn(() => ({ select: jest.fn(() => ({ get: jest.fn() })) })) })) })),
   })),
   authenticateFirebase: jest.fn((_req: unknown, _res: unknown, next: () => void) => next()),
 }));
 
 jest.mock('@almadar-io/knowledge/server', () => ({
+  ...jest.requireActual('@almadar-io/knowledge/server'),
   KnowledgeGraphAccessLayer: jest.fn().mockImplementation(() => ({
     getGraph: jest.fn(),
     saveGraph: jest.fn(),
     clearCache: jest.fn(),
   })),
-}));
-
-jest.mock('../../services/graphMutationService', () => ({
   GraphMutationService: jest.fn().mockImplementation(() => ({
     applyMutationBatchSafe: jest.fn(),
     validateMutation: jest.fn(),

@@ -5,7 +5,7 @@
  */
 
 import { progressiveExpandMultipleFromText } from '../../services/graphOperations/progressiveExpandMultipleFromText';
-import { GraphMutationService } from '../../services/graphMutationService';
+import { GraphMutationService } from '@almadar-io/knowledge/server';
 import { GraphQueryService } from '../../services/graphQueryService';
 import type { NodeBasedKnowledgeGraph } from '../../types/nodeBasedKnowledgeGraph';
 import { createGraphNode } from '../../types/nodeBasedKnowledgeGraph';

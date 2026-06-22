@@ -4,7 +4,7 @@
  * Core service for applying mutations to NodeBasedKnowledgeGraph structures.
  */
 
-import { GraphMutationService } from '../../services/graphMutationService';
+import { GraphMutationService } from '@almadar-io/knowledge/server';
 import type { NodeBasedKnowledgeGraph } from '../../types/nodeBasedKnowledgeGraph';
 import type { GraphMutation, MutationBatch } from '../../types/mutations';
 import { createGraphNode, createRelationship } from '../../types/nodeBasedKnowledgeGraph';

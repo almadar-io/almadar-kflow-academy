@@ -11,9 +11,10 @@ import { createGraphNode } from '../../../types/nodeBasedKnowledgeGraph';
 import { createMockDecodedToken, setupFirebaseAdminMocks, resetAllMocks } from '../../testUtils.helper';
 
 // Mock the services
-jest.mock('../../../services/graphMutationService', () => {
+jest.mock('@almadar-io/knowledge/server', () => {
   const mockApplyMutationBatchSafe = jest.fn();
   return {
+    ...jest.requireActual('@almadar-io/knowledge/server'),
     GraphMutationService: jest.fn().mockImplementation(() => ({
       applyMutationBatchSafe: mockApplyMutationBatchSafe,
     })),
@@ -75,7 +76,7 @@ jest.mock('../../../graphql/resolvers/shared/resolverHelpers', () => {
 
 const {
   mockApplyMutationBatchSafe,
-} = require('../../../services/graphMutationService').__mocks;
+} = require('@almadar-io/knowledge/server').__mocks;
 
 const {
   mockSaveGraph,
