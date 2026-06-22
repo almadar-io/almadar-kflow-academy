@@ -71,7 +71,11 @@ function fromNode(node: GraphNodeOf<'LearningGoal'>): LearningGoal {
 
 async function ensureGoalGraph(uid: string): Promise<string> {
   const graphId = GOALS_GRAPH(uid);
-  const exists = await kgal.getNode(uid, graphId, graphId).catch(() => null);
+  // Check whether the GRAPH exists — not whether a node with id===graphId exists.
+  // The goals graph only holds LearningGoal nodes, so a getNode(graphId, graphId)
+  // probe never matches; it always reported "missing" and re-saved an empty graph
+  // (saveGraph uses merge:false), wiping previously saved goals between writes/reads.
+  const exists = await kgal.getGraph(uid, graphId).then(() => true).catch(() => false);
   if (!exists) {
     const now = Date.now();
     const emptyIndex = createEmptyNodeTypeIndex();
