@@ -1,28 +1,18 @@
 /**
  * DashboardBoard Organism
  *
- * Dashboard layout with stats, learning paths, recent activity, and quick actions.
+ * Knowledge-graph-led dashboard: the learner's knowledge map is the hero, with their
+ * latest learning paths below and a single "Generate a learning path" action.
  *
  * Events Emitted:
- * - UI:QUICK_ACTION — user clicks a quick action, payload: { actionId }
- * - UI:ACTIVITY_CLICK — user clicks an activity item, payload: { activityId, type }
  * - UI:LEARNING_PATH_CLICK — user clicks a learning path, payload: { pathId, graphId }
- * - UI:CREATE_LEARNING_PATH — user clicks create new path
+ * - UI:CREATE_LEARNING_PATH — user clicks generate a learning path
  * - UI:DELETE_LEARNING_PATH — user clicks delete path, payload: { pathId }
  * - UI:KNOWLEDGE_NODE_CLICK — user clicks a knowledge map node, payload: { nodeId, graphId }
  */
 
 import React, { useCallback } from 'react';
-import type { LucideIcon } from 'lucide-react';
-import {
-  TrendingUp,
-  TrendingDown,
-  Minus,
-  BookOpen,
-  Plus,
-  Trash2,
-  Clock,
-} from 'lucide-react';
+import { BookOpen, Plus, Trash2, Brain } from 'lucide-react';
 import {
   Box,
   VStack,
@@ -42,21 +32,6 @@ import {
   type GraphViewEdge,
 } from '@almadar/ui';
 
-export interface DashboardStat {
-  label: string;
-  value: string | number;
-  icon?: LucideIcon;
-  trend?: 'up' | 'down' | 'flat';
-}
-
-export interface DashboardActivity {
-  id: string;
-  type: string;
-  title: string;
-  timestamp: string;
-  icon?: LucideIcon;
-}
-
 export interface DashboardLearningPath {
   id: string;
   graphId: string;
@@ -67,26 +42,14 @@ export interface DashboardLearningPath {
   description?: string;
 }
 
-export interface DashboardQuickAction {
-  id: string;
-  label: string;
-  icon?: LucideIcon;
-  description?: string;
-}
-
 export interface DashboardKnowledgeMapNode extends GraphViewNode {
   graphId: string;
 }
 
 export interface DashboardEntity {
   welcomeName: string;
-  stats: DashboardStat[];
-  recentActivity: DashboardActivity[];
   learningPaths: DashboardLearningPath[];
-  quickActions: DashboardQuickAction[];
-  recommendations?: Array<{ id: string; title: string; type: string }>;
-  achievements?: Array<{ id: string; title: string; earnedAt: string }>;
-  /** Pre-built knowledge map for the force-directed graph section */
+  /** Pre-built knowledge map for the force-directed graph hero */
   knowledgeMap?: {
     nodes: DashboardKnowledgeMapNode[];
     edges: GraphViewEdge[];
@@ -99,15 +62,6 @@ export interface DashboardBoardProps extends DisplayStateProps {
   entity?: DashboardEntity;
 }
 
-const TrendIcon: React.FC<{ trend?: 'up' | 'down' | 'flat' }> = ({ trend }) => {
-  if (trend === 'up') return <TrendingUp size={14} className="text-green-500" />;
-  if (trend === 'down') return <TrendingDown size={14} className="text-red-500" />;
-  if (trend === 'flat') return <Minus size={14} className="text-[var(--color-muted-foreground)]" />;
-  return null;
-};
-
-TrendIcon.displayName = 'TrendIcon';
-
 export function DashboardBoard({
   entity,
   className = '',
@@ -115,14 +69,6 @@ export function DashboardBoard({
   const dash = (entity && typeof entity === 'object' && !Array.isArray(entity)) ? entity as DashboardEntity : undefined;
   const { emit } = useEventBus();
   const { t } = useTranslate();
-
-  const handleQuickAction = useCallback((actionId: string) => {
-    emit('UI:QUICK_ACTION', { actionId });
-  }, [emit]);
-
-  const handleActivityClick = useCallback((activityId: string, type: string) => {
-    emit('UI:ACTIVITY_CLICK', { activityId, type });
-  }, [emit]);
 
   const handlePathClick = useCallback((pathId: string, graphId: string) => {
     emit('UI:LEARNING_PATH_CLICK', { pathId, graphId });
@@ -141,6 +87,9 @@ export function DashboardBoard({
     emit('UI:KNOWLEDGE_NODE_CLICK', { nodeId: mapNode.id, graphId: mapNode.graphId });
   }, [emit]);
 
+  const hasMap = (dash?.knowledgeMap?.nodes?.length ?? 0) > 0;
+  const paths = dash?.learningPaths ?? [];
+
   return (
     <Container size="lg" padding="sm" className={`py-6 ${className}`}>
       <VStack gap="xl">
@@ -149,215 +98,102 @@ export function DashboardBoard({
           {t('dashboard.welcome', { name: dash?.welcomeName ?? '' })}
         </Typography>
 
-        {/* Stats grid */}
-        {(dash?.stats?.length ?? 0) > 0 && (
-          <SimpleGrid minChildWidth="200px" gap="md">
-            {(dash?.stats ?? []).map((stat: DashboardStat, idx: number) => {
-              const StatIcon = stat.icon;
-              return (
-                <Card key={idx} className="p-4">
-                  <VStack gap="xs">
-                    <HStack justify="between" align="center">
-                      <Typography variant="small" className="text-[var(--color-muted-foreground)]">
-                        {stat.label}
-                      </Typography>
-                      {StatIcon && <StatIcon size={16} className="text-[var(--color-muted-foreground)]" />}
-                    </HStack>
-                    <HStack gap="xs" align="center">
-                      <Typography variant="h2" className="text-2xl font-bold text-[var(--color-foreground)]">
-                        {stat.value}
-                      </Typography>
-                      <TrendIcon trend={stat.trend} />
-                    </HStack>
-                  </VStack>
-                </Card>
-              );
-            })}
-          </SimpleGrid>
-        )}
+        {hasMap ? (
+          <>
+            {/* Hero: the knowledge map */}
+            <VStack gap="sm">
+              <Typography variant="h3" className="text-lg font-semibold text-[var(--color-foreground)]">
+                {t('dashboard.knowledgeMap')}
+              </Typography>
+              <Box className="rounded-lg overflow-hidden border border-[var(--color-border)]">
+                <GraphView
+                  nodes={dash!.knowledgeMap!.nodes}
+                  edges={dash!.knowledgeMap!.edges}
+                  height={500}
+                  showLabels
+                  zoomToFit
+                  onNodeClick={handleKnowledgeNodeClick}
+                  className="w-full"
+                />
+              </Box>
+            </VStack>
 
-        {/* Quick actions */}
-        {(dash?.quickActions?.length ?? 0) > 0 && (
-          <VStack gap="sm">
-            <Typography variant="h3" className="text-lg font-semibold text-[var(--color-foreground)]">
-              {t('dashboard.quickActions')}
-            </Typography>
-            <HStack gap="sm" wrap>
-              {(dash?.quickActions ?? []).map((action: DashboardQuickAction) => {
-                const ActionIcon = action.icon;
-                const handleClick = () => handleQuickAction(action.id);
-                return (
-                  <Button
-                    key={action.id}
-                    data-entity-row={action.id}
-                    onClick={handleClick}
-                    variant="secondary"
-                    className="px-4 py-2 flex items-center gap-2"
-                  >
-                    {ActionIcon && <ActionIcon size={16} />}
-                    <Typography variant="small">{action.label}</Typography>
-                  </Button>
-                );
-              })}
-            </HStack>
-          </VStack>
-        )}
+            {/* Latest learning paths */}
+            <VStack gap="sm">
+              <HStack justify="between" align="center">
+                <Typography variant="h3" className="text-lg font-semibold text-[var(--color-foreground)]">
+                  {t('dashboard.learningPaths')}
+                </Typography>
+                <Button onClick={handleCreatePath} variant="primary" size="sm" className="flex items-center gap-1">
+                  <Plus size={16} />
+                  {t('dashboard.createPath')}
+                </Button>
+              </HStack>
 
-        {/* Learning paths */}
-        <VStack gap="sm">
-          <HStack justify="between" align="center">
-            <Typography variant="h3" className="text-lg font-semibold text-[var(--color-foreground)]">
-              {t('dashboard.learningPaths')}
-            </Typography>
-            <Button
-              onClick={handleCreatePath}
-              variant="primary"
-              size="sm"
-              className="flex items-center gap-1"
-            >
-              <Plus size={16} />
-              {t('dashboard.createPath')}
-            </Button>
-          </HStack>
-
-          {(dash?.learningPaths?.length ?? 0) > 0 ? (
-            <SimpleGrid minChildWidth="280px" gap="md">
-              {(dash?.learningPaths ?? []).map((path: DashboardLearningPath) => {
-                const handleClick = () => handlePathClick(path.id, path.graphId);
-                const handleDelete = (e: React.MouseEvent) => {
-                  e.stopPropagation();
-                  handleDeletePath(path.id);
-                };
-                return (
-                <Card
-                  key={path.id}
-                  data-entity-row={path.id}
-                  className="p-4 cursor-pointer hover:shadow-md transition-shadow"
-                  onClick={handleClick}
-                >
-                  <VStack gap="sm">
-                    <HStack justify="between" align="start">
-                      <VStack gap="xs">
-                        <Typography variant="h4" className="font-semibold text-[var(--color-foreground)]">
-                          {path.name}
-                        </Typography>
-                        <Typography variant="small" className="text-[var(--color-muted-foreground)]">
-                          {path.seedConcept}
-                        </Typography>
+              <SimpleGrid minChildWidth="280px" gap="md">
+                {paths.map((path: DashboardLearningPath) => {
+                  const handleClick = () => handlePathClick(path.id, path.graphId);
+                  const handleDelete = (e: React.MouseEvent) => {
+                    e.stopPropagation();
+                    handleDeletePath(path.id);
+                  };
+                  return (
+                    <Card
+                      key={path.id}
+                      data-entity-row={path.id}
+                      className="p-4 cursor-pointer border border-[var(--color-border)] shadow-[var(--shadow-sm)] hover:shadow-[var(--shadow-hover)] hover:-translate-y-1 transition-all duration-[var(--transition-normal)]"
+                      onClick={handleClick}
+                    >
+                      <VStack gap="sm">
+                        <HStack justify="between" align="start">
+                          <VStack gap="xs">
+                            <Typography variant="h4" className="font-semibold text-[var(--color-foreground)]">
+                              {path.name}
+                            </Typography>
+                            <Typography variant="small" className="text-[var(--color-muted-foreground)]">
+                              {path.seedConcept}
+                            </Typography>
+                          </VStack>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={handleDelete}
+                            className="p-1 text-[var(--color-muted-foreground)] hover:text-red-500"
+                          >
+                            <Trash2 size={14} />
+                          </Button>
+                        </HStack>
+                        <HStack gap="sm">
+                          <Badge variant="info" size="sm">
+                            {t('dashboard.concepts', { count: path.conceptCount })}
+                          </Badge>
+                          <Badge variant="default" size="sm">
+                            {t('dashboard.levels', { count: path.levelCount })}
+                          </Badge>
+                        </HStack>
+                        {path.description && (
+                          <Typography variant="small" className="text-[var(--color-muted-foreground)] line-clamp-2">
+                            {path.description}
+                          </Typography>
+                        )}
                       </VStack>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={handleDelete}
-                        className="p-1 text-[var(--color-muted-foreground)] hover:text-red-500"
-                      >
-                        <Trash2 size={14} />
-                      </Button>
-                    </HStack>
-                    <HStack gap="sm">
-                      <Badge variant="info" size="sm">
-                        {t('dashboard.concepts', { count: path.conceptCount })}
-                      </Badge>
-                      <Badge variant="default" size="sm">
-                        {t('dashboard.levels', { count: path.levelCount })}
-                      </Badge>
-                    </HStack>
-                    {path.description && (
-                      <Typography variant="small" className="text-[var(--color-muted-foreground)] line-clamp-2">
-                        {path.description}
-                      </Typography>
-                    )}
-                  </VStack>
-                </Card>
-                );
-              })}
-            </SimpleGrid>
-          ) : (
+                    </Card>
+                  );
+                })}
+              </SimpleGrid>
+            </VStack>
+          </>
+        ) : (
+          /* No knowledge yet — one clear call to generate the first learning path */
+          <Box className="flex-1 flex items-center justify-center min-h-[50vh]">
             <EmptyState
-              icon={BookOpen}
+              icon={Brain}
               title={t('dashboard.noPathsTitle')}
               description={t('dashboard.noPathsDesc')}
               actionLabel={t('dashboard.createPath')}
               onAction={handleCreatePath}
             />
-          )}
-        </VStack>
-
-        {/* Knowledge map */}
-        {dash?.knowledgeMap && dash.knowledgeMap.nodes.length > 0 && (
-          <VStack gap="sm">
-            <Typography variant="h3" className="text-lg font-semibold text-[var(--color-foreground)]">
-              {t('dashboard.knowledgeMap')}
-            </Typography>
-            <Box className="rounded-lg overflow-hidden border border-[var(--color-border)]">
-              <GraphView
-                nodes={dash.knowledgeMap.nodes}
-                edges={dash.knowledgeMap.edges}
-                height={340}
-                showLabels
-                zoomToFit
-                onNodeClick={handleKnowledgeNodeClick}
-                className="w-full"
-              />
-            </Box>
-          </VStack>
-        )}
-
-        {/* Recent activity */}
-        {(dash?.recentActivity?.length ?? 0) > 0 && (
-          <VStack gap="sm">
-            <Typography variant="h3" className="text-lg font-semibold text-[var(--color-foreground)]">
-              {t('dashboard.recentActivity')}
-            </Typography>
-            <Card className="divide-y divide-[var(--color-border)]">
-              {(dash?.recentActivity ?? []).map((activity: DashboardActivity) => {
-                const ActivityIcon = activity.icon ?? Clock;
-                const handleClick = () => handleActivityClick(activity.id, activity.type);
-                return (
-                  <Button
-                    key={activity.id}
-                    data-entity-row={activity.id}
-                    onClick={handleClick}
-                    variant="ghost"
-                    className="w-full text-left px-4 py-3 hover:bg-[var(--color-muted)] transition-colors"
-                  >
-                    <HStack gap="sm" align="center">
-                      <ActivityIcon size={16} className="text-[var(--color-muted-foreground)] flex-shrink-0" />
-                      <VStack gap="none" className="flex-1 min-w-0">
-                        <Typography variant="small" className="font-medium text-[var(--color-foreground)] truncate">
-                          {activity.title}
-                        </Typography>
-                        <Typography variant="small" className="text-xs text-[var(--color-muted-foreground)]">
-                          {activity.timestamp}
-                        </Typography>
-                      </VStack>
-                      <Badge variant="default" size="sm">
-                        {activity.type}
-                      </Badge>
-                    </HStack>
-                  </Button>
-                );
-              })}
-            </Card>
-          </VStack>
-        )}
-
-        {/* Achievements */}
-        {dash?.achievements && dash.achievements.length > 0 && (
-          <VStack gap="sm">
-            <Typography variant="h3" className="text-lg font-semibold text-[var(--color-foreground)]">
-              {t('dashboard.achievements')}
-            </Typography>
-            <HStack gap="sm" wrap>
-              {dash.achievements.map((achievement) => (
-                <Box key={achievement.id} data-entity-row={achievement.id}>
-                  <Badge variant="warning" size="md">
-                    {achievement.title}
-                  </Badge>
-                </Box>
-              ))}
-            </HStack>
-          </VStack>
+          </Box>
         )}
       </VStack>
     </Container>

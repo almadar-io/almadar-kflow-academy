@@ -1,24 +1,20 @@
 /**
  * DashboardPage — thin assembler
  *
- * Calls feature hooks, derives DashboardBoardTemplateEntity, mounts
- * DashboardBoardTemplate. All navigation and interaction handled via
- * the event bus (UI:QUICK_ACTION, UI:ACTIVITY_CLICK,
- * UI:LEARNING_PATH_CLICK, UI:CREATE_LEARNING_PATH, UI:DELETE_LEARNING_PATH,
- * UI:KNOWLEDGE_NODE_CLICK).
+ * Knowledge-graph-led dashboard: the knowledge map is the hero, latest learning paths
+ * below, and a single "Generate a learning path" action (navigates to /learn, which hosts
+ * the goal/path-generation modal). All interaction via the event bus
+ * (UI:LEARNING_PATH_CLICK, UI:CREATE_LEARNING_PATH, UI:DELETE_LEARNING_PATH, UI:KNOWLEDGE_NODE_CLICK).
  */
 
 import React, { useEffect, useMemo } from 'react';
 import { useLocation } from 'react-router';
 import { useEventBus, useTranslate } from '@almadar/ui';
-import { Brain } from 'lucide-react';
 import kflowLogo from '../assets/kflow-logo.svg';
 import { DashboardBoardTemplate } from '@design-system/templates/DashboardTemplate/DashboardBoardTemplate';
 import type { DashboardBoardTemplateEntity } from '@design-system/templates/DashboardTemplate/DashboardBoardTemplate';
 import { useAuthContext } from '../features/auth/AuthContext';
-import { useRecentActivity } from '../features/dashboard/hooks/useRecentActivity';
 import { useJumpBackIn } from '../features/dashboard/hooks/useJumpBackIn';
-import { useDashboardStats } from '../features/dashboard/hooks';
 import { useLearningPaths } from '../features/knowledge-graph/hooks/useLearningPaths';
 import { useConceptsByLayer } from '../features/knowledge-graph/hooks/useConceptsByLayer';
 import { getNavigationItems, getUserForTemplate, mainNavItems } from '../config/navigation';
@@ -33,12 +29,10 @@ export const DashboardPage: React.FC = () => {
   const { on } = useEventBus();
   const { t } = useTranslate();
 
-  const { activity, isLoading: isLoadingActivity, formatTimestamp } = useRecentActivity(5);
   const { items: jumpBackInItems, isLoading: isLoadingJumpBackIn } = useJumpBackIn();
-  const { stats, isLoading: isLoadingStats } = useDashboardStats();
   const { learningPaths: pathSummaries } = useLearningPaths();
 
-  // Use the most recently updated learning path for the knowledge map
+  // Use the most recently updated learning path for the knowledge map hero
   const primaryGraphId = pathSummaries[0]?.id ?? '';
   const { concepts: mapConcepts } = useConceptsByLayer(primaryGraphId, {
     includeRelationships: true,
@@ -48,22 +42,6 @@ export const DashboardPage: React.FC = () => {
   const templateUser = getUserForTemplate(user);
 
   useEffect(() => {
-    const unsubQuick = on('UI:QUICK_ACTION', (event) => {
-      const actionId = event.payload?.actionId as string | undefined;
-      if (actionId === 'createPath') navigate('/learn');
-    });
-    const unsubActivity = on('UI:ACTIVITY_CLICK', (event) => {
-      const activityId = event.payload?.activityId as string | undefined;
-      const type = event.payload?.type as string | undefined;
-      if (!activityId) return;
-      const matched = activity.find(a => a.id === activityId);
-      if (!matched) return;
-      if (type === 'concept_studied' && matched.metadata?.conceptId) {
-        if (matched.metadata.graphId) {
-          navigate(`/concepts/${matched.metadata.graphId}/concept/${encodeURIComponent(matched.metadata.conceptId)}`);
-        }
-      }
-    });
     const unsubPath = on('UI:LEARNING_PATH_CLICK', (event) => {
       const graphId = event.payload?.graphId as string | undefined;
       if (graphId) navigate(`/concepts/${graphId}`);
@@ -79,13 +57,11 @@ export const DashboardPage: React.FC = () => {
       }
     });
     return () => {
-      unsubQuick();
-      unsubActivity();
       unsubPath();
       unsubCreate();
       unsubKnowledgeNode();
     };
-  }, [on, navigate, activity]);
+  }, [on, navigate]);
 
   const navItems = useMemo(
     () => getNavigationItems(location.pathname, mainNavItems),
@@ -106,17 +82,6 @@ export const DashboardPage: React.FC = () => {
           description: item.description,
         })),
     [jumpBackInItems]
-  );
-
-  const recentActivity = useMemo(
-    () =>
-      activity.map(a => ({
-        id: a.id,
-        type: a.type,
-        title: a.resourceName,
-        timestamp: formatTimestamp(a.timestamp),
-      })),
-    [activity, formatTimestamp]
   );
 
   // Node cap: limit to 60 concepts so the graph stays readable
@@ -148,15 +113,7 @@ export const DashboardPage: React.FC = () => {
 
   const dashboard: DashboardEntity = {
     welcomeName: user?.displayName?.split(' ')[0] ?? t('nav.user'),
-    stats: [
-      { label: t('dashboard.stat.streak'), value: stats.learningStreak },
-      { label: t('dashboard.stat.concepts'), value: stats.conceptsMastered },
-    ],
-    recentActivity,
     learningPaths,
-    quickActions: [
-      { id: 'createPath', label: t('dashboard.action.createPath'), icon: Brain },
-    ],
     knowledgeMap,
   };
 
@@ -178,9 +135,7 @@ export const DashboardPage: React.FC = () => {
     dashboard,
   };
 
-  const isLoading = isLoadingActivity || isLoadingJumpBackIn || isLoadingStats;
-
-  return <DashboardBoardTemplate entity={entity} isLoading={isLoading} />;
+  return <DashboardBoardTemplate entity={entity} isLoading={isLoadingJumpBackIn} />;
 };
 
 DashboardPage.displayName = 'DashboardPage';
