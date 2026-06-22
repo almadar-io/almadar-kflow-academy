@@ -14,38 +14,19 @@
 
 import React, { useState, useCallback, useEffect } from 'react';
 import type { LucideIcon } from 'lucide-react';
-import { Sun, Moon } from 'lucide-react';
 import {
   Box,
   Sidebar,
   Header,
   Overlay,
+  ThemeToggle,
   useEventBus,
   useEventListener,
   cn,
   type SidebarItem,
   type DisplayStateProps,
 } from '@almadar/ui';
-import { useTheme } from '@almadar/ui/context';
 import { ProfilePopup } from './ProfilePopup/ProfilePopup';
-
-// ThemeToggleBridge reads from @almadar/ui/context (same instance as ThemeProvider
-// in providers.tsx) instead of the @almadar/ui components chunk's inlined context copy.
-function ThemeToggleBridge(): React.JSX.Element {
-  const { resolvedMode, toggleMode } = useTheme();
-  const isDark = resolvedMode === 'dark';
-  return (
-    <button
-      type="button"
-      onClick={toggleMode}
-      aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
-      title={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
-      className="inline-flex items-center justify-center p-2 text-[var(--color-foreground)] hover:bg-[var(--color-muted)] rounded-sm transition-colors"
-    >
-      {isDark ? <Sun size={20} /> : <Moon size={20} />}
-    </button>
-  );
-}
 
 export interface AppShellNavItem {
   id: string;
@@ -175,7 +156,7 @@ export function AppShellBoard({
 
   const footerContent = (
     <Box className="flex flex-col gap-2 w-full">
-      <ThemeToggleBridge />
+      <ThemeToggle />
     </Box>
   );
 
@@ -227,7 +208,7 @@ export function AppShellBoard({
           onMenuToggle={() => setMobileOpen(!mobileOpen)}
           onLogoClick={handleLogoClick}
           actions={
-            <ThemeToggleBridge />
+            <ThemeToggle />
           }
         />
 

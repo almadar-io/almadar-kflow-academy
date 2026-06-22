@@ -16,8 +16,6 @@ export type {
   ConceptMetadataNodeProperties,
   GraphMetadataNodeProperties,
   FlashCardNodeProperties,
-  StoryNodeProperties,
-  StoryStep,
   CourseNodeProperties,
   CourseModule,
   ConceptRef,
