@@ -32,9 +32,12 @@ export async function handleStreamingRequest<T, B extends object = Record<string
   callbacks: StreamingCallbacks<T>
 ): Promise<T> {
   const user = auth.currentUser;
-  if (!user) throw new Error('User not authenticated');
+  // Dev bypass: with no signed-in user and the bypass on, send no token so the server's
+  // ALLOW_DEV_AUTH_BYPASS resolves DEV_USER (otherwise streaming generation hangs on the loader).
+  const devBypass = import.meta.env.DEV && import.meta.env.VITE_ALLOW_DEV_AUTH_BYPASS === 'true';
+  if (!user && !devBypass) throw new Error('User not authenticated');
 
-  const token = await user.getIdToken();
+  const token = user ? await user.getIdToken() : null;
 
   const { stream: _stream, ...bodyWithoutStream } = requestBody as Record<string, JsonValue>;
   const url = `${API_BASE_URL}${endpoint}${endpoint.includes('?') ? '&' : '?'}stream=true`;
@@ -43,7 +46,7 @@ export async function handleStreamingRequest<T, B extends object = Record<string
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      Authorization: `Bearer ${token}`,
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
     },
     body: JSON.stringify(bodyWithoutStream),
   });

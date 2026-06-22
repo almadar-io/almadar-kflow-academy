@@ -59,3 +59,4 @@ temp/
 yarn.lock
 pnpm-lock.yaml
 .claude/
+e2e/.artifacts/

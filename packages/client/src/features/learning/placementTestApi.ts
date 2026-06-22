@@ -16,6 +16,10 @@ import type {
 const withAuthHeaders = async (): Promise<HeadersInit> => {
   const currentUser = auth.currentUser;
   if (!currentUser) {
+    // Dev bypass: send no token so the server's ALLOW_DEV_AUTH_BYPASS resolves DEV_USER.
+    if (import.meta.env.DEV && import.meta.env.VITE_ALLOW_DEV_AUTH_BYPASS === 'true') {
+      return {};
+    }
     throw new Error('User is not authenticated');
   }
   const token = await currentUser.getIdToken();

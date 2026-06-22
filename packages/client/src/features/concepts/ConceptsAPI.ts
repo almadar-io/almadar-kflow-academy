@@ -103,6 +103,9 @@ export interface GenerateLayerPracticeResponse {
 const withAuthHeaders = async (): Promise<HeadersInit> => {
   const currentUser = auth.currentUser;
   if (!currentUser) {
+    if (import.meta.env.DEV && import.meta.env.VITE_ALLOW_DEV_AUTH_BYPASS === 'true') {
+      return {};
+    }
     throw new Error('User is not authenticated');
   }
   const token = await currentUser.getIdToken();

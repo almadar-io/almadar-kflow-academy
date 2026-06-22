@@ -17,6 +17,10 @@ import { parseIncrementalJSON } from '../../utils/jsonParser';
 const withAuthHeaders = async (): Promise<HeadersInit> => {
   const currentUser = auth.currentUser;
   if (!currentUser) {
+    // Dev bypass: send no token so the server's ALLOW_DEV_AUTH_BYPASS resolves DEV_USER.
+    if (import.meta.env.DEV && import.meta.env.VITE_ALLOW_DEV_AUTH_BYPASS === 'true') {
+      return {};
+    }
     throw new Error('User is not authenticated');
   }
   const token = await currentUser.getIdToken();
@@ -335,39 +339,38 @@ async function handleStreamingGraphWithGoal(
       buffer = lines.pop() || '';
 
       for (const line of lines) {
-        if (line.startsWith('data: ')) {
-          try {
-            const data = JSON.parse(line.slice(6));
-            
-            if (data.error) {
-              throw new Error(data.error);
-            }
+        if (!line.startsWith('data: ')) continue;
+        const payload = line.slice(6).trim();
+        if (payload === '[DONE]') continue;
+        try {
+          // Server SSE envelope: { type: 'message'|'complete'|'error', data: {...} }
+          const evt = JSON.parse(payload);
 
-            // Stream content chunks
-            if (data.content) {
-              fullContent += data.content;
-              // Parse incremental JSON to extract available key-value pairs
-              const partialGoal = parseIncrementalJSON(fullContent);
-              onStream(data.content, partialGoal);
-            }
+          if (evt.type === 'error') {
+            throw new Error(evt.data?.error || 'Stream error');
+          }
 
-            // Capture final result when streaming completes
-            // The backend sends the final result in the done event with goal, graphId, and seedConceptId
-            if (data.done) {
-              if (data.goal && data.graphId) {
-                finalResult = {
-                  goal: data.goal,
-                  graphId: data.graphId,
-                  seedConceptId: data.seedConceptId || '',
-                };
-              } else if (data.error) {
-                throw new Error(data.error);
-              }
+          // Stream content chunks
+          if (evt.type === 'message' && evt.data?.content) {
+            fullContent += evt.data.content;
+            const partialGoal = parseIncrementalJSON(fullContent);
+            onStream(evt.data.content, partialGoal);
+          }
+
+          // Final result arrives on the complete event (goal, graphId, seedConceptId in data).
+          if (evt.type === 'complete') {
+            const d = evt.data || {};
+            if (d.goal && d.graphId) {
+              finalResult = {
+                goal: d.goal,
+                graphId: d.graphId,
+                seedConceptId: d.seedConceptId || '',
+              };
             }
-          } catch (e) {
-            if (e instanceof Error && e.message !== 'Unexpected end of JSON input') {
-              throw e;
-            }
+          }
+        } catch (e) {
+          if (e instanceof Error && e.message !== 'Unexpected end of JSON input') {
+            throw e;
           }
         }
       }
