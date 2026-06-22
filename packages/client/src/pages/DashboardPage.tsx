@@ -16,11 +16,10 @@ import type { DashboardBoardTemplateEntity } from '@design-system/templates/Dash
 import { useAuthContext } from '../features/auth/AuthContext';
 import { useJumpBackIn } from '../features/dashboard/hooks/useJumpBackIn';
 import { useLearningPaths } from '../features/knowledge-graph/hooks/useLearningPaths';
-import { useConceptsByLayer } from '../features/knowledge-graph/hooks/useConceptsByLayer';
+import { useLearningPathMap } from '../features/knowledge-graph/hooks/useLearningPathMap';
 import { getNavigationItems, getUserForTemplate, mainNavItems } from '../config/navigation';
 import { useNavigateEvent } from '../hooks/useNavigateEvent';
-import type { DashboardEntity, DashboardKnowledgeMapNode } from '@design-system/organisms/DashboardBoard';
-import type { GraphViewEdge } from '@almadar/ui';
+import type { DashboardEntity } from '@design-system/organisms/DashboardBoard';
 
 export const DashboardPage: React.FC = () => {
   const { user } = useAuthContext();
@@ -32,12 +31,12 @@ export const DashboardPage: React.FC = () => {
   const { items: jumpBackInItems, isLoading: isLoadingJumpBackIn } = useJumpBackIn();
   const { learningPaths: pathSummaries } = useLearningPaths();
 
-  // Use the most recently updated learning path for the knowledge map hero
-  const primaryGraphId = pathSummaries[0]?.id ?? '';
-  const { concepts: mapConcepts } = useConceptsByLayer(primaryGraphId, {
-    includeRelationships: true,
-    enabled: !!primaryGraphId,
-  });
+  // Top-level knowledge map: every learning path is a node, connected to the paths it shares concepts with.
+  const pathMapInputs = useMemo(
+    () => pathSummaries.map(p => ({ graphId: p.id, name: p.title, conceptCount: p.conceptCount })),
+    [pathSummaries]
+  );
+  const pathMap = useLearningPathMap(pathMapInputs);
 
   const templateUser = getUserForTemplate(user);
 
@@ -50,11 +49,10 @@ export const DashboardPage: React.FC = () => {
       navigate('/learn');
     });
     const unsubKnowledgeNode = on('UI:KNOWLEDGE_NODE_CLICK', (event) => {
-      const nodeId = event.payload?.nodeId as string | undefined;
-      const graphId = event.payload?.graphId as string | undefined;
-      if (nodeId && graphId) {
-        navigate(`/concepts/${graphId}/concept/${encodeURIComponent(nodeId)}`);
-      }
+      // Top-level map nodes are learning paths — clicking one drills into its concept graph.
+      // For a path node the node id IS its graphId, so either field identifies the path.
+      const graphId = (event.payload?.graphId ?? event.payload?.nodeId) as string | undefined;
+      if (graphId) navigate(`/concepts/${graphId}`);
     });
     return () => {
       unsubPath();
@@ -84,32 +82,10 @@ export const DashboardPage: React.FC = () => {
     [jumpBackInItems]
   );
 
-  // Node cap: limit to 60 concepts so the graph stays readable
-  const NODE_CAP = 60;
   const knowledgeMap = useMemo((): DashboardEntity['knowledgeMap'] => {
-    if (!primaryGraphId || mapConcepts.length === 0) return undefined;
-    const capped = mapConcepts.slice(0, NODE_CAP);
-    const cappedIds = new Set(capped.map(c => c.id));
-    const nodes: DashboardKnowledgeMapNode[] = capped.map(c => ({
-      id: c.id,
-      label: c.name,
-      graphId: primaryGraphId,
-      group: String(c.layer),
-    }));
-    const edgeSet = new Set<string>();
-    const edges: GraphViewEdge[] = [];
-    for (const c of capped) {
-      for (const childId of c.children) {
-        if (!cappedIds.has(childId)) continue;
-        const key = `${c.id}→${childId}`;
-        if (!edgeSet.has(key)) {
-          edgeSet.add(key);
-          edges.push({ source: c.id, target: childId });
-        }
-      }
-    }
-    return { nodes, edges, graphId: primaryGraphId };
-  }, [primaryGraphId, mapConcepts]);
+    if (!pathMap || pathMap.nodes.length === 0) return undefined;
+    return { nodes: pathMap.nodes, edges: pathMap.edges, graphId: pathSummaries[0]?.id ?? '' };
+  }, [pathMap, pathSummaries]);
 
   const dashboard: DashboardEntity = {
     welcomeName: user?.displayName?.split(' ')[0] ?? t('nav.user'),
