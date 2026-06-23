@@ -49,6 +49,8 @@ export interface FocusModeEntity {
   isGeneratingLayerPractice?: boolean;
   layerPracticeStreamContent?: string;
   graphId?: string;
+  logoSrc?: string;
+  brandName?: string;
   user?: { name: string; email?: string; avatar?: string };
   navigationItems?: FocusModeNavItem[];
   graphNodes?: Array<{ id: string; label: string; layer: number }>;
@@ -87,6 +89,8 @@ export const FocusModeTemplate: React.FC<FocusModeTemplateProps> = (props) => {
         graphId: (props as LearnTemplateProps).graphId,
         user: (props as LearnTemplateProps).user,
         navigationItems: (props as LearnTemplateProps).navigationItems,
+        logoSrc: (props as LearnTemplateProps).logoSrc,
+        brandName: (props as LearnTemplateProps).brandName,
         graphNodes: (props as LearnTemplateProps).graphNodes,
         graphEdges: (props as LearnTemplateProps).graphEdges,
       };
@@ -105,6 +109,8 @@ export const FocusModeTemplate: React.FC<FocusModeTemplateProps> = (props) => {
     layerPracticeStreamContent,
     user,
     navigationItems,
+    logoSrc,
+    brandName,
     graphNodes = [],
     graphEdges = [],
   } = data;
@@ -343,6 +349,8 @@ export const FocusModeTemplate: React.FC<FocusModeTemplateProps> = (props) => {
         navigationItems={navigationItems}
         user={user}
         logo={!entityMode ? (props as LearnTemplateProps).logo : undefined}
+        logoSrc={logoSrc}
+        brandName={brandName}
         contentClassName="w-full md:max-w-4xl md:mx-auto"
         contentPadding={false}
       >

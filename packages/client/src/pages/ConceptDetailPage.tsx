@@ -20,6 +20,7 @@ import { convertConceptDisplayToConcept } from '../features/concepts/utils/conve
 import { useEventBus, useTranslate } from '@almadar/ui';
 import { LearnConceptDetailTemplate } from '@design-system/templates/LearnConceptDetailTemplate';
 import type { ConceptDetailTemplateEntity } from '@design-system/templates/LearnConceptDetailTemplate';
+import kflowLogo from '../assets/kflow-logo.svg';
 import { LessonPanel } from '@design-system/organisms/LessonPanel';
 import { AnnotatedLessonContent } from '@design-system/organisms/AnnotatedLessonContent';
 import type { SelectionInfo } from '@design-system/organisms/AnnotatedLessonContent';
@@ -501,6 +502,8 @@ export const ConceptDetailPage: React.FC = () => {
     backLabel: t('concept.backToConcepts'),
     user: templateUser,
     navigationItems,
+    logoSrc: kflowLogo,
+    brandName: 'KFlow',
   };
 
   return (

@@ -20,6 +20,7 @@ import { getConceptRouteId } from '../features/concepts/utils/graphHelpers';
 import { convertConceptDisplayToConcept } from '../features/concepts/utils/convertConceptDisplay';
 import { FocusModeTemplate } from '@design-system/templates/FocusModeTemplate';
 import type { FocusModeEntity } from '@design-system/templates/FocusModeTemplate';
+import kflowLogo from '../assets/kflow-logo.svg';
 import type { LearnGoal, LearnLevel, LearnConcept } from '@design-system/templates/LearnTemplates/types';
 
 export const ConceptsPage: React.FC = () => {
@@ -331,6 +332,8 @@ export const ConceptsPage: React.FC = () => {
     graphId: graphId || undefined,
     user: templateUser,
     navigationItems,
+    logoSrc: kflowLogo,
+    brandName: 'KFlow',
     graphNodes: learnGraphNodes,
     graphEdges: learnGraphEdges,
   };

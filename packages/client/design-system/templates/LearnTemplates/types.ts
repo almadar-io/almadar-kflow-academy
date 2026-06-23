@@ -104,6 +104,8 @@ export interface LearnTemplateProps {
   /** @deprecated Handled by UIEventBridge */
   onLogout?: () => void;
   logo?: React.ReactNode;
+  logoSrc?: string;
+  brandName?: string;
   /** @deprecated Handled by UIEventBridge */
   onLogoClick?: () => void;
   

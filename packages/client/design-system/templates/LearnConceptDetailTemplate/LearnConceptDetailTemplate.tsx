@@ -63,6 +63,8 @@ export interface ConceptDetailTemplateEntity {
   backLabel?: string;
   user?: { name: string; email?: string; avatar?: string };
   navigationItems?: ConceptDetailNavItem[];
+  logoSrc?: string;
+  brandName?: string;
 }
 
 /** Props for entity-based (page-assembler) usage. */
@@ -87,6 +89,8 @@ export interface LearnConceptDetailTemplateProps {
   /** @deprecated Handled by UIEventBridge */
   onLogout?: () => void;
   logo?: React.ReactNode;
+  logoSrc?: string;
+  brandName?: string;
   /** @deprecated Handled by UIEventBridge */
   onLogoClick?: () => void;
   className?: string;
@@ -115,6 +119,8 @@ export const LearnConceptDetailTemplate: React.FC<AllProps> = (props) => {
   const user = entityMode ? props.entity.user : flat?.user;
   const navigationItems = entityMode ? props.entity.navigationItems : flat?.navigationItems;
   const logo = !entityMode ? flat?.logo : undefined;
+  const logoSrc = entityMode ? props.entity.logoSrc : flat?.logoSrc;
+  const brandName = entityMode ? props.entity.brandName : flat?.brandName;
 
   const seedConceptAction = entityMode
     ? (props.entity.seedConceptCta
@@ -155,6 +161,8 @@ export const LearnConceptDetailTemplate: React.FC<AllProps> = (props) => {
         navigationItems={navigationItems}
         user={user}
         logo={logo}
+        logoSrc={logoSrc}
+        brandName={brandName}
         contentClassName="w-full md:max-w-4xl md:mx-auto"
       >
         <div className="min-h-screen flex items-center justify-center">
@@ -173,6 +181,8 @@ export const LearnConceptDetailTemplate: React.FC<AllProps> = (props) => {
         navigationItems={navigationItems}
         user={user}
         logo={logo}
+        logoSrc={logoSrc}
+        brandName={brandName}
         contentClassName="w-full md:max-w-4xl md:mx-auto"
       >
         <div className="min-h-screen flex items-center justify-center">
@@ -197,6 +207,8 @@ export const LearnConceptDetailTemplate: React.FC<AllProps> = (props) => {
       navigationItems={navigationItems}
       user={user}
       logo={logo}
+      logoSrc={logoSrc}
+      brandName={brandName}
       contentClassName="w-full md:max-w-4xl md:mx-auto"
       contentPadding={false}
     >
