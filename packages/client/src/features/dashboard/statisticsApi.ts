@@ -37,6 +37,15 @@ export interface StatisticsSummary {
   recentActivity: RecentActivity[];
 }
 
+export interface DetailedStatistics {
+  totalStudyTime: number;
+  lessonsCompleted: number;
+  coursesCompleted: number;
+  conceptsMastered: number;
+  learningStreak: number;
+  activeCourses: number;
+}
+
 // Statistics API
 export const statisticsApi = {
   /**
@@ -86,7 +95,7 @@ export const statisticsApi = {
   /**
    * Get detailed statistics
    */
-  getDetailedStatistics: async (): Promise<any> => {
+  getDetailedStatistics: async (): Promise<DetailedStatistics> => {
     const headers = await withAuthHeaders();
     const result = await apiClient.fetch('/api/user/statistics/detailed', {
       headers: { 'Content-Type': 'application/json', ...headers },

@@ -42,6 +42,8 @@ module.exports = {
     }],
   },
   moduleNameMapper: {
+    '^@design-system/(.*)$': '<rootDir>/design-system/$1',
+    '^@features/(.*)$': '<rootDir>/src/features/$1',
     '^react$': '<rootDir>/node_modules/react/index.js',
     '^react-dom$': '<rootDir>/node_modules/react-dom/index.js',
     '^react-dom/(.*)$': '<rootDir>/node_modules/react-dom/$1',

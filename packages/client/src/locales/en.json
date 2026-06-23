@@ -358,6 +358,9 @@
   "worldMap.start": "Start",
 
   "dashboard.achievements": "Achievements",
+  "dashboard.back": "Back",
+  "dashboard.open": "Open",
+  "dashboard.showConcepts": "Show concepts",
   "dashboard.action.browseStories": "Browse Stories",
   "dashboard.action.createPath": "Create Learning Path",
   "dashboard.concepts": "{{count}} concepts",

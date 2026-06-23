@@ -8,6 +8,7 @@ import {
   UpsertConceptGraphPayload,
 } from '../services/graphService';
 import { upsertUser } from '../services/userService';
+import { invalidateGraphCaches } from '../services/cacheInvalidation';
 
 
 type GraphResponse = { graph: StoredConceptGraph };
@@ -141,6 +142,7 @@ export const removeGraph = async (
     const { graphId } = req.params;
 
     await deleteUserGraph(uid, graphId);
+    await invalidateGraphCaches(uid, graphId);
 
     return res.json({ success: true });
   } catch (error) {

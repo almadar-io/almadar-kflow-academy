@@ -17,7 +17,7 @@ import React from 'react';
 import { AppShellTemplate } from '../AppShellTemplate';
 import type { AppShellEntity } from '../AppShellTemplate';
 import { DashboardBoard } from '../../organisms/DashboardBoard';
-import type { DashboardEntity } from '../../organisms/DashboardBoard';
+import type { DashboardEntity, DashboardMapLevel } from '../../organisms/DashboardBoard';
 import type { DisplayStateProps } from '@almadar/ui';
 
 export type { DashboardEntity } from '../../organisms/DashboardBoard';
@@ -25,6 +25,10 @@ export type { DashboardEntity } from '../../organisms/DashboardBoard';
 export interface DashboardBoardTemplateEntity {
   shell: AppShellEntity;
   dashboard: DashboardEntity;
+  /** Hero knowledge-map level: L1 = paths, L2 = drilled concepts. Default L1. */
+  mapLevel?: DashboardMapLevel;
+  /** True while the current map level's data is loading — shows a loader in the map area. */
+  mapLoading?: boolean;
 }
 
 export interface DashboardBoardTemplateProps extends DisplayStateProps {
@@ -39,7 +43,7 @@ export function DashboardBoardTemplate({
 }: DashboardBoardTemplateProps): React.JSX.Element {
   return (
     <AppShellTemplate entity={entity.shell} className={className}>
-      <DashboardBoard entity={entity.dashboard} isLoading={isLoading} error={error} />
+      <DashboardBoard entity={entity.dashboard} level={entity.mapLevel} mapLoading={entity.mapLoading} isLoading={isLoading} error={error} />
     </AppShellTemplate>
   );
 }

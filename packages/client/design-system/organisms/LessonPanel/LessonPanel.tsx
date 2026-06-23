@@ -277,8 +277,8 @@ export const LessonPanel: React.FC<LessonPanelProps> = ({
               disabled={isGenerating}
               className={cn(
                 "inline-flex items-center gap-3 px-8 py-4",
-                "bg-gradient-to-r from-indigo-600 to-purple-600",
-                "hover:from-indigo-700 hover:to-purple-700",
+                "bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-accent)]",
+                "hover:opacity-90",
                 "text-white font-semibold rounded-lg",
                 "shadow-lg hover:shadow-xl",
                 "transition-all duration-200",

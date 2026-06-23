@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { getJumpBackInItems, type JumpBackInItem } from '../preferencesApi';
 
-const JUMP_BACK_IN_QUERY_KEY = ['jumpBackIn'] as const;
+export const JUMP_BACK_IN_QUERY_KEY = ['jumpBackIn'] as const;
 
 export function useJumpBackIn() {
   const query = useQuery<JumpBackInItem[]>({

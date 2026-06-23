@@ -358,6 +358,9 @@
   "worldMap.start": "ابدأ",
 
   "dashboard.achievements": "الإنجازات",
+  "dashboard.back": "رجوع",
+  "dashboard.open": "فتح",
+  "dashboard.showConcepts": "عرض المفاهيم",
   "dashboard.action.browseStories": "تصفح القصص",
   "dashboard.action.createPath": "إنشاء مسار تعلم",
   "dashboard.concepts": "{{count}} مفهوم",

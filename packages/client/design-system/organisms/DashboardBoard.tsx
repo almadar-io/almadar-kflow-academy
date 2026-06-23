@@ -9,10 +9,13 @@
  * - UI:CREATE_LEARNING_PATH — user clicks generate a learning path
  * - UI:DELETE_LEARNING_PATH — user clicks delete path, payload: { pathId }
  * - UI:KNOWLEDGE_NODE_CLICK — user clicks a knowledge map node, payload: { nodeId, graphId }
+ * - UI:KNOWLEDGE_NODE_OPEN — user opens the selected node's destination, payload: { graphId, nodeId? }
+ * - UI:KNOWLEDGE_NODE_DRILL — user drills a path node into its concept map, payload: { graphId }
+ * - UI:KNOWLEDGE_BACK — user returns from the L2 concept map to the L1 path map, payload: {}
  */
 
-import React, { useCallback } from 'react';
-import { BookOpen, Plus, Trash2, Brain } from 'lucide-react';
+import React, { useCallback, useEffect, useState } from 'react';
+import { Plus, Trash2, Brain, ArrowLeft, X } from 'lucide-react';
 import {
   Box,
   VStack,
@@ -24,12 +27,13 @@ import {
   Container,
   Badge,
   EmptyState,
-  GraphView,
+  GraphCanvas,
+  Spinner,
   useEventBus,
   useTranslate,
   type DisplayStateProps,
-  type GraphViewNode,
-  type GraphViewEdge,
+  type GraphNode,
+  type GraphEdge,
 } from '@almadar/ui';
 
 export interface DashboardLearningPath {
@@ -42,9 +46,12 @@ export interface DashboardLearningPath {
   description?: string;
 }
 
-export interface DashboardKnowledgeMapNode extends GraphViewNode {
+export type DashboardKnowledgeMapNode = GraphNode & {
   graphId: string;
-}
+};
+
+/** Which level the hero knowledge map is showing. */
+export type DashboardMapLevel = 'L1' | 'L2';
 
 export interface DashboardEntity {
   welcomeName: string;
@@ -52,7 +59,7 @@ export interface DashboardEntity {
   /** Pre-built knowledge map for the force-directed graph hero */
   knowledgeMap?: {
     nodes: DashboardKnowledgeMapNode[];
-    edges: GraphViewEdge[];
+    edges: GraphEdge[];
     /** The graphId these concepts belong to (for click navigation) */
     graphId: string;
   };
@@ -60,15 +67,38 @@ export interface DashboardEntity {
 
 export interface DashboardBoardProps extends DisplayStateProps {
   entity?: DashboardEntity;
+  /** L1 = graph-of-paths, L2 = concepts of one drilled path. Default L1. */
+  level?: DashboardMapLevel;
+  /** True while the current level's map data is loading — shows a loader in the map area. */
+  mapLoading?: boolean;
 }
 
 export function DashboardBoard({
   entity,
+  level = 'L1',
+  mapLoading = false,
   className = '',
 }: DashboardBoardProps): React.JSX.Element {
   const dash = (entity && typeof entity === 'object' && !Array.isArray(entity)) ? entity as DashboardEntity : undefined;
   const { emit } = useEventBus();
   const { t } = useTranslate();
+  const [selectedNode, setSelectedNode] = useState<DashboardKnowledgeMapNode | null>(null);
+  // Drives the popover's mount transition (tailwindcss-animate isn't loaded, so we toggle
+  // opacity/translate on the frame after the popover mounts).
+  const [popoverVisible, setPopoverVisible] = useState(false);
+
+  // Drop the selection (and its action popover) when the map level changes, so a node from the
+  // other level doesn't linger after drilling in or going back.
+  useEffect(() => { setSelectedNode(null); }, [level]);
+
+  useEffect(() => {
+    if (!selectedNode) {
+      setPopoverVisible(false);
+      return;
+    }
+    const frame = requestAnimationFrame(() => setPopoverVisible(true));
+    return () => cancelAnimationFrame(frame);
+  }, [selectedNode]);
 
   const handlePathClick = useCallback((pathId: string, graphId: string) => {
     emit('UI:LEARNING_PATH_CLICK', { pathId, graphId });
@@ -82,9 +112,44 @@ export function DashboardBoard({
     emit('UI:DELETE_LEARNING_PATH', { pathId });
   }, [emit]);
 
-  const handleKnowledgeNodeClick = useCallback((node: GraphViewNode) => {
+  const handleKnowledgeNodeClick = useCallback((node: GraphNode) => {
     const mapNode = node as DashboardKnowledgeMapNode;
+    setSelectedNode(mapNode);
     emit('UI:KNOWLEDGE_NODE_CLICK', { nodeId: mapNode.id, graphId: mapNode.graphId });
+  }, [emit]);
+
+  // Double-click is a shortcut for the selected node's primary action: in L1 it drills into
+  // the path's concept map, in L2 it opens the concept. Single-click still just selects.
+  const handleKnowledgeNodeDoubleClick = useCallback((node: GraphNode) => {
+    const mapNode = node as DashboardKnowledgeMapNode;
+    if (level === 'L2') {
+      emit('UI:KNOWLEDGE_NODE_OPEN', { graphId: mapNode.graphId, nodeId: mapNode.id });
+    } else {
+      emit('UI:KNOWLEDGE_NODE_DRILL', { graphId: mapNode.graphId });
+    }
+  }, [emit, level]);
+
+  const handleClearSelected = useCallback(() => {
+    setSelectedNode(null);
+  }, []);
+
+  const handleOpenSelected = useCallback(() => {
+    if (!selectedNode) return;
+    if (level === 'L2') {
+      emit('UI:KNOWLEDGE_NODE_OPEN', { graphId: selectedNode.graphId, nodeId: selectedNode.id });
+    } else {
+      emit('UI:KNOWLEDGE_NODE_OPEN', { graphId: selectedNode.graphId });
+    }
+  }, [emit, level, selectedNode]);
+
+  const handleDrillSelected = useCallback(() => {
+    if (!selectedNode) return;
+    emit('UI:KNOWLEDGE_NODE_DRILL', { graphId: selectedNode.graphId });
+  }, [emit, selectedNode]);
+
+  const handleBack = useCallback(() => {
+    setSelectedNode(null);
+    emit('UI:KNOWLEDGE_BACK', {});
   }, [emit]);
 
   const hasMap = (dash?.knowledgeMap?.nodes?.length ?? 0) > 0;
@@ -98,23 +163,101 @@ export function DashboardBoard({
           {t('dashboard.welcome', { name: dash?.welcomeName ?? '' })}
         </Typography>
 
-        {hasMap ? (
+        {(hasMap || mapLoading) ? (
           <>
             {/* Hero: the knowledge map */}
             <VStack gap="sm">
-              <Typography variant="h3" className="text-lg font-semibold text-[var(--color-foreground)]">
-                {t('dashboard.knowledgeMap')}
-              </Typography>
-              <Box className="rounded-lg overflow-hidden border border-[var(--color-border)]">
-                <GraphView
-                  nodes={dash!.knowledgeMap!.nodes}
-                  edges={dash!.knowledgeMap!.edges}
-                  height={500}
-                  showLabels
-                  zoomToFit
-                  onNodeClick={handleKnowledgeNodeClick}
-                  className="w-full"
-                />
+              <HStack justify="between" align="center">
+                <Typography variant="h3" className="text-lg font-semibold text-[var(--color-foreground)]">
+                  {t('dashboard.knowledgeMap')}
+                </Typography>
+              </HStack>
+
+              <Box className="relative rounded-[var(--radius-lg)] overflow-hidden border border-[var(--color-border)]">
+                {mapLoading || !hasMap ? (
+                  <Box className="flex items-center justify-center" style={{ height: 500 }}>
+                    <Spinner size="lg" />
+                  </Box>
+                ) : (
+                  <>
+                    <GraphCanvas
+                      nodes={dash!.knowledgeMap!.nodes}
+                      edges={dash!.knowledgeMap!.edges}
+                      height={500}
+                      showLabels
+                      interactive
+                      draggable
+                      repulsion={3000}
+                      linkDistance={200}
+                      selectedNodeId={selectedNode?.id}
+                      onNodeClick={handleKnowledgeNodeClick}
+                      onNodeDoubleClick={handleKnowledgeNodeDoubleClick}
+                      className="w-full"
+                    />
+
+                    {/* Back control — overlaid top-left, returns from the L2 concept map to L1. */}
+                    {level === 'L2' && (
+                      <Button
+                        onClick={handleBack}
+                        variant="ghost"
+                        size="sm"
+                        className="absolute top-3 left-3 z-20 flex items-center gap-1 bg-[var(--color-card)] border border-[var(--color-border)] shadow-[var(--shadow-sm)] hover:-translate-y-0.5 hover:shadow-[var(--shadow-hover)] transition-all duration-200"
+                      >
+                        <ArrowLeft size={16} />
+                        {t('dashboard.back')}
+                      </Button>
+                    )}
+
+                    {/* Floating action popover for the selected node (Floating layer per the beauty guide). */}
+                    {selectedNode && (
+                      <Box
+                        className={`absolute top-3 left-1/2 z-20 transition-all duration-200 ease-out ${
+                          popoverVisible
+                            ? 'opacity-100 -translate-x-1/2 translate-y-0'
+                            : 'opacity-0 -translate-x-1/2 -translate-y-2'
+                        }`}
+                      >
+                        <Box className="flex items-center gap-3 px-4 py-3 bg-[var(--color-card)] border border-[var(--color-border)] rounded-[var(--radius-md)] shadow-[var(--shadow-lg)]">
+                          <Typography
+                            variant="small"
+                            className="font-medium text-[var(--color-foreground)] truncate max-w-[14rem]"
+                          >
+                            {selectedNode.label ?? selectedNode.id}
+                          </Typography>
+                          <HStack gap="xs" align="center">
+                            <Button
+                              onClick={handleOpenSelected}
+                              variant="primary"
+                              size="sm"
+                              className="hover:-translate-y-0.5 transition-all duration-200"
+                            >
+                              {t('dashboard.open')}
+                            </Button>
+                            {level === 'L1' && (
+                              <Button
+                                onClick={handleDrillSelected}
+                                variant="secondary"
+                                size="sm"
+                                className="hover:-translate-y-0.5 transition-all duration-200"
+                              >
+                                {t('dashboard.showConcepts')}
+                              </Button>
+                            )}
+                            <Button
+                              onClick={handleClearSelected}
+                              variant="ghost"
+                              size="sm"
+                              aria-label={t('learning.close')}
+                              className="p-1 text-[var(--color-muted-foreground)] hover:text-[var(--color-foreground)] transition-all duration-200"
+                            >
+                              <X size={16} />
+                            </Button>
+                          </HStack>
+                        </Box>
+                      </Box>
+                    )}
+                  </>
+                )}
               </Box>
             </VStack>
 
@@ -158,7 +301,7 @@ export function DashboardBoard({
                             variant="ghost"
                             size="sm"
                             onClick={handleDelete}
-                            className="p-1 text-[var(--color-muted-foreground)] hover:text-red-500"
+                            className="p-1 text-[var(--color-muted-foreground)] hover:text-error"
                           >
                             <Trash2 size={14} />
                           </Button>

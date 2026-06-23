@@ -88,6 +88,7 @@ export async function getJumpBackInItems(uid: string): Promise<JumpBackInItem[]>
           graphId: path.id,
           seedConceptId: path.seedConcept?.id,
           conceptCount: path.conceptCount,
+          levelCount: Math.max(1, Math.ceil((path.conceptCount ?? 0) / 7)),
         },
       });
     }

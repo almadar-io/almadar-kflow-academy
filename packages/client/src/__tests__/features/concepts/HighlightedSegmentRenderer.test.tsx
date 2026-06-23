@@ -1,6 +1,6 @@
 import React from 'react';
 import { render, screen, waitFor, act } from '@testing-library/react';
-import { HighlightedSegmentRenderer } from '../../../features/concepts/components/HighlightedSegmentRenderer';
+import { HighlightedSegmentRenderer } from '@design-system/organisms/HighlightedSegmentRenderer';
 import type { LessonSegment as Segment } from '@almadar/ui';
 import { Concept, NoteItem, QuestionAnswer } from '../../../features/concepts/types';
 import { renderWithProviders } from '../../testUtils.helper';

@@ -12,7 +12,7 @@
     "test": "node --experimental-vm-modules node_modules/.bin/jest"
   },
   "dependencies": {
-    "@almadar-io/knowledge": "^0.6.4",
+    "@almadar-io/knowledge": "^0.6.7",
     "@almadar/core": "^10.3.0",
     "@almadar/llm": "^2.24.0",
     "@almadar/server": "^2.14.2",

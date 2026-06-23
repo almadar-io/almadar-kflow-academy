@@ -9,12 +9,15 @@
  */
 
 import React, { useState, useCallback, useMemo, useRef, useEffect } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 import { useLocation } from 'react-router';
 import { Box, Card, Overlay, Spinner, Typography, VStack, useEventBus, useTranslate } from '@almadar/ui';
 import { LearnPathsTemplate } from '@design-system/templates/LearnTemplates/LearnPathsTemplate';
 import type { LearnPathsTemplateEntity } from '@design-system/templates/LearnTemplates/LearnPathsTemplate';
 import { useAuthContext } from '../features/auth/AuthContext';
 import { useLearningPaths } from '../features/knowledge-graph/hooks/useLearningPaths';
+import { knowledgeGraphKeys } from '../features/knowledge-graph/hooks/queryKeys';
+import { JUMP_BACK_IN_QUERY_KEY } from '../features/dashboard/hooks/useJumpBackIn';
 import { useGetGraph } from '../features/knowledge-graph/hooks/useKnowledgeGraphRest';
 import { useAppDispatch } from '../app/hooks';
 import { setCurrentGraphId } from '../features/knowledge-graph/knowledgeGraphSlice';
@@ -33,6 +36,7 @@ export const LearnPage: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigateEvent();
   const dispatch = useAppDispatch();
+  const queryClient = useQueryClient();
   const { on, emit } = useEventBus();
   const { t } = useTranslate();
 
@@ -90,8 +94,10 @@ export const LearnPage: React.FC = () => {
       setShowGoalForm(false);
       navigate(`/concepts/${result.graphId}`);
       refetch();
+      queryClient.invalidateQueries({ queryKey: JUMP_BACK_IN_QUERY_KEY });
+      queryClient.invalidateQueries({ queryKey: knowledgeGraphKeys.learningPaths() });
     },
-    [dispatch, navigate, refetch]
+    [dispatch, navigate, refetch, queryClient]
   );
 
   const handleDeletePath = useCallback(
@@ -106,11 +112,13 @@ export const LearnPage: React.FC = () => {
         });
         emit('UI:NOTIFY', { severity: 'success', message: t('learn.deleteSuccess') } satisfies UiNotifyPayload);
         await refetch();
+        await queryClient.invalidateQueries({ queryKey: JUMP_BACK_IN_QUERY_KEY });
+        await queryClient.invalidateQueries({ queryKey: knowledgeGraphKeys.learningPaths() });
       } catch {
         emit('UI:NOTIFY', { severity: 'error', message: t('learn.deleteError') } satisfies UiNotifyPayload);
       }
     },
-    [refetch, emit, t]
+    [refetch, emit, t, queryClient]
   );
 
   useEffect(() => {
@@ -151,7 +159,8 @@ export const LearnPage: React.FC = () => {
           seedConcept: path.seedConcept?.name ?? '',
           conceptCount: path.conceptCount,
           levelCount: Math.max(1, Math.ceil(path.conceptCount / 7)),
-          description: path.description,
+          // The rich "Learn X to…" text lives on the seed concept; the goal node's description is empty.
+          description: path.seedConcept?.description || path.description || '',
         })),
       loading: isLoadingPaths || isLoadingGraph,
       error: pathsError ?? undefined,

@@ -133,15 +133,17 @@ export function LearnBoard({
                       <Typography variant="h4" className="font-semibold text-[var(--color-foreground)]">
                         {path.name}
                       </Typography>
-                      <Typography variant="small" className="text-[var(--color-muted-foreground)]">
-                        {path.seedConcept}
-                      </Typography>
+                      {path.description && (
+                        <Typography variant="small" className="text-[var(--color-muted-foreground)] line-clamp-2">
+                          {path.description}
+                        </Typography>
+                      )}
                     </VStack>
                     <Button
                       variant="ghost"
                       size="sm"
                       onClick={handleDelete}
-                      className="p-1 text-[var(--color-muted-foreground)] hover:text-red-500 flex-shrink-0"
+                      className="p-1 text-[var(--color-muted-foreground)] hover:text-error flex-shrink-0"
                     >
                       <Trash2 size={14} />
                     </Button>
@@ -155,12 +157,6 @@ export function LearnBoard({
                       {t('learn.levels', { count: path.levelCount })}
                     </Badge>
                   </HStack>
-
-                  {path.description && (
-                    <Typography variant="small" className="text-[var(--color-muted-foreground)] line-clamp-2">
-                      {path.description}
-                    </Typography>
-                  )}
                 </VStack>
               </Card>
               );

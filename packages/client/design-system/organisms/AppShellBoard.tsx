@@ -13,7 +13,7 @@
  */
 
 import React, { useState, useCallback, useEffect } from 'react';
-import type { LucideIcon } from 'lucide-react';
+import { Settings, type LucideIcon } from 'lucide-react';
 import {
   Box,
   Sidebar,
@@ -154,9 +154,24 @@ export function AppShellBoard({
     />
   ) : undefined;
 
+  const settingsActive = app?.activeRoute === '/settings';
   const footerContent = (
-    <Box className="flex flex-col gap-2 w-full">
+    <Box className="flex flex-row flex-wrap items-center justify-center gap-2 w-full">
       <ThemeToggle />
+      <button
+        type="button"
+        onClick={() => handleNavClick('/settings')}
+        aria-label="Settings"
+        title="Settings"
+        className={cn(
+          'flex items-center justify-center p-2 rounded-md transition-colors',
+          settingsActive
+            ? 'text-[var(--color-foreground)] bg-[var(--color-muted)]'
+            : 'text-[var(--color-muted-foreground)] hover:text-[var(--color-foreground)] hover:bg-[var(--color-muted)]'
+        )}
+      >
+        <Settings size={18} />
+      </button>
     </Box>
   );
 

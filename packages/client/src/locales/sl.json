@@ -358,6 +358,9 @@
   "worldMap.start": "Začni",
 
   "dashboard.achievements": "Dosežki",
+  "dashboard.back": "Nazaj",
+  "dashboard.open": "Odpri",
+  "dashboard.showConcepts": "Prikaži koncepte",
   "dashboard.action.browseStories": "Brskaj po zgodbah",
   "dashboard.action.createPath": "Ustvari učno pot",
   "dashboard.concepts": "{{count}} pojmov",

@@ -95,6 +95,9 @@ export async function callLLM(request: LLMRequest): Promise<LLMResponse> {
     provider: almadarProvider,
     model: actualModel,
     temperature: request.temperature,
+    // Must be set for streamRaw's LangChain .stream() to emit token deltas — without it the
+    // model is built non-streaming and .stream() yields the whole response as a single chunk.
+    streaming: request.stream ?? false,
   });
 
   try {

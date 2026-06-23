@@ -2,7 +2,7 @@
  * useLearningPathMap — top-level knowledge map: one node per learning PATH, with an
  * edge between two paths for every concept they share. Concept ids ARE concept names,
  * so "shared" is a deterministic id-set intersection (no fuzzy/similarity matching).
- * Edge `label` = the shared-concept count; node `size` scales with the path's concept count.
+ * Edges are unlabeled; node `size` scales with the path's concept count.
  *
  * Each path's concepts are fetched client-side in parallel (useQueries), reusing the same
  * query cache as the per-path concept views.
@@ -50,12 +50,24 @@ export function useLearningPathMap(paths: LearningPathInput[]): LearningPathMap 
     );
     const maxConcepts = Math.max(1, ...paths.map((p) => p.conceptCount));
 
-    const nodes: LearningPathMapNode[] = paths.map((p) => ({
-      id: p.graphId,
-      label: p.name,
-      graphId: p.graphId,
-      size: 6 + Math.round((p.conceptCount / maxConcepts) * 10), // 6..16 by relative size
-    }));
+    // Union-find over the shared-concept edges so each connected component becomes a
+    // distinct color cluster. Singleton paths stay their own component.
+    const parent = paths.map((_, i) => i);
+    const find = (i: number): number => {
+      let root = i;
+      while (parent[root] !== root) root = parent[root];
+      while (parent[i] !== root) {
+        const next = parent[i];
+        parent[i] = root;
+        i = next;
+      }
+      return root;
+    };
+    const union = (a: number, b: number): void => {
+      const ra = find(a);
+      const rb = find(b);
+      if (ra !== rb) parent[rb] = ra;
+    };
 
     const edges: GraphViewEdge[] = [];
     for (let i = 0; i < paths.length; i++) {
@@ -67,10 +79,30 @@ export function useLearningPathMap(paths: LearningPathInput[]): LearningPathMap 
         let shared = 0;
         for (const id of small) if (large.has(id)) shared++;
         if (shared > 0) {
-          edges.push({ source: paths[i].graphId, target: paths[j].graphId, label: String(shared) });
+          union(i, j);
+          edges.push({ source: paths[i].graphId, target: paths[j].graphId });
         }
       }
     }
+
+    // Map each component root to a stable, contiguous cluster id (cluster-0, cluster-1, ...).
+    const clusterOf = new Map<number, string>();
+    let nextCluster = 0;
+    const nodes: LearningPathMapNode[] = paths.map((p, i) => {
+      const root = find(i);
+      let cluster = clusterOf.get(root);
+      if (cluster === undefined) {
+        cluster = `cluster-${nextCluster++}`;
+        clusterOf.set(root, cluster);
+      }
+      return {
+        id: p.graphId,
+        label: p.name,
+        graphId: p.graphId,
+        group: cluster,
+        size: 6 + Math.round((p.conceptCount / maxConcepts) * 10), // 6..16 by relative size
+      };
+    });
 
     return { nodes, edges };
     // `results` is read above but intentionally NOT a dep (it's a fresh array every render); `fingerprint`

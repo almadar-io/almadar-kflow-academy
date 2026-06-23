@@ -1,12 +1,10 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Concept, ConceptGraph } from '../types';
-import { useTranslate } from '@almadar/ui';
-import ConceptName from './ConceptName';
+import { useTranslate, HStack, Badge, Typography, Box } from '@almadar/ui';
 import { ConceptDescription } from '@design-system/organisms/ConceptDescription';
-import ConceptParents from './ConceptParents';
 import { Layers, Loader2, Minus, Plus, ChevronDown, ChevronRight, Target, Info, BookOpen } from 'lucide-react';
 import { useConceptLevels } from '../hooks/useConceptLevels';
-import LayerPracticeModal from './LayerPracticeModal';
+import { LayerPracticeModal } from '@design-system/organisms/LayerPracticeModal';
 import { PrerequisiteList } from '@design-system/organisms/PrerequisiteList';
 
 interface ConceptListItemProps {
@@ -95,17 +93,21 @@ const ConceptListItem: React.FC<ConceptListItemProps & { itemRef?: React.RefObje
         className={`${cardBaseClasses} ${cardStateClasses}`}
         onClick={() => onSelectConcept(concept)}
       >
-        <ConceptName
-          concept={concept}
-          isEditing={false}
-          editValues={{ name: concept.name }}
-          onNameChange={() => { }}
-          onStartEditing={() => { }}
-          onCancelEdit={() => { }}
-          onKeyDown={() => { }}
-          nameInputRefs={{ current: {} }}
-          onTitleClick={() => onSelectConcept(concept)}
-        />
+        <HStack align="center" gap="md">
+          <Box
+            role="button"
+            title={t('concept.viewDetails')}
+            className="flex-1 underline underline-offset-4 decoration-transparent hover:decoration-[var(--color-primary)] px-2 py-1 rounded cursor-pointer transition-all duration-200"
+            onClick={(e) => {
+              e.stopPropagation();
+              onSelectConcept(concept);
+            }}
+          >
+            <Typography as="h4" variant="h4" weight="semibold" className="text-[var(--color-primary)]">
+              {concept.name}
+            </Typography>
+          </Box>
+        </HStack>
         <div className="mt-2">
           <ConceptDescription
             concept={concept}
@@ -120,12 +122,22 @@ const ConceptListItem: React.FC<ConceptListItemProps & { itemRef?: React.RefObje
           />
         </div>
         {concept.parents.length > 0 && (
-          <div className="mt-3">
-            <ConceptParents
-              concept={concept}
-              onNavigateToParent={onNavigateToParent}
-            />
-          </div>
+          <HStack align="center" gap="sm" wrap className="mt-3">
+            {concept.parents.map(parentName => (
+              <Badge
+                key={parentName}
+                variant="secondary"
+                className="cursor-pointer"
+                title={t('concept.navigateTo', { name: parentName })}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onNavigateToParent(parentName);
+                }}
+              >
+                ← {parentName}
+              </Badge>
+            ))}
+          </HStack>
         )}
         {hasLesson && (
           <div

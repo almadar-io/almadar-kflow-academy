@@ -13,9 +13,10 @@
     "test": "jest --config jest.config.cjs"
   },
   "dependencies": {
+    "@almadar-io/knowledge": "^0.6.7",
     "@almadar/core": "^10.3.0",
     "@almadar/syntax": "^1.4.0",
-    "@almadar/ui": "^5.49.1",
+    "@almadar/ui": "^5.61.0",
     "@apollo/client": "^3.14.0",
     "@kflow-academy/shared": "*",
     "@react-three/drei": "^10.7.7",
@@ -45,6 +46,7 @@
   },
   "devDependencies": {
     "@almadar/eslint-plugin": "^2.8.2",
+    "@tailwindcss/typography": "^0.5.20",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.3.0",
     "@testing-library/user-event": "^14.5.2",

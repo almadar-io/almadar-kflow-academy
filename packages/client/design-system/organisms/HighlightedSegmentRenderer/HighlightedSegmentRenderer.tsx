@@ -1,17 +1,30 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { extractHighlightChunks } from '../utils/textHighlighter';
-import { applyHighlightingToDOM } from '../utils/domHighlighter';
-import { Modal, SegmentRenderer, parseMarkdownWithCodeBlocks, type SegmentRendererProps, type LessonSegment } from '@almadar/ui';
-import { Concept, QuestionAnswer } from '../types';
+/**
+ * HighlightedSegmentRenderer Organism
+ *
+ * Renders lesson segments, then applies concept-driven text highlighting as a
+ * DOM overlay and opens a modal with the saved question/answer when a highlight
+ * is clicked. Manages annotation/selection behavior → organism.
+ */
 
-interface HighlightedSegmentRendererProps extends SegmentRendererProps {
+import React, { useEffect, useRef, useState } from 'react';
+import {
+  Modal,
+  SegmentRenderer,
+  parseMarkdownWithCodeBlocks,
+  Box,
+  VStack,
+  Typography,
+  type SegmentRendererProps,
+  type LessonSegment,
+} from '@almadar/ui';
+import { extractHighlightChunks } from '@features/concepts/utils/textHighlighter';
+import { applyHighlightingToDOM } from '@features/concepts/utils/domHighlighter';
+import { Concept, QuestionAnswer } from '@features/concepts/types';
+
+export interface HighlightedSegmentRendererProps extends SegmentRendererProps {
   concept?: Concept | null;
 }
 
-/**
- * Wrapper component that applies text highlighting to rendered segments
- * This component renders segments normally, then applies highlighting as a DOM overlay
- */
 export const HighlightedSegmentRenderer: React.FC<HighlightedSegmentRendererProps> = ({
   segments,
   concept,
@@ -81,11 +94,10 @@ export const HighlightedSegmentRenderer: React.FC<HighlightedSegmentRendererProp
 
   return (
     <>
-      <div ref={containerRef}>
+      <Box ref={containerRef}>
         <SegmentRenderer segments={segments} {...otherProps} />
-      </div>
+      </Box>
 
-      {/* Question Answer Dialog */}
       <Modal
         isOpen={selectedQuestion !== null}
         onClose={() => setSelectedQuestion(null)}
@@ -93,34 +105,36 @@ export const HighlightedSegmentRenderer: React.FC<HighlightedSegmentRendererProp
         size="lg"
       >
         {selectedQuestion && (
-          <div className="space-y-4">
+          <VStack gap="md">
             {selectedQuestion.selectedText && (
-              <div className="bg-surface border-l-4 border-info p-3 rounded-r-md">
-                <p className="text-xs font-medium text-info mb-1">
+              <Box
+                padding="sm"
+                className="bg-surface border-l-4 border-[var(--color-info)] rounded-r-md"
+              >
+                <Typography variant="caption" weight="medium" className="text-[var(--color-info)] mb-1">
                   Context:
-                </p>
-                <p className="text-sm text-muted-foreground italic">
+                </Typography>
+                <Typography variant="body2" color="muted" className="italic">
                   "{selectedQuestion.selectedText}"
-                </p>
-              </div>
+                </Typography>
+              </Box>
             )}
-            <div>
-              <h4 className="text-sm font-semibold text-foreground mb-2">
+            <Box>
+              <Typography variant="subheading" weight="semibold" className="mb-2">
                 Answer:
-              </h4>
-              <div className="prose max-w-none">
+              </Typography>
+              <Box className="prose max-w-none">
                 <SegmentRenderer segments={questionAnswerSegments} />
-              </div>
-            </div>
+              </Box>
+            </Box>
             {selectedQuestion.timestamp && (
-              <div className="text-xs text-muted-foreground">
+              <Typography variant="caption" color="muted">
                 {new Date(selectedQuestion.timestamp).toLocaleString()}
-              </div>
+              </Typography>
             )}
-          </div>
+          </VStack>
         )}
       </Modal>
     </>
   );
 };
-

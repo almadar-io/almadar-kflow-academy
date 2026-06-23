@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Concept, ConceptGraph } from "../types";
-import { ConceptViewMode } from "../components/ConceptViewHeader";
 import { computeConceptLevels } from "./useConceptLevels";
+
+export type ConceptViewMode = 'list' | 'detail' | 'mindmap' | 'radial' | 'graph';
 
 export const getInitialViewMode = (conceptId?: string): ConceptViewMode =>
   conceptId ? "detail" : "list";

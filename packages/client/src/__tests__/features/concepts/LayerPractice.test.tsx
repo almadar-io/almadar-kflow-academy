@@ -1,7 +1,7 @@
 import React from 'react';
 import { screen, fireEvent, waitFor } from '@testing-library/react';
 import { renderWithProviders, resetAllMocks } from '../../testUtils.helper';
-import LayerPracticeModal from '../../../features/concepts/components/LayerPracticeModal';
+import { LayerPracticeModal } from '@design-system/organisms/LayerPracticeModal';
 import { Concept, PracticeItem } from '../../../features/concepts/types';
 import { ConceptsAPI } from '../../../features/concepts/ConceptsAPI';
 

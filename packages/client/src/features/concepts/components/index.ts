@@ -4,11 +4,8 @@
 // Note: ConceptLessonPanel has been deprecated and removed. Use LessonPanel from @components/organisms/LessonPanel instead.
 export { default as ConceptCard } from './ConceptCard';
 export { default as ConceptList } from './ConceptList';
-export { default as ConceptName } from './ConceptName';
-export { default as ConceptParents } from './ConceptParents';
 export { default as ConceptLoader } from './ConceptLoader';
 export { default as FirstLayerLoader } from './FirstLayerLoader';
-export { default as RelatedConceptList } from './RelatedConceptList';
 
 // Learning science components (now from @almadar/ui)
 export { ActivationBlock, ConnectionBlock, ReflectionBlock, BloomQuizBlock } from '@almadar/ui';
