@@ -2,7 +2,6 @@ import { Router } from 'express';
 import { authenticateFirebase } from '@almadar/server';
 import {
   generateGoalQuestionsHandler,
-  createGoalHandler,
   createGraphWithGoalHandler,
   updateGoalHandler,
   deleteGoalHandler,
@@ -19,8 +18,7 @@ router.post(
   generateGoalQuestionsHandler
 );
 
-// Goal CRUD operations
-router.post('/goals', authenticateFirebase, createGoalHandler);
+// Goal CRUD operations — goals are created with their learning-path graph
 router.post('/goals/with-graph', authenticateFirebase, createGraphWithGoalHandler);
 router.put('/goals/:goalId', authenticateFirebase, updateGoalHandler);
 router.delete('/goals/:goalId', authenticateFirebase, deleteGoalHandler);

@@ -87,16 +87,6 @@ export interface GoalQuestionAnswer {
 }
 
 /**
- * Create goal request
- */
-export interface CreateGoalRequest {
-  anchorAnswer: string;
-  questionAnswers: GoalQuestionAnswer[];
-  graphId?: string;
-  stream?: boolean;
-}
-
-/**
  * Learning goal
  */
 export interface Milestone {
@@ -128,120 +118,6 @@ export interface LearningGoal {
 export interface CreateGoalResponse {
   goal: LearningGoal;
   model?: string;
-}
-
-/**
- * Create a learning goal
- */
-export async function createGoal(
-  request: CreateGoalRequest,
-  onStream?: (chunk: string, partialGoal: Partial<LearningGoal>) => void
-): Promise<CreateGoalResponse> {
-  const headers = await withAuthHeaders();
-  
-  // Handle streaming if requested
-  const shouldStream = request.stream && onStream;
-  if (shouldStream) {
-    return handleStreamingGoalCreation(request, headers, onStream);
-  }
-  
-  // Non-streaming fallback
-  return apiClient.fetch('/api/learning/goals', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...headers },
-    body: JSON.stringify({ ...request, stream: false }),
-  });
-}
-
-/**
- * Handle streaming goal creation with incremental JSON parsing
- */
-async function handleStreamingGoalCreation(
-  request: CreateGoalRequest,
-  headers: HeadersInit,
-  onStream: (chunk: string, partialGoal: Partial<LearningGoal>) => void
-): Promise<CreateGoalResponse> {
-  const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
-  
-  const response = await fetch(`${API_BASE_URL}/api/learning/goals`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      ...headers,
-    },
-    body: JSON.stringify(request),
-  });
-
-  if (!response.ok) {
-    const error = await response.json().catch(() => ({ message: 'Failed to create goal' }));
-    throw new Error(error.message || 'Failed to create goal');
-  }
-
-  const reader = response.body?.getReader();
-  if (!reader) {
-    throw new Error('Response body is not readable');
-  }
-
-  const decoder = new TextDecoder();
-  let buffer = '';
-  let fullContent = '';
-  let finalResult: CreateGoalResponse | null = null;
-
-  try {
-    while (true) {
-      const { done, value } = await reader.read();
-      if (done) break;
-
-      buffer += decoder.decode(value, { stream: true });
-      const lines = buffer.split('\n');
-      buffer = lines.pop() || '';
-
-      for (const line of lines) {
-        if (line.startsWith('data: ')) {
-          try {
-            const data = JSON.parse(line.slice(6));
-            
-            if (data.error) {
-              throw new Error(data.error);
-            }
-
-            // Stream content chunks
-            if (data.content) {
-              fullContent += data.content;
-              // Parse incremental JSON to extract available key-value pairs
-              const partialGoal = parseIncrementalJSON(fullContent);
-              onStream(data.content, partialGoal);
-            }
-
-            // Capture final result when streaming completes
-            // The backend sends the final result in the done event with goal and model
-            if (data.done) {
-              if (data.goal) {
-                finalResult = {
-                  goal: data.goal,
-                  model: data.model,
-                };
-              } else if (data.error) {
-                throw new Error(data.error);
-              }
-            }
-          } catch (e) {
-            if (e instanceof Error && e.message !== 'Unexpected end of JSON input') {
-              throw e;
-            }
-          }
-        }
-      }
-    }
-  } catch (error) {
-    throw error;
-  }
-
-  if (!finalResult) {
-    throw new Error('Streaming goal creation did not return a result');
-  }
-
-  return finalResult;
 }
 
 /**

@@ -5,9 +5,7 @@
 
 import { useState, useCallback } from 'react';
 import {
-  createGoal,
   createGraphWithGoal,
-  type CreateGoalRequest,
   type CreateGraphWithGoalRequest,
   type CreateGoalResponse,
   type CreateGraphWithGoalResponse,
@@ -22,39 +20,6 @@ export function useCreateGoal() {
   const [goal, setGoal] = useState<CreateGoalResponse | null>(null);
   const [streamingContent, setStreamingContent] = useState('');
   const [partialGoal, setPartialGoal] = useState<PartialGoal | null>(null);
-
-  const create = useCallback(async (
-    request: CreateGoalRequest,
-    onStream?: (chunk: string, partialGoal: PartialGoal) => void
-  ) => {
-    setIsLoading(true);
-    setError(null);
-    setStreamingContent('');
-    setPartialGoal(null);
-
-    try {
-      const response = await createGoal(
-        { ...request, stream: !!onStream },
-        (chunk: string, partial: PartialGoal) => {
-          setStreamingContent(prev => prev + chunk);
-          setPartialGoal(partial);
-          onStream?.(chunk, partial);
-        }
-      );
-      setGoal(response);
-      setStreamingContent('');
-      setPartialGoal(null);
-      return response;
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to create goal';
-      setError(errorMessage);
-      setStreamingContent('');
-      setPartialGoal(null);
-      throw err;
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
 
   const createWithGraph = useCallback(async (
     request: CreateGraphWithGoalRequest,
@@ -103,7 +68,6 @@ export function useCreateGoal() {
     error,
     streamingContent,
     partialGoal,
-    create,
     createWithGraph,
     reset,
   };
