@@ -70,6 +70,7 @@ import type {
   GenerateGoalQuestionsOptions,
   GoalQuestionAnswer,
   GenerateGoalResult,
+  LearningGoal,
 } from '../types/goal';
 import type { Concept } from '../types/concept';
 
@@ -143,6 +144,16 @@ export async function createGoalHandler(
       return;
     }
 
+    // Goals live as LearningGoal nodes inside their learning-path graph, so a
+    // goal cannot be created without a real graph. Use /goals/with-graph to
+    // create the graph and goal together.
+    if (!graphId || typeof graphId !== 'string') {
+      res.status(400).json({
+        error: 'graphId is required — goals are stored inside their learning-path graph. Use /goals/with-graph to create both together.',
+      });
+      return;
+    }
+
     // Validate question answers structure
     const validAnswers: GoalQuestionAnswer[] = questionAnswers.map((qa: any) => ({
       questionId: qa.questionId || '',
@@ -196,9 +207,9 @@ export async function createGoalHandler(
             }));
 
             // Create goal object
-            const goal: any = {
+            const goal: LearningGoal = {
               id: generateConceptId(),
-              graphId: graphId || generateConceptId(), // Use provided graphId or generate one
+              graphId,
               title: goalData.title,
               description: goalData.description,
               type: goalData.type,
@@ -229,18 +240,11 @@ export async function createGoalHandler(
 
     // Non-streaming response
     const normalResult = goalResult as GenerateGoalResult;
-    // If graphId is provided, link the goal to the graph
-    if (graphId) {
-      const linkedGoal = await saveGoal(uid, {
-        ...normalResult.goal,
-        graphId,
-      });
-      res.json({ goal: linkedGoal, model: normalResult.model });
-    } else {
-      // Save goal without graphId (can be linked later)
-      const savedGoal = await saveGoal(uid, normalResult.goal);
-      res.json({ goal: savedGoal, model: normalResult.model });
-    }
+    const linkedGoal = await saveGoal(uid, {
+      ...normalResult.goal,
+      graphId,
+    });
+    res.json({ goal: linkedGoal, model: normalResult.model });
   } catch (error) {
     console.error('Error creating goal:', error);
     res.status(500).json({

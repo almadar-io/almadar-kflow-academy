@@ -1,6 +1,6 @@
 import type { Request } from 'express';
-import { getFirestore } from '@almadar/server';
 import type { JsonValue } from '@almadar/core';
+import { listUserGraphIds } from './listUserGraphIds';
 import {
   KnowledgeGraphAccessLayer,
   type GraphAccessDeps,
@@ -37,14 +37,7 @@ function getUid(req: Request): string {
 }
 
 async function getAllGraphIds(uid: string): Promise<string[]> {
-  const db = getFirestore();
-  const snapshot = await db
-    .collection('users')
-    .doc(uid)
-    .collection('knowledgeGraphs')
-    .select('id')
-    .get();
-  return snapshot.docs.map(doc => doc.id);
+  return listUserGraphIds(uid);
 }
 
 async function verifyAccess(uid: string, graphId: string, level: 'read' | 'write'): Promise<void> {

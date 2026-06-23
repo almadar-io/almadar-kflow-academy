@@ -1,10 +1,11 @@
 import { KnowledgeGraphAccessLayer } from '@almadar-io/knowledge/server';
-import { createEmptyNodeTypeIndex } from '@almadar-io/knowledge';
 import type { LearningGoalNodeProperties, GraphNodeOf } from '@almadar-io/knowledge';
 import type {
   LearningGoal,
   GoalQuestionAnswer,
 } from '../types/goal';
+import { listUserGraphIds } from '../utils/listUserGraphIds';
+import { invalidateGraphCaches } from './cacheInvalidation';
 
 export const COMMON_GOAL_TYPES = [
   'certification',
@@ -15,7 +16,9 @@ export const COMMON_GOAL_TYPES = [
 
 const kgal = new KnowledgeGraphAccessLayer();
 
-const GOALS_GRAPH = (uid: string) => `goals:${uid}`;
+// Goals are stored as `LearningGoal` nodes INSIDE their learning-path graph
+// (the same model @almadar-io/knowledge reads via `graph.nodeTypes.LearningGoal`).
+// There is no separate `goals:${uid}` registry graph.
 
 function toNodeProps(goal: LearningGoal): LearningGoalNodeProperties {
   return {
@@ -69,51 +72,34 @@ function fromNode(node: GraphNodeOf<'LearningGoal'>): LearningGoal {
   };
 }
 
-async function ensureGoalGraph(uid: string): Promise<string> {
-  const graphId = GOALS_GRAPH(uid);
-  // Check whether the GRAPH exists — not whether a node with id===graphId exists.
-  // The goals graph only holds LearningGoal nodes, so a getNode(graphId, graphId)
-  // probe never matches; it always reported "missing" and re-saved an empty graph
-  // (saveGraph uses merge:false), wiping previously saved goals between writes/reads.
-  const exists = await kgal.getGraph(uid, graphId).then(() => true).catch(() => false);
-  if (!exists) {
-    const now = Date.now();
-    const emptyIndex = createEmptyNodeTypeIndex();
-    await kgal.saveGraph(uid, {
-      id: graphId,
-      seedConceptId: graphId,
-      createdAt: now,
-      updatedAt: now,
-      version: 1,
-      name: `Goals:${uid}`,
-      nodes: {},
-      nodeTypes: { ...emptyIndex, Graph: [graphId] },
-      relationships: [],
-    });
+export async function getGoalsByGraphId(uid: string, graphId: string): Promise<LearningGoal[]> {
+  try {
+    const nodes = await kgal.getNodesByType(uid, graphId, 'LearningGoal');
+    return nodes.map(fromNode);
+  } catch {
+    // Graph missing/unreadable — no goals to surface.
+    return [];
   }
-  return graphId;
 }
 
 export async function getUserGoals(uid: string): Promise<LearningGoal[]> {
-  const graphId = await ensureGoalGraph(uid);
-  const nodes = await kgal.getNodesByType(uid, graphId, 'LearningGoal');
-  return nodes.map(fromNode);
-}
-
-export async function getGoalsByGraphId(uid: string, graphId: string): Promise<LearningGoal[]> {
-  const all = await getUserGoals(uid);
-  return all.filter((g) => g.graphId === graphId);
+  const graphIds = await listUserGraphIds(uid);
+  const perGraph = await Promise.all(graphIds.map((id) => getGoalsByGraphId(uid, id)));
+  return perGraph.flat();
 }
 
 export async function getGoalById(uid: string, goalId: string): Promise<LearningGoal | null> {
-  const graphId = await ensureGoalGraph(uid);
-  const node = await kgal.getNode(uid, graphId, goalId);
-  if (!node || node.type !== 'LearningGoal') return null;
-  return fromNode(node as GraphNodeOf<'LearningGoal'>);
+  const all = await getUserGoals(uid);
+  return all.find((g) => g.id === goalId) ?? null;
 }
 
 export async function saveGoal(uid: string, goal: LearningGoal): Promise<LearningGoal> {
-  const graphId = await ensureGoalGraph(uid);
+  if (!goal.graphId) {
+    throw new Error(
+      `Cannot save goal ${goal.id}: missing graphId. Goals live as LearningGoal nodes inside their learning-path graph.`
+    );
+  }
+  const graphId = goal.graphId;
   const payload = { ...goal, updatedAt: Date.now() };
   const nodeProps = toNodeProps(payload);
 
@@ -132,6 +118,7 @@ export async function saveGoal(uid: string, goal: LearningGoal): Promise<Learnin
     });
   }
 
+  await invalidateGraphCaches(uid, graphId);
   return payload;
 }
 
@@ -147,14 +134,11 @@ export async function updateGoal(
 }
 
 export async function deleteGoal(uid: string, goalId: string): Promise<void> {
-  const graphId = await ensureGoalGraph(uid);
   const existing = await getGoalById(uid, goalId);
   if (!existing) throw new Error(`Goal with ID ${goalId} not found`);
-  await kgal.deleteNode(uid, graphId, goalId);
-}
-
-export async function linkGoalToGraph(uid: string, goalId: string, graphId: string): Promise<LearningGoal> {
-  return updateGoal(uid, goalId, { graphId });
+  if (!existing.graphId) return;
+  await kgal.deleteNode(uid, existing.graphId, goalId);
+  await invalidateGraphCaches(uid, existing.graphId);
 }
 
 export async function markMilestoneCompleted(

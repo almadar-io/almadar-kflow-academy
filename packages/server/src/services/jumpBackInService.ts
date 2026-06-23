@@ -1,8 +1,8 @@
 import { KnowledgeGraphAccessLayer, extractLearningPathSummary } from '@almadar-io/knowledge/server';
-import { getFirestore } from '@almadar/server';
 import { getAllUserProgress } from "./userProgressService";
 import { hybridCache, CACHE_TTL } from "./cacheService";
 import { CACHE_KEYS } from "./cacheInvalidation";
+import { listUserGraphIds } from "../utils/listUserGraphIds";
 
 export interface JumpBackInItem {
   id: string;
@@ -39,14 +39,7 @@ export async function getJumpBackInItems(uid: string): Promise<JumpBackInItem[]>
   if (cached) return cached;
 
   try {
-    const db = getFirestore();
-    const snapshot = await db
-      .collection('users')
-      .doc(uid)
-      .collection('knowledgeGraphs')
-      .select('id')
-      .get();
-    const graphIds: string[] = snapshot.docs.map((doc: import('firebase-admin/firestore').QueryDocumentSnapshot) => doc.id);
+    const graphIds = await listUserGraphIds(uid);
     const accessLayer = new KnowledgeGraphAccessLayer();
 
     const [graphSummaries, allUserProgress] = await Promise.all([
