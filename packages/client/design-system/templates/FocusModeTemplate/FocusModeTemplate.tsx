@@ -20,7 +20,7 @@ import { LessonPanel } from '../../organisms/LessonPanel';
 import { Check, ArrowRight, GitBranch, List, Sparkles, Loader2, BookOpen, GraduationCap, Info, Flag } from 'lucide-react';
 import { cn } from '@utils/theme';
 import type { LearnTemplateProps, LearnConcept, LearnGoal, LearnLevel, LearnMilestone } from '../LearnTemplates/types';
-import ConceptLoader from '@features/concepts/components/ConceptLoader';
+import ConceptLoader from '../../organisms/ConceptLoader';
 import type { LucideIcon } from 'lucide-react';
 
 /** Layout-only nav item shape used by templates. */

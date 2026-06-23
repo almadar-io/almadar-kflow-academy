@@ -18,3 +18,5 @@ export { HighlightedSegmentRenderer } from './HighlightedSegmentRenderer';
 export type { HighlightedSegmentRendererProps } from './HighlightedSegmentRenderer';
 export { LayerPracticeModal } from './LayerPracticeModal';
 export type { LayerPracticeModalProps } from './LayerPracticeModal';
+export { ConceptLoader } from './ConceptLoader';
+export type { ConceptLoaderProps, LessonPreview } from './ConceptLoader';
