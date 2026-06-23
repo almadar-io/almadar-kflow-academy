@@ -23,8 +23,8 @@ export function useGoalQuestions() {
       const response = await generateGoalQuestions(request);
       setQuestions(response);
       return response;
-    } catch (err: any) {
-      const errorMessage = err.message || 'Failed to generate goal questions';
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to generate goal questions';
       setError(errorMessage);
       throw err;
     } finally {

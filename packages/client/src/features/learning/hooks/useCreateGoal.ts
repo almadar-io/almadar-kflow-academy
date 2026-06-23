@@ -11,18 +11,21 @@ import {
   type CreateGraphWithGoalRequest,
   type CreateGoalResponse,
   type CreateGraphWithGoalResponse,
+  type LearningGoal,
 } from '../goalApi';
+
+type PartialGoal = Partial<LearningGoal>;
 
 export function useCreateGoal() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [goal, setGoal] = useState<CreateGoalResponse | null>(null);
   const [streamingContent, setStreamingContent] = useState('');
-  const [partialGoal, setPartialGoal] = useState<any>(null);
+  const [partialGoal, setPartialGoal] = useState<PartialGoal | null>(null);
 
   const create = useCallback(async (
     request: CreateGoalRequest,
-    onStream?: (chunk: string, partialGoal: any) => void
+    onStream?: (chunk: string, partialGoal: PartialGoal) => void
   ) => {
     setIsLoading(true);
     setError(null);
@@ -32,7 +35,7 @@ export function useCreateGoal() {
     try {
       const response = await createGoal(
         { ...request, stream: !!onStream },
-        (chunk: string, partial: any) => {
+        (chunk: string, partial: PartialGoal) => {
           setStreamingContent(prev => prev + chunk);
           setPartialGoal(partial);
           onStream?.(chunk, partial);
@@ -42,8 +45,8 @@ export function useCreateGoal() {
       setStreamingContent('');
       setPartialGoal(null);
       return response;
-    } catch (err: any) {
-      const errorMessage = err.message || 'Failed to create goal';
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to create goal';
       setError(errorMessage);
       setStreamingContent('');
       setPartialGoal(null);
@@ -55,7 +58,7 @@ export function useCreateGoal() {
 
   const createWithGraph = useCallback(async (
     request: CreateGraphWithGoalRequest,
-    onStream?: (chunk: string, partialGoal: any) => void
+    onStream?: (chunk: string, partialGoal: PartialGoal) => void
   ) => {
     setIsLoading(true);
     setError(null);
@@ -65,7 +68,7 @@ export function useCreateGoal() {
     try {
       const response = await createGraphWithGoal(
         { ...request, stream: !!onStream },
-        (chunk: string, partial: any) => {
+        (chunk: string, partial: PartialGoal) => {
           setStreamingContent(prev => prev + chunk);
           setPartialGoal(partial);
           onStream?.(chunk, partial);
@@ -75,8 +78,8 @@ export function useCreateGoal() {
       setStreamingContent('');
       setPartialGoal(null);
       return response;
-    } catch (err: any) {
-      const errorMessage = err.message || 'Failed to create graph with goal';
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to create graph with goal';
       setError(errorMessage);
       setStreamingContent('');
       setPartialGoal(null);
