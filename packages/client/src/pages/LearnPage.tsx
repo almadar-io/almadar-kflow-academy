@@ -22,7 +22,7 @@ import { useGetGraph } from '../features/knowledge-graph/hooks/useKnowledgeGraph
 import { useAppDispatch } from '../app/hooks';
 import { setCurrentGraphId } from '../features/knowledge-graph/knowledgeGraphSlice';
 import { graphOperationsStreamingApi } from '../features/knowledge-graph/api/streaming';
-import { GoalForm } from '../features/learning/components/GoalForm';
+import { GoalForm } from '@design-system/organisms/GoalForm';
 import { getNavigationItems, getUserForTemplate, mainNavItems } from '../config/navigation';
 import kflowLogo from '../assets/kflow-logo.svg';
 import { useNavigateEvent } from '../hooks/useNavigateEvent';

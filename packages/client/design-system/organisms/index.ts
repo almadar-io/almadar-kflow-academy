@@ -20,3 +20,7 @@ export { LayerPracticeModal } from './LayerPracticeModal';
 export type { LayerPracticeModalProps } from './LayerPracticeModal';
 export { ConceptLoader } from './ConceptLoader';
 export type { ConceptLoaderProps, LessonPreview } from './ConceptLoader';
+
+// Learning organisms
+export { GoalForm } from './GoalForm';
+export { PlacementTest } from './PlacementTest';
