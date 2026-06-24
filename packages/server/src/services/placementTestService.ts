@@ -1,5 +1,5 @@
 import type { AssessmentSubmissionNodeProperties } from '@almadar-io/knowledge';
-import { studentData } from './studentDataAccess';
+import { accessLayer } from './studentDataAccess';
 import type {
   PlacementTest,
   PlacementQuestion,
@@ -95,7 +95,7 @@ function submissionNodeToTest(testId: string, node: AssessmentSubmissionNodeProp
   }));
   return {
     id: testId,
-    graphId,
+    graphId: node.sourceGraphId ?? graphId,
     goalId: '',
     userId: '',
     topic: '',
@@ -126,16 +126,16 @@ export async function createPlacementTest(options: CreatePlacementTestOptions): 
     updatedAt: Date.now(),
   };
 
-  await studentData.recordSubmission(uid, testId, {
+  await accessLayer.recordSubmission(uid, graphId, uid, testId, {
     ...testToSubmissionData(test, 'pending'),
-    ...(graphId ? { sourceGraphId: graphId } : {}),
+    sourceGraphId: graphId,
   });
 
   return test;
 }
 
 export async function getPlacementTestById(uid: string, testId: string, graphId: string = ''): Promise<PlacementTest | null> {
-  const submissions = await studentData.listSubmissions(uid);
+  const submissions = await accessLayer.listSubmissions(uid);
   const match = submissions.find(s => s.id === testId);
   if (!match) return null;
   return submissionNodeToTest(testId, match, graphId);
@@ -151,8 +151,9 @@ export async function updatePlacementTestQuestions(
   if (!test) throw new Error('Placement test not found after update');
 
   const updated: PlacementTest = { ...test, questions, updatedAt: Date.now() };
-  await studentData.recordSubmission(uid, testId, {
+  await accessLayer.recordSubmission(uid, test.graphId, uid, testId, {
     ...testToSubmissionData(updated, 'in_progress'),
+    sourceGraphId: test.graphId,
   });
 
   return updated;
@@ -190,8 +191,9 @@ export async function submitPlacementTest(options: SubmitPlacementTestOptions & 
   const updatedTest = { ...test, answers: validatedAnswers };
   const result = assessLevel(updatedTest);
 
-  await studentData.recordSubmission(uid, testId, {
+  await accessLayer.recordSubmission(uid, test.graphId, uid, testId, {
     ...testToSubmissionData({ ...updatedTest, assessedLevel: result.assessedLevel, score: result.test.score, completedAt: result.test.completedAt }, 'completed'),
+    sourceGraphId: test.graphId,
   });
 
   try {
@@ -212,7 +214,7 @@ export async function submitPlacementTest(options: SubmitPlacementTestOptions & 
 }
 
 export async function getUserPlacementTests(uid: string, graphId: string = ''): Promise<PlacementTest[]> {
-  const submissions = await studentData.listSubmissions(uid);
+  const submissions = await accessLayer.listSubmissions(uid);
   return submissions
     .map(s => submissionNodeToTest(s.id, s, graphId))
     .sort((a, b) => b.createdAt - a.createdAt);
@@ -226,12 +228,13 @@ export async function getPlacementTestsByGoalId(uid: string, goalId: string, gra
 export async function deletePlacementTest(uid: string, testId: string, graphId: string = ''): Promise<void> {
   const existing = await getPlacementTestById(uid, testId, graphId);
   if (!existing) return;
-  await studentData.recordSubmission(uid, testId, {
+  await accessLayer.recordSubmission(uid, existing.graphId, uid, testId, {
     answers: [],
     score: 0,
     maxScore: 0,
     percentage: 0,
     passed: false,
     submittedAt: Date.now(),
+    sourceGraphId: existing.graphId,
   });
 }

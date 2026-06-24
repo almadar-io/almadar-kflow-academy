@@ -1,5 +1,5 @@
 import { cache, CACHE_TTL } from './cacheService';
-import { studentData } from './studentDataAccess';
+import { accessLayer } from './studentDataAccess';
 
 export interface UserPreferences {
   dailyLessonGoal: number;
@@ -20,11 +20,11 @@ export async function getUserPreferences(uid: string): Promise<UserPreferences> 
   const cached = cache.get<UserPreferences>(cacheKey);
   if (cached !== null) return cached;
 
-  const stored = await studentData.getPreferences(uid);
+  const stored = await accessLayer.getPreferences(uid);
 
+  const now = Date.now();
   let preferences: UserPreferences;
   if (!stored) {
-    const now = Date.now();
     preferences = { ...DEFAULT_PREFERENCES, updatedAt: now, createdAt: now };
   } else {
     preferences = {
@@ -34,8 +34,8 @@ export async function getUserPreferences(uid: string): Promise<UserPreferences> 
       learningStyle: stored.learningStyle as UserPreferences['learningStyle'],
       timePerWeek: stored.timePerWeek,
       interests: stored.interests,
-      updatedAt: stored.updatedAt,
-      createdAt: stored.createdAt,
+      updatedAt: now,
+      createdAt: now,
     };
   }
 
@@ -58,14 +58,12 @@ export async function updateUserPreferences(
     dailyGoalStartDate: preferences.dailyLessonGoal !== undefined ? now : existing.dailyGoalStartDate,
   };
 
-  await studentData.setPreferences(uid, {
+  await accessLayer.setPreferences(uid, {
     dailyLessonGoal: updatedPreferences.dailyLessonGoal,
     dailyGoalStartDate: updatedPreferences.dailyGoalStartDate,
     learningStyle: updatedPreferences.learningStyle,
     timePerWeek: updatedPreferences.timePerWeek,
     interests: updatedPreferences.interests ?? [],
-    updatedAt: updatedPreferences.updatedAt,
-    createdAt: updatedPreferences.createdAt,
   });
   cache.delete(`preferences:${uid}`);
   return updatedPreferences;

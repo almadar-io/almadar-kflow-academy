@@ -32,7 +32,6 @@ import {
 } from '@almadar-io/knowledge/server';
 
 const accessLayer = new KnowledgeGraphAccessLayer();
-const studentData = accessLayer.getStudentDataService();
 
 async function migrateUser(uid: string, sourceGraphId: string): Promise<void> {
   const db = getFirestore();
@@ -43,7 +42,7 @@ async function migrateUser(uid: string, sourceGraphId: string): Promise<void> {
   for (const doc of progressSnap.docs) {
     const { nodes } = migrateUserProgressDoc(doc.data(), uid);
     for (const node of nodes) {
-      await studentData.upsertProgress(uid, doc.id, { ...node.properties, graphId: sourceGraphId || undefined });
+      await accessLayer.upsertProgress(uid, sourceGraphId, uid, doc.id, { ...node.properties, graphId: sourceGraphId || undefined });
     }
   }
   console.log(`  ✓ Progress: ${progressSnap.size} records`);
@@ -56,7 +55,7 @@ async function migrateUser(uid: string, sourceGraphId: string): Promise<void> {
   for (const doc of enrollmentsSnap.docs) {
     const { nodes } = migrateEnrollmentDoc(doc.data(), uid);
     for (const node of nodes) {
-      await studentData.upsertEnrollment(uid, doc.id, { ...node.properties, sourceGraphId: sourceGraphId || undefined });
+      await accessLayer.upsertEnrollment(uid, sourceGraphId, uid, { ...node.properties, sourceGraphId: sourceGraphId || undefined });
     }
   }
   console.log(`  ✓ Enrollments: ${enrollmentsSnap.size} records`);
@@ -66,7 +65,7 @@ async function migrateUser(uid: string, sourceGraphId: string): Promise<void> {
   for (const doc of testsSnap.docs) {
     const { nodes } = migrateSubmissionDoc(doc.data(), uid);
     for (const node of nodes) {
-      await studentData.recordSubmission(uid, doc.id, {
+      await accessLayer.recordSubmission(uid, sourceGraphId, uid, doc.id, {
         answers: node.properties.answers,
         score: node.properties.score,
         maxScore: node.properties.maxScore,
@@ -85,7 +84,7 @@ async function migrateUser(uid: string, sourceGraphId: string): Promise<void> {
   for (const doc of achievementsSnap.docs) {
     const { nodes } = migrateAchievementDoc(doc.data(), uid);
     for (const node of nodes) {
-      await studentData.awardAchievement(uid, {
+      await accessLayer.awardAchievement(uid, {
         achievementType: node.properties.achievementType,
         name: node.properties.name,
         description: node.properties.description,
@@ -102,7 +101,13 @@ async function migrateUser(uid: string, sourceGraphId: string): Promise<void> {
   if (prefsDoc.exists) {
     const { nodes } = migratePreferencesDoc(prefsDoc.data()!, uid);
     for (const node of nodes) {
-      await studentData.setPreferences(uid, node.properties);
+      await accessLayer.setPreferences(uid, {
+        dailyLessonGoal: node.properties.dailyLessonGoal,
+        learningStyle: node.properties.learningStyle,
+        timePerWeek: node.properties.timePerWeek,
+        interests: node.properties.interests,
+        dailyGoalStartDate: node.properties.dailyGoalStartDate,
+      });
     }
     console.log(`  ✓ Preferences migrated`);
   }

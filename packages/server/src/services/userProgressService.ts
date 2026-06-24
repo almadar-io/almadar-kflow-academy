@@ -1,7 +1,7 @@
 import type { ProgressNodeProperties } from '@almadar-io/knowledge';
 import { hybridCache, CACHE_TTL } from "./cacheService";
 import { CACHE_KEYS, invalidateUserProgress } from "./cacheInvalidation";
-import { studentData } from "./studentDataAccess";
+import { accessLayer } from "./studentDataAccess";
 
 export type BloomLevel = "remember" | "understand" | "apply" | "analyze" | "evaluate" | "create";
 
@@ -86,7 +86,11 @@ export async function saveUserProgress(
   const now = Date.now();
   const sourceGraphId = progress.graphId;
 
-  const existing = await getProgressNode(uid, sanitizedConceptId);
+  if (!sourceGraphId) {
+    throw new Error(`saveUserProgress requires a graphId for concept ${conceptId}`);
+  }
+
+  const existing = await getProgressNode(uid, sourceGraphId, sanitizedConceptId);
 
   const userProgress: UserProgressDocument = existing
     ? {
@@ -118,8 +122,8 @@ export async function saveUserProgress(
       };
 
   const progressData = toProgressNodeData(sanitizedConceptId, userProgress);
-  if (sourceGraphId) progressData.graphId = sourceGraphId;
-  await studentData.upsertProgress(uid, sanitizedConceptId, progressData);
+  progressData.graphId = sourceGraphId;
+  await accessLayer.upsertProgress(uid, sourceGraphId, uid, sanitizedConceptId, progressData);
   await invalidateUserProgress(uid);
   return { ...userProgress, conceptId };
 }
@@ -133,21 +137,24 @@ export async function trackConceptAccess(
   const sanitizedConceptId = sanitizeConceptId(conceptId);
   const now = Date.now();
 
-  const existing = await getProgressNode(uid, sanitizedConceptId);
+  const existing = await getProgressNode(uid, sourceGraphId, sanitizedConceptId);
+  const graphId = existing?.graphId ?? sourceGraphId;
+  if (!graphId) return;
+
   if (existing) {
-    await studentData.upsertProgress(uid, sanitizedConceptId, {
+    await accessLayer.upsertProgress(uid, graphId, uid, sanitizedConceptId, {
       masteryLevel: existing.masteryLevel,
       lastStudied: now,
       updatedAt: now,
-      graphId: existing.graphId ?? sourceGraphId,
+      graphId,
     });
   } else {
-    await studentData.upsertProgress(uid, sanitizedConceptId, {
+    await accessLayer.upsertProgress(uid, graphId, uid, sanitizedConceptId, {
       masteryLevel: 0,
       lastStudied: now,
       createdAt: now,
       updatedAt: now,
-      graphId: sourceGraphId,
+      graphId,
     });
   }
 
@@ -158,17 +165,18 @@ export async function getUserProgress(
   uid: string,
   conceptId: string,
   updateLastStudied: boolean = false,
-  conceptName?: string
+  conceptName?: string,
+  graphId?: string
 ): Promise<UserProgressDocument | null> {
   const sanitizedConceptId = sanitizeConceptId(conceptId);
 
   if (updateLastStudied) {
-    trackConceptAccess(uid, sanitizedConceptId, conceptName ?? conceptId).catch((error) => {
+    trackConceptAccess(uid, sanitizedConceptId, conceptName ?? conceptId, graphId).catch((error) => {
       console.warn("Failed to track concept access:", error);
     });
   }
 
-  const node = await getProgressNode(uid, sanitizedConceptId);
+  const node = await getProgressNode(uid, graphId, sanitizedConceptId);
   if (!node) return null;
   return { ...node, conceptId };
 }
@@ -178,14 +186,14 @@ export async function getAllUserProgress(uid: string): Promise<UserProgressDocum
   const cached = await hybridCache.get<UserProgressDocument[]>(cacheKey);
   if (cached) return cached;
 
-  const nodes = await studentData.listProgress(uid);
+  const nodes = await accessLayer.listProgress(uid);
   const result = nodes.map((n) => fromProgressNode(n.id, n));
   await hybridCache.set(cacheKey, result, CACHE_TTL.USER_PROGRESS);
   return result;
 }
 
 export async function getConceptsMastered(uid: string): Promise<number> {
-  const all = await studentData.listProgress(uid);
+  const all = await accessLayer.listProgress(uid);
   return all.filter((p) => p.masteryLevel === 3).length;
 }
 
@@ -245,8 +253,18 @@ export async function updateFromLessonCompletion(
   return saveUserProgress(uid, conceptName, merged);
 }
 
-async function getProgressNode(uid: string, conceptId: string): Promise<UserProgressDocument | null> {
-  const node = await studentData.getProgressForConcept(uid, conceptId);
-  if (!node) return null;
-  return fromProgressNode(conceptId, node);
+async function getProgressNode(
+  uid: string,
+  graphId: string | undefined,
+  conceptId: string
+): Promise<UserProgressDocument | null> {
+  if (graphId) {
+    const node = await accessLayer.getProgressForConcept(uid, graphId, uid, conceptId);
+    if (!node) return null;
+    return fromProgressNode(conceptId, node);
+  }
+  const all = await accessLayer.listProgress(uid);
+  const match = all.find((n) => n.id === conceptId);
+  if (!match) return null;
+  return fromProgressNode(conceptId, match);
 }

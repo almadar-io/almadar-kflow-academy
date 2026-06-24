@@ -95,7 +95,7 @@ export async function getUserProgressHandler(req: Request, res: Response): Promi
       });
     }
     
-    const progress = await getUserProgress(uid, decodedConceptId);
+    const progress = await getUserProgress(uid, decodedConceptId, false, conceptName || undefined, graphId || undefined);
 
     if (!progress) {
       res.status(404).json({ error: 'User progress not found' });

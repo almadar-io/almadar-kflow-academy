@@ -16,7 +16,7 @@
     "@almadar-io/knowledge": "^0.6.7",
     "@almadar/core": "^10.4.0",
     "@almadar/syntax": "^1.4.0",
-    "@almadar/ui": "^5.62.0",
+    "@almadar/ui": "^5.63.2",
     "@apollo/client": "^3.14.0",
     "@kflow-academy/shared": "*",
     "@react-three/drei": "^10.7.7",

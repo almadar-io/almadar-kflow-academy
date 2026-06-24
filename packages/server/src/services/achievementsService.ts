@@ -1,5 +1,5 @@
-import type { AchievementNodeProperties } from '@almadar-io/knowledge';
-import { studentData } from './studentDataAccess';
+import type { AchievementRecord } from '@almadar-io/knowledge/server';
+import { accessLayer } from './studentDataAccess';
 import { getStudentEnrollments } from './enrollmentService';
 import { getConceptsMastered } from './userProgressService';
 import { getLearningStreak } from './statisticsService';
@@ -39,15 +39,15 @@ export type AchievementEvent =
   | { type: 'streak_updated'; streak: number }
   | { type: 'concept_mastered' };
 
-function nodeToAchievement(node: AchievementNodeProperties): Achievement {
+function recordToAchievement(record: AchievementRecord): Achievement {
   return {
-    id: node.id,
-    type: node.achievementType as AchievementType,
-    name: node.name,
-    description: node.description,
-    icon: node.icon ?? '',
-    unlockedAt: node.unlockedAt,
-    progress: node.progress,
+    id: record.achievementType,
+    type: record.achievementType as AchievementType,
+    name: record.name,
+    description: record.description,
+    icon: record.icon ?? '',
+    unlockedAt: record.unlockedAt,
+    progress: record.progress,
   };
 }
 
@@ -78,7 +78,7 @@ export async function checkAndAwardAchievements(uid: string, event: AchievementE
       { type: 'courses_completed_5', condition: completedCourses >= 5 },
     ];
 
-    const existing = await studentData.listAchievements(uid);
+    const existing = await accessLayer.listAchievements(uid);
     const unlockedTypes = new Set(existing.map(a => a.achievementType as AchievementType));
 
     for (const check of checks) {
@@ -89,7 +89,7 @@ export async function checkAndAwardAchievements(uid: string, event: AchievementE
           ...definition,
           unlockedAt: Date.now(),
         };
-        await studentData.awardAchievement(uid, {
+        await accessLayer.awardAchievement(uid, {
           achievementType: check.type,
           name: achievement.name,
           description: achievement.description,
@@ -109,8 +109,8 @@ export async function checkAndAwardAchievements(uid: string, event: AchievementE
 }
 
 export async function getUserAchievements(uid: string): Promise<Achievement[]> {
-  const nodes = await studentData.listAchievements(uid);
-  return nodes.map(nodeToAchievement);
+  const records = await accessLayer.listAchievements(uid);
+  return records.map(recordToAchievement);
 }
 
 export async function getAchievementProgress(uid: string): Promise<Record<AchievementType, number>> {

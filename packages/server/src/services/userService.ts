@@ -1,5 +1,5 @@
 import { getFirestore } from '@almadar/server';
-import { studentData } from './studentDataAccess';
+import { accessLayer } from './studentDataAccess';
 
 export interface UserData {
   uid: string;
@@ -26,7 +26,7 @@ export async function upsertUser(uid: string, email: string): Promise<UserData> 
 
     await userRef.set(userData, { merge: true });
 
-    await studentData.upsertStudent(uid);
+    await accessLayer.upsertProfile(uid, { email });
 
     return userData;
   } catch (error) {

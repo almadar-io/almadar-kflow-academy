@@ -2,7 +2,7 @@ import { getFirestore } from '@almadar/server';
 import type { EnrollmentNodeProperties } from '@almadar-io/knowledge';
 import { hybridCache, CACHE_TTL } from "./cacheService";
 import { CACHE_KEYS } from "./cacheInvalidation";
-import { studentData } from "./studentDataAccess";
+import { accessLayer } from "./studentDataAccess";
 import type { PublishedCourse } from "../types/publishing";
 import type { Enrollment, AssessmentStatus } from "@kflow-academy/shared";
 
@@ -32,7 +32,7 @@ export async function getEnrollmentById(
   studentId: string,
   courseSettingsNodeId: string
 ): Promise<Enrollment | null> {
-  const node = await studentData.getEnrollment(studentId, courseSettingsNodeId);
+  const node = await accessLayer.getEnrollment(studentId, courseSettingsNodeId, studentId);
   if (!node) return null;
   return enrollmentNodeToEnrollment(courseSettingsNodeId, node);
 }
@@ -46,7 +46,7 @@ export async function getStudentEnrollments(studentId: string): Promise<Enrollme
   const cached = await hybridCache.get<Enrollment[]>(cacheKey);
   if (cached) return cached;
 
-  const nodes = await studentData.listEnrollments(studentId);
+  const nodes = await accessLayer.listEnrollments(studentId);
   const result = nodes.map((node) => enrollmentNodeToEnrollment(node.id, node));
 
   await hybridCache.set(cacheKey, result, CACHE_TTL.ENROLLMENTS);
