@@ -102,6 +102,62 @@ await check('concept detail + generate lesson (explain)', async () => {
   return `concept ${conceptId} detail rendered (lesson ${/Generate Lesson/i.test(t) ? 'pending' : 'generated'})`;
 });
 
+await check('student progress persists in the content graph (no student: registry)', async () => {
+  assert(generatedGraphUrl, 'no generated graph from the prior step');
+  const graphId = generatedGraphUrl.split('/concepts/')[1];
+  // Same fetch the lesson check uses to discover a concept in the generated graph.
+  const conceptId = await page.evaluate(async (gid) => {
+    const r = await fetch(`/api/graph-queries/${gid}/concepts`);
+    const j = await r.json().catch(() => ({}));
+    const list = j.concepts || j.nodes || [];
+    return (list[0] && (list[0].id || list[0].conceptId)) || null;
+  }, graphId);
+  assert(conceptId, 'no concept found in generated graph');
+
+  const masteryLevel = 2;
+  // Record progress (graphId is REQUIRED now — progress is stored inside that content graph).
+  const saved = await page.evaluate(async ({ conceptId, graphId, masteryLevel }) => {
+    const r = await fetch('/api/user/progress', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ conceptId, graphId, masteryLevel, conceptName: conceptId }),
+    });
+    return { status: r.status, body: await r.json().catch(() => ({})) };
+  }, { conceptId, graphId, masteryLevel });
+  assert(saved.status === 200, `save failed: ${saved.status} ${JSON.stringify(saved.body).slice(0, 160)}`);
+  // The server sanitizes the conceptId into the node id; match the list against that form.
+  const sanitizedId = (saved.body.progress && saved.body.progress.conceptId) || conceptId;
+  const matchId = String(sanitizedId)
+    .replace(/[\/\\.#?\[\]]/g, '-').replace(/\s+/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '');
+
+  // KEY assertion: the just-recorded concept is visible in the all-progress list WITHOUT a
+  // separate enrollment step (pre-0.7.2 this was invisible). Proves content-graph write + enrolledGraphs index.
+  const list = await page.evaluate(async () => {
+    const r = await fetch('/api/user/progress');
+    return { status: r.status, body: await r.json().catch(() => ({})) };
+  });
+  assert(list.status === 200, `list failed: ${list.status}`);
+  const items = (list.body && list.body.progress) || [];
+  // The list returns content-graph progress node ids (e.g. `progress-<uid>-<sanitizedConceptId>`);
+  // match by the sanitized concept suffix rather than exact equality.
+  const inList = items.find((p) => {
+    const id = String(p.conceptId || '');
+    return id === matchId || id === String(sanitizedId) || id === conceptId || id.endsWith(`-${matchId}`) || id.endsWith(matchId);
+  });
+  assert(inList, `recorded concept not in all-progress list (looked for ${matchId} among ${items.map((p) => p.conceptId).slice(0, 5).join(',')})`);
+
+  // Single read-back (pass graphId so it uses the direct content-graph lookup).
+  const single = await page.evaluate(async ({ conceptId, graphId }) => {
+    const r = await fetch(`/api/user/progress/${encodeURIComponent(conceptId)}?graphId=${encodeURIComponent(graphId)}`);
+    return { status: r.status, body: await r.json().catch(() => ({})) };
+  }, { conceptId, graphId });
+  assert(single.status === 200, `single read-back failed: ${single.status} ${JSON.stringify(single.body).slice(0, 120)}`);
+  const readMastery = single.body.progress && single.body.progress.masteryLevel;
+  assert(readMastery === masteryLevel, `masteryLevel mismatch: expected ${masteryLevel}, got ${readMastery}`);
+
+  return `recorded+readback masteryLevel=${readMastery} (graph ${graphId})`;
+});
+
 await check('settings renders language switcher', async () => {
   await goto('/settings'); const t = await text();
   assert(/Language/i.test(t) && /English/i.test(t), `no language switcher: ${t.slice(0, 80)}`);
