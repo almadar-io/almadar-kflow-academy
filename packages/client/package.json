@@ -13,7 +13,7 @@
     "test": "jest --config jest.config.cjs"
   },
   "dependencies": {
-    "@almadar-io/knowledge": "^0.7.2",
+    "@almadar-io/knowledge": "^0.7.3",
     "@almadar/core": "^10.4.0",
     "@almadar/syntax": "^1.4.0",
     "@almadar/ui": "^5.63.2",
