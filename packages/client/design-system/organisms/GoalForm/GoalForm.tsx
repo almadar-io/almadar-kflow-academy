@@ -583,18 +583,16 @@ export const GoalForm: React.FC<GoalFormProps> = ({ onComplete, onCancel }) => {
             />
           </Box>
 
-          {/* Action Buttons - Fixed to bottom */}
-          <Box className="sticky bottom-0 left-0 right-0 bg-card border-t border-border py-4 -mx-6 px-6 -mb-6">
-            <Stack direction="horizontal" justify="end" gap="md">
-              <Button
-                variant="primary"
-                onClick={handleAnchorSubmit}
-                disabled={!anchorAnswer.trim() || isGeneratingQuestions}
-              >
-                {t('episode.continue')}
-              </Button>
-            </Stack>
-          </Box>
+          {/* Action Buttons */}
+          <Stack direction="horizontal" justify="end" gap="md">
+            <Button
+              variant="primary"
+              onClick={handleAnchorSubmit}
+              disabled={!anchorAnswer.trim() || isGeneratingQuestions}
+            >
+              {t('episode.continue')}
+            </Button>
+          </Stack>
         </Box>
       )}
 

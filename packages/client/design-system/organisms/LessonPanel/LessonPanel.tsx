@@ -306,30 +306,6 @@ export const LessonPanel: React.FC<LessonPanelProps> = ({
           <>
             <Divider />
             <div className="flex flex-wrap gap-3">
-              {onGenerateLesson && (
-                <>
-                  <Button
-                    variant="secondary"
-                    size="sm"
-                    icon={isGenerating ? Loader2 : Sparkles}
-                    onClick={() => onGenerateLesson(true)}
-                    disabled={isGenerating}
-                    isLoading={isGenerating}
-                  >
-                    Quick Lesson
-                  </Button>
-                  <Button
-                    variant="secondary"
-                    size="sm"
-                    icon={isGenerating ? Loader2 : Sparkles}
-                    onClick={() => onGenerateLesson(false)}
-                    disabled={isGenerating}
-                    isLoading={isGenerating}
-                  >
-                    Detailed Lesson
-                  </Button>
-                </>
-              )}
               {onGenerateFlashCards && (
                 <Button
                   variant="secondary"

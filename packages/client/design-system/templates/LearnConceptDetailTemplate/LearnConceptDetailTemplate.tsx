@@ -13,7 +13,7 @@
 
 import React from 'react';
 import { AppLayoutTemplate } from '../AppLayoutTemplate';
-import { Badge, Button, Card, Typography, useEventBus, useTranslate } from '@almadar/ui';
+import { Badge, Box, Button, Card, HStack, Typography, VStack, useEventBus, useTranslate } from '@almadar/ui';
 import type { DisplayStateProps } from '@almadar/ui';
 import { ArrowLeft, ChevronLeft, ChevronRight, ArrowRight } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
@@ -273,38 +273,38 @@ export const LearnConceptDetailTemplate: React.FC<AllProps> = (props) => {
 
         {/* Concept Navigation */}
         {(previousConcept || nextConcept) && (
-          <div className="flex items-center justify-between gap-4">
+          <HStack justify="between" align="center" gap="md">
             {previousConcept ? (
               <Button
                 variant="secondary"
                 onClick={() => handlePrevious(previousConcept)}
                 icon={ChevronLeft}
-                className="flex-1"
+                className="gap-3"
               >
-                <div className="text-left">
-                  <div className="text-xs text-muted-foreground mb-1">{t('lesson.previous')}</div>
-                  <div className="font-medium">{previousConcept.name}</div>
-                </div>
+                <VStack gap="none" align="start" className="min-w-0">
+                  <Typography variant="caption" className="text-muted-foreground">{t('lesson.previous')}</Typography>
+                  <Typography variant="small" weight="medium" className="truncate">{previousConcept.name}</Typography>
+                </VStack>
               </Button>
             ) : (
-              <div className="flex-1" />
+              <Box />
             )}
             {nextConcept ? (
               <Button
                 variant="primary"
                 onClick={() => handleNext(nextConcept)}
                 iconRight={ChevronRight}
-                className="flex-1"
+                className="gap-3"
               >
-                <div className="text-left">
-                  <div className="text-xs text-primary-foreground mb-1">{t('lesson.next')}</div>
-                  <div className="font-medium">{nextConcept.name}</div>
-                </div>
+                <VStack gap="none" align="end" className="min-w-0">
+                  <Typography variant="caption" className="text-primary-foreground">{t('lesson.next')}</Typography>
+                  <Typography variant="small" weight="medium" className="truncate">{nextConcept.name}</Typography>
+                </VStack>
               </Button>
             ) : (
-              <div className="flex-1" />
+              <Box />
             )}
-          </div>
+          </HStack>
         )}
       </div>
     </AppLayoutTemplate>

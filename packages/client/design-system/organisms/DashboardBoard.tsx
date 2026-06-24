@@ -15,6 +15,7 @@
  */
 
 import React, { useCallback, useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { Plus, Trash2, Brain, ArrowLeft, X } from 'lucide-react';
 import {
   Box,
@@ -40,7 +41,6 @@ export interface DashboardLearningPath {
   id: string;
   graphId: string;
   name: string;
-  seedConcept: string;
   conceptCount: number;
   levelCount: number;
   description?: string;
@@ -157,6 +157,49 @@ export function DashboardBoard({
 
   return (
     <Container size="lg" padding="sm" className={`py-6 ${className}`}>
+      {/* Selected-node actions render in a viewport-fixed top HUD (not pinned to the
+          scrollable map) so they stay reachable on mobile and when scrolled away. */}
+      {selectedNode && typeof document !== 'undefined' &&
+        createPortal(
+          <Box
+            className={`fixed top-4 inset-x-4 sm:inset-x-0 z-[60] flex justify-center transition-all duration-200 ease-out ${
+              popoverVisible ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-2 pointer-events-none'
+            }`}
+          >
+            <Card
+              padding="sm"
+              className="w-full sm:w-auto bg-[var(--color-card)] border border-[var(--color-border)] shadow-[var(--shadow-lg)]"
+            >
+              <HStack gap="sm" align="center" justify="between" wrap>
+                <Typography
+                  variant="small"
+                  className="font-medium text-[var(--color-foreground)] truncate max-w-[10rem] sm:max-w-[16rem]"
+                >
+                  {selectedNode.label ?? selectedNode.id}
+                </Typography>
+                <HStack gap="xs" align="center">
+                  <Button onClick={handleOpenSelected} variant="primary" size="sm">
+                    {t('dashboard.open')}
+                  </Button>
+                  {level === 'L1' && (
+                    <Button onClick={handleDrillSelected} variant="secondary" size="sm">
+                      {t('dashboard.showConcepts')}
+                    </Button>
+                  )}
+                  <Button
+                    onClick={handleClearSelected}
+                    variant="ghost"
+                    size="sm"
+                    icon={X}
+                    aria-label={t('learning.close')}
+                    className="text-[var(--color-muted-foreground)] hover:text-[var(--color-foreground)]"
+                  />
+                </HStack>
+              </HStack>
+            </Card>
+          </Box>,
+          document.body
+        )}
       <VStack gap="xl">
         {/* Welcome */}
         <Typography variant="h1" className="text-2xl font-bold text-[var(--color-foreground)]">
@@ -208,54 +251,6 @@ export function DashboardBoard({
                       </Button>
                     )}
 
-                    {/* Floating action popover for the selected node (Floating layer per the beauty guide). */}
-                    {selectedNode && (
-                      <Box
-                        className={`absolute top-3 left-1/2 z-20 transition-all duration-200 ease-out ${
-                          popoverVisible
-                            ? 'opacity-100 -translate-x-1/2 translate-y-0'
-                            : 'opacity-0 -translate-x-1/2 -translate-y-2'
-                        }`}
-                      >
-                        <Box className="flex items-center gap-3 px-4 py-3 bg-[var(--color-card)] border border-[var(--color-border)] rounded-[var(--radius-md)] shadow-[var(--shadow-lg)]">
-                          <Typography
-                            variant="small"
-                            className="font-medium text-[var(--color-foreground)] truncate max-w-[14rem]"
-                          >
-                            {selectedNode.label ?? selectedNode.id}
-                          </Typography>
-                          <HStack gap="xs" align="center">
-                            <Button
-                              onClick={handleOpenSelected}
-                              variant="primary"
-                              size="sm"
-                              className="hover:-translate-y-0.5 transition-all duration-200"
-                            >
-                              {t('dashboard.open')}
-                            </Button>
-                            {level === 'L1' && (
-                              <Button
-                                onClick={handleDrillSelected}
-                                variant="secondary"
-                                size="sm"
-                                className="hover:-translate-y-0.5 transition-all duration-200"
-                              >
-                                {t('dashboard.showConcepts')}
-                              </Button>
-                            )}
-                            <Button
-                              onClick={handleClearSelected}
-                              variant="ghost"
-                              size="sm"
-                              aria-label={t('learning.close')}
-                              className="p-1 text-[var(--color-muted-foreground)] hover:text-[var(--color-foreground)] transition-all duration-200"
-                            >
-                              <X size={16} />
-                            </Button>
-                          </HStack>
-                        </Box>
-                      </Box>
-                    )}
                   </>
                 )}
               </Box>
@@ -289,19 +284,21 @@ export function DashboardBoard({
                     >
                       <VStack gap="sm">
                         <HStack justify="between" align="start">
-                          <VStack gap="xs">
+                          <VStack gap="xs" className="flex-1 min-w-0">
                             <Typography variant="h4" className="font-semibold text-[var(--color-foreground)]">
                               {path.name}
                             </Typography>
-                            <Typography variant="small" className="text-[var(--color-muted-foreground)]">
-                              {path.seedConcept}
-                            </Typography>
+                            {path.description && (
+                              <Typography variant="small" className="text-[var(--color-muted-foreground)] line-clamp-2">
+                                {path.description}
+                              </Typography>
+                            )}
                           </VStack>
                           <Button
                             variant="ghost"
                             size="sm"
                             onClick={handleDelete}
-                            className="p-1 text-[var(--color-muted-foreground)] hover:text-error"
+                            className="p-1 text-[var(--color-muted-foreground)] hover:text-error flex-shrink-0"
                           >
                             <Trash2 size={14} />
                           </Button>
@@ -314,11 +311,6 @@ export function DashboardBoard({
                             {t('dashboard.levels', { count: path.levelCount })}
                           </Badge>
                         </HStack>
-                        {path.description && (
-                          <Typography variant="small" className="text-[var(--color-muted-foreground)] line-clamp-2">
-                            {path.description}
-                          </Typography>
-                        )}
                       </VStack>
                     </Card>
                   );

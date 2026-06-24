@@ -157,7 +157,6 @@ export const DashboardPage: React.FC = () => {
           id: item.id,
           graphId: item.metadata.graphId ?? item.id,
           name: item.title,
-          seedConcept: item.description ?? '',
           conceptCount: item.metadata.conceptCount ?? 0,
           levelCount: item.metadata.levelCount ?? 0,
           description: item.description,

@@ -11,7 +11,8 @@
 import React, { useState, useCallback, useMemo, useRef, useEffect } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { useLocation } from 'react-router';
-import { Box, Card, Overlay, Spinner, Typography, VStack, useEventBus, useTranslate } from '@almadar/ui';
+import { Box, Button, Card, Overlay, Spinner, Typography, VStack, useEventBus, useTranslate } from '@almadar/ui';
+import { X } from 'lucide-react';
 import { LearnPathsTemplate } from '@design-system/templates/LearnTemplates/LearnPathsTemplate';
 import type { LearnPathsTemplateEntity } from '@design-system/templates/LearnTemplates/LearnPathsTemplate';
 import { useAuthContext } from '../features/auth/AuthContext';
@@ -189,11 +190,25 @@ export const LearnPage: React.FC = () => {
     [navItems, templateUser, location.pathname, learnEntity]
   );
 
+  const closeGoalModal = useCallback(() => {
+    setShowGoalForm(false);
+    setIsExpanding(false);
+  }, []);
+
   const overlay =
     showGoalForm || isExpanding ? (
       <Box className="fixed inset-0 z-50 flex items-center justify-center p-4">
-        <Overlay />
-        <Card className="relative z-50 max-w-2xl w-full max-h-[90vh] overflow-y-auto p-6">
+        <Overlay onClick={closeGoalModal} />
+        <Card className="relative z-50 max-w-2xl w-full max-h-[90vh] overflow-y-auto overflow-x-hidden p-6">
+          <Box className="absolute top-3 right-3 z-10">
+            <Button
+              variant="ghost"
+              size="sm"
+              icon={X}
+              onClick={closeGoalModal}
+              aria-label={t('learning.close')}
+            />
+          </Box>
           {isExpanding ? (
             <VStack gap="md" align="center" className="py-8">
               <Spinner size="lg" />
