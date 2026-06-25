@@ -19,6 +19,12 @@ runConfig:
   memoryMiB: 1024
 
 env:
+  # GitHub token for @almadar-io private packages from GitHub Packages
+  - variable: GITHUB_TOKEN
+    secret: GH_PACKAGES_TOKEN
+    availability:
+      - BUILD
+
   # Use development during build to install devDependencies
   - variable: NODE_ENV
     value: development

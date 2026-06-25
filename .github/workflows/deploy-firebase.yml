@@ -20,6 +20,7 @@ jobs:
     permissions:
       contents: read
       id-token: write
+      packages: read
 
     steps:
       - name: Checkout code
@@ -43,18 +44,15 @@ jobs:
 
       - name: Install dependencies
         run: |
-          if [ -f package-lock.json ]; then
-            npm ci
-          else
-            echo "::warning::No package-lock.json found — falling back to npm install"
-            npm install --legacy-peer-deps
-          fi
+          npm install --legacy-peer-deps
         env:
           NODE_ENV: development
+          GITHUB_TOKEN: ${{ secrets.GH_PACKAGES_TOKEN }}
 
       - name: Build Client
         run: npm run build:client
         env:
+          NODE_OPTIONS: '--max-old-space-size=4096'
           VITE_API_URL: ${{ secrets.VITE_API_URL }}
           VITE_FIREBASE_API_KEY: ${{ secrets.VITE_FIREBASE_API_KEY }}
           VITE_FIREBASE_AUTH_DOMAIN: ${{ secrets.VITE_FIREBASE_AUTH_DOMAIN }}
