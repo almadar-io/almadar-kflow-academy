@@ -15,6 +15,9 @@ import type { JsonValue } from '@almadar-io/knowledge';
 import enMessagesRaw from '../locales/en.json';
 import arMessagesRaw from '../locales/ar.json';
 import slMessagesRaw from '../locales/sl.json';
+import uiEnMessagesRaw from '@almadar/ui/locales/en.json';
+import uiArMessagesRaw from '@almadar/ui/locales/ar.json';
+import uiSlMessagesRaw from '@almadar/ui/locales/sl.json';
 
 type SupportedLocale = 'en' | 'ar' | 'sl';
 
@@ -32,6 +35,12 @@ const messagesByLocale: Record<SupportedLocale, Record<string, string>> = {
   sl: filterMessages(slMessagesRaw as Record<string, JsonValue>),
 };
 
+const coreMessagesByLocale: Record<SupportedLocale, Record<string, string>> = {
+  en: filterMessages(uiEnMessagesRaw as Record<string, JsonValue>),
+  ar: filterMessages(uiArMessagesRaw as Record<string, JsonValue>),
+  sl: filterMessages(uiSlMessagesRaw as Record<string, JsonValue>),
+};
+
 const metaByLocale: Record<SupportedLocale, { direction: 'ltr' | 'rtl' }> = {
   en: { direction: 'ltr' },
   ar: { direction: 'rtl' },
@@ -39,10 +48,13 @@ const metaByLocale: Record<SupportedLocale, { direction: 'ltr' | 'rtl' }> = {
 };
 
 function buildI18nValue(locale: SupportedLocale): I18nContextValue {
+  // Merge @almadar/ui core messages for the active locale with project overrides.
+  // Project keys take precedence, so core translations are used for anything
+  // the app does not explicitly override.
   return {
     locale,
     direction: metaByLocale[locale].direction,
-    t: createTranslate(messagesByLocale[locale]),
+    t: createTranslate({ ...coreMessagesByLocale[locale], ...messagesByLocale[locale] }),
   };
 }
 
