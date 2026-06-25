@@ -10,7 +10,9 @@ on:
   workflow_dispatch:
 
 env:
-  NODE_VERSION: '22'
+  # Pinned to 20 LTS: Node 22.23.x's bundled undici premature-closes firebase-tools'
+  # OAuth token exchange ("Failed to authenticate"); gcloud + curl over the same network succeed.
+  NODE_VERSION: '20'
   FIREBASE_PROJECT: 'kflow-b3a39'
 
 jobs:
