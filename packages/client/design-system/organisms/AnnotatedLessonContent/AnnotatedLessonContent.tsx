@@ -9,6 +9,7 @@
 import React, { useRef, useCallback, useEffect, useMemo } from 'react';
 import { SelectionToolbar, SelectionInfo } from '../SelectionToolbar';
 import { SegmentRenderer, parseLessonSegments } from '../LessonSegments';
+import { normalizeLatexDelimiters } from '../../utils/normalizeLatexDelimiters';
 import { InteractiveOrbitalPanel } from '../InteractiveOrbitalPanel';
 import { useRunCodeSimulation } from '@features/learning/hooks/useRunCodeSimulation';
 import { useGenerateInteractiveOrbital } from '@features/learning/hooks/useGenerateInteractiveOrbital';
@@ -102,10 +103,11 @@ export const AnnotatedLessonContent: React.FC<AnnotatedLessonContentProps> = ({
     [generateInteractiveOrbital],
   );
 
-  // Parse lesson segments
+  // Parse lesson segments (normalize LaTeX delimiters first so \[...\] /
+  // \(...\) math renders via remark-math/KaTeX).
   const segments = useMemo(() => {
     if (!content) return [];
-    return parseLessonSegments(content);
+    return parseLessonSegments(normalizeLatexDelimiters(content));
   }, [content]);
 
   // Handle text selection for question - just trigger callback

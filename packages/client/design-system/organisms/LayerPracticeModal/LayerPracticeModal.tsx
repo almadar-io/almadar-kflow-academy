@@ -23,6 +23,7 @@ import {
   useTranslate,
   type LessonSegment,
 } from '@almadar/ui';
+import { normalizeLatexDelimiters } from '../../utils/normalizeLatexDelimiters';
 import { Concept, PracticeItem } from '@features/concepts/types';
 import { useLayerPractice } from '@features/concepts/hooks/useLayerPractice';
 
@@ -65,10 +66,12 @@ export const LayerPracticeModal: React.FC<LayerPracticeModalProps> = ({
 
   const displayContent = streamingContent || (items.length > 0 ? items[0]?.question : '');
 
-  // Parse content into segments (markdown and code blocks)
+  // Parse content into segments (markdown and code blocks).
+  // Normalize LaTeX delimiters first so \[...\] / \(...\) math renders
+  // via remark-math/KaTeX.
   const contentSegments = useMemo((): LessonSegment[] => {
     if (!displayContent) return [];
-    return parseMarkdownWithCodeBlocks(displayContent);
+    return parseMarkdownWithCodeBlocks(normalizeLatexDelimiters(displayContent));
   }, [displayContent]);
 
   if (!isOpen) return null;

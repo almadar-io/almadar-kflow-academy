@@ -9,6 +9,7 @@ import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { Edit2, X, Check, Sparkles, FileText, Loader2, Play } from 'lucide-react';
 import { Badge, Button, Card, Divider, Input, Typography } from '@almadar/ui';
 import { SegmentRenderer, parseLessonSegments } from '../LessonSegments';
+import { normalizeLatexDelimiters } from '../../utils/normalizeLatexDelimiters';
 import { cn } from '@utils/theme';
 
 export interface Prerequisite {
@@ -137,10 +138,12 @@ export const LessonPanel: React.FC<LessonPanelProps> = ({
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   
   // Parse lesson segments if lessonContent is not provided
+  // Normalize LaTeX delimiters first so \[...\] / \(...\) math renders
+  // via remark-math/KaTeX.
   const parsedSegments = useMemo(() => {
     if (lessonContent) return null; // Use provided lessonContent if available
     if (!renderedLesson || !conceptHasLesson) return null;
-    return parseLessonSegments(renderedLesson);
+    return parseLessonSegments(normalizeLatexDelimiters(renderedLesson));
   }, [renderedLesson, conceptHasLesson, lessonContent]);
 
   useEffect(() => {

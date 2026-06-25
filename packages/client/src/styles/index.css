@@ -20,6 +20,13 @@
   }
 }
 
+/* Override Tailwind Typography's default inline-code backtick pseudo-elements.
+   Without this, .prose code elements render literal "`" characters around them. */
+.prose :where(code):not(:where([class~="not-prose"], [class~="not-prose"] *))::before,
+.prose :where(code):not(:where([class~="not-prose"], [class~="not-prose"] *))::after {
+  content: none;
+}
+
 @layer components {
   .lesson-markdown {
     @apply text-foreground leading-relaxed space-y-4;

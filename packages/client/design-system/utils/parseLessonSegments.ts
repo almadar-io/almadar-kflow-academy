@@ -5,6 +5,8 @@
  * into structured segments for rendering.
  */
 
+import { normalizeLatexDelimiters } from "./normalizeLatexDelimiters";
+
 // Bloom's Taxonomy cognitive levels
 export type BloomLevel =
   | "remember"
@@ -52,10 +54,11 @@ export const parseMarkdownWithCodeBlocks = (
   let match: RegExpExecArray | null;
 
   while ((match = codeBlockRegex.exec(content)) !== null) {
-    // Add markdown before the code block
+    // Add markdown before the code block, normalizing LaTeX delimiters so
+    // remark-math/KaTeX can render \[...\] and \(...\) math.
     const before = content.slice(lastIndex, match.index);
     if (before.trim()) {
-      segments.push({ type: "markdown" as const, content: before });
+      segments.push({ type: "markdown" as const, content: normalizeLatexDelimiters(before) });
     }
 
     // Add the code block (ensure language is always a string)
@@ -76,10 +79,11 @@ export const parseMarkdownWithCodeBlocks = (
     lastIndex = codeBlockRegex.lastIndex;
   }
 
-  // Add remaining markdown
+  // Add remaining markdown, normalizing LaTeX delimiters so
+  // remark-math/KaTeX can render \[...\] and \(...\) math.
   const remaining = content.slice(lastIndex);
   if (remaining.trim()) {
-    segments.push({ type: "markdown" as const, content: remaining });
+    segments.push({ type: "markdown" as const, content: normalizeLatexDelimiters(remaining) });
   }
 
   return segments;
@@ -113,7 +117,7 @@ export const parseLessonSegments = (lesson: string | undefined): Segment[] => {
   if (activateMatch) {
     segments.push({
       type: "activate",
-      question: activateMatch[1].trim(),
+      question: normalizeLatexDelimiters(activateMatch[1].trim()),
     });
     content = content.replace(activateMatch[0], "").trim();
   }
@@ -123,7 +127,7 @@ export const parseLessonSegments = (lesson: string | undefined): Segment[] => {
   if (connectMatch) {
     segments.push({
       type: "connect",
-      content: connectMatch[1].trim(),
+      content: normalizeLatexDelimiters(connectMatch[1].trim()),
     });
     content = content.replace(connectMatch[0], "").trim();
   }
@@ -151,7 +155,7 @@ export const parseLessonSegments = (lesson: string | undefined): Segment[] => {
     if (match.groups?.reflect) {
       segments.push({
         type: "reflect",
-        prompt: match.groups.reflectContent.trim(),
+        prompt: normalizeLatexDelimiters(match.groups.reflectContent.trim()),
       });
     } else if (match.groups?.bloom) {
       const level = match.groups.bloomLevel as BloomLevel;
@@ -166,15 +170,15 @@ export const parseLessonSegments = (lesson: string | undefined): Segment[] => {
         segments.push({
           type: "bloom",
           level,
-          question: questionMatch[1].trim(),
-          answer: answerMatch[1].trim(),
+          question: normalizeLatexDelimiters(questionMatch[1].trim()),
+          answer: normalizeLatexDelimiters(answerMatch[1].trim()),
         });
       }
     } else if (match.groups?.quiz) {
       segments.push({
         type: "quiz",
-        question: match.groups.quizQuestion.trim(),
-        answer: match.groups.quizAnswer.trim(),
+        question: normalizeLatexDelimiters(match.groups.quizQuestion.trim()),
+        answer: normalizeLatexDelimiters(match.groups.quizAnswer.trim()),
       });
     } else if (match.groups?.visualize) {
       segments.push({

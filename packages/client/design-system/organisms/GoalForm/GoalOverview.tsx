@@ -29,14 +29,14 @@ export const GoalOverview: React.FC<GoalOverviewProps> = ({ goal }) => {
                         <Box className="p-2 bg-primary/20 rounded-lg text-primary">
                             <Target size={20} />
                         </Box>
-                        <Box>
-                            <Typography variant="overline" weight="semibold" className="uppercase tracking-wider text-primary mb-0.5">
+                        <Stack direction="vertical" gap="xs" className="flex-1 min-w-0">
+                            <Typography variant="overline" weight="semibold" className="uppercase tracking-wider text-primary">
                                 {t('learning.targetOutcome')}
                             </Typography>
                             <Typography variant="small" weight="medium" className="text-foreground">
                                 {goal.target || <Typography as="span" className="text-muted-foreground italic">{t('learning.generating')}</Typography>}
                             </Typography>
-                        </Box>
+                        </Stack>
                     </Stack>
 
                     {goal.estimatedTime && (
@@ -44,14 +44,14 @@ export const GoalOverview: React.FC<GoalOverviewProps> = ({ goal }) => {
                             <Box className="p-2 bg-info/20 rounded-lg text-info">
                                 <Clock size={20} />
                             </Box>
-                            <Box>
-                                <Typography variant="overline" weight="semibold" className="uppercase tracking-wider text-info mb-0.5">
+                            <Stack direction="vertical" gap="xs" className="flex-1 min-w-0">
+                                <Typography variant="overline" weight="semibold" className="uppercase tracking-wider text-info">
                                     {t('learning.estTime')}
                                 </Typography>
                                 <Typography variant="small" weight="medium" className="text-foreground">
                                     {t('learning.hours', { count: goal.estimatedTime })}
                                 </Typography>
-                            </Box>
+                            </Stack>
                         </Stack>
                     )}
 
@@ -59,14 +59,14 @@ export const GoalOverview: React.FC<GoalOverviewProps> = ({ goal }) => {
                         <Box className="p-2 bg-accent/20 rounded-lg text-accent">
                             <BookOpen size={20} />
                         </Box>
-                        <Box>
-                            <Typography variant="overline" weight="semibold" className="uppercase tracking-wider text-accent mb-0.5">
+                        <Stack direction="vertical" gap="xs" className="flex-1 min-w-0">
+                            <Typography variant="overline" weight="semibold" className="uppercase tracking-wider text-accent">
                                 {t('learning.type')}
                             </Typography>
                             <Typography variant="small" weight="medium" className="text-foreground capitalize">
                                 {goal.type || <Typography as="span" className="text-muted-foreground italic">{t('learning.generating')}</Typography>}
                             </Typography>
-                        </Box>
+                        </Stack>
                     </Stack>
 
                     {goal.assessedLevel && (
@@ -74,14 +74,14 @@ export const GoalOverview: React.FC<GoalOverviewProps> = ({ goal }) => {
                             <Box className="p-2 bg-success/20 rounded-lg text-success">
                                 <Award size={20} />
                             </Box>
-                            <Box>
-                                <Typography variant="overline" weight="semibold" className="uppercase tracking-wider text-success mb-0.5">
+                            <Stack direction="vertical" gap="xs" className="flex-1 min-w-0">
+                                <Typography variant="overline" weight="semibold" className="uppercase tracking-wider text-success">
                                     {t('learning.level')}
                                 </Typography>
                                 <Typography variant="small" weight="medium" className="text-foreground capitalize">
                                     {goal.assessedLevel}
                                 </Typography>
-                            </Box>
+                            </Stack>
                         </Stack>
                     )}
                 </Box>
