@@ -33,8 +33,7 @@ jobs:
           cache: npm
 
       - name: Install Firebase CLI
-        # Pinned: 15.21+ broke service-account auth via GOOGLE_APPLICATION_CREDENTIALS ("Failed to authenticate")
-        run: npm install -g firebase-tools@15.20.0
+        run: npm install -g firebase-tools
 
       - name: Authenticate to Firebase
         env:
@@ -63,5 +62,12 @@ jobs:
           VITE_FIREBASE_APP_ID: ${{ secrets.VITE_FIREBASE_APP_ID }}
           VITE_FIREBASE_MEASUREMENT_ID: ${{ secrets.VITE_FIREBASE_MEASUREMENT_ID }}
 
+      - name: Diagnose credentials
+        run: |
+          echo "GAC=$GOOGLE_APPLICATION_CREDENTIALS"
+          ls -l "$GOOGLE_APPLICATION_CREDENTIALS" || echo "FILE MISSING"
+          node -e "const d=require(process.env.GOOGLE_APPLICATION_CREDENTIALS); console.log('client_email=',d.client_email,'type=',d.type,'pk_len=',(d.private_key||'').length)" || echo "INVALID JSON"
+          firebase projects:list 2>&1 | tail -20 || true
+
       - name: Deploy Client to Firebase Hosting
-        run: firebase deploy --only hosting:prod --project ${{ env.FIREBASE_PROJECT }}
+        run: firebase deploy --only hosting:prod --project ${{ env.FIREBASE_PROJECT }} --debug 2>&1 | tail -40
