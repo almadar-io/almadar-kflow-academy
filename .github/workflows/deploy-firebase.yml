@@ -62,12 +62,17 @@ jobs:
           VITE_FIREBASE_APP_ID: ${{ secrets.VITE_FIREBASE_APP_ID }}
           VITE_FIREBASE_MEASUREMENT_ID: ${{ secrets.VITE_FIREBASE_MEASUREMENT_ID }}
 
-      - name: Diagnose credentials
-        run: |
-          echo "GAC=$GOOGLE_APPLICATION_CREDENTIALS"
-          ls -l "$GOOGLE_APPLICATION_CREDENTIALS" || echo "FILE MISSING"
-          node -e "const d=require(process.env.GOOGLE_APPLICATION_CREDENTIALS); console.log('client_email=',d.client_email,'type=',d.type,'pk_len=',(d.private_key||'').length)" || echo "INVALID JSON"
-          firebase projects:list 2>&1 | tail -20 || true
-
       - name: Deploy Client to Firebase Hosting
-        run: firebase deploy --only hosting:prod --project ${{ env.FIREBASE_PROJECT }} --debug 2>&1 | tail -40
+        # Retry: the SA token exchange at googleapis.com/oauth2/v4/token intermittently
+        # drops mid-response ("Premature close"), which firebase reports as an auth failure.
+        run: |
+          for attempt in 1 2 3 4 5; do
+            if firebase deploy --only hosting:prod --project ${{ env.FIREBASE_PROJECT }} --non-interactive; then
+              echo "Deploy succeeded on attempt $attempt"
+              exit 0
+            fi
+            echo "::warning::Deploy attempt $attempt failed; retrying in 15s..."
+            sleep 15
+          done
+          echo "::error::Deploy failed after 5 attempts"
+          exit 1
