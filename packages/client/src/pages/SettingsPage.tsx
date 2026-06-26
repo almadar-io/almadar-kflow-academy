@@ -10,6 +10,7 @@ import {
   type SelectOption,
 } from '@almadar/ui';
 import { useTheme } from '@almadar/ui/context';
+import { useFont } from '../features/theme/FontContext';
 import { AppShellTemplate } from '@design-system/templates/AppShellTemplate';
 import { getNavigationItems, getUserForTemplate, mainNavItems } from '../config/navigation';
 import { useAuthContext } from '../features/auth/AuthContext';
@@ -21,6 +22,7 @@ export const SettingsPage: React.FC = () => {
   const { emit } = useEventBus();
   const { t } = useTranslate();
   const { theme, setTheme, mode, setMode, resolvedMode, availableThemes } = useTheme();
+  const { font, setFont, availableFonts } = useFont();
 
   const templateUser = getUserForTemplate(user);
 
@@ -49,6 +51,11 @@ export const SettingsPage: React.FC = () => {
     [t]
   );
 
+  const fontOptions: SelectOption[] = useMemo(
+    () => availableFonts.map((f) => ({ value: f.id, label: f.displayName })),
+    [availableFonts]
+  );
+
   const handleLocaleChange = useCallback((value: string | string[]) => {
     const next = Array.isArray(value) ? value[0] : value;
     emit('UI:SET_LOCALE', { locale: next });
@@ -63,6 +70,11 @@ export const SettingsPage: React.FC = () => {
     const next = Array.isArray(value) ? value[0] : value;
     setMode(next as 'light' | 'dark' | 'system');
   }, [setMode]);
+
+  const handleFontChange = useCallback((value: string | string[]) => {
+    const next = Array.isArray(value) ? value[0] : value;
+    setFont(next);
+  }, [setFont]);
 
   const shellEntity = {
     navigationItems: navItems.map(item => ({
@@ -103,12 +115,21 @@ export const SettingsPage: React.FC = () => {
               className="w-full"
             />
           </Box>
-          <Box>
+          <Box className="mb-4">
             <Typography variant="body2" className="mb-2">{t('settings.colorMode')}</Typography>
             <Select
               options={modeOptions}
               value={mode}
               onValueChange={handleModeChange}
+              className="w-full"
+            />
+          </Box>
+          <Box>
+            <Typography variant="body2" className="mb-2">{t('settings.font')}</Typography>
+            <Select
+              options={fontOptions}
+              value={font.id}
+              onValueChange={handleFontChange}
               className="w-full"
             />
           </Box>

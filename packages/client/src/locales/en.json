@@ -415,6 +415,7 @@
   "settings.themeSystem": "System",
   "settings.themeLight": "Light",
   "settings.themeDark": "Dark",
+  "settings.font": "Font",
 
   "knowledge.searchTitle": "Knowledge Search",
   "knowledge.searchPlaceholder": "Search concepts, subjects, disciplines...",

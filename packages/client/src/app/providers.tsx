@@ -10,6 +10,7 @@ import { store } from './store';
 import { queryClient } from './queryClient';
 import { apolloClient } from '../features/knowledge-graph';
 import { AuthProvider } from '../features/auth';
+import { FontProvider } from '../features/theme/FontContext';
 import ErrorHandlerInitializer from './ErrorHandlerInitializer';
 import type { JsonValue } from '@almadar-io/knowledge';
 import enMessagesRaw from '../locales/en.json';
@@ -107,10 +108,12 @@ export const Providers: React.FC<ProvidersProps> = ({ children }) => {
                 defaultTheme="kflow"
                 defaultMode="dark"
               >
-                <ErrorHandlerInitializer />
-                <AuthProvider>
-                  {children}
-                </AuthProvider>
+                <FontProvider>
+                  <ErrorHandlerInitializer />
+                  <AuthProvider>
+                    {children}
+                  </AuthProvider>
+                </FontProvider>
               </ThemeProvider>
             </I18nController>
           </ApolloProvider>

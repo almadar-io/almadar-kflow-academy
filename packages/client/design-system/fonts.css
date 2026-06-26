@@ -1,0 +1,10 @@
+/**
+ * Font faces used by the KFlow font selector.
+ *
+ * Loaded early so web fonts are ready by the time the ThemeProvider applies
+ * the active theme. The @almadar/ui theme CSS already loads Inter, Fraunces
+ * and JetBrains Mono; we add Nunito/Nunito Sans here for the playful font
+ * option.
+ */
+
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:wght@400;500;700;900&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&family=Nunito:wght@400;500;600;700;800&family=Nunito+Sans:wght@400;600;700&display=swap');

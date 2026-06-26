@@ -279,10 +279,10 @@ export const LearnConceptDetailTemplate: React.FC<AllProps> = (props) => {
                 variant="secondary"
                 onClick={() => handlePrevious(previousConcept)}
                 icon={ChevronLeft}
-                className="gap-3"
+                className="h-auto py-3 px-4 gap-3"
               >
-                <VStack gap="none" align="start" className="min-w-0">
-                  <Typography variant="caption" className="text-muted-foreground">{t('lesson.previous')}</Typography>
+                <VStack gap="none" align="start" className="min-w-0 text-left">
+                  <Typography variant="caption" color="muted">{t('lesson.previous')}</Typography>
                   <Typography variant="small" weight="medium" className="truncate">{previousConcept.name}</Typography>
                 </VStack>
               </Button>
@@ -294,10 +294,10 @@ export const LearnConceptDetailTemplate: React.FC<AllProps> = (props) => {
                 variant="primary"
                 onClick={() => handleNext(nextConcept)}
                 iconRight={ChevronRight}
-                className="gap-3"
+                className="h-auto py-3 px-4 gap-3"
               >
-                <VStack gap="none" align="end" className="min-w-0">
-                  <Typography variant="caption" className="text-primary-foreground">{t('lesson.next')}</Typography>
+                <VStack gap="none" align="end" className="min-w-0 text-right">
+                  <Typography variant="caption" className="opacity-80">{t('lesson.next')}</Typography>
                   <Typography variant="small" weight="medium" className="truncate">{nextConcept.name}</Typography>
                 </VStack>
               </Button>
