@@ -408,6 +408,14 @@
   "locale.ar": "العربية",
   "locale.sl": "Slovenščina",
 
+  "settings.language": "Language",
+  "settings.appearance": "Appearance",
+  "settings.themeStyle": "Theme",
+  "settings.colorMode": "Color mode",
+  "settings.themeSystem": "System",
+  "settings.themeLight": "Light",
+  "settings.themeDark": "Dark",
+
   "knowledge.searchTitle": "Knowledge Search",
   "knowledge.searchPlaceholder": "Search concepts, subjects, disciplines...",
   "knowledge.searchEmptyTitle": "Search your knowledge",

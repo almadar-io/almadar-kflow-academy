@@ -1,7 +1,10 @@
 /**
  * Theme index - exports all theme CSS files
+ *
+ * Loads Almadar UI built-in themes first, then app-specific overrides.
  */
 
+@import "@almadar/ui/themes/index.css";
 @import "./kflow.css";
 @import "./kflow-playful.css";
 @import "./trait-wars.css";

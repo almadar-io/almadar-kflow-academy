@@ -1,4 +1,5 @@
 @import '../../design-system/themes/index.css';
+@import '@almadar/ui/index.css';
 
 @tailwind base;
 @tailwind components;
