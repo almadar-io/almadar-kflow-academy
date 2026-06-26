@@ -210,12 +210,6 @@ export function DashboardBoard({
           <>
             {/* Hero: the knowledge map */}
             <VStack gap="sm">
-              <HStack justify="between" align="center">
-                <Typography variant="h3" className="text-lg font-semibold text-[var(--color-foreground)]">
-                  {t('dashboard.knowledgeMap')}
-                </Typography>
-              </HStack>
-
               <Box className="relative rounded-[var(--radius-lg)] overflow-hidden border border-[var(--color-border)]">
                 {mapLoading || !hasMap ? (
                   <Box className="flex items-center justify-center" style={{ height: 500 }}>
@@ -228,6 +222,7 @@ export function DashboardBoard({
                       edges={dash!.knowledgeMap!.edges}
                       height={500}
                       showLabels
+                      showLegend={false}
                       interactive
                       draggable
                       repulsion={3000}

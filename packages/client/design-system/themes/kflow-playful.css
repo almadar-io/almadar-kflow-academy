@@ -136,7 +136,7 @@
     /* Colors - Bright green on rich charcoal, not pure black */
     --color-primary: #58cc02;
     --color-primary-hover: #6ee718;
-    --color-primary-foreground: #131f00;
+    --color-primary-foreground: #ffffff;
 
     --color-secondary: #2b2438;
     --color-secondary-hover: #382e48;
