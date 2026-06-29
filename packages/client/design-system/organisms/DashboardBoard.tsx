@@ -222,7 +222,6 @@ export function DashboardBoard({
                       edges={dash!.knowledgeMap!.edges}
                       height={500}
                       showLabels
-                      showLegend={false}
                       interactive
                       draggable
                       repulsion={3000}
