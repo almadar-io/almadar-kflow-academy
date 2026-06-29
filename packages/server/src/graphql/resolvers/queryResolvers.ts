@@ -6,6 +6,7 @@ import { KnowledgeGraphAccessLayer, extractLearningPathSummary, extractGraphSumm
 import { getFirestore } from '@almadar/server';
 import type { GraphQLContext } from '../types';
 import { getUserId, verifyGraphAccessForResolver } from './shared/resolverHelpers';
+import { computeLevelCount } from '../../utils/computeLevelCount';
 
 const accessLayer = new KnowledgeGraphAccessLayer();
 
@@ -33,7 +34,10 @@ export const queryResolvers = {
         graphIds.map(async graphId => {
           try {
             const graph = await accessLayer.getGraph(uid, graphId);
-            return extractLearningPathSummary(graph);
+            return {
+              ...extractLearningPathSummary(graph),
+              levelCount: computeLevelCount(graph),
+            };
           } catch {
             return null;
           }

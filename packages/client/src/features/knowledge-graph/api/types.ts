@@ -154,6 +154,7 @@ export interface LearningPathSummary {
   title: string;
   description: string;
   conceptCount: number;
+  levelCount: number;
   seedConcept: {
     id: string;
     name: string;

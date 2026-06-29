@@ -43,6 +43,7 @@ describe('graphQueryApi', () => {
             title: 'Learn JavaScript',
             description: 'A comprehensive JavaScript course',
             conceptCount: 10,
+            levelCount: 2,
             seedConcept: {
               id: 'seed-1',
               name: 'JavaScript Basics',

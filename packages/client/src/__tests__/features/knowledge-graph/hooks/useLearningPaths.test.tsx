@@ -29,6 +29,7 @@ describe('useLearningPaths', () => {
           title: 'Learn JavaScript',
           description: 'A comprehensive JavaScript course',
           conceptCount: 10,
+          levelCount: 2,
           seedConcept: {
             id: 'seed-1',
             name: 'JavaScript Basics',
@@ -78,6 +79,7 @@ describe('useLearningPaths', () => {
           title: 'Learn JavaScript',
           description: 'A comprehensive JavaScript course',
           conceptCount: 10,
+          levelCount: 2,
           seedConcept: null,
           updatedAt: Date.now(),
           createdAt: Date.now(),
@@ -128,6 +130,7 @@ describe('useLearningPaths', () => {
           title: 'Learn JavaScript',
           description: 'A comprehensive JavaScript course',
           conceptCount: 10,
+          levelCount: 2,
           seedConcept: null,
           updatedAt: Date.now(),
           createdAt: Date.now(),

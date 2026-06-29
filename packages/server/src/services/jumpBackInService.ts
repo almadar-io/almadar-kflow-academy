@@ -3,6 +3,7 @@ import { getAllUserProgress } from "./userProgressService";
 import { hybridCache, CACHE_TTL } from "./cacheService";
 import { CACHE_KEYS } from "./cacheInvalidation";
 import { listUserGraphIds } from "../utils/listUserGraphIds";
+import { computeLevelCount } from "../utils/computeLevelCount";
 
 export interface JumpBackInItem {
   id: string;
@@ -42,12 +43,11 @@ export async function getJumpBackInItems(uid: string): Promise<JumpBackInItem[]>
     const graphIds = await listUserGraphIds(uid);
     const accessLayer = new KnowledgeGraphAccessLayer();
 
-    const [graphSummaries, allUserProgress] = await Promise.all([
+    const [graphs, allUserProgress] = await Promise.all([
       Promise.all(
         graphIds.map(async (graphId) => {
           try {
-            const graph = await accessLayer.getGraph(uid, graphId);
-            return extractLearningPathSummary(graph);
+            return await accessLayer.getGraph(uid, graphId);
           } catch {
             return null;
           }
@@ -56,7 +56,9 @@ export async function getJumpBackInItems(uid: string): Promise<JumpBackInItem[]>
       getAllUserProgress(uid),
     ]);
 
-    const learningPaths = graphSummaries.filter((s): s is NonNullable<typeof s> => s !== null);
+    const validGraphs = graphs.filter((g): g is NonNullable<typeof g> => g !== null);
+    const learningPaths = validGraphs.map((graph) => extractLearningPathSummary(graph));
+    const graphById = new Map(validGraphs.map((graph) => [graph.id, graph]));
 
     const graphLastAccessed = new Map<string, number>();
     for (const progress of allUserProgress) {
@@ -81,7 +83,7 @@ export async function getJumpBackInItems(uid: string): Promise<JumpBackInItem[]>
           graphId: path.id,
           seedConceptId: path.seedConcept?.id,
           conceptCount: path.conceptCount,
-          levelCount: Math.max(1, Math.ceil((path.conceptCount ?? 0) / 7)),
+          levelCount: computeLevelCount(graphById.get(path.id)),
         },
       });
     }

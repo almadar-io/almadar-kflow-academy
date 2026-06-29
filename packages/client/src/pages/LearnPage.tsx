@@ -159,7 +159,7 @@ export const LearnPage: React.FC = () => {
           name: path.title,
           seedConcept: path.seedConcept?.name ?? '',
           conceptCount: path.conceptCount,
-          levelCount: Math.max(1, Math.ceil(path.conceptCount / 7)),
+          levelCount: path.levelCount,
           // The rich "Learn X to…" text lives on the seed concept; the goal node's description is empty.
           description: path.seedConcept?.description || path.description || '',
         })),

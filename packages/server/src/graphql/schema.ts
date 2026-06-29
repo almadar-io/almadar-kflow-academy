@@ -148,6 +148,7 @@ export const typeDefs = gql`
     title: String!
     description: String
     conceptCount: Int!
+    levelCount: Int!
     seedConcept: SeedConceptInfo
     updatedAt: DateTime!
     createdAt: DateTime!
