@@ -1,17 +1,10 @@
 /**
  * Regression test: verify that the two route groups kept for the student client
  * are still registered after any future server trim.
- *
- * - GET  /api/knowledge-graphs-access/:graphId  (graph load via useGetGraph)
- * - POST /api/graph-operations/:graphId/expand  (concept-operation hooks)
- *
- * The test inspects the Express router stack instead of making live HTTP calls,
- * so it runs without Firebase credentials and without supertest.
  */
 
-import { jest } from '@jest/globals';
+import { jest, describe, beforeAll, it, expect } from '@jest/globals';
 
-// Mock every module that touches Firebase / external services at import time
 jest.unstable_mockModule('../../config/firebaseAdmin', () => ({
   getFirebaseAuth: jest.fn(() => ({ verifyIdToken: jest.fn() })),
   getFirebaseAdmin: jest.fn(() => ({})),
@@ -27,8 +20,22 @@ jest.unstable_mockModule('../../config/llmConfig', () => ({
   getLLMConfig: jest.fn(() => ({})),
 }));
 
+jest.unstable_mockModule('@almadar/server', () => ({
+  getFirestore: jest.fn(() => ({
+    collection: jest.fn(() => ({ doc: jest.fn(() => ({ collection: jest.fn() })) })),
+  })),
+  getFirebaseAuth: jest.fn(),
+  getFirebaseAdmin: jest.fn(),
+  authenticateFirebase: jest.fn((_req: unknown, _res: unknown, next: () => void) => next()),
+  setupSSE: jest.fn(),
+  sendSSEEvent: jest.fn(),
+  sendSSEDone: jest.fn(),
+  closeSSE: jest.fn(),
+}));
+
 jest.unstable_mockModule('@almadar-io/knowledge/server', () => ({
   KnowledgeGraphAccessLayer: jest.fn().mockImplementation(() => ({ clearCache: jest.fn() })),
+  GraphMutationService: jest.fn().mockImplementation(() => ({ applyMutationBatchSafe: jest.fn() })),
   createGetGraphHandler: jest.fn(() => jest.fn()),
   createSaveGraphHandler: jest.fn(() => jest.fn()),
   createGetNodesHandler: jest.fn(() => jest.fn()),
@@ -59,12 +66,6 @@ jest.unstable_mockModule('@almadar-io/knowledge/server', () => ({
   createCustomOperationHandler: jest.fn(() => jest.fn()),
 }));
 
-// Load the routers after mocks are in place
-const { default: knowledgeGraphAccessRoutes } = await import('../../routes/knowledgeGraphAccessRoutes.js');
-const { default: graphOperationRoutes } = await import('../../routes/graphOperationRoutes.js');
-const { default: rootRouter } = await import('../../routes/index.js');
-
-// Helpers to extract registered route descriptors from an Express router stack
 type RouteDescriptor = { method: string; path: string };
 
 function extractRoutes(router: any): RouteDescriptor[] {
@@ -81,7 +82,6 @@ function extractRoutes(router: any): RouteDescriptor[] {
   return routes;
 }
 
-// Collect all routes mounted under a sub-router (handles router.use('/prefix', subRouter))
 function extractRoutesWithPrefix(router: any, prefix = ''): RouteDescriptor[] {
   const routes: RouteDescriptor[] = [];
   const stack: any[] = router.stack ?? [];
@@ -93,7 +93,6 @@ function extractRoutesWithPrefix(router: any, prefix = ''): RouteDescriptor[] {
         routes.push({ method, path: prefix + routePath });
       }
     } else if (layer.handle?.stack) {
-      // Nested router mounted via router.use()
       const mountPath: string = layer.regexp?.source
         ? extractMountPath(layer.regexp, layer.keys)
         : '';
@@ -103,9 +102,7 @@ function extractRoutesWithPrefix(router: any, prefix = ''): RouteDescriptor[] {
   return routes;
 }
 
-// Attempt to recover the string mount path from the regexp Express compiles for router.use()
 function extractMountPath(regexp: RegExp, keys: any[]): string {
-  // Express encodes /path as ^\/path\/?(?=\/|$) — extract the literal segment
   const src = regexp.source;
   const match = src.match(/^\^\\\/([^\\]+)/);
   if (match) return '/' + match[1].replace(/\\\//g, '/');
@@ -113,6 +110,16 @@ function extractMountPath(regexp: RegExp, keys: any[]): string {
 }
 
 describe('Kept routes are still mounted', () => {
+  let knowledgeGraphAccessRoutes: any;
+  let graphOperationRoutes: any;
+  let rootRouter: any;
+
+  beforeAll(async () => {
+    ({ default: knowledgeGraphAccessRoutes } = await import('../../routes/knowledgeGraphAccessRoutes.js'));
+    ({ default: graphOperationRoutes } = await import('../../routes/graphOperationRoutes.js'));
+    ({ default: rootRouter } = await import('../../routes/index.js'));
+  });
+
   describe('knowledgeGraphAccessRoutes', () => {
     it('registers GET /:graphId (graph load used by concepts page)', () => {
       const routes = extractRoutes(knowledgeGraphAccessRoutes);
@@ -145,7 +152,6 @@ describe('Kept routes are still mounted', () => {
       const hasMountedAccess = allRoutes.some((r) =>
         r.path.includes('knowledge-graphs-access')
       );
-      // Fall back to stack inspection if path extraction is imprecise
       const stackIncludesAccessRouter = rootRouter.stack.some(
         (layer: any) =>
           layer.handle === knowledgeGraphAccessRoutes ||

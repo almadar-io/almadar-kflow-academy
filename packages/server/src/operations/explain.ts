@@ -218,8 +218,15 @@ RUNNABLE CODE BLOCKS:
 
 INTERACTIVE VISUALIZATIONS:
 - When a concrete example would be clearer than prose alone, insert an inline visualization marker.
-- Use EXACTLY this self-closing tag format: <visualize type="chart|simulation" description="short, specific description of what to show" />
-- Allowed types: "chart" (data visualization) and "simulation" (interactive simulation).
+- Use EXACTLY this self-closing tag format: <visualize type="chart|simulation|math|physics|biology|chemistry|probability" description="short, specific description of what to show" />
+- Allowed types:
+  * "chart" — data visualization (bar, line, pie, scatter, histogram, etc.)
+  * "simulation" — interactive physics simulation
+  * "math" — coordinate plane, function plot, geometry, vectors, number line, slope field, area/integral
+  * "physics" — waves, fields, ray diagrams, pendulum, circuits
+  * "biology" — cell, food web, classification network
+  * "chemistry" — molecule, reaction
+  * "probability" — dice, coins, random walk, distribution
 - Keep the description specific (1-2 sentences) so the generator knows what data, axes, or controls to include.
 - Place visualizations right after the explanatory paragraph that motivates them.
 - Only include 1-2 visualizations per lesson, and only when they genuinely aid understanding.

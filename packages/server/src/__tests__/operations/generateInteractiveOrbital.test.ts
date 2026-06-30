@@ -59,7 +59,23 @@ describe('generateInteractiveOrbital', () => {
     expect(request.endUserId).toBe(concept.id);
     expect(request.provider).toBe('deepseek');
     expect(request.model).toBe('deepseek-chat');
-    expect(request.stdAllowList).toEqual(['std-graphs']);
+    expect(request.stdAllowList).toEqual([
+      'std-graphs',
+      'std-graphs-bar',
+      'std-graphs-line',
+      'std-graphs-pie',
+      'std-graphs-donut',
+      'std-graphs-area',
+      'std-graphs-scatter',
+      'std-graphs-histogram',
+      'ui-line-chart',
+      'ui-sparkline',
+      'ui-chart-legend',
+      'ui-stats-grid',
+      'ui-stat-card',
+      'ui-animated-counter',
+      'ui-trend-indicator',
+    ]);
     expect(request.catalogMode).toBe('subset');
   });
 
@@ -76,12 +92,32 @@ describe('generateInteractiveOrbital', () => {
     expect(result).toEqual(sampleSchema);
     const request = generateMock.mock.calls[0][0];
     expect(request.stdAllowList).toEqual([
-      'ui-simulation-canvas',
-      'ui-simulation-controls',
-      'ui-simulator-board',
+      'learning-physics-lab',
+      'ui-physics-canvas',
+      'ui-learning-canvas',
     ]);
     expect(request.catalogMode).toBe('subset');
   });
+
+  it.each([
+    ['math', ['learning-math-lab', 'ui-math-canvas', 'ui-learning-canvas']],
+    ['physics', ['learning-physics-lab', 'ui-physics-canvas', 'ui-learning-canvas']],
+    ['biology', ['learning-biology-lab', 'ui-biology-canvas', 'ui-learning-canvas']],
+    ['chemistry', ['learning-chemistry-lab', 'ui-chemistry-canvas', 'ui-learning-canvas']],
+    ['probability', ['learning-probability-lab', 'ui-math-canvas', 'ui-learning-canvas']],
+  ] as const)(
+    'should map %s to its field-scoped lab allow-list',
+    async (type, expectedAllowList) => {
+      const result = await generateInteractiveOrbital(
+        { type, concept, markerDescription: 'test' },
+        deps,
+      );
+      expect(result).toEqual(sampleSchema);
+      const request = generateMock.mock.calls[0][0];
+      expect(request.stdAllowList).toEqual(expectedAllowList);
+      expect(request.catalogMode).toBe('subset');
+    },
+  );
 
   it('should throw when SDK generate rejects', async () => {
     generateMock.mockRejectedValueOnce(new Error('Generation failed'));

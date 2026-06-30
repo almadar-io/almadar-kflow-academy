@@ -15,7 +15,7 @@
     "@almadar-io/knowledge": "^0.7.3",
     "@almadar/core": "^10.11.0",
     "@almadar/llm": "^2.24.1",
-    "@almadar/sdk": "^0.1.0",
+    "@almadar/sdk": "^0.2.0",
     "@almadar/server": "^2.14.2",
     "@kflow-academy/shared": "*",
     "apollo-server-express": "^3.13.0",

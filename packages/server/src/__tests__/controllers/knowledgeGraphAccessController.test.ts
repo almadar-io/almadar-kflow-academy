@@ -32,6 +32,10 @@ jest.mock('@almadar-io/knowledge/server', () => ({
     traverse: jest.fn(),
     extractSubgraph: jest.fn(),
   })),
+  GraphMutationService: jest.fn().mockImplementation(() => ({
+    applyMutationBatchSafe: jest.fn(),
+    validateMutation: jest.fn(),
+  })),
 }));
 
 describe('graphAccessDeps', () => {

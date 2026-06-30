@@ -8,18 +8,33 @@
  */
 
 import { migrateGraph, migrateTitleToName } from '../../scripts/migrateTitleToName';
-import { getNodeBasedKnowledgeGraph, saveNodeBasedKnowledgeGraph } from '../../services/knowledgeGraphService';
+import { getNodeBasedKnowledgeGraph, saveNodeBasedKnowledgeGraph } from '@almadar-io/knowledge/server';
 import { createGraphNode } from '../../types/nodeBasedKnowledgeGraph';
 import type { NodeBasedKnowledgeGraph } from '../../types/nodeBasedKnowledgeGraph';
+import { getFirestore } from '@almadar/server';
 
 // Mock the services
-jest.mock('../../services/knowledgeGraphService', () => ({
+jest.mock('@almadar-io/knowledge/server', () => ({
   getNodeBasedKnowledgeGraph: jest.fn(),
   saveNodeBasedKnowledgeGraph: jest.fn(),
+  KnowledgeGraphAccessLayer: jest.fn().mockImplementation(() => ({
+    getGraph: jest.fn(),
+    saveGraph: jest.fn(),
+  })),
+  GraphMutationService: jest.fn().mockImplementation(() => ({
+    applyMutationBatchSafe: jest.fn(),
+    validateMutation: jest.fn(),
+  })),
 }));
 
-jest.mock('../../config/firebaseAdmin', () => ({
+jest.mock('@almadar/server', () => ({
   getFirestore: jest.fn(),
+  getFirebaseAuth: jest.fn(),
+  getFirebaseAdmin: jest.fn(),
+  setupSSE: jest.fn(),
+  sendSSEEvent: jest.fn(),
+  sendSSEDone: jest.fn(),
+  closeSSE: jest.fn(),
 }));
 
 const mockGetNodeBasedKnowledgeGraph = getNodeBasedKnowledgeGraph as jest.MockedFunction<typeof getNodeBasedKnowledgeGraph>;
@@ -443,8 +458,8 @@ describe('migrateTitleToName', () => {
 
   describe('migrateTitleToName', () => {
     it('should migrate all graphs for a user', async () => {
-      const { getFirestore } = require('../../config/firebaseAdmin');
-      
+      const { getFirestore } = require('@almadar/server');
+
       // Mock Firestore
       const mockSnapshot = {
         docs: [
@@ -582,8 +597,8 @@ describe('migrateTitleToName', () => {
     });
 
     it('should collect errors for failed migrations', async () => {
-      const { getFirestore } = require('../../config/firebaseAdmin');
-      
+      const { getFirestore } = require('@almadar/server');
+
       const mockSnapshot = {
         docs: [
           { id: 'graph-1' },

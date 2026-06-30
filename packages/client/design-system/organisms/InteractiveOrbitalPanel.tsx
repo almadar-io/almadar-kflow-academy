@@ -23,9 +23,18 @@ import {
   useEventBus,
 } from '@almadar/ui';
 
+export type InteractiveOrbitalType =
+  | "chart"
+  | "simulation"
+  | "math"
+  | "physics"
+  | "biology"
+  | "chemistry"
+  | "probability";
+
 export interface InteractiveOrbitalPanelProps {
   /** Marker type */
-  type: "chart" | "simulation";
+  type: InteractiveOrbitalType;
   /** Description of what the learner should see */
   description: string;
   /** Concept context passed to the generator */
@@ -33,11 +42,13 @@ export interface InteractiveOrbitalPanelProps {
   /** Callback that generates the orbital schema */
   onGenerate: (
     request: {
-      type: "chart" | "simulation";
+      type: InteractiveOrbitalType;
       concept: { id?: string; name: string; description?: string };
       markerDescription: string;
     },
   ) => Promise<OrbitalSchema | null>;
+  /** Tiers of config knobs to expose as auto-derived controls. */
+  exposedTiers?: string[];
   /** Whether to auto-generate when the panel mounts */
   autoGenerate?: boolean;
   /** Additional CSS classes */
@@ -49,6 +60,7 @@ export const InteractiveOrbitalPanel: React.FC<InteractiveOrbitalPanelProps> = (
   description,
   concept,
   onGenerate,
+  exposedTiers = ["presentation", "domain"],
   autoGenerate = false,
   className,
 }) => {
@@ -130,7 +142,7 @@ export const InteractiveOrbitalPanel: React.FC<InteractiveOrbitalPanelProps> = (
 
         {schema && (
           <Box className="border border-border rounded-lg overflow-hidden">
-            <AlmadarApp schema={schema} mode="static" height="24rem" />
+            <AlmadarApp schema={schema} mode="static" height="24rem" exposedTiers={exposedTiers} />
           </Box>
         )}
       </VStack>

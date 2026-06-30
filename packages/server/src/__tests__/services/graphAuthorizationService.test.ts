@@ -8,18 +8,24 @@ import { GraphAuthorizationService } from '../../services/graphAuthorizationServ
 import type { NodeBasedKnowledgeGraph } from '../../types/nodeBasedKnowledgeGraph';
 import { createGraphNode } from '../../types/nodeBasedKnowledgeGraph';
 
-// Mock the knowledge graph service
-jest.mock('../../services/knowledgeGraphService', () => {
+// Mock the knowledge graph access layer
+jest.mock('@almadar-io/knowledge/server', () => {
   const mockGetGraph = jest.fn();
   return {
-    getNodeBasedKnowledgeGraph: mockGetGraph,
+    KnowledgeGraphAccessLayer: jest.fn().mockImplementation(() => ({
+      getGraph: mockGetGraph,
+    })),
+    GraphMutationService: jest.fn().mockImplementation(() => ({
+      applyMutationBatchSafe: jest.fn(),
+      validateMutation: jest.fn(),
+    })),
     __mocks: {
       mockGetGraph,
     },
   };
 });
 
-const { mockGetGraph } = require('../../services/knowledgeGraphService').__mocks;
+const { mockGetGraph } = require('@almadar-io/knowledge/server').__mocks;
 
 describe('GraphAuthorizationService', () => {
   let authorizationService: GraphAuthorizationService;

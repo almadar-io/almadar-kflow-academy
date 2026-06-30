@@ -24,6 +24,10 @@ jest.mock('@almadar-io/knowledge/server', () => ({
     getGraph: jest.fn(),
     clearCache: jest.fn(),
   })),
+  GraphMutationService: jest.fn().mockImplementation(() => ({
+    applyMutationBatchSafe: jest.fn(),
+    validateMutation: jest.fn(),
+  })),
 }));
 
 jest.mock('../../services/graphAuthorizationService', () => ({

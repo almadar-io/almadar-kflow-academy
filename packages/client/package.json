@@ -15,9 +15,9 @@
   "dependencies": {
     "@almadar-io/knowledge": "^0.7.3",
     "@almadar/core": "^10.11.0",
-    "@almadar/sdk": "^0.1.0",
+    "@almadar/sdk": "^0.2.0",
     "@almadar/syntax": "^1.4.0",
-    "@almadar/ui": "^5.76.7",
+    "@almadar/ui": "^5.79.2",
     "@apollo/client": "^3.14.0",
     "@kflow-academy/shared": "*",
     "@react-three/drei": "^10.7.7",

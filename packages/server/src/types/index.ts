@@ -143,8 +143,17 @@ export interface RunCodeSimulationResponse {
   testResults: RunCodeSimulationTestResult[];
 }
 
+export type InteractiveOrbitalType =
+  | 'chart'
+  | 'simulation'
+  | 'math'
+  | 'physics'
+  | 'biology'
+  | 'chemistry'
+  | 'probability';
+
 export interface GenerateInteractiveOrbitalRequest {
-  type: 'chart' | 'simulation';
+  type: InteractiveOrbitalType;
   concept: Concept;
   markerDescription: string;
 }

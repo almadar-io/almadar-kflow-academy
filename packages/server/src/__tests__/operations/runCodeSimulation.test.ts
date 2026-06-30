@@ -1,15 +1,23 @@
 import { jest, describe, beforeEach, it, expect } from '@jest/globals';
+import { runCodeSimulation } from '../../operations/runCodeSimulation';
+import { callLLM } from '../../services/llm';
 
-jest.unstable_mockModule('../../services/llm', () => ({
+jest.mock('../../services/llm', () => ({
   callLLM: jest.fn(),
+  extractJSONArray: jest.fn((content: string) => {
+    try {
+      return JSON.parse(content);
+    } catch {
+      return [];
+    }
+  }),
 }));
-
-const { runCodeSimulation } = await import('../../operations/runCodeSimulation');
-const { callLLM } = await import('../../services/llm');
 
 describe('runCodeSimulation', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    process.env.ALMADAR_API_KEY = 'sk_test_key';
+    process.env.ALMADAR_BASE_URL = 'http://localhost:3999';
   });
 
   it('should parse a clean JSON response', async () => {
@@ -103,4 +111,5 @@ describe('runCodeSimulation', () => {
       runCodeSimulation({ language: 'python', code: '' }),
     ).rejects.toThrow('Language and code are required');
   });
+
 });

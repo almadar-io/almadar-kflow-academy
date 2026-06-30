@@ -73,6 +73,7 @@ async function migrateGraph(uid: string, graphId: string): Promise<{
         if (propsTitle && !propsName) {
           // Copy title to name
           props.name = propsTitle;
+          goalNode.properties = props as any;
           goalsMigrated++;
           graphModified = true;
           console.log(`  ✓ Migrated LearningGoal ${goalId}: "${propsTitle}" → name`);
@@ -99,6 +100,7 @@ async function migrateGraph(uid: string, graphId: string): Promise<{
         if (propsTitle && !propsName) {
           // Copy title to name
           props.name = propsTitle;
+          milestoneNode.properties = props as any;
           milestonesMigrated++;
           graphModified = true;
           console.log(`  ✓ Migrated Milestone ${milestoneId}: "${propsTitle}" → name`);
@@ -127,18 +129,21 @@ async function migrateGraph(uid: string, graphId: string): Promise<{
         if (propLevelName && !propName) {
           layerName = propLevelName;
           mutableProps.name = layerName;
+          layerNode.properties = mutableProps as any;
           layersMigrated++;
           graphModified = true;
           console.log(`  ✓ Migrated Layer ${layerId}: levelName "${propLevelName}" → name`);
         } else if (propGoal && !propName && !propLevelName) {
           layerName = propGoal;
           mutableProps.name = layerName;
+          layerNode.properties = mutableProps as any;
           layersMigrated++;
           graphModified = true;
           console.log(`  ✓ Migrated Layer ${layerId}: goal "${propGoal}" → name`);
         } else if (!propName && !propLevelName && !propGoal && layerNode.properties.layerNumber !== undefined) {
           layerName = `Layer ${layerNode.properties.layerNumber}`;
           mutableProps.name = layerName;
+          layerNode.properties = mutableProps as any;
           layersMigrated++;
           graphModified = true;
           console.log(`  ✓ Migrated Layer ${layerId}: generated name "${layerName}" from layerNumber`);

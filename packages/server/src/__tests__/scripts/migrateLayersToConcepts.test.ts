@@ -2,20 +2,27 @@ import { migrateGraph } from '../../scripts/migrateLayersToConcepts';
 import { Concept } from '../../types/concept';
 import { StoredConceptGraph } from '../../services/graphService';
 import { LayerDocument } from '../../services/layerService';
+import { getFirestore } from '@almadar/server';
 
 // Mock Firebase Admin
-jest.mock('../../config/firebaseAdmin', () => ({
+jest.mock('@almadar/server', () => ({
   getFirestore: jest.fn(() => ({
     collection: jest.fn(() => ({
       doc: jest.fn(() => ({
         collection: jest.fn(() => ({
           limit: jest.fn(() => ({
-            get: jest.fn(),
+            get: jest.fn().mockResolvedValue({ empty: true }),
           })),
         })),
       })),
     })),
   })),
+  getFirebaseAuth: jest.fn(),
+  getFirebaseAdmin: jest.fn(),
+  setupSSE: jest.fn(),
+  sendSSEEvent: jest.fn(),
+  sendSSEDone: jest.fn(),
+  closeSSE: jest.fn(),
 }));
 
 // Mock services
@@ -30,7 +37,6 @@ jest.mock('../../services/layerService', () => ({
 
 import { getUserGraphById, upsertUserGraph } from '../../services/graphService';
 import { getLayerByNumber } from '../../services/layerService';
-import { getFirestore } from '../../config/firebaseAdmin';
 
 describe('migrateLayersToConcepts', () => {
   const uid = 'test-uid';

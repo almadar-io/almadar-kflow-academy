@@ -1,6 +1,6 @@
 /**
  * Tests for Shared GraphQL Resolver Helpers
- * 
+ *
  * Common utilities for GraphQL resolvers.
  */
 
@@ -17,23 +17,34 @@ import type { NodeBasedKnowledgeGraph } from '../../../../types/nodeBasedKnowled
 import { createGraphNode, createRelationship } from '../../../../types/nodeBasedKnowledgeGraph';
 import { createMockDecodedToken, setupFirebaseAdminMocks, resetAllMocks } from '../../../testUtils.helper';
 
-// Mock the access layer
-jest.mock('../../../../services/knowledgeGraphAccess/KnowledgeGraphAccessLayer', () => {
+jest.mock('@almadar-io/knowledge/server', () => {
   const mockGetGraph = jest.fn();
+  const mockSaveGraph = jest.fn();
   return {
     KnowledgeGraphAccessLayer: jest.fn().mockImplementation(() => ({
       getGraph: mockGetGraph,
+      saveGraph: mockSaveGraph,
+    })),
+    GraphMutationService: jest.fn().mockImplementation(() => ({
+      applyMutationBatchSafe: jest.fn(),
+      validateMutation: jest.fn(),
     })),
     __mocks: {
       mockGetGraph,
+      mockSaveGraph,
     },
   };
 });
 
-// Import mocks for use in tests
+jest.mock('../../../../services/graphAuthorizationService', () => ({
+  GraphAuthorizationService: jest.fn().mockImplementation(() => ({
+    verifyGraphAccess: jest.fn(),
+  })),
+}));
+
 const {
   mockGetGraph,
-} = require('../../../../services/knowledgeGraphAccess/KnowledgeGraphAccessLayer').__mocks;
+} = require('@almadar-io/knowledge/server').__mocks;
 
 describe('GraphQL Resolver Helpers', () => {
 
@@ -49,7 +60,6 @@ describe('GraphQL Resolver Helpers', () => {
     resetAllMocks();
     jest.clearAllMocks();
 
-    // Create sample graph
     const node1 = createGraphNode(nodeId1, 'Concept', {
       id: nodeId1,
       name: 'React',
@@ -96,7 +106,6 @@ describe('GraphQL Resolver Helpers', () => {
       ],
     };
 
-    // Reset mock and set default return value
     mockGetGraph.mockClear();
     mockGetGraph.mockResolvedValue(sampleGraph);
   });
@@ -163,7 +172,8 @@ describe('GraphQL Resolver Helpers', () => {
     it('should return learning goal if found in graph', () => {
       const goalNode = createGraphNode('goal-1', 'LearningGoal', {
         id: 'goal-1',
-        description: 'Learn React',
+        name: 'Learn React',
+        description: 'Master React',
         assessedLevel: 'beginner',
       });
 
@@ -181,7 +191,11 @@ describe('GraphQL Resolver Helpers', () => {
 
       const result = inferLearningGoalFromGraph(graphWithGoal);
 
-      expect(result).toEqual(goalNode.properties);
+      expect(result).toBeDefined();
+      expect(result!.id).toBe('goal-1');
+      expect(result!.title).toBe('Learn React');
+      expect(result!.description).toBe('Master React');
+      expect(result!.assessedLevel).toBe('beginner');
     });
 
     it('should return undefined if no learning goal found', () => {
@@ -278,4 +292,3 @@ describe('GraphQL Resolver Helpers', () => {
     });
   });
 });
-

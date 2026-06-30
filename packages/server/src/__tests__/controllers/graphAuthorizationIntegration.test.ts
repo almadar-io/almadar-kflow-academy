@@ -31,12 +31,17 @@ jest.mock('@almadar-io/knowledge/server', () => ({
   })),
 }));
 
-const mockVerifyGraphAccess = jest.fn();
-jest.mock('../../services/graphAuthorizationService', () => ({
-  GraphAuthorizationService: jest.fn().mockImplementation(() => ({
-    verifyGraphAccess: mockVerifyGraphAccess,
-  })),
-}));
+jest.mock('../../services/graphAuthorizationService', () => {
+  const mockVerifyGraphAccess = jest.fn();
+  return {
+    GraphAuthorizationService: jest.fn().mockImplementation(() => ({
+      verifyGraphAccess: mockVerifyGraphAccess,
+    })),
+    __mockVerifyGraphAccess: mockVerifyGraphAccess,
+  };
+});
+
+const mockVerifyGraphAccess = jest.requireMock('../../services/graphAuthorizationService').__mockVerifyGraphAccess;
 
 describe('authorization wiring', () => {
   it('graphMutationDeps.verifyAccess delegates to GraphAuthorizationService', async () => {

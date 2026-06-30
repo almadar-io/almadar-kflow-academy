@@ -17,6 +17,15 @@ export type BloomLevel =
   | "create";
 
 // Segment types for lesson content
+export type InteractiveOrbitalType =
+  | "chart"
+  | "simulation"
+  | "math"
+  | "physics"
+  | "biology"
+  | "chemistry"
+  | "probability";
+
 export type Segment =
   | { type: "markdown"; content: string }
   | { type: "code"; language: string; content: string; runnable?: boolean }
@@ -25,7 +34,7 @@ export type Segment =
   | { type: "connect"; content: string }
   | { type: "reflect"; prompt: string }
   | { type: "bloom"; level: BloomLevel; question: string; answer: string }
-  | { type: "visualization"; visualizationType: "chart" | "simulation"; description: string };
+  | { type: "visualization"; visualizationType: InteractiveOrbitalType; description: string };
 
 /**
  * Parse markdown content to extract code blocks
@@ -98,7 +107,7 @@ export const parseMarkdownWithCodeBlocks = (
  * - <reflect>prompt</reflect> - Reflection prompts
  * - <bloom level="level"><question>q</question><answer>a</answer></bloom> - Bloom's taxonomy questions
  * - <question>q</question><answer>a</answer> - Regular quiz questions
- * - <visualize type="chart|simulation" description="..." /> - Interactive visualizations
+ * - <visualize type="chart|simulation|math|physics|biology|chemistry|probability" description="..." /> - Interactive visualizations
  *
  * Also handles fenced code blocks (```language...```)
  */
@@ -137,7 +146,7 @@ export const parseLessonSegments = (lesson: string | undefined): Segment[] => {
     "(?<reflect><reflect>(?<reflectContent>[\\s\\S]*?)<\\/reflect>)|" +
       "(?<bloom><bloom\\s+level=\"(?<bloomLevel>remember|understand|apply|analyze|evaluate|create)\">(?<bloomBody>[\\s\\S]*?)<\\/bloom>)|" +
       "(?<quiz><question>(?<quizQuestion>[\\s\\S]*?)<\\/question>\\s*<answer>(?<quizAnswer>[\\s\\S]*?)<\\/answer>)|" +
-      "(?<visualize><visualize\\s+type=\"(?<vizType>chart|simulation)\"\\s+description=\"(?<vizDesc>[^\"]*?)\"\\s*\\/?>)",
+      "(?<visualize><visualize\\s+type=\"(?<vizType>chart|simulation|math|physics|biology|chemistry|probability)\"\\s+description=\"(?<vizDesc>[^\"]*?)\"\\s*\\/?>)",
     "gi",
   );
 
@@ -183,7 +192,7 @@ export const parseLessonSegments = (lesson: string | undefined): Segment[] => {
     } else if (match.groups?.visualize) {
       segments.push({
         type: "visualization",
-        visualizationType: match.groups.vizType as "chart" | "simulation",
+        visualizationType: match.groups.vizType as InteractiveOrbitalType,
         description: match.groups.vizDesc ?? "",
       });
     }
