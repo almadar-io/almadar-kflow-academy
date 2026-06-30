@@ -84,3 +84,13 @@ env:
 
   - variable: DEEPSEEK_API_KEY
     secret: DEEPSEEK_API_KEY
+
+  # Almadar SDK credentials — used by /api/generate-interactive-orbital
+  # to call the Builder Studio agent endpoint.
+  - variable: ALMADAR_API_KEY
+    secret: ALMADAR_API_KEY
+
+  - variable: ALMADAR_BASE_URL
+    value: "https://studio.almadar.io"
+    availability:
+      - RUNTIME

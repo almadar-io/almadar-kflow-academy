@@ -17,6 +17,7 @@
     "build:server": "npm run build:shared && npm run build -w @kflow-academy/server",
     "test": "npm run test --workspaces --if-present",
     "test:e2e": "node e2e/flows.mjs",
+    "test:e2e:sdk-lesson": "node e2e/sdk-lesson.mjs",
     "lint": "npm run lint --workspaces --if-present",
     "clean": "npm run clean --workspaces --if-present && rm -rf node_modules",
     "deploy:prod": "npm run build:client && firebase deploy --only hosting:prod",
