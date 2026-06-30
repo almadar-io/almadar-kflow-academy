@@ -1,27 +1,10 @@
 import { jest, describe, beforeEach, it, expect } from '@jest/globals';
 import type { OrbitalSchema } from '@almadar/core';
-
-const { generateInteractiveOrbital } = await import(
-  '../../operations/generateInteractiveOrbital'
-);
-
-function makeStream(chunks: string[]): ReadableStream<Uint8Array> {
-  let index = 0;
-  return new ReadableStream({
-    pull(controller) {
-      if (index < chunks.length) {
-        controller.enqueue(new TextEncoder().encode(chunks[index]));
-        index += 1;
-      } else {
-        controller.close();
-      }
-    },
-  });
-}
-
-function sseEvent(type: string, data: Record<string, unknown>): string {
-  return `data: ${JSON.stringify({ type, ...data })}\n\n`;
-}
+import type { AlmadarClient } from '@almadar/sdk/client';
+import {
+  generateInteractiveOrbital,
+  type GenerateInteractiveOrbitalDependencies,
+} from '../../operations/generateInteractiveOrbital';
 
 const sampleSchema: OrbitalSchema = {
   name: 'TestApp',
@@ -46,93 +29,87 @@ const concept = {
 };
 
 describe('generateInteractiveOrbital', () => {
+  let generateMock: jest.Mock<() => Promise<{ schema: OrbitalSchema; appId?: string }>>;
+  let deps: GenerateInteractiveOrbitalDependencies;
+
   beforeEach(() => {
-    jest.resetAllMocks();
+    process.env.ALMADAR_API_KEY = 'sk_test_key';
+    process.env.ALMADAR_BASE_URL = 'http://localhost:3999';
+    generateMock = jest.fn(async () => ({ schema: sampleSchema, appId: 'test-app-id' }));
+    deps = {
+      createClient: () =>
+        ({ generate: generateMock }) as unknown as AlmadarClient,
+    };
   });
 
-  it('should return schema from complete event', async () => {
-    global.fetch = jest.fn(async () => ({
-      ok: true,
-      body: makeStream([
-        sseEvent('start', { threadId: 't1' }),
-        sseEvent('schema_update', { schema: sampleSchema }),
-        sseEvent('complete', { schema: sampleSchema, schemaGenerated: true }),
-      ]),
-    })) as unknown as typeof fetch;
-
-    const result = await generateInteractiveOrbital({
-      type: 'chart',
-      concept,
-      markerDescription: 'Bar chart of row vector components.',
-    });
+  it('should return schema from SDK generate result for chart', async () => {
+    const result = await generateInteractiveOrbital(
+      {
+        type: 'chart',
+        concept,
+        markerDescription: 'Bar chart of row vector components.',
+      },
+      deps,
+    );
 
     expect(result).toEqual(sampleSchema);
-    expect(global.fetch).toHaveBeenCalledTimes(1);
-    const request = (global.fetch as jest.Mock).mock.calls[0][1] as {
-      body: string;
-    };
-    const body = JSON.parse(request.body);
-    expect(body.stdAllowList).toEqual(['std-graphs']);
-    expect(body.catalogMode).toBe('subset');
+    expect(generateMock).toHaveBeenCalledTimes(1);
+    const request = generateMock.mock.calls[0][0];
+    expect(request.prompt).toContain('Row Vectors');
+    expect(request.endUserId).toBe(concept.id);
+    expect(request.provider).toBe('deepseek');
+    expect(request.model).toBe('deepseek-chat');
+    expect(request.stdAllowList).toEqual(['std-graphs']);
+    expect(request.catalogMode).toBe('subset');
   });
 
-  it('should fall back to last schema_update if complete has no schema', async () => {
-    global.fetch = jest.fn(async () => ({
-      ok: true,
-      body: makeStream([
-        sseEvent('schema_update', { schema: sampleSchema }),
-        sseEvent('complete', { schemaGenerated: true }),
-      ]),
-    })) as unknown as typeof fetch;
-
-    const result = await generateInteractiveOrbital({
-      type: 'simulation',
-      concept,
-      markerDescription: 'Projectile motion preset.',
-    });
+  it('should return schema from SDK generate result for simulation', async () => {
+    const result = await generateInteractiveOrbital(
+      {
+        type: 'simulation',
+        concept,
+        markerDescription: 'Projectile motion preset.',
+      },
+      deps,
+    );
 
     expect(result).toEqual(sampleSchema);
-    const request = (global.fetch as jest.Mock).mock.calls[0][1] as {
-      body: string;
-    };
-    const body = JSON.parse(request.body);
-    expect(body.stdAllowList).toEqual([
+    const request = generateMock.mock.calls[0][0];
+    expect(request.stdAllowList).toEqual([
       'ui-simulation-canvas',
       'ui-simulation-controls',
       'ui-simulator-board',
     ]);
+    expect(request.catalogMode).toBe('subset');
   });
 
-  it('should throw when builder returns an error event', async () => {
-    global.fetch = jest.fn(async () => ({
-      ok: true,
-      body: makeStream([
-        sseEvent('error', { error: 'Generation failed' }),
-      ]),
-    })) as unknown as typeof fetch;
+  it('should throw when SDK generate rejects', async () => {
+    generateMock.mockRejectedValueOnce(new Error('Generation failed'));
 
     await expect(
-      generateInteractiveOrbital({
-        type: 'chart',
-        concept,
-        markerDescription: 'A chart.',
-      }),
+      generateInteractiveOrbital(
+        {
+          type: 'chart',
+          concept,
+          markerDescription: 'A chart.',
+        },
+        deps,
+      ),
     ).rejects.toThrow('Generation failed');
   });
 
-  it('should throw on non-ok response', async () => {
-    global.fetch = jest.fn(async () => ({
-      ok: false,
-      status: 400,
-      text: async () => 'Bad request',
-    })) as unknown as typeof fetch;
+  it('should throw when ALMADAR_API_KEY is missing', async () => {
+    delete process.env.ALMADAR_API_KEY;
 
     await expect(
-      generateInteractiveOrbital({
-        type: 'chart',
-        concept,
-        markerDescription: 'A chart.',
-      }),
-    ).rejects.toThrow('Builder API returned 400: Bad request');
+      generateInteractiveOrbital(
+        {
+          type: 'chart',
+          concept,
+          markerDescription: 'A chart.',
+        },
+        deps,
+      ),
+    ).rejects.toThrow('ALMADAR_API_KEY environment variable is not set');
   });
 });

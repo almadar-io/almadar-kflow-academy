@@ -2,8 +2,8 @@
  * InteractiveOrbitalPanel Organism Component
  *
  * Generates and renders an interactive visualization or simulation orbital
- * inside a lesson. The caller supplies the generation function so the panel
- * stays decoupled from any specific API.
+ * inside a lesson. Uses `@almadar/sdk/react` `AlmadarApp` for rendering so
+ * the runtime path stays consistent with the public SDK contract.
  *
  * Event Contract:
  * - Emits: UI:GENERATE_INTERACTIVE_ORBITAL { type, success }
@@ -12,6 +12,7 @@
 import React, { useState, useCallback, useEffect } from "react";
 import { Sparkles, Loader2, AlertCircle, RefreshCw } from "lucide-react";
 import type { OrbitalSchema } from "@almadar/core";
+import { AlmadarApp } from "@almadar/sdk/react";
 import {
   Box,
   VStack,
@@ -129,7 +130,7 @@ export const InteractiveOrbitalPanel: React.FC<InteractiveOrbitalPanelProps> = (
 
         {schema && (
           <Box className="border border-border rounded-lg overflow-hidden">
-            <OrbitalPreview schema={schema} />
+            <AlmadarApp schema={schema} mode="static" height="24rem" />
           </Box>
         )}
       </VStack>
@@ -138,42 +139,3 @@ export const InteractiveOrbitalPanel: React.FC<InteractiveOrbitalPanelProps> = (
 };
 
 InteractiveOrbitalPanel.displayName = "InteractiveOrbitalPanel";
-
-/**
- * Lazy-loaded orbital preview.
- *
- * OrbPreview is imported from the runtime subpath so that design-system
- * consumers only pay the runtime bundle cost when a visualize marker is
- * actually rendered.
- */
-const OrbitalPreview: React.FC<{ schema: OrbitalSchema }> = ({ schema }) => {
-  const [Component, setComponent] = useState<
-    React.ComponentType<{ schema: OrbitalSchema }> | null
-  >(null);
-
-  useEffect(() => {
-    let cancelled = false;
-    import("@almadar/ui/runtime").then((mod) => {
-      if (!cancelled) {
-        setComponent(() => mod.OrbPreview);
-      }
-    });
-    return () => {
-      cancelled = true;
-    };
-  }, []);
-
-  if (!Component) {
-    return (
-      <Box className="h-96 flex items-center justify-center">
-        <Loader2 size={24} className="animate-spin text-muted-foreground" />
-      </Box>
-    );
-  }
-
-  return (
-    <Box className="h-96">
-      <Component schema={schema} />
-    </Box>
-  );
-};
