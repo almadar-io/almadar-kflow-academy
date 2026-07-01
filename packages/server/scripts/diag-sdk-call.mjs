@@ -40,16 +40,13 @@ const MARKERS = {
 };
 
 const CATALOG = {
-  // NOTE: the intended learning-* organisms are not present in the current
-  // @almadar-io/behaviors registry, so we verify the allow-list plumbing with
-  // real organisms that exist today. Replace once learning-* are shipped.
-  chart: ['std-embedded-dashboard'],
-  simulation: ['std-stem-lab'],
-  math: ['std-embedded-dashboard'],
-  physics: ['std-stem-lab'],
-  biology: ['std-stem-lab'],
-  chemistry: ['std-stem-lab'],
-  probability: ['std-embedded-dashboard'],
+  chart: ['learning-math-lab'],
+  simulation: ['learning-physics-lab'],
+  math: ['learning-math-lab'],
+  physics: ['learning-physics-lab'],
+  biology: ['learning-biology-lab'],
+  chemistry: ['learning-chemistry-lab'],
+  probability: ['learning-probability-lab'],
 };
 
 const concept = CONCEPTS[type] || CONCEPTS.chart;

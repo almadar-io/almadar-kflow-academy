@@ -31,42 +31,16 @@ const CATALOG: Record<
   InteractiveOrbitalType,
   { stdAllowList: string[]; catalogMode: 'subset' }
 > = {
-  chart: {
-    stdAllowList: ['learning-function-plotter', 'learning-coordinate-plane'],
-    catalogMode: 'subset',
-  },
-  simulation: {
-    stdAllowList: ['learning-wave-canvas', 'learning-field-canvas'],
-    catalogMode: 'subset',
-  },
-  math: {
-    stdAllowList: [
-      'learning-function-plotter',
-      'learning-coordinate-plane',
-      'learning-vector-canvas',
-    ],
-    catalogMode: 'subset',
-  },
-  physics: {
-    stdAllowList: [
-      'learning-wave-canvas',
-      'learning-field-canvas',
-      'learning-vector-canvas',
-    ],
-    catalogMode: 'subset',
-  },
-  biology: {
-    stdAllowList: ['learning-cell-viewer', 'learning-molecule-viewer'],
-    catalogMode: 'subset',
-  },
-  chemistry: {
-    stdAllowList: ['learning-molecule-viewer'],
-    catalogMode: 'subset',
-  },
-  probability: {
-    stdAllowList: ['learning-function-plotter'],
-    catalogMode: 'subset',
-  },
+  // NOTE: these are the real organism names in @almadar/std's ui/learning
+  // registry. Each lab exposes a single orbital with an "@config.mode" knob
+  // that selects the specific visualization (function-plot, wave, cell, etc.).
+  chart: { stdAllowList: ['learning-math-lab'], catalogMode: 'subset' },
+  simulation: { stdAllowList: ['learning-physics-lab'], catalogMode: 'subset' },
+  math: { stdAllowList: ['learning-math-lab'], catalogMode: 'subset' },
+  physics: { stdAllowList: ['learning-physics-lab'], catalogMode: 'subset' },
+  biology: { stdAllowList: ['learning-biology-lab'], catalogMode: 'subset' },
+  chemistry: { stdAllowList: ['learning-chemistry-lab'], catalogMode: 'subset' },
+  probability: { stdAllowList: ['learning-probability-lab'], catalogMode: 'subset' },
 };
 
 function buildPrompt(options: GenerateInteractiveOrbitalOptions): string {
@@ -84,7 +58,12 @@ Learner context: ${markerDescription}
 
 Requirements:
 - Compose the result as one Orbital schema using ONLY the allowed std behaviors.
-- For field-scoped "learning-*-lab" organisms, set the \\"@config.mode\\" knob to the specific visualization that matches the learner context (e.g. function-plot, wave, cell, molecule, dice, etc.).
+- For "learning-*-lab" organisms, set the \\"@config.mode\\" knob to the specific visualization that matches the learner context:
+  - learning-math-lab: coordinate-plane, function-plot, vector, geometry, number-line, slope-field, area-integral
+  - learning-physics-lab: wave, field, ray, pendulum, circuit
+  - learning-biology-lab: cell, organism, ecosystem
+  - learning-chemistry-lab: molecule, reaction, periodic
+  - learning-probability-lab: distribution, simulation, bayes
 - Keep the UI focused on the learning goal: no navigation, no authentication, no complex app chrome.
 - Use realistic, pedagogically useful data.
 - Return a valid, compilable OrbitalSchema.`;
