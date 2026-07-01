@@ -23,76 +23,48 @@ export interface GenerateInteractiveOrbitalOptions {
   markerDescription: string;
 }
 
+// Organism-level allow-list only. almadar-rabit's Coordinator only selects
+// top-level organisms (`pick_organism`), and `extraTraits` is no longer
+// LLM-writable, so atoms/molecules/variations are not selectable here.
+// Keeping the list narrow to real `learning-*` organisms for the baseline.
 const CATALOG: Record<
   InteractiveOrbitalType,
   { stdAllowList: string[]; catalogMode: 'subset' }
 > = {
   chart: {
-    stdAllowList: [
-      'std-graphs',
-      'std-graphs-bar',
-      'std-graphs-line',
-      'std-graphs-pie',
-      'std-graphs-donut',
-      'std-graphs-area',
-      'std-graphs-scatter',
-      'std-graphs-histogram',
-      'ui-line-chart',
-      'ui-sparkline',
-      'ui-chart-legend',
-      'ui-stats-grid',
-      'ui-stat-card',
-      'ui-animated-counter',
-      'ui-trend-indicator',
-    ],
+    stdAllowList: ['learning-function-plotter', 'learning-coordinate-plane'],
     catalogMode: 'subset',
   },
   simulation: {
-    stdAllowList: [
-      'learning-physics-lab',
-      'ui-physics-canvas',
-      'ui-learning-canvas',
-    ],
+    stdAllowList: ['learning-wave-canvas', 'learning-field-canvas'],
     catalogMode: 'subset',
   },
   math: {
     stdAllowList: [
-      'learning-math-lab',
-      'ui-math-canvas',
-      'ui-learning-canvas',
+      'learning-function-plotter',
+      'learning-coordinate-plane',
+      'learning-vector-canvas',
     ],
     catalogMode: 'subset',
   },
   physics: {
     stdAllowList: [
-      'learning-physics-lab',
-      'ui-physics-canvas',
-      'ui-learning-canvas',
+      'learning-wave-canvas',
+      'learning-field-canvas',
+      'learning-vector-canvas',
     ],
     catalogMode: 'subset',
   },
   biology: {
-    stdAllowList: [
-      'learning-biology-lab',
-      'ui-biology-canvas',
-      'ui-learning-canvas',
-    ],
+    stdAllowList: ['learning-cell-viewer', 'learning-molecule-viewer'],
     catalogMode: 'subset',
   },
   chemistry: {
-    stdAllowList: [
-      'learning-chemistry-lab',
-      'ui-chemistry-canvas',
-      'ui-learning-canvas',
-    ],
+    stdAllowList: ['learning-molecule-viewer'],
     catalogMode: 'subset',
   },
   probability: {
-    stdAllowList: [
-      'learning-probability-lab',
-      'ui-math-canvas',
-      'ui-learning-canvas',
-    ],
+    stdAllowList: ['learning-function-plotter'],
     catalogMode: 'subset',
   },
 };
