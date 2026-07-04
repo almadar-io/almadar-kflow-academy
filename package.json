@@ -37,11 +37,9 @@
     "playwright": "^1.61.0",
     "prettier": "^3.4.2",
     "typescript": "^5.7.2",
-    "vite": "^6.0.5",
-    "turbo": "^2.8.17"
+    "vite": "^6.0.5"
   },
   "engines": {
     "node": "22"
-  },
-  "packageManager": "pnpm@10.30.3"
+  }
 }
