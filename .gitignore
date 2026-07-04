@@ -55,8 +55,8 @@ temp/
 *.tmp
 *.temp
 
-# Lock files (keep package-lock.json for npm workspaces)
+# Lock files (keep pnpm-lock.yaml for pnpm workspaces)
 yarn.lock
-pnpm-lock.yaml
+package-lock.json
 .claude/
 e2e/.artifacts/
