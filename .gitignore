@@ -60,3 +60,4 @@ yarn.lock
 package-lock.json
 .claude/
 e2e/.artifacts/
+.turbo/
