@@ -17,7 +17,7 @@ overrides:
   '@types/three': 0.160.0
   '@almadar/std': ^16.103.2
   '@almadar/ui': ^5.93.0
-  '@almadar/core': ^10.24.0
+  '@almadar/core': ^10.25.0
 
 importers:
 
@@ -25,7 +25,7 @@ importers:
     dependencies:
       '@almadar-io/knowledge':
         specifier: ^0.7.3
-        version: 0.7.4(@almadar/core@10.18.0)(@almadar/llm@2.28.0(@almadar/core@10.18.0)(@opentelemetry/api@1.9.1)(ws@8.21.0))(@almadar/server@2.17.0(express@4.22.2))(express@4.22.2)
+        version: 0.7.4(@almadar/core@10.25.0)(@almadar/llm@2.28.0(@almadar/core@10.25.0)(@opentelemetry/api@1.9.1)(ws@8.21.0))(@almadar/server@2.17.0(express@4.22.2))(express@4.22.2)
       three:
         specifier: ^0.160.1
         version: 0.160.1
@@ -60,7 +60,7 @@ packages:
   '@almadar-io/knowledge@0.7.4':
     resolution: {integrity: sha512-eLTNWR5vp6rYsl11BGk2xPsGMtpWEZSbXaihVVrR0Rk2RrTNPeNUxMV3UeGwG3FPwNhYM4OMCSItiTkhfHXr7Q==, tarball: https://npm.pkg.github.com/download/@almadar-io/knowledge/0.7.4/54c269904cc7dd23d84b3de8d45b08a9968a1641}
     peerDependencies:
-      '@almadar/core': ^10.24.0
+      '@almadar/core': ^10.25.0
       '@almadar/llm': '>=2.24.0'
       '@almadar/server': '>=2.14.2'
       express: '>=4.0.0'
@@ -68,16 +68,13 @@ packages:
       express:
         optional: true
 
-  '@almadar/core@10.18.0':
-    resolution: {integrity: sha512-bqvQGMc0lgzkJnQbABbh1OObUFJNrs0z3EyU1eRl74WvPMDKnAWLp5ZwmIDekUtP9WEkpxJ8jyM1TZaqAFzoXg==}
-
   '@almadar/core@10.25.0':
     resolution: {integrity: sha512-GkwgpunROGSjjO1N9UcTE9Zhy7dXggbrLddXVfWo9C0xbTPzEq4tjAL2PxJSMzkmcxK/R5lNchAqwHMer5fBNw==}
 
   '@almadar/llm@2.28.0':
     resolution: {integrity: sha512-EnCpNPyPn+qB77ceYH7YRK2Kn9usFavHAWwJ1FjZjKxLSodE0lJLpLFqpAPE4QiioLIIVc5ZrQPE+ZVOPcfNRA==}
     peerDependencies:
-      '@almadar/core': ^10.24.0
+      '@almadar/core': ^10.25.0
 
   '@almadar/logger@1.6.0':
     resolution: {integrity: sha512-DtFJ9UP51fNm07KQ5un7ziIVmY5YcnSfRK+eEgDcEG4+vjZ6bLhl9wcnp0ASI48sWbm0lPo+bV7VAVxqEEaclQ==}
@@ -1890,10 +1887,10 @@ packages:
 
 snapshots:
 
-  '@almadar-io/knowledge@0.7.4(@almadar/core@10.18.0)(@almadar/llm@2.28.0(@almadar/core@10.18.0)(@opentelemetry/api@1.9.1)(ws@8.21.0))(@almadar/server@2.17.0(express@4.22.2))(express@4.22.2)':
+  '@almadar-io/knowledge@0.7.4(@almadar/core@10.25.0)(@almadar/llm@2.28.0(@almadar/core@10.25.0)(@opentelemetry/api@1.9.1)(ws@8.21.0))(@almadar/server@2.17.0(express@4.22.2))(express@4.22.2)':
     dependencies:
-      '@almadar/core': 10.18.0
-      '@almadar/llm': 2.28.0(@almadar/core@10.18.0)(@opentelemetry/api@1.9.1)(ws@8.21.0)
+      '@almadar/core': 10.25.0
+      '@almadar/llm': 2.28.0(@almadar/core@10.25.0)(@opentelemetry/api@1.9.1)(ws@8.21.0)
       '@almadar/server': 2.17.0(express@4.22.2)
       graphology: 0.26.0(graphology-types@0.24.8)
       graphology-shortest-path: 2.1.0(graphology-types@0.24.8)
@@ -1902,19 +1899,14 @@ snapshots:
     optionalDependencies:
       express: 4.22.2
 
-  '@almadar/core@10.18.0':
-    dependencies:
-      '@almadar/patterns': 2.95.0
-      zod: 3.25.76
-
   '@almadar/core@10.25.0':
     dependencies:
       '@almadar/patterns': 2.95.0
       zod: 3.25.76
 
-  '@almadar/llm@2.28.0(@almadar/core@10.18.0)(@opentelemetry/api@1.9.1)(ws@8.21.0)':
+  '@almadar/llm@2.28.0(@almadar/core@10.25.0)(@opentelemetry/api@1.9.1)(ws@8.21.0)':
     dependencies:
-      '@almadar/core': 10.18.0
+      '@almadar/core': 10.25.0
       '@almadar/logger': 1.6.0
       '@anthropic-ai/sdk': 0.52.0
       '@langchain/anthropic': 1.5.1(@langchain/core@1.2.1(@opentelemetry/api@1.9.1)(openai@6.45.0(ws@8.21.0)(zod@3.25.76))(ws@8.21.0))
