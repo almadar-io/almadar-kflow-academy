@@ -95,6 +95,7 @@ export interface AnswerQuestionResponse {
   mutations: MutationBatch;
   content: {
     answer: string;
+    relatedConcepts?: Array<{ graphId: string; nodeId: string; name?: string; text?: string }>;
   };
   graph: NodeBasedKnowledgeGraph;
   errors?: MutationError[];
@@ -166,6 +167,8 @@ export interface LearningPathSummary {
 
 export interface LearningPathsSummaryResponse {
   learningPaths: LearningPathSummary[];
+  /** Semantic edges computed via cross-graph vector search (for L1 viz clustering of similar paths). */
+  semanticEdges?: Array<{ source: string; target: string; weight?: number }>;
 }
 
 /**

@@ -63,6 +63,7 @@ export function useAnswerQuestion(graphId: string) {
               onDone: (finalResult) => {
                 setStreaming((prev) => prev ? { ...prev, isStreaming: false } : prev);
                 setIsLoading(false);
+                // relatedConcepts (cross-graph) travel in finalResult.content.relatedConcepts when present
                 options.onDone?.(finalResult);
               },
               onError: (err) => {

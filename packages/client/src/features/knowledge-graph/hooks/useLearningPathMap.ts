@@ -29,7 +29,7 @@ export interface LearningPathMap {
 const CONCEPT_OPTS = { includeRelationships: false } as const;
 const FIVE_MIN = 5 * 60 * 1000;
 
-export function useLearningPathMap(paths: LearningPathInput[]): LearningPathMap | undefined {
+export function useLearningPathMap(paths: LearningPathInput[], semanticEdges: Array<{ source: string; target: string; weight?: number }> = []): LearningPathMap | undefined {
   const results = useQueries({
     queries: paths.map((p) => ({
       queryKey: knowledgeGraphKeys.conceptsByLayer(p.graphId, CONCEPT_OPTS),
@@ -85,6 +85,23 @@ export function useLearningPathMap(paths: LearningPathInput[]): LearningPathMap 
       }
     }
 
+    // Augment with semantic edges from server (cross-graph Chroma vector search on path texts).
+    // Union for clusters + add edges so force layout pulls semantically similar paths together.
+    for (const se of semanticEdges) {
+      const i = paths.findIndex(p => p.graphId === se.source);
+      const j = paths.findIndex(p => p.graphId === se.target);
+      if (i >= 0 && j >= 0) {
+        const alreadyExact = edges.some(e =>
+          (e.source === se.source && e.target === se.target) ||
+          (e.source === se.target && e.target === se.source)
+        );
+        union(i, j);
+        if (!alreadyExact) {
+          edges.push({ source: se.source, target: se.target, weight: se.weight ?? 0.75 });
+        }
+      }
+    }
+
     // Map each component root to a stable, contiguous cluster id (cluster-0, cluster-1, ...).
     const clusterOf = new Map<number, string>();
     let nextCluster = 0;
@@ -107,5 +124,5 @@ export function useLearningPathMap(paths: LearningPathInput[]): LearningPathMap 
     return { nodes, edges };
     // `results` is read above but intentionally NOT a dep (it's a fresh array every render); `fingerprint`
     // captures its loaded-data identity, so the force graph only re-lays-out when concept data changes.
-  }, [fingerprint, paths]);
+  }, [fingerprint, paths, semanticEdges]);
 }

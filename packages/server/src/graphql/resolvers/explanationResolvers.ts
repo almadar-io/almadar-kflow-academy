@@ -21,6 +21,7 @@ import {
   inferLearningGoalFromGraph,
   verifyGraphAccessForResolver,
 } from './shared/resolverHelpers';
+import { listUserGraphIds } from '../../utils/listUserGraphIds';
 
 const mutationService = new GraphMutationService();
 const accessLayer = new KnowledgeGraphAccessLayer();
@@ -53,6 +54,16 @@ export const explanationResolvers = {
       // Infer learning goal from graph
       const learningGoal = inferLearningGoalFromGraph(graph);
 
+      // Cross-graph priors for lesson generation: fetch all user's graphs and let the explain
+      // operation perform vector search. The LLM will weave "builds on" references from other
+      // paths into the <connect> segment of the generated lesson content.
+      let allUserGraphIds: string[] | undefined;
+      try {
+        allUserGraphIds = await listUserGraphIds(uid);
+      } catch {
+        /* best effort, no cross priors */
+      }
+
       // Execute operation with minimal input
       const result = await explain({
         graph,
@@ -61,6 +72,7 @@ export const explanationResolvers = {
         learningGoal,
         uid,
         stream: false,
+        allUserGraphIds,
       });
 
       // Handle streaming result (not supported in GraphQL yet)
@@ -108,6 +120,14 @@ export const explanationResolvers = {
       // Create mutation context from graph
       const mutationContext = createMutationContext(graph, args.targetNodeId);
 
+      // Cross-graph for related concepts in answers (symmetric to explain lesson priors).
+      let allUserGraphIds: string[] | undefined;
+      try {
+        allUserGraphIds = await listUserGraphIds(uid);
+      } catch {
+        /* best effort */
+      }
+
       // Execute operation with minimal input (default to ephemeral)
       const result = await answerQuestion({
         graph,
@@ -117,6 +137,7 @@ export const explanationResolvers = {
         storeQA: false, // Default to ephemeral
         uid,
         stream: false,
+        allUserGraphIds,
       });
 
       // Handle streaming result (not supported in GraphQL yet)

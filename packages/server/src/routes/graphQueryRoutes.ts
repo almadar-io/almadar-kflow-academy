@@ -38,7 +38,33 @@ router.get('/learning-paths', async (req, res, next) => {
     )).filter((p): p is NonNullable<typeof p> => p !== null);
 
     paths.sort((a, b) => b.updatedAt - a.updatedAt);
-    res.json({ learningPaths: paths });
+
+    // Compute semantic edges for L1 viz using cross-graph vector search (Chroma).
+    // For each path, use its title+desc as query, find similar concepts across other graphs.
+    // This allows client to augment exact-ID clusters with semantic ones.
+    const semanticEdges: Array<{ source: string; target: string; weight?: number }> = [];
+    try {
+      const access = graphQueryDeps.accessLayer;
+      for (const p of paths) {
+        const query = `${p.title || ''} ${p.description || ''}`.trim().slice(0, 300);
+        if (!query) continue;
+        const otherIds = paths.map(pp => pp.id).filter(id => id !== p.id);
+        if (otherIds.length === 0) continue;
+        const hits = await access.findSimilarNodesCrossGraph(uid, otherIds, query, 3, ['Concept']);
+        const hitGraphSet = new Set(hits.map(h => h.graphId).filter(g => g && g !== p.id));
+        for (const g of hitGraphSet) {
+          // add undirected
+          const [s, t] = p.id < g ? [p.id, g] : [g, p.id];
+          if (!semanticEdges.some(e => e.source === s && e.target === t)) {
+            semanticEdges.push({ source: s, target: t, weight: 0.75 });
+          }
+        }
+      }
+    } catch {
+      // graceful, no semantic
+    }
+
+    res.json({ learningPaths: paths, semanticEdges });
   } catch (error) {
     next(error);
   }

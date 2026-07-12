@@ -66,6 +66,10 @@ describe('operation deps wiring', () => {
     expect(typeof explanationDeps.parseAnswerQuestionContent).toBe('function');
   });
 
+  it('explanationDeps provides getAllGraphIds for V2 cross-graph (answer relatedConcepts, lesson priors, viz semantic)', () => {
+    expect(typeof explanationDeps.getAllGraphIds).toBe('function');
+  });
+
   it.each(sharedFields)('layerPracticeDeps has %s', field => {
     expect(layerPracticeDeps).toHaveProperty(field);
   });

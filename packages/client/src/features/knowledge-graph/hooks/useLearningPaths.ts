@@ -26,9 +26,13 @@ export function useLearningPaths(options?: UseLearningPathsOptions) {
     queryKey: knowledgeGraphKeys.learningPaths(),
     queryFn: async () => {
       const response = await graphQueryApi.getLearningPaths();
-      return [...response.learningPaths].sort(
+      const sortedPaths = [...response.learningPaths].sort(
         (a, b) => b.updatedAt - a.updatedAt
       );
+      return {
+        learningPaths: sortedPaths,
+        semanticEdges: response.semanticEdges ?? [],
+      };
     },
     enabled: options?.enabled !== false,
     staleTime: options?.staleTime,
@@ -39,7 +43,8 @@ export function useLearningPaths(options?: UseLearningPathsOptions) {
   };
 
   return {
-    learningPaths: query.data ?? [],
+    learningPaths: query.data?.learningPaths ?? [],
+    semanticEdges: query.data?.semanticEdges ?? [],
     loading: query.isLoading,
     error: query.error?.message ?? null,
     refetch,

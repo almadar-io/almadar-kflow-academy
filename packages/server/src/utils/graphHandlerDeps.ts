@@ -104,6 +104,7 @@ export const explanationDeps: ExplanationDeps = {
   mutationApplier: mutationService,
   getUid,
   verifyAccess,
+  getAllGraphIds,
   parseExplainContent,
   parseAnswerQuestionContent: (fullContent: string, storeQA: boolean) =>
     parseAnswerQuestionContent(fullContent, storeQA),

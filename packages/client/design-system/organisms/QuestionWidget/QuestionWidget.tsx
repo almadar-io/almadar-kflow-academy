@@ -87,6 +87,18 @@ export interface QuestionWidgetProps {
    * Callback to open widget (for floating button)
    */
   onOpen?: () => void;
+
+  /**
+   * Cross-graph related concepts discovered via vector search (Chroma). Rendered as
+   * navigable links after the answer. No new prompts or decisions for the user.
+   */
+  relatedConcepts?: Array<{ graphId: string; nodeId: string; name?: string }>;
+
+  /**
+   * Page-provided navigation for related links (carries the target graphId so we
+   * can cross paths without changing the current concept view model).
+   */
+  onNavigateRelated?: (related: { graphId: string; nodeId: string }) => void;
 }
 
 export const QuestionWidget: React.FC<QuestionWidgetProps> = ({
@@ -102,6 +114,8 @@ export const QuestionWidget: React.FC<QuestionWidgetProps> = ({
   onReset,
   showFloatingButton = false,
   onOpen,
+  relatedConcepts = [],
+  onNavigateRelated,
 }) => {
   const [question, setQuestion] = useState('');
   const [expandedQuestions, setExpandedQuestions] = useState<Set<string>>(new Set());
@@ -323,6 +337,28 @@ export const QuestionWidget: React.FC<QuestionWidgetProps> = ({
               <div className="prose max-w-none">
                 <SegmentRenderer segments={answerSegments} />
               </div>
+
+              {/* Cross-graph related concepts (from Chroma vector search across user's graphs).
+                  Passive enhancement — no prompts. Uses existing navigation. */}
+              {relatedConcepts.length > 0 && onNavigateRelated && (
+                <div className="mt-3 pt-3 border-t border-border">
+                  <Typography variant="small" className="text-muted-foreground mb-1">
+                    Related concepts from your other learning paths:
+                  </Typography>
+                  <div className="flex flex-wrap gap-1.5">
+                    {relatedConcepts.map((r, idx) => (
+                      <button
+                        key={`${r.graphId}:${r.nodeId}:${idx}`}
+                        type="button"
+                        onClick={() => onNavigateRelated({ graphId: r.graphId, nodeId: r.nodeId })}
+                        className="text-xs px-2 py-0.5 rounded border border-primary/40 hover:bg-primary/10 text-primary"
+                      >
+                        {r.name || r.nodeId}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           )}
 

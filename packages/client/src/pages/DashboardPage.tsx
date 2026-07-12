@@ -58,18 +58,19 @@ export const DashboardPage: React.FC = () => {
   );
 
   const { items: jumpBackInItems, isLoading: isLoadingJumpBackIn } = useJumpBackIn();
-  const { learningPaths: pathSummaries, loading: pathsLoading } = useLearningPaths();
+  const { learningPaths: pathSummaries, loading: pathsLoading, semanticEdges = [] } = useLearningPaths();
 
   // Hero map level: L1 = graph-of-paths, L2 = concepts of the drilled path.
   const [level, setLevel] = useState<DashboardMapLevel>('L1');
   const [selectedGraphId, setSelectedGraphId] = useState<string | null>(null);
 
   // Top-level knowledge map: every learning path is a node, connected to the paths it shares concepts with.
+  // Augmented with semanticEdges from cross-graph vector search (Chroma) for similar-path clustering.
   const pathMapInputs = useMemo(
     () => pathSummaries.map(p => ({ graphId: p.id, name: p.title, conceptCount: p.conceptCount })),
     [pathSummaries]
   );
-  const pathMap = useLearningPathMap(pathMapInputs);
+  const pathMap = useLearningPathMap(pathMapInputs, semanticEdges);
 
   // L2 drill: the concepts of one path, edged by concept parent -> child.
   const { concepts: l2Concepts, loading: l2Loading } = useConceptsByLayer(selectedGraphId ?? '', {

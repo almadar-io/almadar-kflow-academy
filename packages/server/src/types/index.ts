@@ -121,6 +121,7 @@ export interface AnswerQuestionRequest {
 
 export interface AnswerQuestionResponse {
   answer: string;
+  relatedConcepts?: Array<{ graphId: string; nodeId: string; name?: string; text?: string }>;
 }
 
 export interface RunCodeSimulationRequest {

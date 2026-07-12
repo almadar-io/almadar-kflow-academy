@@ -84,6 +84,7 @@ export interface AnswerQuestionResponse {
   mutations: MutationBatch;
   content: {
     answer: string;
+    relatedConcepts?: Array<{ graphId: string; nodeId: string; name?: string; text?: string }>;
   };
   graph: NodeBasedKnowledgeGraph;
   errors?: MutationError[];

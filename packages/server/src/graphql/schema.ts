@@ -416,6 +416,14 @@ export const typeDefs = gql`
 
   type AnswerContent {
     answer: String!
+    relatedConcepts: [RelatedConcept!]
+  }
+
+  type RelatedConcept {
+    graphId: ID!
+    nodeId: ID!
+    name: String
+    text: String
   }
 
   type GenerateGoalsResult {

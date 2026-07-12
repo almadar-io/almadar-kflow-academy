@@ -120,6 +120,7 @@ export const ConceptDetailPage: React.FC = () => {
   const [streamingAnswer, setStreamingAnswer] = useState('');
   const [questionComplete, setQuestionComplete] = useState(false);
   const [questionError, setQuestionError] = useState<string | null>(null);
+  const [currentRelatedConcepts, setCurrentRelatedConcepts] = useState<Array<{ graphId: string; nodeId: string; name?: string }>>([]);
 
   // Note widget state
   const [showNoteWidget, setShowNoteWidget] = useState(false);
@@ -208,9 +209,16 @@ export const ConceptDetailPage: React.FC = () => {
     try {
       let fullAnswer = '';
       const context = questionSelection?.text || '';
-      await answer(
+      const resp = await answer(
         { targetNodeId: conceptId, question: context ? `Context: "${context}"\n\nQuestion: ${questionText}` : questionText },
-        { stream: true, onChunk: (chunk: string) => { fullAnswer += chunk; setStreamingAnswer(prev => prev + chunk); } }
+        { 
+          stream: true, 
+          onChunk: (chunk: string) => { fullAnswer += chunk; setStreamingAnswer(prev => prev + chunk); },
+          onDone: (finalResult: any) => {
+            const rels = finalResult?.content?.relatedConcepts;
+            if (Array.isArray(rels) && rels.length) setCurrentRelatedConcepts(rels);
+          }
+        }
       );
       setQuestionComplete(true);
       if (lessonNodeId && fullAnswer) {
@@ -240,12 +248,14 @@ export const ConceptDetailPage: React.FC = () => {
     setQuestionComplete(false);
     setQuestionSelection(null);
     setQuestionError(null);
+    setCurrentRelatedConcepts([]);
   }, []);
 
   const handleResetQuestion = useCallback(() => {
     setStreamingAnswer('');
     setQuestionComplete(false);
     setQuestionError(null);
+    setCurrentRelatedConcepts([]);
   }, []);
 
   const handleAddNote = useCallback(async (text: string, selectedText?: string, selectedTextChunks?: string[]) => {
@@ -520,6 +530,11 @@ export const ConceptDetailPage: React.FC = () => {
         isComplete={questionComplete}
         error={questionError || undefined}
         onReset={handleResetQuestion}
+        relatedConcepts={currentRelatedConcepts}
+        onNavigateRelated={(rel) => {
+          // Cross-graph navigation using the graphId from the hit.
+          navigate(`/concepts/${rel.graphId}/concept/${encodeURIComponent(rel.nodeId)}`);
+        }}
       />
 
       {/* Notes Widget */}
