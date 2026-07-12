@@ -29,6 +29,89 @@ export interface LearningPathMap {
 const CONCEPT_OPTS = { includeRelationships: false } as const;
 const FIVE_MIN = 5 * 60 * 1000;
 
+export function computeSemanticPathMap(
+  paths: LearningPathInput[],
+  conceptIdSets: Set<string>[],
+  semanticEdges: Array<{ source: string; target: string; weight?: number }> = []
+): LearningPathMap | undefined {
+  if (paths.length === 0) return undefined;
+
+  const maxConcepts = Math.max(1, ...paths.map((p) => p.conceptCount));
+
+  // Union-find over the shared-concept edges so each connected component becomes a
+  // distinct color cluster. Singleton paths stay their own component.
+  const parent = paths.map((_, i) => i);
+  const find = (i: number): number => {
+    let root = i;
+    while (parent[root] !== root) root = parent[root];
+    while (parent[i] !== root) {
+      const next = parent[i];
+      parent[i] = root;
+      i = next;
+    }
+    return root;
+  };
+  const union = (a: number, b: number): void => {
+    const ra = find(a);
+    const rb = find(b);
+    if (ra !== rb) parent[rb] = ra;
+  };
+
+  const edges: GraphViewEdge[] = [];
+  for (let i = 0; i < paths.length; i++) {
+    for (let j = i + 1; j < paths.length; j++) {
+      const [small, large] =
+        conceptIdSets[i].size <= conceptIdSets[j].size
+          ? [conceptIdSets[i], conceptIdSets[j]]
+          : [conceptIdSets[j], conceptIdSets[i]];
+      let shared = 0;
+      for (const id of small) if (large.has(id)) shared++;
+      if (shared > 0) {
+        union(i, j);
+        edges.push({ source: paths[i].graphId, target: paths[j].graphId });
+      }
+    }
+  }
+
+  // Augment with semantic edges from server (cross-graph Chroma vector search on path texts).
+  // Union for clusters + add edges (with weight) so force layout pulls semantically similar paths together.
+  for (const se of semanticEdges) {
+    const i = paths.findIndex(p => p.graphId === se.source);
+    const j = paths.findIndex(p => p.graphId === se.target);
+    if (i >= 0 && j >= 0) {
+      const alreadyExact = edges.some(e =>
+        (e.source === se.source && e.target === se.target) ||
+        (e.source === se.target && e.target === se.source)
+      );
+      union(i, j);
+      if (!alreadyExact) {
+        edges.push({ source: se.source, target: se.target, weight: se.weight ?? 0.75 });
+      }
+    }
+  }
+
+  // Map each component root to a stable, contiguous cluster id (cluster-0, cluster-1, ...).
+  const clusterOf = new Map<number, string>();
+  let nextCluster = 0;
+  const nodes: LearningPathMapNode[] = paths.map((p, i) => {
+    const root = find(i);
+    let cluster = clusterOf.get(root);
+    if (cluster === undefined) {
+      cluster = `cluster-${nextCluster++}`;
+      clusterOf.set(root, cluster);
+    }
+    return {
+      id: p.graphId,
+      label: p.name,
+      graphId: p.graphId,
+      group: cluster,
+      size: 6 + Math.round((p.conceptCount / maxConcepts) * 10), // 6..16 by relative size
+    };
+  });
+
+  return { nodes, edges };
+}
+
 export function useLearningPathMap(paths: LearningPathInput[], semanticEdges: Array<{ source: string; target: string; weight?: number }> = []): LearningPathMap | undefined {
   const results = useQueries({
     queries: paths.map((p) => ({
@@ -40,88 +123,13 @@ export function useLearningPathMap(paths: LearningPathInput[], semanticEdges: Ar
   });
 
   // Recompute only when loaded data actually changes (avoids re-laying-out the force graph every render).
-  const fingerprint = results.map((r) => r.dataUpdatedAt).join('|');
+  const fingerprint = results.map((r: { dataUpdatedAt?: number }) => r.dataUpdatedAt).join('|');
 
   return useMemo(() => {
-    if (paths.length === 0) return undefined;
-
     const conceptIdSets = paths.map(
-      (_, i) => new Set((results[i]?.data?.concepts ?? []).map((c) => c.id))
+      (_, i) => new Set((results[i]?.data?.concepts ?? []).map((c: { id: string }) => c.id))
     );
-    const maxConcepts = Math.max(1, ...paths.map((p) => p.conceptCount));
-
-    // Union-find over the shared-concept edges so each connected component becomes a
-    // distinct color cluster. Singleton paths stay their own component.
-    const parent = paths.map((_, i) => i);
-    const find = (i: number): number => {
-      let root = i;
-      while (parent[root] !== root) root = parent[root];
-      while (parent[i] !== root) {
-        const next = parent[i];
-        parent[i] = root;
-        i = next;
-      }
-      return root;
-    };
-    const union = (a: number, b: number): void => {
-      const ra = find(a);
-      const rb = find(b);
-      if (ra !== rb) parent[rb] = ra;
-    };
-
-    const edges: GraphViewEdge[] = [];
-    for (let i = 0; i < paths.length; i++) {
-      for (let j = i + 1; j < paths.length; j++) {
-        const [small, large] =
-          conceptIdSets[i].size <= conceptIdSets[j].size
-            ? [conceptIdSets[i], conceptIdSets[j]]
-            : [conceptIdSets[j], conceptIdSets[i]];
-        let shared = 0;
-        for (const id of small) if (large.has(id)) shared++;
-        if (shared > 0) {
-          union(i, j);
-          edges.push({ source: paths[i].graphId, target: paths[j].graphId });
-        }
-      }
-    }
-
-    // Augment with semantic edges from server (cross-graph Chroma vector search on path texts).
-    // Union for clusters + add edges so force layout pulls semantically similar paths together.
-    for (const se of semanticEdges) {
-      const i = paths.findIndex(p => p.graphId === se.source);
-      const j = paths.findIndex(p => p.graphId === se.target);
-      if (i >= 0 && j >= 0) {
-        const alreadyExact = edges.some(e =>
-          (e.source === se.source && e.target === se.target) ||
-          (e.source === se.target && e.target === se.source)
-        );
-        union(i, j);
-        if (!alreadyExact) {
-          edges.push({ source: se.source, target: se.target, weight: se.weight ?? 0.75 });
-        }
-      }
-    }
-
-    // Map each component root to a stable, contiguous cluster id (cluster-0, cluster-1, ...).
-    const clusterOf = new Map<number, string>();
-    let nextCluster = 0;
-    const nodes: LearningPathMapNode[] = paths.map((p, i) => {
-      const root = find(i);
-      let cluster = clusterOf.get(root);
-      if (cluster === undefined) {
-        cluster = `cluster-${nextCluster++}`;
-        clusterOf.set(root, cluster);
-      }
-      return {
-        id: p.graphId,
-        label: p.name,
-        graphId: p.graphId,
-        group: cluster,
-        size: 6 + Math.round((p.conceptCount / maxConcepts) * 10), // 6..16 by relative size
-      };
-    });
-
-    return { nodes, edges };
+    return computeSemanticPathMap(paths, conceptIdSets, semanticEdges);
     // `results` is read above but intentionally NOT a dep (it's a fresh array every render); `fingerprint`
     // captures its loaded-data identity, so the force graph only re-lays-out when concept data changes.
   }, [fingerprint, paths, semanticEdges]);

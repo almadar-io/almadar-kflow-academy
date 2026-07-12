@@ -51,12 +51,18 @@ router.get('/learning-paths', async (req, res, next) => {
         const otherIds = paths.map(pp => pp.id).filter(id => id !== p.id);
         if (otherIds.length === 0) continue;
         const hits = await access.findSimilarNodesCrossGraph(uid, otherIds, query, 3, ['Concept']);
-        const hitGraphSet = new Set(hits.map(h => h.graphId).filter(g => g && g !== p.id));
-        for (const g of hitGraphSet) {
+        const graphScores = new Map<string, number>();
+        for (const h of hits) {
+          if (h.graphId && h.graphId !== p.id) {
+            const prev = graphScores.get(h.graphId) || 0;
+            graphScores.set(h.graphId, Math.max(prev, h.score || 0.5));
+          }
+        }
+        for (const [g, score] of graphScores) {
           // add undirected
           const [s, t] = p.id < g ? [p.id, g] : [g, p.id];
           if (!semanticEdges.some(e => e.source === s && e.target === t)) {
-            semanticEdges.push({ source: s, target: t, weight: 0.75 });
+            semanticEdges.push({ source: s, target: t, weight: score });
           }
         }
       }

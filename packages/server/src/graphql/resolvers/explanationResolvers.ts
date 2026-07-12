@@ -128,6 +128,28 @@ export const explanationResolvers = {
         /* best effort */
       }
 
+      // Compute related here (op no longer attaches for consistency with stream path).
+      let relatedFromOp: Array<{ graphId: string; nodeId: string; name?: string; text?: string }> | undefined;
+      if (allUserGraphIds && allUserGraphIds.length > 0) {
+        const otherIds = allUserGraphIds.filter(id => id !== args.graphId);
+        if (otherIds.length > 0) {
+          try {
+            const targetNode = graph.nodes[args.targetNodeId] as { properties?: { name?: string; description?: string } } | undefined;
+            const props = targetNode?.properties || {};
+            const query = `${props.name || ''} ${props.description || ''}`.trim().slice(0, 400);
+            const hits = await accessLayer.findSimilarNodesCrossGraph(uid, otherIds, query, 3, ['Concept']);
+            relatedFromOp = hits
+              .filter((h): h is { graphId: string; name: string } => {
+                return !!(h && h.graphId && h.graphId !== args.graphId && h.name);
+              })
+              .slice(0, 3)
+              .map((h) => ({ 
+                graphId: h.graphId, nodeId: h.nodeId, name: h.name, text: h.text?.slice(0, 160) 
+              }));
+          } catch {}
+        }
+      }
+
       // Execute operation with minimal input (default to ephemeral)
       const result = await answerQuestion({
         graph,
@@ -156,10 +178,13 @@ export const explanationResolvers = {
         await accessLayer.saveGraph(uid, updatedGraph);
       }
 
+      const finalContent = relatedFromOp 
+        ? { ...result.content, relatedConcepts: relatedFromOp } 
+        : result.content;
       return {
         graph: result.mutations.mutations.length > 0 ? updatedGraph : graph,
         mutations: result.mutations,
-        content: result.content,
+        content: finalContent,
         errors: errors.length > 0 ? errors : [],
       };
     },

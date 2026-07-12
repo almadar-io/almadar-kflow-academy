@@ -6,6 +6,7 @@ import { renderHook, waitFor, act } from '@testing-library/react';
 import { useConceptsByLayer } from '../../../../features/knowledge-graph/hooks/useConceptsByLayer';
 import { graphQueryApi } from '../../../../features/knowledge-graph/api/queryApi';
 import type { ConceptDisplay } from '../../../../features/knowledge-graph/api/types';
+import { computeSemanticPathMap } from '../../../../features/knowledge-graph/hooks/useLearningPathMap';
 
 // Mock the query API
 jest.mock('../../../../features/knowledge-graph/api/queryApi', () => ({
@@ -256,6 +257,38 @@ describe('useConceptsByLayer', () => {
     await waitFor(() => {
       expect(result.current.loading).toBe(false);
     });
+  });
+});
+
+describe('computeSemanticPathMap (for V2 viz)', () => {
+  it('should merge semantic edges and produce shared cluster even without exact concept overlap', () => {
+    const paths = [
+      { graphId: 'g-beginner', name: 'Beginner Rust', conceptCount: 2 },
+      { graphId: 'g-mid', name: 'Mid Rust', conceptCount: 2 },
+    ];
+    const conceptSets = [new Set(['borrowing']), new Set(['lifetimes'])];
+    const semantic = [{ source: 'g-beginner', target: 'g-mid', weight: 0.9 }];
+
+    const result = computeSemanticPathMap(paths, conceptSets, semantic);
+
+    expect(result).toBeDefined();
+    expect(result!.edges).toHaveLength(1);
+    expect(result!.edges[0].weight).toBe(0.9);
+    // Should share cluster via semantic union
+    expect(result!.nodes[0].group).toBe(result!.nodes[1].group);
+  });
+
+  it('should preserve exact edges and add semantic', () => {
+    const paths = [
+      { graphId: 'g1', name: 'p1', conceptCount: 2 },
+      { graphId: 'g2', name: 'p2', conceptCount: 2 },
+    ];
+    const sets = [new Set(['shared']), new Set(['shared', 'other'])];
+    const sem = [{ source: 'g1', target: 'g2', weight: 0.5 }];
+
+    const res = computeSemanticPathMap(paths, sets, sem);
+
+    expect(res!.edges.length).toBeGreaterThanOrEqual(1);
   });
 });
 
