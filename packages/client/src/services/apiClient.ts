@@ -1,5 +1,8 @@
 // Centralized API client configuration
+import { createLogger } from '@almadar/logger';
 import { auth } from '../config/firebase';
+
+const log = createLogger('kflow:client:services:apiClient');
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
 
@@ -76,17 +79,17 @@ const getAuthToken = async (): Promise<string | null> => {
   const currentUser = auth.currentUser;
   
   if (!currentUser) {
-    console.warn('[apiClient] No current user');
+    log.warn('No current user');
     return null;
   }
-  
+
   try {
     // Force refresh to ensure token is valid
     const token = await currentUser.getIdToken(true);
-    console.log('[apiClient] Got token, length:', token.length);
+    log.debug('Got token', { length: token.length });
     return token;
   } catch (error) {
-    console.error('[apiClient] Failed to get auth token:', error);
+    log.error('Failed to get auth token', { error: error instanceof Error ? error.message : String(error) });
     return null;
   }
 };
@@ -119,17 +122,17 @@ export const apiClient = {
       (headers as Record<string, string>)['Authorization'] = `Bearer ${token}`;
     }
     
-    console.log('[apiClient] Request:', endpoint, 'Has auth:', !!(hasAuthHeader || token));
-    
+    log.debug('Request', { endpoint, hasAuth: !!(hasAuthHeader || token) });
+
     try {
       const response = await fetch(url, {
         ...options,
         headers,
       });
-      
+
       if (!response.ok) {
         const errorMessage = await extractErrorMessage(response);
-        console.error('[apiClient] Response error:', endpoint, response.status, errorMessage);
+        log.error('Response error', { endpoint, status: response.status, message: errorMessage });
         const error = new Error(errorMessage);
         
         // Show alert if global error handler is set

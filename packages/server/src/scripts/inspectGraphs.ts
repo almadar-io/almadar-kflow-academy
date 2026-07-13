@@ -5,7 +5,10 @@
  * Usage: npx tsx src/scripts/inspectGraphs.ts <uid> [graphId]
  */
 import * as dotenv from 'dotenv';
+import { createLogger } from '@almadar/logger';
 dotenv.config(); // run from packages/server so .env resolves from cwd
+
+const log = createLogger('kflow:server:scripts:inspectGraphs');
 
 // Mirror server.ts: map the app's FB_* creds onto the FIREBASE_* names initializeFirebase reads.
 process.env.FIREBASE_PROJECT_ID ??= process.env.FB_PROJECT_ID;
@@ -35,16 +38,16 @@ function deriveTitle(graph: Awaited<ReturnType<typeof getNodeBasedKnowledgeGraph
 
 async function main() {
   const [uid, graphId] = process.argv.slice(2);
-  if (!uid) { console.error('Usage: inspectGraphs.ts <uid> [graphId]'); process.exit(1); }
+  if (!uid) { log.error('Usage: inspectGraphs.ts <uid> [graphId]'); process.exit(1); }
   const db = getFirestore();
   const ids = graphId
     ? [graphId]
     : (await db.collection('users').doc(uid).collection('knowledgeGraphs').select('id').get()).docs.map(d => d.id);
 
-  console.log(`\nUser ${uid} — ${ids.length} graph doc(s)\n`);
+  log.info(`User ${uid}`, { graphCount: ids.length });
   for (const id of ids) {
-    const g = await getNodeBasedKnowledgeGraph(uid, id).catch(e => { console.log(`  ${id}: LOAD ERROR ${e?.message}`); return null; });
-    if (!g) { console.log(`  ${id}: <null / not loadable>`); continue; }
+    const g = await getNodeBasedKnowledgeGraph(uid, id).catch(e => { log.info(`  ${id}`, { error: `LOAD ERROR ${e?.message}` }); return null; });
+    if (!g) { log.info(`  ${id}`, { status: '<null / not loadable>' }); continue; }
     const nt = g.nodeTypes ?? {};
     const typeCounts = Object.fromEntries(Object.entries(nt).map(([k, v]) => [k, Array.isArray(v) ? v.length : 0]).filter(([, n]) => (n as number) > 0));
     const conceptCount = (nt.Concept?.length ?? 0);
@@ -53,12 +56,18 @@ async function main() {
     const seedName = seedNode?.type === 'Concept' ? seedNode.properties.name : null;
     const goalNode = nt.LearningGoal?.length ? g.nodes?.[nt.LearningGoal[0]] : undefined;
     const goalName = goalNode?.type === 'LearningGoal' ? goalNode.properties.name : null;
-    console.log(`  ${id}`);
-    console.log(`    title=${JSON.stringify(deriveTitle(g))}  concepts=${conceptCount}  seedConceptId=${g.seedConceptId ?? 'NONE'} seedResolves=${seedOk}`);
-    console.log(`    seedName=${JSON.stringify(seedName)}  goalNodeName=${JSON.stringify(goalName)}`);
-    console.log(`    version=${g.version} nodeTypes=${JSON.stringify(typeCounts)} nodes=${g.nodes ? Object.keys(g.nodes).length : 'MISSING'}`);
+    log.info(`Graph ${id}`, {
+      title: deriveTitle(g),
+      conceptCount,
+      seedConceptId: g.seedConceptId ?? 'NONE',
+      seedResolves: seedOk,
+      seedName,
+      goalNodeName: goalName,
+      version: g.version,
+      nodeTypes: typeCounts,
+      nodeCount: g.nodes ? Object.keys(g.nodes).length : 'MISSING'
+    });
   }
-  console.log('');
   process.exit(0);
 }
-main().catch(e => { console.error(e); process.exit(1); });
+main().catch(e => { log.error('Fatal error', { error: e instanceof Error ? e.message : String(e) }); process.exit(1); });

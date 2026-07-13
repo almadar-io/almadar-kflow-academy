@@ -1,14 +1,17 @@
 /**
  * Apollo Server Setup for Knowledge Graph Access API
- * 
+ *
  * Phase 3: GraphQL Schema & Resolvers
  */
 
 import { ApolloServer } from 'apollo-server-express';
 import type { Application } from 'express';
+import { createLogger } from '@almadar/logger';
 import { typeDefs } from './schema';
 import { resolvers } from './resolvers';
 import type { DecodedIdToken } from 'firebase-admin/auth';
+
+const log = createLogger('kflow:server:graphql:server');
 
 export interface GraphQLContext {
   firebaseUser?: DecodedIdToken;
@@ -29,7 +32,7 @@ export function createApolloServer(): ApolloServer {
     },
     formatError: (error) => {
       // Log error for debugging
-      console.error('GraphQL Error:', error);
+      log.error('GraphQL Error', { error: error.message });
 
       // Return user-friendly error message
       return {

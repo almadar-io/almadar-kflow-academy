@@ -1,6 +1,9 @@
 import { useEffect, useRef } from 'react';
 import { useEventBus } from '@almadar/ui';
 import type { EventPayload } from '@almadar/core';
+import { createLogger } from '@almadar/logger';
+
+const log = createLogger('kflow:client:learning:useServerEvents');
 
 export interface ServerEventMessage {
   type: string;
@@ -28,7 +31,7 @@ export function useServerEvents(enabled = true) {
     };
 
     ws.onerror = (err) => {
-      console.error('[useServerEvents] WebSocket error', err);
+      log.error('WebSocket error', { error: err.message || String(err) });
     };
 
     return () => {

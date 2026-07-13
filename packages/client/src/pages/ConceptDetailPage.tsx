@@ -1,3 +1,4 @@
+import { createLogger } from '@almadar/logger';
 import React, { useEffect, useMemo, useCallback, useState } from 'react';
 import { useParams, useLocation } from 'react-router';
 import { useAppDispatch, useAppSelector } from '../app/hooks';
@@ -30,6 +31,8 @@ import { NotesWidget } from '@design-system/organisms/NotesWidget';
 import { AnnotationViewModal } from '@design-system/organisms/AnnotationViewModal';
 import type { AnnotationEntity } from '@design-system/organisms/AnnotationViewModal';
 
+const log = createLogger('kflow:client:pages:ConceptDetailPage');
+
 export const ConceptDetailPage: React.FC = () => {
   const { graphId, conceptId } = useParams<{ graphId: string; conceptId: string }>();
   const navigate = useNavigateEvent();
@@ -61,7 +64,7 @@ export const ConceptDetailPage: React.FC = () => {
   useEffect(() => {
     if (graphId && !graph && !isLoadingGraph) {
       getGraph(graphId, { storeInRedux: true }).catch((err) => {
-        console.error('Failed to load graph:', err);
+        log.error('Failed to load graph', { error: err instanceof Error ? err.message : String(err) });
       });
     }
   }, [graphId, graph, isLoadingGraph, getGraph]);
@@ -157,7 +160,7 @@ export const ConceptDetailPage: React.FC = () => {
       );
       await conceptDetail.refetch();
     } catch (err) {
-      console.error('Failed to generate lesson:', err);
+      log.error('Failed to generate lesson', { error: err instanceof Error ? err.message : String(err) });
     } finally {
       setLocalLessonLoading(false);
     }
@@ -229,9 +232,11 @@ export const ConceptDetailPage: React.FC = () => {
             selectedText: questionSelection?.text,
             selectedTextChunks: questionSelection?.textChunks,
           });
-          conceptDetail.refetch().catch(console.error);
+          conceptDetail.refetch().catch((err) => {
+            log.error('Failed to refetch after save question', { error: err instanceof Error ? err.message : String(err) });
+          });
         } catch (saveErr) {
-          console.error('Failed to save question:', saveErr);
+          log.error('Failed to save question', { error: saveErr instanceof Error ? saveErr.message : String(saveErr) });
         }
       }
     } catch (err) {
@@ -266,9 +271,11 @@ export const ConceptDetailPage: React.FC = () => {
         selectedText: selectedText || noteSelection?.text,
         selectedTextChunks: selectedTextChunks || noteSelection?.textChunks,
       });
-      conceptDetail.refetch().catch(console.error);
+      conceptDetail.refetch().catch((err) => {
+        log.error('Failed to refetch after add note', { error: err instanceof Error ? err.message : String(err) });
+      });
     } catch (err) {
-      console.error('Failed to add note:', err);
+      log.error('Failed to add note', { error: err instanceof Error ? err.message : String(err) });
     }
   }, [lessonNodeId, noteSelection, addNote, conceptDetail]);
 
@@ -284,7 +291,7 @@ export const ConceptDetailPage: React.FC = () => {
       setViewAnnotation(null);
       await conceptDetail.refetch();
     } catch (err) {
-      console.error('Failed to delete question:', err);
+      log.error('Failed to delete question', { error: err instanceof Error ? err.message : String(err) });
     }
   }, [lessonNodeId, deleteQuestion, conceptDetail]);
 
@@ -295,7 +302,7 @@ export const ConceptDetailPage: React.FC = () => {
       setViewAnnotation(null);
       await conceptDetail.refetch();
     } catch (err) {
-      console.error('Failed to delete note:', err);
+      log.error('Failed to delete note', { error: err instanceof Error ? err.message : String(err) });
     }
   }, [lessonNodeId, deleteNote, conceptDetail]);
 

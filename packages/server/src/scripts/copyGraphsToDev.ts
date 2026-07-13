@@ -12,6 +12,9 @@
 import * as dotenv from 'dotenv';
 import * as path from 'path';
 import admin from 'firebase-admin';
+import { createLogger } from '@almadar/logger';
+
+const log = createLogger('kflow:server:scripts:copyGraphsToDev');
 
 // Load environment variables
 dotenv.config({ path: path.resolve(__dirname, '../../.env') });
@@ -63,10 +66,11 @@ function getFirestoreForDatabase(databaseId: string): admin.firestore.Firestore 
 }
 
 async function copyGraphs(): Promise<void> {
-  console.log('Starting graph copy operation...');
-  console.log(`Source database: ${SOURCE_DATABASE_ID}`);
-  console.log(`Target database: ${TARGET_DATABASE_ID}`);
-  console.log(`User ID: ${USER_ID}\n`);
+  log.info('Starting graph copy operation', {
+    sourceDatabase: SOURCE_DATABASE_ID,
+    targetDatabase: TARGET_DATABASE_ID,
+    userId: USER_ID,
+  });
 
   const sourceDb = getFirestoreForDatabase(SOURCE_DATABASE_ID);
   const targetDb = getFirestoreForDatabase(TARGET_DATABASE_ID);
@@ -81,11 +85,11 @@ async function copyGraphs(): Promise<void> {
     const sourceGraphsSnapshot = await sourceGraphsRef.get();
 
     if (sourceGraphsSnapshot.empty) {
-      console.log('No graphs found in source database.');
+      log.info('No graphs found in source database.');
       return;
     }
 
-    console.log(`Found ${sourceGraphsSnapshot.size} graph(s) to copy.\n`);
+    log.info(`Found ${sourceGraphsSnapshot.size} graph(s) to copy.`);
 
     const targetGraphsRef = targetDb
       .collection('users')
@@ -105,29 +109,34 @@ async function copyGraphs(): Promise<void> {
         // Check if graph already exists in target
         const targetDoc = await targetGraphsRef.doc(graphId).get();
         if (targetDoc.exists) {
-          console.log(`  ⚠️  Graph ${graphId} already exists in target database, skipping...`);
+          log.warn(`Graph ${graphId} already exists in target database, skipping...`);
           skippedCount++;
           continue;
         }
 
         // Copy graph to target database
         await targetGraphsRef.doc(graphId).set(graphData);
-        console.log(`  ✅ Copied graph ${graphId}`);
+        log.info(`Copied graph ${graphId}`);
         copiedCount++;
       } catch (error) {
-        console.error(`  ❌ Error copying graph ${graphId}:`, error);
+        log.error(`Error copying graph ${graphId}`, {
+          error: error instanceof Error ? error.message : String(error),
+        });
         errorCount++;
       }
     }
 
-    console.log('\n=== Copy Summary ===');
-    console.log(`Total graphs found: ${sourceGraphsSnapshot.size}`);
-    console.log(`Successfully copied: ${copiedCount}`);
-    console.log(`Skipped (already exists): ${skippedCount}`);
-    console.log(`Errors: ${errorCount}`);
-    console.log('\n✅ Copy operation completed!');
+    log.info('Copy Summary', {
+      totalGraphsFound: sourceGraphsSnapshot.size,
+      successfullyCopied: copiedCount,
+      skipped: skippedCount,
+      errors: errorCount,
+    });
+    log.info('Copy operation completed!');
   } catch (error) {
-    console.error('❌ Fatal error during copy operation:', error);
+    log.error('Fatal error during copy operation', {
+      error: error instanceof Error ? error.message : String(error),
+    });
     throw error;
   }
 }
@@ -136,11 +145,13 @@ async function copyGraphs(): Promise<void> {
 if (require.main === module) {
   copyGraphs()
     .then(() => {
-      console.log('\nScript completed successfully.');
+      log.info('Script completed successfully.');
       process.exit(0);
     })
     .catch((error) => {
-      console.error('\nScript failed:', error);
+      log.error('Script failed', {
+        error: error instanceof Error ? error.message : String(error),
+      });
       process.exit(1);
     });
 }

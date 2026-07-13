@@ -1,10 +1,13 @@
 /**
  * GraphQL Explanation Resolvers
- * 
+ *
  * Resolvers for explanation and Q&A operations.
  */
 
+import { createLogger } from '@almadar/logger';
 import { GraphMutationService } from '@almadar-io/knowledge/server';
+
+const log = createLogger('kflow:server:graphql:explanationResolvers');
 import { KnowledgeGraphAccessLayer } from '@almadar-io/knowledge/server';
 import { explain, answerQuestion } from '@almadar-io/knowledge/server';
 import type {
@@ -36,6 +39,7 @@ export const explanationResolvers = {
       args: ExplainConceptArgs,
       context: GraphQLContext
     ): Promise<ExplainConceptResult> => {
+      log.info('[CHROMA-DEBUG][LESSON] explainConcept called', { graphId: args.graphId, targetNodeId: args.targetNodeId });
       // Verify graph ownership before write operations
       await verifyGraphAccessForResolver(context, args.graphId, 'write');
       
@@ -44,6 +48,8 @@ export const explanationResolvers = {
 
       // Find target node
       const targetNode = graph.nodes[args.targetNodeId];
+      const targetName = (targetNode?.properties as any)?.name || (targetNode as any)?.name || '??';
+      log.info('[CHROMA-DEBUG][LESSON] targetNode', { name: targetName, type: targetNode?.type, graphId: args.graphId });
       if (!targetNode || targetNode.type !== 'Concept') {
         throw new Error(`Concept node ${args.targetNodeId} not found`);
       }
@@ -60,11 +66,14 @@ export const explanationResolvers = {
       let allUserGraphIds: string[] | undefined;
       try {
         allUserGraphIds = await listUserGraphIds(uid);
-      } catch {
+        log.info('[CHROMA-DEBUG][LESSON] listUserGraphIds returned', { count: allUserGraphIds?.length || 0, uid, ids: allUserGraphIds?.join(',') });
+      } catch (e) {
+        log.error('[CHROMA-DEBUG][LESSON] listUserGraphIds failed', { error: (e as any)?.message || String(e) });
         /* best effort, no cross priors */
       }
 
       // Execute operation with minimal input
+      log.info('[CHROMA-DEBUG][LESSON] calling @almadar explain', { allUserGraphIdsLen: allUserGraphIds?.length });
       const result = await explain({
         graph,
         mutationContext,
@@ -88,6 +97,21 @@ export const explanationResolvers = {
 
       // Save graph
       await accessLayer.saveGraph(uid, updatedGraph);
+      log.info('[CHROMA-DEBUG][LESSON] saved graph after explain', { mutationCount: result.mutations?.mutations?.length || 0, errorCount: errors.length });
+
+      // INSTRUMENT + FORCE: try explicit vector registration for any new Lesson/Concept nodes using whatever vector the access has
+      try {
+        const v = (accessLayer as any).getVectorService?.();
+        if (v && typeof v.upsertNodes === 'function') {
+          const allNodes = Object.values(updatedGraph.nodes || {});
+          const count = await v.upsertNodes(args.graphId, allNodes);
+          log.info('[CHROMA-DEBUG][LESSON] explicit v.upsertNodes after save', { count });
+        } else {
+          log.info('[CHROMA-DEBUG][LESSON] no getVectorService or no upsert on accessLayer (old dep or not wired)');
+        }
+      } catch (e) {
+        log.error('[CHROMA-DEBUG][LESSON] explicit upsert attempt error', { error: (e as any)?.message || String(e) });
+      }
 
       return {
         graph: updatedGraph,
@@ -132,12 +156,14 @@ export const explanationResolvers = {
       let relatedFromOp: Array<{ graphId: string; nodeId: string; name?: string; text?: string }> | undefined;
       if (allUserGraphIds && allUserGraphIds.length > 0) {
         const otherIds = allUserGraphIds.filter(id => id !== args.graphId);
+        log.info('[CHROMA-DEBUG][ANSWER] related cross', { all: allUserGraphIds.length, other: otherIds.length });
         if (otherIds.length > 0) {
           try {
             const targetNode = graph.nodes[args.targetNodeId] as { properties?: { name?: string; description?: string } } | undefined;
             const props = targetNode?.properties || {};
             const query = `${props.name || ''} ${props.description || ''}`.trim().slice(0, 400);
             const hits = await accessLayer.findSimilarNodesCrossGraph(uid, otherIds, query, 3, ['Concept']);
+            log.info('[CHROMA-DEBUG][ANSWER] related hits', { hitCount: hits?.length || 0 });
             relatedFromOp = hits
               .filter((h): h is { graphId: string; name: string } => {
                 return !!(h && h.graphId && h.graphId !== args.graphId && h.name);
@@ -146,8 +172,12 @@ export const explanationResolvers = {
               .map((h) => ({ 
                 graphId: h.graphId, nodeId: h.nodeId, name: h.name, text: h.text?.slice(0, 160) 
               }));
-          } catch {}
+          } catch (e) {
+            log.error('[CHROMA-DEBUG][ANSWER] findSimilar cross error', { error: (e as any)?.message || String(e) });
+          }
         }
+      } else {
+        log.info('[CHROMA-DEBUG][ANSWER] no allUserGraphIds for related');
       }
 
       // Execute operation with minimal input (default to ephemeral)

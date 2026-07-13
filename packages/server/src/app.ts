@@ -42,7 +42,16 @@ app.use(express.json({ limit: '1mb' }));
 
 export async function initApp(): Promise<void> {
   initializeFirebase();
-  getFirestore().settings({ ignoreUndefinedProperties: true, databaseId: process.env.FB_DB_ID });
+  // @almadar/server.getFirestore() applies the named-database setting (from
+  // FB_DB_ID / FIRESTORE_DATABASE_ID) itself, so every module instance — including
+  // the copy resolved by @almadar/knowledge — targets the same DB. Warm it here.
+  const firestore = getFirestore();
+  const settings: { databaseId?: string; projectId?: string } | undefined = Reflect.get(firestore, '_settings');
+  logger.info('Firestore ready', {
+    databaseId: settings?.databaseId ?? '(default)',
+    projectId: settings?.projectId,
+    expected: process.env.FB_DB_ID || '(default)',
+  });
 
   app.use('/api', routes);
 

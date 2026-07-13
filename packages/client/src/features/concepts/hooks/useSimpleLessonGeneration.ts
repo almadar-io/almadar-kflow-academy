@@ -1,6 +1,9 @@
+import { createLogger } from '@almadar/logger';
 import { useState, useCallback, useRef } from 'react';
 import { ConceptsAPI } from '../ConceptsAPI';
 import { Concept } from '../types';
+
+const log = createLogger('kflow:client:concepts:useSimpleLessonGeneration');
 
 interface UseSimpleLessonGenerationReturn {
   lesson: string;
@@ -55,7 +58,7 @@ export const useSimpleLessonGeneration = (): UseSimpleLessonGenerationReturn => 
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to generate lesson';
       setError(errorMessage);
-      console.error('Error generating simple lesson:', err);
+      log.error('Error generating simple lesson', { error: err instanceof Error ? err.message : String(err) });
     } finally {
       setIsGenerating(false);
       generatingRef.current = false;

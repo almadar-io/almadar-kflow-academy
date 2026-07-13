@@ -5,9 +5,11 @@
   "packageManager": "pnpm@10.30.3",
   "scripts": {
     "start": "node packages/server/dist/server.js",
-    "dev": "concurrently -k -n server,client -c blue,green \"pnpm run dev:server\" \"pnpm run dev:client\"",
-    "dev:server": "pnpm --filter @kflow-academy/shared build && pnpm --filter @kflow-academy/server dev",
+    "dev:chroma": "docker ps --filter \"name=chroma-local\" --format '{{.Names}}' | grep -q chroma-local || docker run -d --rm -p 8000:8000 -v chroma-data:/chroma/chroma --name chroma-local chromadb/chroma",
+    "dev": "pnpm run dev:chroma && concurrently -k -n server,client -c blue,green \"pnpm run dev:server\" \"pnpm run dev:client\"",
+    "dev:server": "pnpm run dev:chroma && CHROMA_HOST=http://localhost:8000 pnpm --filter @kflow-academy/shared build && CHROMA_HOST=http://localhost:8000 pnpm --filter @kflow-academy/server dev",
     "dev:client": "pnpm --filter @kflow-academy/client dev",
+    "backfill:chroma": "pnpm --filter @kflow-academy/server backfill:chroma",
     "build": "pnpm run build:server",
     "build:all": "pnpm -r --if-present build",
     "build:shared": "pnpm --filter @kflow-academy/shared build",

@@ -1,4 +1,7 @@
 import Redis from "ioredis";
+import { createLogger } from "@almadar/logger";
+
+const log = createLogger("kflow:server:config:redis");
 
 let redis: Redis | null = null;
 
@@ -17,7 +20,7 @@ export function getRedisClient(): Redis | null {
       retryStrategy: (times) => {
         const delay = Math.min(times * 50, 2000);
         if (times > 3) {
-          console.warn(`Redis connection failed after ${times} retries; falling back to in-memory cache`);
+          log.warn('Redis connection failed; falling back to in-memory cache', { retries: times });
           return null;
         }
         return delay;
@@ -28,16 +31,16 @@ export function getRedisClient(): Redis | null {
     });
 
     redis.on("error", (err) => {
-      console.warn("Redis error:", err.message);
+      log.warn("Redis error", { error: err.message });
     });
 
     redis.on("connect", () => {
-      console.log("Redis connected");
+      log.info("Redis connected");
     });
 
     return redis;
   } catch (err) {
-    console.warn("Failed to initialize Redis client:", err);
+    log.warn("Failed to initialize Redis client", { error: err instanceof Error ? err.message : String(err) });
     return null;
   }
 }

@@ -1,3 +1,4 @@
+import { createLogger } from '@almadar/logger';
 import { callLLM } from '../services/llm';
 import type {
   GenerateGoalQuestionsResult,
@@ -5,6 +6,8 @@ import type {
   GoalQuestion,
 } from '../types/goal';
 import { getAllUserProgress } from '../services/userProgressService';
+
+const log = createLogger('kflow:server:operations:generateGoalQuestions');
 
 /**
  * Generates adaptive questions for learning goal refinement based on user's anchor answer.
@@ -40,7 +43,7 @@ export async function generateGoalQuestions(
       }
     } catch (error) {
       // If we can't get progress, continue without it
-      console.warn('Could not fetch user progress for goal questions:', error);
+      log.warn('Could not fetch user progress for goal questions', { error: error instanceof Error ? error.message : String(error) });
     }
   }
 

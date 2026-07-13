@@ -1,5 +1,8 @@
 import { Request, Response } from 'express';
+import { createLogger } from '@almadar/logger';
 import { singleParam, singleQueryParam } from '../utils/httpParams';
+
+const log = createLogger('kflow:server:controllers:userProgressController');
 import {
   saveUserProgress,
   getUserProgress,
@@ -52,7 +55,7 @@ export async function saveUserProgressHandler(req: Request, res: Response): Prom
     const progress = await saveUserProgress(uid, conceptId, progressData);
     res.json({ progress });
   } catch (error: any) {
-    console.error('Error saving user progress:', error);
+    log.error('Error saving user progress', { error: error instanceof Error ? error.message : String(error) });
     res.status(500).json({ error: error.message || 'Failed to save user progress' });
   }
 }
@@ -90,7 +93,7 @@ export async function getUserProgressHandler(req: Request, res: Response): Promi
         conceptName || decodedConceptId,
         graphId
       ).catch(error => {
-        console.warn('Failed to track concept access:', error);
+        log.warn('Failed to track concept access', { error: error instanceof Error ? error.message : String(error) });
         // Don't fail the request if tracking fails
       });
     }
@@ -104,7 +107,7 @@ export async function getUserProgressHandler(req: Request, res: Response): Promi
 
     res.json({ progress });
   } catch (error: any) {
-    console.error('Error getting user progress:', error);
+    log.error('Error getting user progress', { error: error instanceof Error ? error.message : String(error) });
     res.status(500).json({ error: error.message || 'Failed to get user progress' });
   }
 }
@@ -134,7 +137,7 @@ export async function trackConceptAccessHandler(req: Request, res: Response): Pr
     await trackConceptAccess(uid, decodedConceptId, conceptName || decodedConceptId, graphId);
     res.json({ success: true });
   } catch (error: any) {
-    console.error('Error tracking concept access:', error);
+    log.error('Error tracking concept access', { error: error instanceof Error ? error.message : String(error) });
     res.status(500).json({ error: error.message || 'Failed to track concept access' });
   }
 }
@@ -154,7 +157,7 @@ export async function getAllUserProgressHandler(req: Request, res: Response): Pr
     const progressList = await getAllUserProgress(uid);
     res.json({ progress: progressList });
   } catch (error: any) {
-    console.error('Error getting all user progress:', error);
+    log.error('Error getting all user progress', { error: error instanceof Error ? error.message : String(error) });
     res.status(500).json({ error: error.message || 'Failed to get user progress' });
   }
 }
@@ -174,7 +177,7 @@ export async function getConceptsMasteredHandler(req: Request, res: Response): P
     const count = await getConceptsMasteredCount(uid);
     res.json({ count });
   } catch (error: any) {
-    console.error('Error getting concepts mastered:', error);
+    log.error('Error getting concepts mastered', { error: error instanceof Error ? error.message : String(error) });
     res.status(500).json({ error: error.message || 'Failed to get concepts mastered' });
   }
 }
@@ -194,7 +197,7 @@ export async function getLearningStreakHandler(req: Request, res: Response): Pro
     const streak = await getLearningStreak(uid);
     res.json({ streak });
   } catch (error: any) {
-    console.error('Error getting learning streak:', error);
+    log.error('Error getting learning streak', { error: error instanceof Error ? error.message : String(error) });
     res.status(500).json({ error: error.message || 'Failed to get learning streak' });
   }
 }
@@ -215,7 +218,7 @@ export async function getRecentActivityHandler(req: Request, res: Response): Pro
     const activity = await getRecentActivity(uid, limit);
     res.json({ activity });
   } catch (error: any) {
-    console.error('Error getting recent activity:', error);
+    log.error('Error getting recent activity', { error: error instanceof Error ? error.message : String(error) });
     res.status(500).json({ error: error.message || 'Failed to get recent activity' });
   }
 }
@@ -236,7 +239,7 @@ export async function getStatisticsSummaryHandler(req: Request, res: Response): 
     const summary = await getStatisticsSummary(uid, activityLimit);
     res.json({ statistics: summary });
   } catch (error: any) {
-    console.error('Error getting statistics summary:', error);
+    log.error('Error getting statistics summary', { error: error instanceof Error ? error.message : String(error) });
     res.status(500).json({ error: error.message || 'Failed to get statistics summary' });
   }
 }
@@ -256,7 +259,7 @@ export async function getUserPreferencesHandler(req: Request, res: Response): Pr
     const preferences = await getUserPreferences(uid);
     res.json({ preferences });
   } catch (error: any) {
-    console.error('Error getting user preferences:', error);
+    log.error('Error getting user preferences', { error: error instanceof Error ? error.message : String(error) });
     res.status(500).json({ error: error.message || 'Failed to get user preferences' });
   }
 }
@@ -276,7 +279,7 @@ export async function updateUserPreferencesHandler(req: Request, res: Response):
     const preferences = await updateUserPreferences(uid, req.body);
     res.json({ preferences });
   } catch (error: any) {
-    console.error('Error updating user preferences:', error);
+    log.error('Error updating user preferences', { error: error instanceof Error ? error.message : String(error) });
     res.status(500).json({ error: error.message || 'Failed to update user preferences' });
   }
 }
@@ -296,7 +299,7 @@ export async function getDailyProgressHandler(req: Request, res: Response): Prom
     const progress = await getDailyProgress(uid);
     res.json({ progress });
   } catch (error: any) {
-    console.error('Error getting daily progress:', error);
+    log.error('Error getting daily progress', { error: error instanceof Error ? error.message : String(error) });
     res.status(500).json({ error: error.message || 'Failed to get daily progress' });
   }
 }
@@ -317,7 +320,7 @@ export async function getRecommendedCoursesHandler(req: Request, res: Response):
     const courses = await getRecommendedCourses(uid, limit);
     res.json({ courses });
   } catch (error: any) {
-    console.error('Error getting recommended courses:', error);
+    log.error('Error getting recommended courses', { error: error instanceof Error ? error.message : String(error) });
     res.status(500).json({ error: error.message || 'Failed to get recommended courses' });
   }
 }
@@ -338,7 +341,7 @@ export async function getContinueLearningCoursesHandler(req: Request, res: Respo
     const courses = await getContinueLearningCourses(uid, limit);
     res.json({ courses });
   } catch (error: any) {
-    console.error('Error getting continue learning courses:', error);
+    log.error('Error getting continue learning courses', { error: error instanceof Error ? error.message : String(error) });
     res.status(500).json({ error: error.message || 'Failed to get continue learning courses' });
   }
 }
@@ -358,7 +361,7 @@ export async function getAchievementsHandler(req: Request, res: Response): Promi
     const achievements = await getAllAchievementsWithProgress(uid);
     res.json({ achievements });
   } catch (error: any) {
-    console.error('Error getting achievements:', error);
+    log.error('Error getting achievements', { error: error instanceof Error ? error.message : String(error) });
     res.status(500).json({ error: error.message || 'Failed to get achievements' });
   }
 }
@@ -379,7 +382,7 @@ export async function checkAchievementsHandler(req: Request, res: Response): Pro
     const newlyAwarded = await checkAndAwardAchievements(uid, event);
     res.json({ achievements: newlyAwarded });
   } catch (error: any) {
-    console.error('Error checking achievements:', error);
+    log.error('Error checking achievements', { error: error instanceof Error ? error.message : String(error) });
     res.status(500).json({ error: error.message || 'Failed to check achievements' });
   }
 }
@@ -399,7 +402,7 @@ export async function getDetailedStatisticsHandler(req: Request, res: Response):
     const statistics = await getDetailedStatistics(uid);
     res.json({ statistics });
   } catch (error: any) {
-    console.error('Error getting detailed statistics:', error);
+    log.error('Error getting detailed statistics', { error: error instanceof Error ? error.message : String(error) });
     res.status(500).json({ error: error.message || 'Failed to get detailed statistics' });
   }
 }
@@ -419,7 +422,7 @@ export async function getJumpBackInHandler(req: Request, res: Response): Promise
     const items = await getJumpBackInItems(uid);
     res.json({ items });
   } catch (error: any) {
-    console.error('Error getting jump back in items:', error);
+    log.error('Error getting jump back in items', { error: error instanceof Error ? error.message : String(error) });
     res.status(500).json({ error: error.message || 'Failed to get jump back in items' });
   }
 }

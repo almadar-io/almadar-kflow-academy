@@ -1,4 +1,7 @@
 import type { AchievementRecord } from '@almadar-io/knowledge/server';
+import { createLogger } from '@almadar/logger';
+
+const log = createLogger('kflow:server:services:achievementsService');
 import { accessLayer } from './studentDataAccess';
 import { getStudentEnrollments } from './enrollmentService';
 import { getConceptsMastered } from './userProgressService';
@@ -103,7 +106,7 @@ export async function checkAndAwardAchievements(uid: string, event: AchievementE
 
     return newlyAwarded;
   } catch (error) {
-    console.error('Error checking achievements:', error);
+    log.error('Error checking achievements', { error: error instanceof Error ? error.message : String(error) });
     return [];
   }
 }
@@ -138,7 +141,7 @@ export async function getAchievementProgress(uid: string): Promise<Record<Achiev
       courses_completed_5: Math.min(100, (completedCourses / 5) * 100),
     };
   } catch (error) {
-    console.error('Error getting achievement progress:', error);
+    log.error('Error getting achievement progress', { error: error instanceof Error ? error.message : String(error) });
     return {} as Record<AchievementType, number>;
   }
 }

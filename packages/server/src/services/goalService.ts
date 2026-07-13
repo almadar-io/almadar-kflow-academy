@@ -1,5 +1,8 @@
 import { KnowledgeGraphAccessLayer } from '@almadar-io/knowledge/server';
 import type { LearningGoalNodeProperties, GraphNodeOf } from '@almadar-io/knowledge';
+import { createLogger } from '@almadar/logger';
+
+const log = createLogger('kflow:server:services:goalService');
 import type {
   LearningGoal,
   GoalQuestionAnswer,
@@ -153,7 +156,7 @@ export async function markMilestoneCompleted(
     const goal = goals[0];
     if (!goal.milestones || goal.milestones.length === 0) return;
     if (milestoneIndex < 0 || milestoneIndex >= goal.milestones.length) {
-      console.warn(`Milestone index ${milestoneIndex} out of range for goal ${goal.id}.`);
+      log.warn('Milestone index out of range for goal', { milestoneIndex, goalId: goal.id });
       return;
     }
 
@@ -164,9 +167,9 @@ export async function markMilestoneCompleted(
     updatedMilestones[milestoneIndex] = { ...milestone, completed: true, completedAt: Date.now() };
 
     await updateGoal(uid, goal.id, { milestones: updatedMilestones });
-    console.log(`Marked milestone "${milestone.title}" as completed for goal ${goal.id}`);
+    log.info('Marked milestone as completed for goal', { title: milestone.title, goalId: goal.id });
   } catch (error) {
-    console.error(`Failed to mark milestone ${milestoneIndex} as completed for graph ${graphId}:`, error);
+    log.error('Failed to mark milestone as completed for graph', { milestoneIndex, graphId, error: error instanceof Error ? error.message : String(error) });
   }
 }
 

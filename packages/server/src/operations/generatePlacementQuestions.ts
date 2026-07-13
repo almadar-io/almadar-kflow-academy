@@ -2,7 +2,10 @@
  * Operation to generate placement test questions based on learning goal
  */
 
+import { createLogger } from '@almadar/logger';
 import { callLLM } from '../services/llm';
+
+const log = createLogger('kflow:server:operations:generatePlacementQuestions');
 import type {
   GeneratePlacementQuestionsOptions,
   GeneratePlacementQuestionsResult,
@@ -31,7 +34,7 @@ Learning Goal Context:
 ${goal.customMetadata ? `- Additional Context: ${JSON.stringify(goal.customMetadata)}` : ''}`;
       }
     } catch (error) {
-      console.warn('Could not fetch goal for placement questions:', error);
+      log.warn('Could not fetch goal for placement questions', { error: error instanceof Error ? error.message : String(error) });
     }
   }
 
@@ -138,8 +141,8 @@ Generate 11-17 questions total (3-5 beginner, 5-7 intermediate, 3-5 advanced).`;
       const parsed = JSON.parse(jsonContent);
       questions = Array.isArray(parsed) ? parsed : [];
     } catch (fallbackError) {
-      console.error('Failed to parse placement questions (both direct and fallback parsing failed):', fallbackError);
-      console.error('Content received:', content.substring(0, 500)); // Log first 500 chars for debugging
+      log.error('Failed to parse placement questions (both direct and fallback parsing failed)', { error: fallbackError instanceof Error ? fallbackError.message : String(fallbackError) });
+      log.error('Content received', { content: content.substring(0, 500) });
       questions = [];
     }
   }
@@ -164,7 +167,7 @@ Generate 11-17 questions total (3-5 beginner, 5-7 intermediate, 3-5 advanced).`;
   const advancedCount = questions.filter(q => q.difficulty === 'advanced').length;
 
   if (beginnerCount < 3 || intermediateCount < 5 || advancedCount < 3) {
-    console.warn(`Placement test question distribution may be insufficient: ${beginnerCount} beginner, ${intermediateCount} intermediate, ${advancedCount} advanced`);
+    log.warn('Placement test question distribution may be insufficient', { beginnerCount, intermediateCount, advancedCount });
   }
 
   return {

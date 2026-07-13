@@ -1,7 +1,15 @@
 // Load and validate environment variables BEFORE importing @almadar/server,
 // which reads FIREBASE_* env vars at module initialization.
 import './config/env.js';
-import { createLogger, setupEventBroadcast } from "@almadar/server";
+
+// Initialize Firebase *immediately* via dynamic import, before any other
+// static imports that might transitively pull in @almadar/server or
+// @almadar-io/knowledge code that calls getFirestore at runtime.
+// This prevents "Firebase Admin SDK is not initialized" errors in request
+// handlers (e.g. old listGraphs -> upsertUser -> StudentProfileService).
+const { initializeFirebase, createLogger, setupEventBroadcast } = await import("@almadar/server");
+initializeFirebase();
+
 import app, { initApp } from "./app";
 import { config, validateEnv } from './config/env.js';
 

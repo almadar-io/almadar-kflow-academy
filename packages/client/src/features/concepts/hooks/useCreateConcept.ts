@@ -2,6 +2,9 @@ import { useState, useCallback } from 'react';
 import { useAppDispatch } from '../../../app/hooks';
 import { createConceptGraphAndPersist } from '../conceptThunks';
 import { store } from '../../../app/store';
+import { createLogger } from '@almadar/logger';
+
+const log = createLogger('kflow:client:concepts:useCreateConcept');
 
 export type ConceptDifficulty = 'beginner' | 'intermediate' | 'advanced';
 
@@ -80,7 +83,7 @@ export const useCreateConcept = (): UseCreateConceptReturn => {
 
       return graphId;
     } catch (error) {
-      console.error('Failed to create concept graph:', error);
+      log.error('Failed to create concept graph', { error: error instanceof Error ? error.message : String(error) });
       return null;
     }
   }, [dispatch, newConceptName, newConceptDescription, difficulty]);

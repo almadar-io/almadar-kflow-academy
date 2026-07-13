@@ -14,12 +14,15 @@
 import * as dotenv from 'dotenv';
 import * as path from 'path';
 import { getFirestore } from '@almadar/server';
+import { createLogger } from '@almadar/logger';
 import { getUserGraphs } from '../services/graphService';
-import { 
-  convertStoredConceptGraphToNodeBased, 
-  saveNodeBasedKnowledgeGraph 
+import {
+  convertStoredConceptGraphToNodeBased,
+  saveNodeBasedKnowledgeGraph
 } from '@almadar-io/knowledge/server';
 import { getGoalsByGraphId } from '../services/goalService';
+
+const log = createLogger('kflow:server:scripts:convertGraphsToKnowledgeGraph');
 
 interface ConversionStats {
   totalGraphs: number;
@@ -44,8 +47,8 @@ async function getAllUserIds(): Promise<string[]> {
  * Convert graphs for a specific user
  */
 async function convertUserGraphs(uid: string): Promise<ConversionStats> {
-  console.log(`\nConverting graphs for user: ${uid}`);
-  
+  log.info(`Converting graphs for user: ${uid}`);
+
   const stats: ConversionStats = {
     totalGraphs: 0,
     successfulConversions: 0,
@@ -59,16 +62,16 @@ async function convertUserGraphs(uid: string): Promise<ConversionStats> {
   try {
     const graphs = await getUserGraphs(uid);
     stats.totalGraphs = graphs.length;
-    console.log(`  Found ${graphs.length} graphs to convert`);
+    log.info(`Found ${graphs.length} graphs to convert`);
 
     for (const graph of graphs) {
       try {
-        console.log(`  Converting graph: ${graph.id}`);
-        
+        log.info(`Converting graph: ${graph.id}`);
+
         // Fetch learning goal if available (pass full object to get milestones)
         const goals = await getGoalsByGraphId(uid, graph.id);
         const learningGoal = goals.length > 0 ? goals[0] : null;
-        
+
         // Convert to NodeBasedKnowledgeGraph (pass full LearningGoal object to include milestones)
         const result = convertStoredConceptGraphToNodeBased(graph, {
           includeLessons: true,
@@ -86,10 +89,11 @@ async function convertUserGraphs(uid: string): Promise<ConversionStats> {
         stats.totalRelationships += result.stats.relationshipsCreated;
         stats.layersConverted += result.stats.layersConverted;
 
-        console.log(`    ✓ Converted and saved successfully`);
-        console.log(`      - Nodes: ${result.stats.nodesCreated}`);
-        console.log(`      - Relationships: ${result.stats.relationshipsCreated}`);
-        console.log(`      - Layers converted: ${result.stats.layersConverted}`);
+        log.info(`Converted and saved successfully`, {
+          nodesCreated: result.stats.nodesCreated,
+          relationshipsCreated: result.stats.relationshipsCreated,
+          layersConverted: result.stats.layersConverted,
+        });
       } catch (error) {
         stats.failedConversions++;
         const errorMessage = error instanceof Error ? error.message : 'Unknown error';
@@ -98,11 +102,13 @@ async function convertUserGraphs(uid: string): Promise<ConversionStats> {
           userId: uid,
           error: errorMessage,
         });
-        console.error(`    ✗ Failed to convert graph ${graph.id}:`, errorMessage);
+        log.error(`Failed to convert graph ${graph.id}`, { error: errorMessage });
       }
     }
   } catch (error) {
-    console.error(`  Error fetching graphs for user ${uid}:`, error);
+    log.error(`Error fetching graphs for user ${uid}`, {
+      error: error instanceof Error ? error.message : String(error),
+    });
     stats.errors.push({
       graphId: 'N/A',
       userId: uid,
@@ -122,8 +128,8 @@ async function main() {
 
   const userId = process.argv[2]; // Optional user ID argument
 
-  console.log('Starting ConceptGraph to KnowledgeGraph conversion...');
-  console.log(`Mode: ${userId ? `Single user (${userId})` : 'All users'}`);
+  log.info('Starting ConceptGraph to KnowledgeGraph conversion...');
+  log.info(`Mode: ${userId ? `Single user (${userId})` : 'All users'}`);
 
   const totalStats: ConversionStats = {
     totalGraphs: 0,
@@ -153,7 +159,7 @@ async function main() {
   } else {
     // Convert graphs for all users
     const userIds = await getAllUserIds();
-    console.log(`\nFound ${userIds.length} users to process`);
+    log.info(`Found ${userIds.length} users to process`);
 
     for (const uid of userIds) {
       const stats = await convertUserGraphs(uid);
@@ -173,30 +179,32 @@ async function main() {
   }
 
   // Print summary
-  console.log('\n' + '='.repeat(50));
-  console.log('Conversion Summary:');
-  console.log('='.repeat(50));
-  console.log(`Total graphs processed: ${totalStats.totalGraphs}`);
-  console.log(`Successful conversions: ${totalStats.successfulConversions}`);
-  console.log(`Failed conversions: ${totalStats.failedConversions}`);
-  console.log(`Total nodes created: ${totalStats.totalNodes}`);
-  console.log(`Total relationships created: ${totalStats.totalRelationships}`);
-  console.log(`Total layers converted: ${totalStats.layersConverted}`);
-  
+  log.info('Conversion Summary', {
+    totalGraphsProcessed: totalStats.totalGraphs,
+    successfulConversions: totalStats.successfulConversions,
+    failedConversions: totalStats.failedConversions,
+    totalNodesCreated: totalStats.totalNodes,
+    totalRelationshipsCreated: totalStats.totalRelationships,
+    totalLayersConverted: totalStats.layersConverted,
+  });
+
   if (totalStats.errors.length > 0) {
-    console.log('\nErrors:');
+    log.error(`Conversion completed with ${totalStats.errors.length} errors`);
     totalStats.errors.forEach((error, index) => {
-      console.log(`  ${index + 1}. Graph ${error.graphId} (User: ${error.userId}): ${error.error}`);
+      log.error(`  Error ${index + 1}: Graph ${error.graphId} (User: ${error.userId})`, {
+        error: error.error,
+      });
     });
+  } else {
+    log.info('Conversion completed successfully!');
   }
-  
-  console.log('='.repeat(50));
-  console.log('\nConversion completed!');
 }
 
 // Run the script
 main().catch(error => {
-  console.error('Fatal error:', error);
+  log.error('Fatal error', {
+    error: error instanceof Error ? error.message : String(error),
+  });
   process.exit(1);
 });
 

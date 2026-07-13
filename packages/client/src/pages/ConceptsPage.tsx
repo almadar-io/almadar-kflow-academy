@@ -1,3 +1,4 @@
+import { createLogger } from '@almadar/logger';
 import React, { useEffect, useMemo, useCallback, useState, useRef } from 'react';
 import { useParams, useLocation } from 'react-router';
 import { useEventBus, useTranslate } from '@almadar/ui';
@@ -22,6 +23,8 @@ import { FocusModeTemplate } from '@design-system/templates/FocusModeTemplate';
 import type { FocusModeEntity } from '@design-system/templates/FocusModeTemplate';
 import kflowLogo from '../assets/kflow-logo.svg';
 import type { LearnGoal, LearnLevel, LearnConcept } from '@design-system/templates/LearnTemplates/types';
+
+const log = createLogger('kflow:client:pages:ConceptsPage');
 
 export const ConceptsPage: React.FC = () => {
   const { graphId } = useParams<{ graphId: string }>();
@@ -61,7 +64,7 @@ export const ConceptsPage: React.FC = () => {
     if (graphId && !graph && !isLoadingGraph && attemptedGraphIdRef.current !== graphId) {
       attemptedGraphIdRef.current = graphId;
       getGraph(graphId, { storeInRedux: true }).catch((err) => {
-        console.error('Failed to load graph:', err);
+        log.error('Failed to load graph', { error: err instanceof Error ? err.message : String(err) });
       });
     }
   }, [graphId, graph, isLoadingGraph, getGraph]);
@@ -149,7 +152,7 @@ export const ConceptsPage: React.FC = () => {
         }
       );
     } catch (err) {
-      console.error('Failed to load next level:', err);
+      log.error('Failed to load next level', { error: err instanceof Error ? err.message : String(err) });
       setShowNextLevelLoader(false);
       setNextLevelStreamContent('');
     }
@@ -163,11 +166,11 @@ export const ConceptsPage: React.FC = () => {
         {
           stream: true,
           onChunk: () => {},
-          onDone: (result) => { console.log('Layer practice generated:', result); },
+          onDone: (result) => { log.debug('Layer practice generated', { result }); },
         }
       );
     } catch (err) {
-      console.error('Failed to generate layer practice:', err);
+      log.error('Failed to generate layer practice', { error: err instanceof Error ? err.message : String(err) });
       throw err;
     }
   }, [graphId, generatePractice]);

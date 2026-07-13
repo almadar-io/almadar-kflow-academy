@@ -1,5 +1,8 @@
 import { Request, Response } from 'express';
+import { createLogger } from '@almadar/logger';
 import { extractJSONArray } from '../services/llm';
+
+const log = createLogger('kflow:server:controllers:aiController');
 import {
   HealthResponse,
   ExpandConceptRequest,
@@ -143,7 +146,7 @@ export async function expandConcept(
 
     res.json({ concepts: results });
   } catch (error) {
-    console.error('Error expanding concept:', error);
+    log.error('Error expanding concept', { error: error instanceof Error ? error.message : String(error) });
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     res.status(500).json({ error: 'Failed to expand concept', details: errorMessage });
   }
@@ -179,7 +182,7 @@ export async function generateNextLayer(
       model: result.model,
     });
   } catch (error) {
-    console.error('Error generating next layer:', error);
+    log.error('Error generating next layer', { error: error instanceof Error ? error.message : String(error) });
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     res.status(500).json({ error: 'Failed to generate next layer', details: errorMessage });
   }
@@ -223,7 +226,7 @@ export async function generateNextConcept(
 
     res.json({ concepts: results });
   } catch (error) {
-    console.error('Error generating next concept:', error);
+    log.error('Error generating next concept', { error: error instanceof Error ? error.message : String(error) });
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     res.status(500).json({ error: 'Failed to generate next concept', details: errorMessage });
   }
@@ -248,7 +251,7 @@ export async function deriveParentsHandler(
 
     res.json({ concepts: results });
   } catch (error) {
-    console.error('Error deriving parents:', error);
+    log.error('Error deriving parents', { error: error instanceof Error ? error.message : String(error) });
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     res.status(500).json({ error: 'Failed to derive parents', details: errorMessage });
   }
@@ -273,7 +276,7 @@ export async function deriveSummaryHandler(
 
     res.json({ concepts: results });
   } catch (error) {
-    console.error('Error deriving summary:', error);
+    log.error('Error deriving summary', { error: error instanceof Error ? error.message : String(error) });
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     res.status(500).json({ error: 'Failed to derive summary', details: errorMessage });
   }
@@ -296,7 +299,7 @@ export async function explainConcept(
     // Save/update user data if authenticated
     if (uid && email) {
       await upsertUser(uid, email).catch((error) => {
-        console.error('Error upserting user:', error);
+        log.error('Error upserting user', { error: error instanceof Error ? error.message : String(error) });
       });
     }
 
@@ -324,11 +327,11 @@ export async function explainConcept(
         
         // If no goal found, log warning (existing graphs should have goals)
         if (!learningGoal) {
-          console.warn(`No learning goal found for graph ${graphId}. User should create a goal for this graph.`);
+          log.warn(`No learning goal found for graph`, { graphId });
           // Continue - operation will handle undefined goal gracefully
         }
       } catch (error) {
-        console.error('Error fetching learning goal:', error);
+        log.error('Error fetching learning goal', { error: error instanceof Error ? error.message : String(error) });
         // Continue without goal - operation will handle gracefully
       }
 
@@ -378,7 +381,7 @@ export async function explainConcept(
     // Non-streaming response (fallback) — result is OperationResult here (stream branch returned above)
     res.json({ concepts: result as import('../types').OperationResult, prompt: operationPrompt });
   } catch (error) {
-    console.error('Error generating lesson:', error);
+    log.error('Error generating lesson', { error: error instanceof Error ? error.message : String(error) });
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     res.status(500).json({ error: 'Failed to generate lesson', details: errorMessage });
   }
@@ -402,7 +405,7 @@ export async function generateFlashCardsHandler(
     // Save/update user data if authenticated
     if (uid && email) {
       await upsertUser(uid, email).catch((error) => {
-        console.error('Error upserting user:', error);
+        log.error('Error upserting user', { error: error instanceof Error ? error.message : String(error) });
       });
     }
 
@@ -438,7 +441,7 @@ export async function generateFlashCardsHandler(
       model: 'gpt-4o-mini', // Default model for flash cards
     });
   } catch (error) {
-    console.error('Error generating flash cards:', error);
+    log.error('Error generating flash cards', { error: error instanceof Error ? error.message : String(error) });
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     res.status(500).json({ error: 'Failed to generate flash cards', details: errorMessage });
   }
@@ -467,7 +470,7 @@ export async function runCodeSimulationHandler(
 
     if (uid && email) {
       await upsertUser(uid, email).catch((error) => {
-        console.error('Error upserting user:', error);
+        log.error('Error upserting user', { error: error instanceof Error ? error.message : String(error) });
       });
     }
 
@@ -478,7 +481,7 @@ export async function runCodeSimulationHandler(
 
     res.json(result);
   } catch (error) {
-    console.error('Error running code simulation:', error);
+    log.error('Error running code simulation', { error: error instanceof Error ? error.message : String(error) });
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     res.status(500).json({ error: 'Failed to run code simulation', details: errorMessage });
   }
@@ -530,7 +533,7 @@ export async function generateLayerPracticeHandler(
           }
         }
       } catch (error) {
-        console.error('Error fetching graph for layer practice:', error);
+        log.error('Error fetching graph for layer practice', { error: error instanceof Error ? error.message : String(error) });
         // Continue without seed concept if graph fetch fails
       }
     }
@@ -572,10 +575,10 @@ export async function generateLayerPracticeHandler(
                     conceptIds: existingLayer?.conceptIds || concepts.map(c => c.id || c.name),
                     practiceExercises: reviewItems,
                   });
-                  console.log(`Successfully saved review to layer ${layerNumber}`);
+                  log.info('Successfully saved review to layer', { layerNumber });
                 })
                 .catch((error) => {
-                  console.error('Failed to save review to layer:', error);
+                  log.error('Failed to save review to layer', { error: error instanceof Error ? error.message : String(error) });
                 });
             }
 
@@ -585,7 +588,7 @@ export async function generateLayerPracticeHandler(
               model,
             };
           } catch (error) {
-            console.error('Error processing streamed review:', error);
+            log.error('Error processing streamed review', { error: error instanceof Error ? error.message : String(error) });
             return { error: 'Failed to process review' };
           }
         },
@@ -603,7 +606,9 @@ export async function generateLayerPracticeHandler(
         // Get existing layer or create new one
         const existingLayer = await getLayerByNumber(uid, graphId, layerNumber);
         
-        console.log(`Saving practice exercises to layer ${layerNumber} for graph ${graphId}`, {
+        log.info('Saving practice exercises to layer', {
+          layerNumber,
+          graphId,
           itemsCount: practiceResult.items.length,
           hasExistingLayer: !!existingLayer,
         });
@@ -617,13 +622,13 @@ export async function generateLayerPracticeHandler(
           practiceExercises: practiceResult.items,
         });
         
-        console.log(`Successfully saved practice exercises to layer ${layerNumber}`);
+        log.info('Successfully saved practice exercises to layer', { layerNumber });
       } catch (error) {
-        console.error('Failed to save practice exercises to layer:', error);
+        log.error('Failed to save practice exercises to layer', { error: error instanceof Error ? error.message : String(error) });
         // Continue even if saving fails
       }
     } else {
-      console.log('Skipping save: graphId or items missing', {
+      log.info('Skipping save: graphId or items missing', {
         hasGraphId: !!graphId,
         itemsCount: practiceResult.items?.length || 0,
       });
@@ -634,7 +639,7 @@ export async function generateLayerPracticeHandler(
       model: practiceResult.model,
     });
   } catch (error) {
-    console.error('Error generating layer practice:', error);
+    log.error('Error generating layer practice', { error: error instanceof Error ? error.message : String(error) });
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     res.status(500).json({ error: 'Failed to generate layer practice', details: errorMessage });
   }
@@ -719,7 +724,7 @@ export async function answerQuestionHandler(
     // Non-streaming response
     res.json(result);
   } catch (error) {
-    console.error('Error answering question:', error);
+    log.error('Error answering question', { error: error instanceof Error ? error.message : String(error) });
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     res.status(500).json({ error: 'Failed to answer question', details: errorMessage });
   }
@@ -822,7 +827,7 @@ export async function customOperationHandler(
       prompt: operationPrompt,
     });
   } catch (error) {
-    console.error('Error performing custom operation:', error);
+    log.error('Error performing custom operation', { error: error instanceof Error ? error.message : String(error) });
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     res.status(500).json({ error: 'Failed to perform custom operation', details: errorMessage });
   }
@@ -847,7 +852,7 @@ export async function synthesizeHandler(
 
     res.json({ concepts: results });
   } catch (error) {
-    console.error('Error synthesizing concepts:', error);
+    log.error('Error synthesizing concepts', { error: error instanceof Error ? error.message : String(error) });
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     res.status(500).json({ error: 'Failed to synthesize concepts', details: errorMessage });
   }
@@ -872,7 +877,7 @@ export async function exploreHandler(
 
     res.json({ concepts: results });
   } catch (error) {
-    console.error('Error exploring concept:', error);
+    log.error('Error exploring concept', { error: error instanceof Error ? error.message : String(error) });
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     res.status(500).json({ error: 'Failed to explore concept', details: errorMessage });
   }
@@ -901,7 +906,7 @@ export async function tracePathHandler(
 
     res.json({ concepts: results });
   } catch (error) {
-    console.error('Error tracing path:', error);
+    log.error('Error tracing path', { error: error instanceof Error ? error.message : String(error) });
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     res.status(500).json({ error: 'Failed to trace path', details: errorMessage });
   }
@@ -942,7 +947,7 @@ export async function progressiveExploreHandler(
 
     res.json({ concepts: results });
   } catch (error) {
-    console.error('Error in progressive explore:', error);
+    log.error('Error in progressive explore', { error: error instanceof Error ? error.message : String(error) });
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     res.status(500).json({ error: 'Failed to progressive explore', details: errorMessage });
   }
@@ -976,7 +981,7 @@ export async function generateInteractiveOrbitalHandler(
 
     if (uid && email) {
       await upsertUser(uid, email).catch((error) => {
-        console.error('Error upserting user:', error);
+        log.error('Error upserting user', { error: error instanceof Error ? error.message : String(error) });
       });
     }
 
@@ -984,7 +989,7 @@ export async function generateInteractiveOrbitalHandler(
 
     res.json({ schema });
   } catch (error) {
-    console.error('Error generating interactive orbital:', error);
+    log.error('Error generating interactive orbital', { error: error instanceof Error ? error.message : String(error) });
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     res.status(500).json({ error: 'Failed to generate interactive orbital', details: errorMessage });
   }

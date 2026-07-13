@@ -13,6 +13,9 @@ import { loadConceptsFromLocalStorage, saveConceptsToLocalStorage } from './util
 import { ensureSequenceForGraph, generateUUID } from './utils/graphHelpers';
 import { auth } from '../../config/firebase';
 import { Concept } from './types';
+import { createLogger } from '@almadar/logger';
+
+const log = createLogger('kflow:client:concepts:conceptThunks');
 
 type ConceptThunk = ThunkAction<Promise<void>, RootState, undefined, UnknownAction>;
 
@@ -80,7 +83,7 @@ export const loadConceptGraphs = (): ConceptThunk => async (dispatch, getState) 
           try {
             await graphApi.upsertGraph(graph);
           } catch (error) {
-            console.error('Failed to persist sequenced graph to server', error);
+            log.error('Failed to persist sequenced graph to server', { error: error instanceof Error ? error.message : String(error) });
           }
         })
       );
@@ -94,7 +97,7 @@ export const loadConceptGraphs = (): ConceptThunk => async (dispatch, getState) 
           try {
             await graphApi.upsertGraph(graph);
           } catch (error) {
-            console.error('Failed to persist local graph to server', error);
+            log.error('Failed to persist local graph to server', { error: error instanceof Error ? error.message : String(error) });
           }
         })
       );
@@ -127,7 +130,7 @@ export const loadConceptGraphs = (): ConceptThunk => async (dispatch, getState) 
 
     saveConceptsToLocalStorage(getState().concepts);
   } catch (error) {
-    console.error('Failed to load concept graphs from backend:', error);
+    log.error('Failed to load concept graphs from backend', { error: error instanceof Error ? error.message : String(error) });
 
     if (localState) {
       const fallbackGraphs = localState.graphs || [];
@@ -188,7 +191,7 @@ export const createConceptGraphAndPersist = (
     try {
       await graphApi.upsertGraph(graphWithSequence);
     } catch (error) {
-      console.error('Failed to persist newly created graph:', error);
+      log.error('Failed to persist newly created graph', { error: error instanceof Error ? error.message : String(error) });
       dispatch(setError('Failed to save new concept graph. Please try again.'));
       // Don't add to Redux if upsert fails - stay on home page
       return;

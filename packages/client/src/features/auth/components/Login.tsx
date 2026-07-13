@@ -5,6 +5,9 @@ import { useSearchParams } from 'react-router';
 import { useNavigateEvent } from '../../../hooks/useNavigateEvent';
 import { RootState } from '../../../app/store';
 import { useTranslate } from '@almadar/ui';
+import { createLogger } from '@almadar/logger';
+
+const log = createLogger('kflow:client:auth:Login');
 
 const EMAIL_FOR_SIGN_IN_KEY = 'emailForSignIn';
 
@@ -60,7 +63,7 @@ const Login: React.FC = () => {
             setCompletingEmailLink(false);
           })
           .catch((error) => {
-            console.error('Error signing in with email link:', error);
+            log.error('Error signing in with email link', { error: error instanceof Error ? error.message : String(error) });
             setCompletingEmailLink(false);
             // If error, prompt for email
             setEmailForLinkCompletion(emailForSignIn);
@@ -78,13 +81,13 @@ const Login: React.FC = () => {
     try {
       await signInWithGoogle();
     } catch (error) {
-      console.error('Google sign-in error:', error);
+      log.error('Google sign-in error', { error: error instanceof Error ? error.message : String(error) });
     }
   };
 
   const handleEmailAuth = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     try {
       if (isSignUp) {
         await signUpWithEmail(email, password, displayName);
@@ -92,7 +95,7 @@ const Login: React.FC = () => {
         await signInWithEmail(email, password);
       }
     } catch (error) {
-      console.error('Email authentication error:', error);
+      log.error('Email authentication error', { error: error instanceof Error ? error.message : String(error) });
     }
   };
 
@@ -113,7 +116,7 @@ const Login: React.FC = () => {
       setCompletingEmailLink(false);
       setEmailForLinkCompletion('');
     } catch (error) {
-      console.error('Error completing email link sign-in:', error);
+      log.error('Error completing email link sign-in', { error: error instanceof Error ? error.message : String(error) });
     }
   };
 

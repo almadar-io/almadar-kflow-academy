@@ -1,6 +1,6 @@
 /**
  * Test Generation Script for Phase 1
- * 
+ *
  * Runs all 8 operations on multiple test topics and validates:
  * - Schema compliance
  * - Cross-topic consistency
@@ -10,6 +10,7 @@
 
 import * as dotenv from 'dotenv';
 import * as path from 'path';
+import { createLogger } from '@almadar/logger';
 import { Concept } from '../types/concept';
 import {
   expand,
@@ -25,6 +26,8 @@ import { validateConcept, validateExtendedConcept } from '../utils/validation';
 
 // Load environment variables
 dotenv.config({ path: path.join(__dirname, '..', '..', '.env') });
+
+const log = createLogger('kflow:server:scripts:test-generation');
 
 // Test topics
 const TEST_TOPICS: Concept[] = [
@@ -114,8 +117,8 @@ async function testOperation(
  * Run all tests
  */
 async function runTests() {
-  console.log('🚀 Starting Phase 1 Test Generation\n');
-  console.log(`Testing ${TEST_TOPICS.length} topics across 8 operations...\n`);
+  log.info('Starting Phase 1 Test Generation');
+  log.info(`Testing ${TEST_TOPICS.length} topics across 8 operations`);
 
   // Test expand
   for (const topic of TEST_TOPICS) {
@@ -230,17 +233,14 @@ async function runTests() {
  * Generate report
  */
 function generateReport() {
-  console.log('\n📊 Test Results Summary\n');
-  console.log('='.repeat(80));
+  log.info('Test Results Summary');
+  log.info('='.repeat(80));
 
   const successCount = results.filter(r => r.success).length;
   const totalCount = results.length;
   const successRate = ((successCount / totalCount) * 100).toFixed(1);
 
-  console.log(`Total Tests: ${totalCount}`);
-  console.log(`Successful: ${successCount}`);
-  console.log(`Failed: ${totalCount - successCount}`);
-  console.log(`Success Rate: ${successRate}%\n`);
+  log.info('Results', { totalTests: totalCount, successful: successCount, failed: totalCount - successCount, successRate });
 
   // Group by operation
   const byOperation = new Map<string, TestResult[]>();
@@ -250,30 +250,28 @@ function generateReport() {
     byOperation.set(result.operation, opResults);
   });
 
-  console.log('Results by Operation:');
-  console.log('-'.repeat(80));
+  log.info('Results by Operation:');
+  log.info('-'.repeat(80));
   for (const [operation, opResults] of byOperation.entries()) {
     const opSuccess = opResults.filter(r => r.success).length;
     const avgTime = opResults
       .filter(r => r.executionTime)
       .reduce((sum, r) => sum + (r.executionTime || 0), 0) / opResults.length;
-    
-    console.log(`\n${operation}:`);
-    console.log(`  Success: ${opSuccess}/${opResults.length}`);
-    console.log(`  Avg Time: ${avgTime ? avgTime.toFixed(0) : 'N/A'}ms`);
-    
+
+    log.info(`Operation: ${operation}`, { success: `${opSuccess}/${opResults.length}`, avgTimeMs: avgTime ? avgTime.toFixed(0) : 'N/A' });
+
     opResults.forEach(result => {
       if (!result.success) {
-        console.log(`  ❌ ${result.topic}: ${result.error}`);
+        log.info(`  ${result.topic}`, { error: result.error });
       } else {
-        console.log(`  ✅ ${result.topic}: ${result.resultCount} concepts (${result.executionTime}ms)`);
+        log.info(`  ${result.topic}`, { resultCount: result.resultCount, executionTimeMs: result.executionTime });
       }
     });
   }
 
   // Test composability
-  console.log('\n\n🔗 Composability Test');
-  console.log('-'.repeat(80));
+  log.info('Composability Test');
+  log.info('-'.repeat(80));
   testComposability();
 }
 
@@ -289,7 +287,7 @@ async function testComposability() {
   };
 
   try {
-    console.log('Testing: expand → expandList → synthesize');
+    log.info('Testing: expand → expandList → synthesize');
     const children = await expand(seed);
     const grandchildren = await expandList(children.slice(0, 3));
     const synthesized = await synthesize(grandchildren.slice(0, 2));
@@ -299,13 +297,12 @@ async function testComposability() {
     const allValid = allConcepts.every(validateConcept);
 
     if (allValid) {
-      console.log('✅ Composability test passed!');
-      console.log(`   Generated ${allConcepts.length} valid concepts`);
+      log.info('Composability test passed', { conceptCount: allConcepts.length });
     } else {
-      console.log('❌ Composability test failed: Invalid concepts detected');
+      log.info('Composability test failed: Invalid concepts detected');
     }
   } catch (error) {
-    console.log(`❌ Composability test failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    log.error('Composability test failed', { error: error instanceof Error ? error.message : 'Unknown error' });
   }
 }
 
@@ -316,9 +313,9 @@ async function main() {
   try {
     await runTests();
     generateReport();
-    console.log('\n✨ Test generation complete!\n');
+    log.info('Test generation complete');
   } catch (error) {
-    console.error('Fatal error:', error);
+    log.error('Fatal error', { error: error instanceof Error ? error.message : String(error) });
     process.exit(1);
   }
 }

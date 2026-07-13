@@ -14,6 +14,9 @@ import { graphApi } from '../graphApi';
 import { saveConceptsToLocalStorage } from '../utils/localStorage';
 import { ensureSequenceForGraph } from '../utils/graphHelpers';
 import { auth } from '../../../config/firebase';
+import { createLogger } from '@almadar/logger';
+
+const log = createLogger('kflow:client:concepts:conceptsPersistenceMiddleware');
 
 const SYNC_DELAY = 500;
 
@@ -52,11 +55,11 @@ export const createConceptsPersistenceMiddleware = (): Middleware<{}, RootState>
     }
 
     try {
-      console.log('Upserting graph to Firestore:', graphToSync);
+      log.debug('Upserting graph to Firestore', { graph: graphToSync });
       await graphApi.upsertGraph(graphToSync);
       scheduleLocalSave(state);
     } catch (error) {
-      console.error('Failed to sync graph to Firestore:', error);
+      log.error('Failed to sync graph to Firestore', { error: error instanceof Error ? error.message : String(error) });
       dispatch(setError('Failed to sync graph changes. Working offline.'));
       scheduleLocalSave(state);
     }
@@ -73,7 +76,7 @@ export const createConceptsPersistenceMiddleware = (): Middleware<{}, RootState>
       await graphApi.deleteGraph(graphId);
       scheduleLocalSave(state);
     } catch (error) {
-      console.error('Failed to delete graph from Firestore:', error);
+      log.error('Failed to delete graph from Firestore', { error: error instanceof Error ? error.message : String(error) });
       dispatch(setError('Failed to delete graph from server.'));
       scheduleLocalSave(state);
     }

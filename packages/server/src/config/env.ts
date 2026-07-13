@@ -9,7 +9,9 @@
 import dotenv from 'dotenv';
 import { fileURLToPath } from 'url';
 import { dirname, resolve } from 'path';
+import { createLogger } from '@almadar/logger';
 
+const log = createLogger('kflow:server:config:env');
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
@@ -32,7 +34,7 @@ for (const root of searchRoots) {
     const path = resolve(root, `.env${suffix}`);
     const result = dotenv.config({ path });
     if (!result.error && result.parsed && Object.keys(result.parsed).length > 0) {
-      console.log(`[env] Loaded ${path}`);
+      log.info(`[env] Loaded ${path}`);
       // Later files override earlier files; empty values are ignored so
       // placeholders don't wipe out real values in .env.local.
       for (const [key, value] of Object.entries(result.parsed)) {
@@ -98,8 +100,8 @@ export function validateEnv(): void {
     if (config.isProduction) {
       throw new Error(`FATAL: ${message}. Server cannot start without Firebase credentials.`);
     }
-    console.warn(`[env] ${message}`);
-    console.warn('[env] Firebase functionality will not work until these are set in .env');
+    log.warn(`[env] ${message}`);
+    log.warn('[env] Firebase functionality will not work until these are set in .env');
   }
 
   if (!config.almadar.apiKey) {
@@ -107,6 +109,6 @@ export function validateEnv(): void {
     if (config.isProduction) {
       throw new Error(`FATAL: ${message}. SDK-powered features (interactive orbitals) will not work.`);
     }
-    console.warn(`[env] ${message} — interactive orbital generation will fail.`);
+    log.warn(`[env] ${message} — interactive orbital generation will fail.`);
   }
 }

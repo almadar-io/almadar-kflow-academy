@@ -1,6 +1,6 @@
 /**
  * Apollo Client Configuration for Knowledge Graph Access
- * 
+ *
  * Sets up Apollo Client with authentication headers
  */
 
@@ -11,6 +11,9 @@ import type { ErrorResponse } from '@apollo/client/link/error';
 import type { GraphQLRequest } from '@apollo/client/link/core';
 import type { DefaultContext } from '@apollo/client/core';
 import { auth } from '../../config/firebase';
+import { createLogger } from '@almadar/logger';
+
+const log = createLogger('kflow:client:knowledge-graph:apolloClient');
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
 
@@ -33,7 +36,7 @@ const authLink = setContext(async (_operation: GraphQLRequest, { headers }: Defa
       };
     }
   } catch (error) {
-    console.error('Error getting auth token:', error);
+    log.error('Error getting auth token', { error: error instanceof Error ? error.message : String(error) });
   }
   return { headers };
 });
@@ -42,14 +45,12 @@ const authLink = setContext(async (_operation: GraphQLRequest, { headers }: Defa
 const errorLink = onError(({ graphQLErrors, networkError }: ErrorResponse) => {
   if (graphQLErrors) {
     graphQLErrors.forEach(({ message, locations, path }) => {
-      console.error(
-        `GraphQL error: Message: ${message}, Location: ${locations}, Path: ${path}`
-      );
+      log.error('GraphQL error', { message, locations, path });
     });
   }
 
   if (networkError) {
-    console.error(`Network error: ${networkError}`);
+    log.error('Network error', { error: networkError.message || String(networkError) });
   }
 });
 

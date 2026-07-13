@@ -1,4 +1,7 @@
 import { Concept, ConceptGraph, ConceptGraphJSON } from '../types';
+import { createLogger } from '@almadar/logger';
+
+const log = createLogger('kflow:client:concepts:localStorage');
 
 export interface ConceptState {
   graphs: ConceptGraph[];
@@ -93,7 +96,7 @@ export const saveConceptsToLocalStorage = (state: ConceptState): void => {
     };
     localStorage.setItem(CONCEPTS_STORAGE_KEY, JSON.stringify(conceptsToSave));
   } catch (error) {
-    console.error('Failed to save concepts to localStorage:', error);
+    log.error('Failed to save concepts to localStorage', { error: error instanceof Error ? error.message : String(error) });
   }
 };
 
@@ -115,7 +118,7 @@ export const loadConceptsFromLocalStorage = (): Partial<ConceptState> | null => 
       selectedConcept: parsed.selectedConcept || null,
     };
   } catch (error) {
-    console.error('Failed to load concepts from localStorage:', error);
+    log.error('Failed to load concepts from localStorage', { error: error instanceof Error ? error.message : String(error) });
     return null;
   }
 };
@@ -127,6 +130,6 @@ export const clearConceptsFromLocalStorage = (): void => {
   try {
     localStorage.removeItem(CONCEPTS_STORAGE_KEY);
   } catch (error) {
-    console.error('Failed to clear concepts from localStorage:', error);
+    log.error('Failed to clear concepts from localStorage', { error: error instanceof Error ? error.message : String(error) });
   }
 };

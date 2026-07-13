@@ -1,5 +1,8 @@
 import { getStudentEnrollments } from './enrollmentService';
 import { getConceptsMastered, getAllUserProgress } from './userProgressService';
+import { createLogger } from '@almadar/logger';
+
+const log = createLogger('kflow:server:services:statisticsService');
 import { getUserPreferences } from './userPreferencesService';
 import { cache, CACHE_TTL } from './cacheService';
 
@@ -51,7 +54,7 @@ export async function getLearningStreak(uid: string): Promise<number> {
     cache.set(cacheKey, streak, CACHE_TTL.STATISTICS);
     return streak;
   } catch (error) {
-    console.error('Error calculating learning streak:', error);
+    log.error('Error calculating learning streak', { error: error instanceof Error ? error.message : String(error) });
     return 0;
   }
 }
@@ -66,7 +69,7 @@ export async function getConceptsMasteredCount(uid: string): Promise<number> {
     cache.set(cacheKey, count, CACHE_TTL.STATISTICS);
     return count;
   } catch (error) {
-    console.error('Error getting concepts mastered count:', error);
+    log.error('Error getting concepts mastered count', { error: error instanceof Error ? error.message : String(error) });
     return 0;
   }
 }
@@ -144,7 +147,7 @@ export async function getRecentActivity(uid: string, limit: number = 10): Promis
     activities.sort((a, b) => b.timestamp - a.timestamp);
     return activities.slice(0, limit);
   } catch (error) {
-    console.error('Error getting recent activity:', error);
+    log.error('Error getting recent activity', { error: error instanceof Error ? error.message : String(error) });
     return [];
   }
 }
@@ -180,7 +183,7 @@ export async function getDetailedStatistics(uid: string): Promise<DetailedStatis
 
     return { totalStudyTime: 0, lessonsCompleted, coursesCompleted, conceptsMastered, learningStreak: streak, activeCourses };
   } catch (error) {
-    console.error('Error getting detailed statistics:', error);
+    log.error('Error getting detailed statistics', { error: error instanceof Error ? error.message : String(error) });
     throw error;
   }
 }
@@ -214,7 +217,7 @@ export async function getStatisticsSummary(uid: string, activityLimit: number = 
     cache.set(cacheKey, summary, CACHE_TTL.STATISTICS);
     return summary;
   } catch (error) {
-    console.error('Error getting statistics summary:', error);
+    log.error('Error getting statistics summary', { error: error instanceof Error ? error.message : String(error) });
     throw error;
   }
 }
@@ -284,7 +287,7 @@ export async function getDailyProgress(uid: string): Promise<DailyProgress> {
 
     return { date: dateStr, goal, completed, progressPercentage, activities: uniqueActivitiesList };
   } catch (error) {
-    console.error('Error getting daily progress:', error);
+    log.error('Error getting daily progress', { error: error instanceof Error ? error.message : String(error) });
     throw error;
   }
 }

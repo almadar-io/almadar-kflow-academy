@@ -18,9 +18,12 @@
 import * as dotenv from 'dotenv';
 import * as path from 'path';
 import { getFirestore } from '@almadar/server';
+import { createLogger } from '@almadar/logger';
 import { getUserGraphById, upsertUserGraph } from '../services/graphService';
 import { getLayerByNumber } from '../services/layerService';
 import { Concept } from '../types/concept';
+
+const log = createLogger('kflow:server:scripts:migrateLayersToConcepts');
 
 const getFirestoreInstance = () => {
   return getFirestore();
@@ -34,39 +37,39 @@ const getFirestoreInstance = () => {
  * - All layers subcollections under each graph
  */
 async function backupUserCollection(uid: string): Promise<void> {
-  console.log(`\nCreating backup for user ${uid}...`);
-  
+  log.info(`Creating backup for user ${uid}...`);
+
   const db = getFirestoreInstance();
   const userDocRef = db.collection('users').doc(uid);
   const backupUserDocRef = db.collection(`backup-${uid}`).doc(uid);
-  
+
   try {
     // Backup user document
     const userDoc = await userDocRef.get();
     if (userDoc.exists) {
       await backupUserDocRef.set(userDoc.data() || {});
-      console.log(`  ✓ Backed up user document`);
+      log.info(`Backed up user document`);
     } else {
-      console.log(`  ⚠ User document does not exist`);
+      log.warn(`User document does not exist`);
     }
-    
+
     // Backup graphs subcollection
     const graphsSnapshot = await userDocRef.collection('graphs').get();
     if (graphsSnapshot.empty) {
-      console.log(`  ⚠ No graphs found for user ${uid}`);
+      log.warn(`No graphs found for user ${uid}`);
       return;
     }
-    
-    console.log(`  Found ${graphsSnapshot.size} graphs to backup`);
-    
+
+    log.info(`Found ${graphsSnapshot.size} graphs to backup`);
+
     for (const graphDoc of graphsSnapshot.docs) {
       const graphData = graphDoc.data();
       const backupGraphRef = backupUserDocRef.collection('graphs').doc(graphDoc.id);
-      
+
       // Backup graph document
       await backupGraphRef.set(graphData);
-      console.log(`    ✓ Backed up graph ${graphDoc.id}`);
-      
+      log.debug(`Backed up graph ${graphDoc.id}`);
+
       // Backup layers subcollection for this graph
       const layersSnapshot = await graphDoc.ref.collection('layers').get();
       if (!layersSnapshot.empty) {
@@ -74,44 +77,46 @@ async function backupUserCollection(uid: string): Promise<void> {
           const layerData = layerDoc.data();
           await backupGraphRef.collection('layers').doc(layerDoc.id).set(layerData);
         }
-        console.log(`      ✓ Backed up ${layersSnapshot.size} layer documents`);
+        log.debug(`Backed up ${layersSnapshot.size} layer documents`);
       }
     }
-    
-    console.log(`  ✓ Successfully created backup for user ${uid}`);
+
+    log.info(`Successfully created backup for user ${uid}`);
   } catch (error) {
-    console.error(`  ✗ Error creating backup for user ${uid}:`, error);
+    log.error(`Error creating backup for user ${uid}`, {
+      error: error instanceof Error ? error.message : String(error),
+    });
     throw error;
   }
 }
 
 async function migrateGraph(uid: string, graphId: string): Promise<void> {
-  console.log(`\nMigrating graph ${graphId} for user ${uid}...`);
-  
+  log.info(`Migrating graph ${graphId} for user ${uid}...`);
+
   try {
     const graph = await getUserGraphById(uid, graphId);
     if (!graph) {
-      console.log(`  Graph ${graphId} not found, skipping...`);
+      log.info(`Graph ${graphId} not found, skipping...`);
       return;
     }
 
     const concepts = Object.values(graph.concepts);
     if (concepts.length === 0) {
-      console.log(`  Graph ${graphId} has no concepts, skipping...`);
+      log.info(`Graph ${graphId} has no concepts, skipping...`);
       return;
     }
 
     // Check if any concepts have a layer property (only migrate graphs with layer numbers)
     const hasLayerConcepts = concepts.some(c => c.layer !== undefined);
     if (!hasLayerConcepts) {
-      console.log(`  Graph ${graphId} has no concepts with layer property, skipping (already migrated or never had layers)...`);
+      log.info(`Graph ${graphId} has no concepts with layer property, skipping (already migrated or never had layers)...`);
       return;
     }
 
     // Find seed concept
     const seedConcept = concepts.find(c => c.isSeed);
     if (!seedConcept) {
-      console.log(`  Seed concept not found for graph ${graphId}, skipping...`);
+      log.info(`Seed concept not found for graph ${graphId}, skipping...`);
       return;
     }
 
@@ -132,16 +137,16 @@ async function migrateGraph(uid: string, graphId: string): Promise<void> {
     });
 
     if (conceptsByLayer.size === 0) {
-      console.log(`  Graph ${graphId} has no concepts with layer property, skipping...`);
+      log.info(`Graph ${graphId} has no concepts with layer property, skipping...`);
       return;
     }
 
-    console.log(`  Found ${conceptsByLayer.size} layers to migrate`);
+    log.info(`Found ${conceptsByLayer.size} layers to migrate`);
 
     // Find existing top-level concepts to determine sequence
     // Exclude concepts that will become level concepts (those with layer property)
-    const existingTopLevelConcepts = concepts.filter(c => 
-      c.parents.length === 1 && 
+    const existingTopLevelConcepts = concepts.filter(c =>
+      c.parents.length === 1 &&
       c.parents[0] === seedConcept.name &&
       c.layer === undefined // Not a concept that will be migrated to a level
     );
@@ -149,20 +154,22 @@ async function migrateGraph(uid: string, graphId: string): Promise<void> {
       ? Math.max(...existingTopLevelConcepts.map(c => c.sequence ?? 0))
       : 0;
 
-    console.log(`  Found ${existingTopLevelConcepts.length} existing top-level concepts (max sequence: ${maxExistingSequence})`);
+    log.info(`Found ${existingTopLevelConcepts.length} existing top-level concepts`, {
+      maxSequence: maxExistingSequence,
+    });
 
     const updatedConcepts: Concept[] = [];
     const levelConceptNames: string[] = [];
-    
+
     // Create level concepts, preserving sequence order
     let currentSequence = maxExistingSequence;
     const sortedLayers = Array.from(conceptsByLayer.entries()).sort(([a], [b]) => a - b);
-    
+
     for (const [layerNum, layerConcepts] of sortedLayers) {
       currentSequence += 1;
       const levelName = `Level ${layerNum}`;
       levelConceptNames.push(levelName);
-      
+
       // Get goal from layer document if available
       // Check if graph has a layers collection attached to it
       let levelGoal: string | undefined;
@@ -175,23 +182,25 @@ async function migrateGraph(uid: string, graphId: string): Promise<void> {
           .collection('graphs')
           .doc(graphId)
           .collection('layers');
-        
+
         const layersSnapshot = await layersCollectionRef.limit(1).get();
-        
+
         if (!layersSnapshot.empty) {
           // Layers collection exists, try to get the goal from the layer document
           const layerDoc = await getLayerByNumber(uid, graphId, layerNum);
           levelGoal = layerDoc?.goal;
         }
       } catch (error) {
-        console.warn(`    Could not fetch layer document for layer ${layerNum}:`, error);
+        log.warn(`Could not fetch layer document for layer ${layerNum}`, {
+          error: error instanceof Error ? error.message : String(error),
+        });
       }
-      
+
       // Filter out seedConcept from children (should never be a child of a level)
       const levelChildren = layerConcepts
         .filter(c => !c.isSeed && c.name !== seedConcept.name)
         .map(c => c.name);
-      
+
       const levelConcept: Concept = {
         name: levelName,
         description: `Layer ${layerNum} concepts`,
@@ -200,8 +209,11 @@ async function migrateGraph(uid: string, graphId: string): Promise<void> {
         children: levelChildren,
         sequence: currentSequence, // Preserve sequence order among top-level concepts
       };
-      
-      console.log(`  Created level concept "${levelName}" with ${layerConcepts.length} children (sequence: ${currentSequence})`);
+
+      log.debug(`Created level concept "${levelName}"`, {
+        childrenCount: layerConcepts.length,
+        sequence: currentSequence,
+      });
       
       // Update layer concepts - add level concept as first parent, preserve existing parents
       // Exclude seedConcept from being updated (it should never be in a level)
@@ -211,7 +223,7 @@ async function migrateGraph(uid: string, graphId: string): Promise<void> {
           // Preserve existing parents, add level concept as first parent
           const existingParents = concept.parents || [];
           const updatedParents = [levelName, ...existingParents.filter(p => p !== levelName)]; // Add level as first, remove duplicates
-          
+
           const { layer: _layer, ...rest } = concept;
           const updatedConcept: Concept = {
             ...rest,
@@ -219,10 +231,10 @@ async function migrateGraph(uid: string, graphId: string): Promise<void> {
           };
           updatedConcepts.push(updatedConcept);
         });
-      
+
       updatedConcepts.push(levelConcept);
     }
-    
+
     // Update seedConcept children (add level concepts)
     const updatedSeedConcept: Concept = {
       ...seedConcept,
@@ -258,27 +270,30 @@ async function migrateGraph(uid: string, graphId: string): Promise<void> {
       focus: graph.focus,
     });
 
-    console.log(`  ✓ Successfully migrated graph ${graphId}`);
-    console.log(`    - Created ${levelConceptNames.length} level concepts`);
-    console.log(`    - Updated ${conceptsByLayer.size} layers`);
-    console.log(`    - Total concepts: ${updatedConcepts.length}`);
+    log.info(`Successfully migrated graph ${graphId}`, {
+      levelConceptsCreated: levelConceptNames.length,
+      layersUpdated: conceptsByLayer.size,
+      totalConcepts: updatedConcepts.length,
+    });
   } catch (error) {
-    console.error(`  ✗ Error migrating graph ${graphId}:`, error);
+    log.error(`Error migrating graph ${graphId}`, {
+      error: error instanceof Error ? error.message : String(error),
+    });
     throw error;
   }
 }
 
 async function migrateUserGraphs(uid: string): Promise<void> {
-  console.log(`\nStarting migration of all graphs for user ${uid}...`);
-  
+  log.info(`Starting migration of all graphs for user ${uid}...`);
+
   // Create backup before migration
   await backupUserCollection(uid);
-  
+
   const db = getFirestoreInstance();
   const graphsSnapshot = await db.collection('users').doc(uid).collection('graphs').get();
-  
+
   if (graphsSnapshot.empty) {
-    console.log(`  No graphs found for user ${uid}.`);
+    log.info(`No graphs found for user ${uid}.`);
     return;
   }
 
@@ -293,39 +308,44 @@ async function migrateUserGraphs(uid: string): Promise<void> {
       migratedGraphs++;
     } catch (error) {
       failedGraphs++;
-      console.error(`Failed to migrate graph ${graphDoc.id} for user ${uid}:`, error);
+      log.error(`Failed to migrate graph ${graphDoc.id} for user ${uid}`, {
+        error: error instanceof Error ? error.message : String(error),
+      });
     }
   }
 
-  console.log(`\nMigration complete for user ${uid}!`);
-  console.log(`  Total graphs: ${totalGraphs}`);
-  console.log(`  Migrated: ${migratedGraphs}`);
-  console.log(`  Failed: ${failedGraphs}`);
+  log.info(`Migration complete for user ${uid}!`, {
+    totalGraphs,
+    migrated: migratedGraphs,
+    failed: failedGraphs,
+  });
 }
 
 async function migrateAllGraphs(): Promise<void> {
-  console.log('Starting migration of all graphs for all users...');
-  
+  log.info('Starting migration of all graphs for all users...');
+
   const db = getFirestoreInstance();
   const usersSnapshot = await db.collection('users').get();
-  
+
   let totalGraphs = 0;
   let migratedGraphs = 0;
   let failedGraphs = 0;
 
   for (const userDoc of usersSnapshot.docs) {
     const uid = userDoc.id;
-    
+
     // Create backup before migrating this user's graphs
     try {
       await backupUserCollection(uid);
     } catch (error) {
-      console.error(`Failed to backup user ${uid}, skipping migration:`, error);
+      log.error(`Failed to backup user ${uid}, skipping migration`, {
+        error: error instanceof Error ? error.message : String(error),
+      });
       continue;
     }
-    
+
     const graphsSnapshot = await db.collection('users').doc(uid).collection('graphs').get();
-    
+
     for (const graphDoc of graphsSnapshot.docs) {
       totalGraphs++;
       try {
@@ -333,15 +353,18 @@ async function migrateAllGraphs(): Promise<void> {
         migratedGraphs++;
       } catch (error) {
         failedGraphs++;
-        console.error(`Failed to migrate graph ${graphDoc.id} for user ${uid}:`, error);
+        log.error(`Failed to migrate graph ${graphDoc.id} for user ${uid}`, {
+          error: error instanceof Error ? error.message : String(error),
+        });
       }
     }
   }
 
-  console.log(`\nMigration complete!`);
-  console.log(`  Total graphs: ${totalGraphs}`);
-  console.log(`  Migrated: ${migratedGraphs}`);
-  console.log(`  Failed: ${failedGraphs}`);
+  log.info('Migration complete!', {
+    totalGraphs,
+    migrated: migratedGraphs,
+    failed: failedGraphs,
+  });
 }
 
 async function main() {
@@ -355,7 +378,7 @@ async function main() {
   dotenv.config({ path: path.join(__dirname, '..', '..', '.env') });
 
   const args = process.argv.slice(2);
-  
+
   if (args.length === 0) {
     // Migrate all graphs for all users
     await migrateAllGraphs();
@@ -370,10 +393,11 @@ async function main() {
     await backupUserCollection(uid);
     await migrateGraph(uid, graphId);
   } else {
-    console.error('Usage: ts-node migrateLayersToConcepts.ts [uid] [graphId]');
-    console.error('  No arguments: migrates all graphs for all users');
-    console.error('  [uid]: migrates all graphs for a specific user');
-    console.error('  [uid] [graphId]: migrates a specific graph');
+    log.error('Invalid usage');
+    log.error('Usage: ts-node migrateLayersToConcepts.ts [uid] [graphId]');
+    log.error('  No arguments: migrates all graphs for all users');
+    log.error('  [uid]: migrates all graphs for a specific user');
+    log.error('  [uid] [graphId]: migrates a specific graph');
     process.exit(1);
   }
 }
@@ -382,11 +406,13 @@ async function main() {
 if (require.main === module) {
   main()
     .then(() => {
-      console.log('\nMigration script completed successfully');
+      log.info('Migration script completed successfully');
       process.exit(0);
     })
     .catch((error) => {
-      console.error('\nMigration script failed:', error);
+      log.error('Migration script failed', {
+        error: error instanceof Error ? error.message : String(error),
+      });
       process.exit(1);
     });
 }

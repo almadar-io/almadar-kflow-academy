@@ -28,10 +28,13 @@ process.env.FIREBASE_PRIVATE_KEY ??= process.env.FB_PRIVATE_KEY;
 
 import * as fs from 'fs';
 import { initializeFirebase, getFirestore } from '@almadar/server';
+import { createLogger } from '@almadar/logger';
 import { KnowledgeGraphAccessLayer } from '@almadar-io/knowledge/server';
 import type { GraphNode, GraphNodeOf } from '@almadar-io/knowledge';
 import type { DocumentData, Firestore } from 'firebase-admin/firestore';
 import { invalidateLearningPaths, invalidateJumpBackIn } from '../services/cacheInvalidation';
+
+const log = createLogger('kflow:server:scripts:migrateGoalsRegistryToPathGraphs');
 
 const GOALS_GRAPH = (uid: string) => `goals:${uid}`;
 const kgal = new KnowledgeGraphAccessLayer();
@@ -75,7 +78,7 @@ async function graphExists(db: Firestore, uid: string, graphId: string): Promise
   return snap.exists;
 }
 
-async function processUser(db: Firestore, uid: string, apply: boolean, agg: Stats, log: boolean): Promise<void> {
+async function processUser(db: Firestore, uid: string, apply: boolean, agg: Stats, verbose: boolean): Promise<void> {
   const registryId = GOALS_GRAPH(uid);
   if (!(await graphExists(db, uid, registryId))) return;
   agg.registries++;
@@ -86,7 +89,9 @@ async function processUser(db: Firestore, uid: string, apply: boolean, agg: Stat
     goals = nodes.filter(isLearningGoalNode);
   } catch (err) {
     agg.failed++;
-    console.error(`  ${uid}: cannot read registry ${registryId}:`, err instanceof Error ? err.message : err);
+    log.error(`Cannot read registry ${registryId} for ${uid}`, {
+      error: err instanceof Error ? err.message : String(err),
+    });
     return;
   }
   agg.goals += goals.length;
@@ -118,7 +123,7 @@ async function processUser(db: Firestore, uid: string, apply: boolean, agg: Stat
     }
     placed++;
     agg.moved++;
-    if (log) console.log(`  ${apply ? 'moved' : 'would move'} goal "${title}" → graph ${graphId}`);
+    if (verbose) log.debug(`${apply ? 'Moved' : 'Would move'} goal "${title}" → graph ${graphId}`);
   }
 
   // Only delete the registry once every placeable goal has been moved.
@@ -130,8 +135,13 @@ async function processUser(db: Firestore, uid: string, apply: boolean, agg: Stat
     await invalidateLearningPaths(uid);
     await invalidateJumpBackIn(uid);
   }
-  if (log) {
-    console.log(`  ${uid}: ${goals.length} goals — ${placed} ${apply ? 'moved' : 'movable'}, ${goals.length - placed} orphan; registry ${apply ? 'deleted' : 'would delete'}`);
+  if (verbose) {
+    log.info(`Migrated ${placed}/${goals.length} goals for ${uid}`, {
+      total: goals.length,
+      placed,
+      orphan: goals.length - placed,
+      registryDeleted: apply,
+    });
   }
 }
 
@@ -142,7 +152,7 @@ async function main() {
   const positional = args.filter(a => !a.startsWith('--'));
   const uidArg = positional[0];
   if (!all && !uidArg) {
-    console.error('usage: <uid> [--apply]  |  --all [--apply]');
+    log.error('usage: <uid> [--apply]  |  --all [--apply]');
     process.exit(1);
   }
 
@@ -161,7 +171,11 @@ async function main() {
     fs.mkdirSync(backupDir, { recursive: true });
   }
 
-  console.log(`\n${apply ? '🟢 APPLY' : '🔎 DRY-RUN'}  db=${process.env.FB_DB_ID || '(default)'}  users=${uids.length}${apply ? `  backups→ ${backupDir}` : ''}\n`);
+  log.info(`${apply ? 'APPLY' : 'DRY-RUN'}`, {
+    database: process.env.FB_DB_ID || '(default)',
+    usersCount: uids.length,
+    backupsDir: backupDir || undefined,
+  });
 
   const agg = newStats();
   const verbose = !all;
@@ -172,29 +186,45 @@ async function main() {
       await processUser(db, uid, apply, agg, verbose);
     } catch (err) {
       agg.failed++;
-      console.error(`  ${uid}: failed —`, err instanceof Error ? err.message : err);
+      log.error(`Failed to process user ${uid}`, {
+        error: err instanceof Error ? err.message : String(err),
+      });
     }
     agg.users++;
   }
 
-  console.log(`\n━━ summary (${agg.users} users) ━━`);
-  console.log(`  goals registries found: ${agg.registries}`);
-  console.log(`  goals in registries: ${agg.goals}`);
-  console.log(`  goals ${apply ? 'moved into path graphs' : 'movable into path graphs'}: ${agg.moved}`);
-  console.log(`  orphans (no graphId): ${agg.orphanNoGraphId}`);
-  console.log(`  orphans (graph missing): ${agg.orphanMissingGraph}`);
-  console.log(`  registries ${apply ? 'deleted' : 'to delete'}: ${apply ? agg.registriesDeleted : agg.registries}`);
-  if (agg.failed) console.log(`  failed: ${agg.failed}`);
+  log.info('Migration summary', {
+    users: agg.users,
+    goalsRegistriesFound: agg.registries,
+    goalsInRegistries: agg.goals,
+    goalsMoved: agg.moved,
+    orphansNoGraphId: agg.orphanNoGraphId,
+    orphansGraphMissing: agg.orphanMissingGraph,
+    registriesDeleted: apply ? agg.registriesDeleted : agg.registries,
+    failed: agg.failed,
+  });
+
   if (agg.orphans.length > 0) {
-    console.log(`\n  ⚠️  ${agg.orphans.length} orphan goal(s) cannot be placed${apply ? ' and were dropped with their registry' : ''}:`);
+    log.warn(`${agg.orphans.length} orphan goal(s) cannot be placed${apply ? ' and were dropped with their registry' : ''}`);
     for (const o of agg.orphans.slice(0, 50)) {
-      console.log(`     - [${o.uid}] "${o.title}" (${o.goalId}) — ${o.reason}`);
+      log.debug(`Orphan goal: [${o.uid}] "${o.title}" (${o.goalId}) — ${o.reason}`);
     }
-    if (agg.orphans.length > 50) console.log(`     … and ${agg.orphans.length - 50} more`);
+    if (agg.orphans.length > 50) {
+      log.warn(`... and ${agg.orphans.length - 50} more orphans`);
+    }
   }
-  if (apply) console.log(`\n  backups: ${backupDir}`);
-  if (!apply && (agg.moved > 0 || agg.registries > 0)) console.log(`\n  Re-run with --apply to write the changes.`);
+
+  if (apply) log.info(`Backups saved to: ${backupDir}`);
+  if (!apply && (agg.moved > 0 || agg.registries > 0)) {
+    log.info('Re-run with --apply to write the changes.');
+  }
+
   process.exit(0);
 }
 
-main().catch(e => { console.error(e); process.exit(1); });
+main().catch(e => {
+  log.error('Fatal error', {
+    error: e instanceof Error ? e.message : String(e),
+  });
+  process.exit(1);
+});

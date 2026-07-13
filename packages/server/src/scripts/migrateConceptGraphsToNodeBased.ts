@@ -15,10 +15,13 @@
  *   npx tsx src/scripts/migrateConceptGraphsToNodeBased.ts --all --apply     # apply ALL users
  */
 import * as dotenv from 'dotenv';
+import { createLogger } from '@almadar/logger';
 dotenv.config();
 process.env.FIREBASE_PROJECT_ID ??= process.env.FB_PROJECT_ID;
 process.env.FIREBASE_CLIENT_EMAIL ??= process.env.FB_CLIENT_EMAIL;
 process.env.FIREBASE_PRIVATE_KEY ??= process.env.FB_PRIVATE_KEY;
+
+const logger = createLogger('kflow:server:scripts:migrateConceptGraphsToNodeBased');
 
 import * as fs from 'fs';
 import { initializeFirebase, getFirestore } from '@almadar/server';
@@ -72,18 +75,18 @@ async function processUser(db: Firestore, uid: string, apply: boolean, agg: Stat
         if (goalNode?.type === 'LearningGoal' && seedName) {
           goalNode.properties.name = seedName;
           if (graph.name === 'Learning Goal') graph.name = seedName;
-          if (log) console.log(`    TITLEFIX ${ref.id}  "Learning Goal" → "${seedName}"`);
+          if (log) logger.info(`TITLEFIX ${ref.id}`, { from: 'Learning Goal', to: seedName });
           if (apply) await saveNodeBasedKnowledgeGraph(uid, graph);
           agg.titleFixed++; titleFixed++;
         } else if (log) {
-          console.log(`    TITLEFIX ${ref.id}  cannot fix (no goal node or seed name)`);
+          logger.info(`TITLEFIX ${ref.id}`, { status: 'cannot fix (no goal node or seed name)' });
         }
       }
       continue;
     }
     if (k === 'empty') {
       agg.emptyIds.push(`${uid}/${ref.id}`);
-      if (log) console.log(`    EMPTY   ${ref.id}  (seedConceptId=${JSON.stringify(data.seedConceptId)})`);
+      if (log) logger.info(`EMPTY ${ref.id}`, { seedConceptId: JSON.stringify(data.seedConceptId) });
       continue;
     }
 
@@ -91,12 +94,12 @@ async function processUser(db: Firestore, uid: string, apply: boolean, agg: Stat
     try {
       const result = convertStoredConceptGraphToNodeBased(data as StoredConceptGraph);
       const title = extractLearningPathSummary(result.nodeBasedGraph).title;
-      if (log) console.log(`    LEGACY  ${ref.id}  → "${title}"  (${result.stats.nodesCreated} nodes)`);
+      if (log) logger.info(`LEGACY ${ref.id}`, { to: title, nodesCreated: result.stats.nodesCreated });
       if (apply) await saveNodeBasedKnowledgeGraph(uid, result.nodeBasedGraph);
       agg.converted++; converted++; legacy++;
     } catch (e) {
       agg.failed++;
-      console.log(`    FAIL    ${uid}/${ref.id}  — ${(e as Error).message}`);
+      logger.error(`FAIL ${uid}/${ref.id}`, { error: (e as Error).message });
     }
   }
   return { total: refs.length, legacy, converted, titleFixed };
@@ -109,7 +112,7 @@ async function main() {
   const positional = args.filter(a => !a.startsWith('--'));
   const uidArg = positional[0];
   const onlyGraph = positional[1]; // only meaningful for a single uid; ignored in --all
-  if (!all && !uidArg) { console.error('usage: <uid> [graphId] [--apply]  |  --all [--apply]'); process.exit(1); }
+  if (!all && !uidArg) { logger.error('usage: <uid> [graphId] [--apply]  |  --all [--apply]'); process.exit(1); }
 
   initializeFirebase();
   const db = getFirestore();
@@ -126,7 +129,7 @@ async function main() {
     fs.mkdirSync(backupDir, { recursive: true });
   }
 
-  console.log(`\n${apply ? '🟢 APPLY' : '🔎 DRY-RUN'}  db=${process.env.FB_DB_ID || '(default)'}  users=${uids.length}${apply ? `  backups→ ${backupDir}` : ''}\n`);
+  logger.info(apply ? 'APPLY' : 'DRY-RUN', { db: process.env.FB_DB_ID || '(default)', userCount: uids.length, backupDir });
 
   const agg = newStats();
   const verbose = !all; // per-graph detail only for a single user; per-user summary for --all
@@ -135,25 +138,28 @@ async function main() {
     if (onlyGraph && !all) {
       // single-graph mode kept for convenience (one user, one graph)
       const data = (await db.collection('users').doc(uid).collection('knowledgeGraphs').doc(onlyGraph).get()).data();
-      if (!data) { console.log(`  ${uid}/${onlyGraph}: not found`); break; }
+      if (!data) { logger.info(`  ${uid}/${onlyGraph}: not found`); break; }
     }
     if (apply) await backupUser(db, uid, `${backupDir}/${uid}.json`);
     const before = { c: agg.converted, t: agg.titleFixed };
     const r = await processUser(db, uid, apply, agg, verbose);
     agg.users++;
     if (all && r.total > 0) {
-      console.log(`  ${uid}: ${r.total} graphs  (legacy=${r.legacy}, titleFix=${r.titleFixed})`);
+      logger.info(`User ${uid}`, { graphCount: r.total, legacy: r.legacy, titleFix: r.titleFixed });
     }
     void before;
   }
 
-  console.log(`\n━━ summary (${agg.users} users) ━━`);
-  console.log(`  already new-schema: ${agg.new}`);
-  console.log(`  legacy → ${apply ? 'converted' : 'would convert'}: ${agg.converted}${agg.failed ? `  (failed: ${agg.failed})` : ''}`);
-  console.log(`  "Learning Goal" titles ${apply ? 'fixed' : 'would fix'}: ${agg.titleFixed}`);
-  console.log(`  empty (no content): ${agg.empty}`);
-  if (apply) console.log(`  backups: ${backupDir}`);
-  if (!apply && (agg.converted > 0 || agg.titleFixed > 0)) console.log(`\n  Re-run with --apply to write the changes.`);
+  logger.info('Summary', {
+    users: agg.users,
+    alreadyNewSchema: agg.new,
+    converted: agg.converted,
+    failed: agg.failed,
+    titleFixed: agg.titleFixed,
+    empty: agg.empty
+  });
+  if (apply) logger.info('Backups saved', { dir: backupDir });
+  if (!apply && (agg.converted > 0 || agg.titleFixed > 0)) logger.info('Re-run with --apply to write the changes');
   process.exit(0);
 }
-main().catch(e => { console.error(e); process.exit(1); });
+main().catch(e => { logger.error('Fatal error', { error: e instanceof Error ? e.message : String(e) }); process.exit(1); });

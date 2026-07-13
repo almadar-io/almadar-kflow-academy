@@ -23,11 +23,14 @@ import * as dotenv from 'dotenv';
 import * as path from 'path';
 import * as fs from 'fs';
 import { getFirestore } from '@almadar/server';
+import { createLogger } from '@almadar/logger';
 import { getUserGraphs } from '../services/graphService';
 import { convertStoredConceptGraphToNodeBased } from '@almadar-io/knowledge/server';
 import { exportGraphML, type GraphMLExportOptions } from '@almadar-io/knowledge/server';
 import { getGoalsByGraphId } from '../services/goalService';
 import type { NodeBasedKnowledgeGraph } from '../types/nodeBasedKnowledgeGraph';
+
+const log = createLogger('kflow:server:scripts:exportKnowledgeGraphsToGraphML');
 
 interface ExportStats {
   totalGraphs: number;
@@ -52,7 +55,7 @@ async function getAllUserIds(): Promise<string[]> {
 function ensureOutputDirectory(outputDir: string): void {
   if (!fs.existsSync(outputDir)) {
     fs.mkdirSync(outputDir, { recursive: true });
-    console.log(`Created output directory: ${outputDir}`);
+    log.info(`Created output directory: ${outputDir}`);
   }
 }
 
@@ -78,8 +81,8 @@ async function exportUserConceptGraphs(
   outputDir: string,
   exportOptions: GraphMLExportOptions = {}
 ): Promise<ExportStats> {
-  console.log(`\nExporting ConceptGraphs for user: ${uid}`);
-  
+  log.info(`Exporting ConceptGraphs for user: ${uid}`);
+
   const stats: ExportStats = {
     totalGraphs: 0,
     successfulExports: 0,
@@ -95,16 +98,16 @@ async function exportUserConceptGraphs(
   try {
     const graphs = await getUserGraphs(uid);
     stats.totalGraphs = graphs.length;
-    console.log(`  Found ${graphs.length} ConceptGraphs to export`);
+    log.info(`Found ${graphs.length} ConceptGraphs to export`);
 
     for (const graph of graphs) {
       try {
-        console.log(`  Exporting ConceptGraph: ${graph.id}`);
-        
+        log.debug(`Exporting ConceptGraph: ${graph.id}`);
+
         // Fetch learning goal if available (pass full object to get milestones)
         const goals = await getGoalsByGraphId(uid, graph.id);
         const learningGoal = goals.length > 0 ? goals[0] : null;
-        
+
         // Convert to NodeBasedKnowledgeGraph (pass full LearningGoal object to include milestones)
         const conversionResult = convertStoredConceptGraphToNodeBased(graph, {
           includeLessons: true,
@@ -122,9 +125,10 @@ async function exportUserConceptGraphs(
         fs.writeFileSync(filepath, graphmlXml, 'utf-8');
 
         stats.successfulExports++;
-        console.log(`    ✓ Exported to: ${filepath}`);
-        console.log(`      - Nodes: ${conversionResult.stats.nodesCreated}`);
-        console.log(`      - Relationships: ${conversionResult.stats.relationshipsCreated}`);
+        log.info(`Exported ConceptGraph to: ${filepath}`, {
+          nodesCreated: conversionResult.stats.nodesCreated,
+          relationshipsCreated: conversionResult.stats.relationshipsCreated,
+        });
       } catch (error) {
         stats.failedExports++;
         const errorMessage = error instanceof Error ? error.message : 'Unknown error';
@@ -134,11 +138,13 @@ async function exportUserConceptGraphs(
           error: errorMessage,
           source: 'conceptGraph',
         });
-        console.error(`    ✗ Failed to export ConceptGraph ${graph.id}:`, errorMessage);
+        log.error(`Failed to export ConceptGraph ${graph.id}`, { error: errorMessage });
       }
     }
   } catch (error) {
-    console.error(`  Error fetching ConceptGraphs for user ${uid}:`, error);
+    log.error(`Error fetching ConceptGraphs for user ${uid}`, {
+      error: error instanceof Error ? error.message : String(error),
+    });
     stats.errors.push({
       graphId: 'N/A',
       userId: uid,
@@ -158,8 +164,8 @@ async function exportUserKnowledgeGraphs(
   outputDir: string,
   exportOptions: GraphMLExportOptions = {}
 ): Promise<ExportStats> {
-  console.log(`\nExporting KnowledgeGraphs for user: ${uid}`);
-  
+  log.info(`Exporting KnowledgeGraphs for user: ${uid}`);
+
   const stats: ExportStats = {
     totalGraphs: 0,
     successfulExports: 0,
@@ -175,12 +181,12 @@ async function exportUserKnowledgeGraphs(
   try {
     const graphs = await getUserKnowledgeGraphs(uid);
     stats.totalGraphs = graphs.length;
-    console.log(`  Found ${graphs.length} KnowledgeGraphs to export`);
+    log.info(`Found ${graphs.length} KnowledgeGraphs to export`);
 
     for (const graph of graphs) {
       try {
-        console.log(`  Exporting KnowledgeGraph: ${graph.id}`);
-        
+        log.debug(`Exporting KnowledgeGraph: ${graph.id}`);
+
         // Export to GraphML (graph is already in NodeBasedKnowledgeGraph format)
         const graphmlXml = exportGraphML(graph, exportOptions);
 
@@ -190,9 +196,10 @@ async function exportUserKnowledgeGraphs(
         fs.writeFileSync(filepath, graphmlXml, 'utf-8');
 
         stats.successfulExports++;
-        console.log(`    ✓ Exported to: ${filepath}`);
-        console.log(`      - Nodes: ${Object.keys(graph.nodes || {}).length}`);
-        console.log(`      - Relationships: ${graph.relationships?.length || 0}`);
+        log.info(`Exported KnowledgeGraph to: ${filepath}`, {
+          nodes: Object.keys(graph.nodes || {}).length,
+          relationships: graph.relationships?.length || 0,
+        });
       } catch (error) {
         stats.failedExports++;
         const errorMessage = error instanceof Error ? error.message : 'Unknown error';
@@ -202,11 +209,13 @@ async function exportUserKnowledgeGraphs(
           error: errorMessage,
           source: 'knowledgeGraph',
         });
-        console.error(`    ✗ Failed to export KnowledgeGraph ${graph.id}:`, errorMessage);
+        log.error(`Failed to export KnowledgeGraph ${graph.id}`, { error: errorMessage });
       }
     }
   } catch (error) {
-    console.error(`  Error fetching KnowledgeGraphs for user ${uid}:`, error);
+    log.error(`Error fetching KnowledgeGraphs for user ${uid}`, {
+      error: error instanceof Error ? error.message : String(error),
+    });
     stats.errors.push({
       graphId: 'N/A',
       userId: uid,
@@ -268,15 +277,15 @@ async function main() {
   const outputDirArg = process.argv[3]; // Optional output directory argument
 
   // Determine output directory
-  const outputDir = outputDirArg 
+  const outputDir = outputDirArg
     ? path.resolve(outputDirArg)
     : path.join(process.cwd(), 'graphml-exports');
 
-  console.log('Starting GraphML export (ConceptGraphs and KnowledgeGraphs)...');
-  console.log(`Mode: ${userId ? `Single user (${userId})` : 'All users'}`);
-  console.log(`Output directory: ${outputDir}`);
-  console.log('Note: ConceptGraphs will be exported to {outputDir}/{userId}/conceptGraphs/');
-  console.log('      KnowledgeGraphs will be exported to {outputDir}/{userId}/knowledgeGraphs/');
+  log.info('Starting GraphML export (ConceptGraphs and KnowledgeGraphs)...');
+  log.info(`Mode: ${userId ? `Single user (${userId})` : 'All users'}`);
+  log.info(`Output directory: ${outputDir}`);
+  log.info('ConceptGraphs will be exported to {outputDir}/{userId}/conceptGraphs/');
+  log.info('KnowledgeGraphs will be exported to {outputDir}/{userId}/knowledgeGraphs/');
 
   // Ensure output directory exists
   ensureOutputDirectory(outputDir);
@@ -312,7 +321,7 @@ async function main() {
   } else {
     // Export graphs for all users
     const userIds = await getAllUserIds();
-    console.log(`\nFound ${userIds.length} users to process`);
+    log.info(`Found ${userIds.length} users to process`);
 
     for (const uid of userIds) {
       const stats = await exportUserGraphs(uid, outputDir, exportOptions);
@@ -324,31 +333,34 @@ async function main() {
   }
 
   // Print summary
-  console.log('\n' + '='.repeat(50));
-  console.log('Export Summary:');
-  console.log('='.repeat(50));
-  console.log(`Output directory: ${totalStats.outputDirectory}`);
-  console.log(`Total graphs processed: ${totalStats.totalGraphs}`);
-  console.log(`Successful exports: ${totalStats.successfulExports}`);
-  console.log(`Failed exports: ${totalStats.failedExports}`);
-  
+  log.info('Export Summary', {
+    outputDirectory: totalStats.outputDirectory,
+    totalGraphsProcessed: totalStats.totalGraphs,
+    successfulExports: totalStats.successfulExports,
+    failedExports: totalStats.failedExports,
+  });
+
   if (totalStats.errors.length > 0) {
-    console.log('\nErrors:');
+    log.error(`Export completed with ${totalStats.errors.length} errors`);
     totalStats.errors.forEach((error, index) => {
       const source = error.source ? ` [${error.source}]` : '';
-      console.log(`  ${index + 1}. Graph ${error.graphId} (User: ${error.userId})${source}: ${error.error}`);
+      log.error(`Error ${index + 1}: Graph ${error.graphId} (User: ${error.userId})${source}`, {
+        error: error.error,
+      });
     });
+  } else {
+    log.info('Export completed successfully!');
   }
-  
-  console.log('='.repeat(50));
-  console.log('\nExport completed!');
-  console.log(`\nGraphML files saved to: ${totalStats.outputDirectory}`);
-  console.log('You can open these files in Gephi, yEd, or Cytoscape for visualization.');
+
+  log.info(`GraphML files saved to: ${totalStats.outputDirectory}`);
+  log.info('Files can be opened in Gephi, yEd, or Cytoscape for visualization.');
 }
 
 // Run the script
 main().catch(error => {
-  console.error('Fatal error:', error);
+  log.error('Fatal error', {
+    error: error instanceof Error ? error.message : String(error),
+  });
   process.exit(1);
 });
 

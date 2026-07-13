@@ -13,17 +13,23 @@
 
 import type { Concept, GraphDifficulty } from '../types/concept';
 import { getFirestore } from '@almadar/server';
+import { createLogger } from '@almadar/logger';
 import { getGraphLayers } from './layerService';
 import { LayerDocument } from './layerService';
+
+const log = createLogger('kflow:graphService');
+
+function firestoreDbId(fs: ReturnType<typeof getFirestore>): string {
+  const settings: { databaseId?: string; projectId?: string } | undefined = Reflect.get(fs, '_settings');
+  return `project=${settings?.projectId ?? '?'} database=${settings?.databaseId ?? '(default)'}`;
+}
 
 // Deprecation warning (logs once)
 let deprecationWarned = false;
 function warnDeprecation(functionName: string) {
   if (!deprecationWarned) {
-    console.warn(
-      `[DEPRECATED] graphService.${functionName}() is deprecated. ` +
-      'Use KnowledgeGraphAccessLayer instead. ' +
-      'See docs/KFLOW_V2_COURSE_PUBLISHING.md for migration guide.'
+    log.warn(
+      `[DEPRECATED] graphService.${functionName}() is deprecated. Use KnowledgeGraphAccessLayer instead. See docs/KFLOW_V2_COURSE_PUBLISHING.md for migration guide.`
     );
     deprecationWarned = true;
   }
@@ -78,8 +84,10 @@ const graphsCollection = (uid: string) => {
  */
 export const getUserGraphs = async (uid: string): Promise<StoredConceptGraph[]> => {
   warnDeprecation('getUserGraphs');
+  log.debug('getUserGraphs start', { uid, target: firestoreDbId(getFirestore()) });
   try {
     const snapshot = await graphsCollection(uid).get();
+    log.debug('getUserGraphs snapshot', { uid, size: snapshot.size, empty: snapshot.empty });
 
     const graphs = await Promise.all(
       snapshot.docs.map(async (doc) => {
@@ -98,9 +106,9 @@ export const getUserGraphs = async (uid: string): Promise<StoredConceptGraph[]> 
             });
           }
         } catch (error) {
-          console.warn(`Failed to load layers for graph ${graphId}:`, error);
+          log.warn('Failed to load layers for graph', { graphId, error: error instanceof Error ? error.message : String(error) });
         }
-        
+
         return {
           id: graphId,
           ...normalizeTimestamps(data),
@@ -109,12 +117,19 @@ export const getUserGraphs = async (uid: string): Promise<StoredConceptGraph[]> 
       })
     );
 
+    log.debug('getUserGraphs done', { uid, count: graphs.length });
     return graphs;
   } catch (error) {
     if (isFirestoreNotFoundError(typeof error === 'object' ? error : null)) {
-      console.warn('Firestore database not found. Ensure Firestore is enabled for this project.');
+      log.error('getUserGraphs NOT_FOUND — returning [] (silent). Wrong databaseId?', {
+        uid,
+        target: firestoreDbId(getFirestore()),
+        code: typeof error === 'object' && error ? Reflect.get(error, 'code') : undefined,
+        message: error instanceof Error ? error.message : String(error),
+      });
       return [];
     }
+    log.error('getUserGraphs threw', { uid, message: error instanceof Error ? error.message : String(error) });
     throw error;
   }
 };
@@ -148,7 +163,7 @@ export const getUserGraphById = async (
         });
       }
     } catch (error) {
-      console.warn(`Failed to load layers for graph ${graphId}:`, error);
+      log.warn('Failed to load layers for graph', { graphId, error: error instanceof Error ? error.message : String(error) });
     }
 
     return {
@@ -158,7 +173,7 @@ export const getUserGraphById = async (
     };
   } catch (error) {
     if (isFirestoreNotFoundError(typeof error === 'object' ? error : null)) {
-      console.warn('Firestore database not found while fetching graph.');
+      log.warn('Firestore database not found while fetching graph.');
       return null;
     }
     throw error;
@@ -214,7 +229,7 @@ export const upsertUserGraph = async (
     await graphsCollection(uid).doc(graph.id).set(payload);
   } catch (error) {
     if (isFirestoreNotFoundError(typeof error === 'object' ? error : null)) {
-      console.warn('Firestore database not found while saving graph.');
+      log.warn('Firestore database not found while saving graph.');
     }
     throw error;
   }
@@ -267,7 +282,7 @@ export const deleteUserGraph = async (
     } catch (error) {
       // Don't fail if graph doesn't exist in this collection
       if (!isFirestoreNotFoundError(typeof error === 'object' ? error : null)) {
-        console.warn(`Failed to delete graph from graphs collection: ${error}`);
+        log.warn('Failed to delete graph from graphs collection', { error: error instanceof Error ? error.message : String(error) });
       }
     }
 
@@ -291,11 +306,11 @@ export const deleteUserGraph = async (
       }
     } catch (error) {
       // Don't fail if graph doesn't exist in this collection
-      console.warn(`Failed to delete graph from knowledgeGraphs collection: ${error}`);
+      log.warn('Failed to delete graph from knowledgeGraphs collection', { error: error instanceof Error ? error.message : String(error) });
     }
   } catch (error) {
     if (isFirestoreNotFoundError(typeof error === 'object' ? error : null)) {
-      console.warn('Firestore database not found while deleting graph.');
+      log.warn('Firestore database not found while deleting graph.');
       return;
     }
     throw error;

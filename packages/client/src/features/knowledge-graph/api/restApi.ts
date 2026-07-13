@@ -1,6 +1,6 @@
 /**
  * REST API Client for Knowledge Graph Access
- * 
+ *
  * Provides functions for making REST API calls to the knowledge graph endpoints
  */
 
@@ -15,6 +15,9 @@ import type {
   RelationshipType,
   RelationshipDirection,
 } from '../types';
+import { createLogger } from '@almadar/logger';
+
+const log = createLogger('kflow:client:knowledge-graph:restApi');
 
 const BASE_PATH = '/api/knowledge-graphs-access';
 
@@ -44,7 +47,7 @@ async function getAuthHeaders(): Promise<HeadersInit> {
       }
     }
   } catch (error) {
-    console.error('Error getting auth token:', error);
+    log.error('Error getting auth token', { error: error instanceof Error ? error.message : String(error) });
   }
 
   return headers;

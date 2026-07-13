@@ -10,9 +10,12 @@
  * - Use useGenerateLayerPractice hook instead of generateLayerPractice
  */
 
+import { createLogger } from '@almadar/logger';
 import { apiClient, handleApiError, extractErrorMessageFromResponse } from '../../services/apiClient';
 import { Concept, PracticeItem } from './types';
 import { auth } from '../../config/firebase';
+
+const log = createLogger('kflow:client:concepts:ConceptsAPI');
 
 // API request types - matching server types
 export interface ExpandConceptRequest {
@@ -205,7 +208,7 @@ async function handleStreamingRequest<T>({
               finalResult = onDone(data, fullContent);
             }
           } catch (e) {
-            console.error('Error parsing SSE data:', e);
+            log.error('Error parsing SSE data', { error: e instanceof Error ? e.message : String(e) });
             // If it's an error we threw (not a parsing error), re-throw it
             if (e instanceof Error && e.message !== 'Unexpected end of JSON input') {
               throw e;

@@ -1,7 +1,7 @@
 /**
  * @deprecated This API is deprecated. Use features/knowledge-graph/api/restApi instead.
  * This file contains the old graph API and will be removed in a future version.
- * 
+ *
  * Migration guide:
  * - Use knowledgeGraphRestApi.getGraph() instead of graphApi.getGraph()
  * - Use knowledgeGraphRestApi.saveGraph() instead of graphApi.upsertGraph()
@@ -13,6 +13,9 @@ import { auth } from '../../config/firebase';
 import { apiClient } from '../../services/apiClient';
 import { ConceptGraph, ConceptGraphJSON } from './types';
 import { graphToJSON, jsonToGraph } from './utils/localStorage';
+import { createLogger } from '@almadar/logger';
+
+const log = createLogger('kflow:client:concepts:graphApi');
 
 interface GraphListResponse {
   graphs: ConceptGraphJSON[];
@@ -40,9 +43,8 @@ const deprecationWarned: Record<string, boolean> = {};
 
 function warnDeprecation(methodName: string, replacement: string) {
   if (!deprecationWarned[methodName]) {
-    console.warn(
-      `[DEPRECATED] graphApi.${methodName}() is deprecated. ${replacement}. ` +
-      'See docs/KFLOW_V2_COURSE_PUBLISHING.md for migration guide.'
+    log.warn(
+      `[DEPRECATED] graphApi.${methodName}() is deprecated. ${replacement}. See docs/KFLOW_V2_COURSE_PUBLISHING.md for migration guide.`
     );
     deprecationWarned[methodName] = true;
   }

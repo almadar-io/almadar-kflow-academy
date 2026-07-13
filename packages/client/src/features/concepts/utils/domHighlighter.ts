@@ -1,5 +1,8 @@
+import { createLogger } from '@almadar/logger';
 import { HighlightChunk } from './textHighlighter';
 import { Concept, QuestionAnswer } from '../types';
+
+const log = createLogger('kflow:client:concepts:domHighlighter');
 
 /**
  * Block-level elements that markdown typically renders
@@ -372,7 +375,7 @@ function wrapRangeInHighlight(
       range.insertNode(highlightSpan);
       return highlightSpan;
     } catch (e2) {
-      console.warn('Failed to highlight range:', e2);
+      log.warn('Failed to highlight range', { error: e2 instanceof Error ? e2.message : String(e2) });
       return null;
     }
   }

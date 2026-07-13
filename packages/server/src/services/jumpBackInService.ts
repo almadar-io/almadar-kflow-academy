@@ -1,4 +1,7 @@
 import { KnowledgeGraphAccessLayer, extractLearningPathSummary } from '@almadar-io/knowledge/server';
+import { createLogger } from '@almadar/logger';
+
+const log = createLogger('kflow:server:services:jumpBackInService');
 import { getAllUserProgress } from "./userProgressService";
 import { hybridCache, CACHE_TTL } from "./cacheService";
 import { CACHE_KEYS } from "./cacheInvalidation";
@@ -94,7 +97,7 @@ export async function getJumpBackInItems(uid: string): Promise<JumpBackInItem[]>
     await hybridCache.set(cacheKey, result, CACHE_TTL.JUMP_BACK_IN);
     return result;
   } catch (error) {
-    console.error("Error getting jump back in items:", error);
+    log.error("Error getting jump back in items", { error: error instanceof Error ? error.message : String(error) });
     return [];
   }
 }

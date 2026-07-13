@@ -1,14 +1,17 @@
 /**
  * Recommendation Service
- * 
+ *
  * @deprecated Old Firestore-based recommendation service.
  * TODO: Migrate to graph-based recommendations when ready.
- * 
+ *
  * Note: This service previously depended on courseService which has been removed
  * as part of the graph-based publishing migration.
  */
 
 import { getFirestore } from '@almadar/server';
+import { createLogger } from '@almadar/logger';
+
+const log = createLogger('kflow:server:services:recommendationService');
 import { getStudentEnrollments } from './enrollmentService';
 import type { PublishedCourse } from '../types/publishing';
 
@@ -61,7 +64,7 @@ export async function getRecommendedCourses(
 
     return availableCourses.slice(0, limit);
   } catch (error) {
-    console.error('Error getting recommended courses:', error);
+    log.error('Error getting recommended courses', { error: error instanceof Error ? error.message : String(error) });
     return [];
   }
 }
@@ -93,7 +96,7 @@ export async function getContinueLearningCourses(
           continueCourses.push(course);
         }
       } catch (error) {
-        console.warn(`Course ${enrollment.courseId} not found:`, error);
+        log.warn('Course not found', { courseId: enrollment.courseId, error: error instanceof Error ? error.message : String(error) });
       }
     }
 
@@ -107,7 +110,7 @@ export async function getContinueLearningCourses(
 
     return continueCourses.slice(0, limit);
   } catch (error) {
-    console.error('Error getting continue learning courses:', error);
+    log.error('Error getting continue learning courses', { error: error instanceof Error ? error.message : String(error) });
     return [];
   }
 }

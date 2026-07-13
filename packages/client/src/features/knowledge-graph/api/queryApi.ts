@@ -1,10 +1,11 @@
 /**
  * Optimized Query API Client (Phase 3.2)
- * 
+ *
  * Client functions for optimized query endpoints that return pre-formatted,
  * display-ready data for Mentor pages. All transformation is done server-side.
  */
 
+import { createLogger } from '@almadar/logger';
 import { apiClient } from '../../../services/apiClient';
 import { auth } from '../../../config/firebase';
 import type {
@@ -14,6 +15,8 @@ import type {
   ConceptDetail,
   MindMapResponse,
 } from './types';
+
+const log = createLogger('kflow:client:knowledge-graph:queryApi');
 
 const QUERY_BASE_PATH = '/api/graph-queries';
 
@@ -34,7 +37,7 @@ async function getAuthHeaders(): Promise<HeadersInit> {
       }
     }
   } catch (error) {
-    console.error('Error getting auth token:', error);
+    log.error('Error getting auth token', { error: error instanceof Error ? error.message : String(error) });
   }
 
   return headers;

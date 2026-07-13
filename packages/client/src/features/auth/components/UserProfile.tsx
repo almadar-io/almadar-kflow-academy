@@ -1,9 +1,12 @@
+import { createLogger } from '@almadar/logger';
 import React from 'react';
 import { useAuthContext } from '../AuthContext';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../../app/store';
 import { Menu, MenuItem, useTranslate } from '@almadar/ui';
 import { LogOut, User } from 'lucide-react';
+
+const log = createLogger('kflow:client:auth:UserProfile');
 
 const UserProfile: React.FC = () => {
   const { t } = useTranslate();
@@ -16,7 +19,7 @@ const UserProfile: React.FC = () => {
     try {
       await signOut();
     } catch (error) {
-      console.error('Sign out error:', error);
+      log.error('Sign out error', { error: error instanceof Error ? error.message : String(error) });
     }
   };
 

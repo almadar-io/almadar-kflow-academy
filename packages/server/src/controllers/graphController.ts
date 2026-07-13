@@ -1,4 +1,5 @@
 import { Request, Response } from 'express';
+import { createLogger } from '@almadar/logger';
 import {
   deleteUserGraph,
   getUserGraphById,
@@ -10,6 +11,7 @@ import {
 import { upsertUser } from '../services/userService';
 import { invalidateGraphCaches } from '../services/cacheInvalidation';
 
+const log = createLogger('kflow:server:controllers:graphController');
 
 type GraphResponse = { graph: StoredConceptGraph };
 type GraphListResponse = { graphs: StoredConceptGraph[] };
@@ -29,14 +31,14 @@ export const listGraphs = async (
     // Save/update user data
     if (email) {
       await upsertUser(uid, email).catch((error) => {
-        console.error('Error upserting user:', error);
+        log.error('Error upserting user', { error: error instanceof Error ? error.message : String(error) });
       });
     }
 
     const graphs = await getUserGraphs(uid);
     return res.json({ graphs });
   } catch (error) {
-    console.error('Failed to list graphs:', error);
+    log.error('Failed to list graphs', { error: error instanceof Error ? error.message : String(error) });
     return res.status(500).json({ error: 'Failed to list graphs' });
   }
 };
@@ -56,7 +58,7 @@ export const getGraph = async (
     // Save/update user data
     if (email) {
       await upsertUser(uid, email).catch((error) => {
-        console.error('Error upserting user:', error);
+        log.error('Error upserting user', { error: error instanceof Error ? error.message : String(error) });
       });
     }
 
@@ -70,7 +72,7 @@ export const getGraph = async (
 
     return res.json({ graph });
   } catch (error) {
-    console.error('Failed to fetch graph:', error);
+    log.error('Failed to fetch graph', { error: error instanceof Error ? error.message : String(error) });
     return res.status(500).json({ error: 'Failed to fetch graph' });
   }
 };
@@ -90,7 +92,7 @@ export const upsertGraph = async (
     // Save/update user data
     if (email) {
       await upsertUser(uid, email).catch((error) => {
-        console.error('Error upserting user:', error);
+        log.error('Error upserting user', { error: error instanceof Error ? error.message : String(error) });
       });
     }
 
@@ -115,7 +117,7 @@ export const upsertGraph = async (
     const graph = await upsertUserGraph(uid, payload);
     return res.json({ graph });
   } catch (error) {
-    console.error('Failed to upsert graph:', error);
+    log.error('Failed to upsert graph', { error: error instanceof Error ? error.message : String(error) });
     return res.status(500).json({ error: 'Failed to upsert graph' });
   }
 };
@@ -135,7 +137,7 @@ export const removeGraph = async (
     // Save/update user data
     if (email) {
       await upsertUser(uid, email).catch((error) => {
-        console.error('Error upserting user:', error);
+        log.error('Error upserting user', { error: error instanceof Error ? error.message : String(error) });
       });
     }
 
@@ -146,7 +148,7 @@ export const removeGraph = async (
 
     return res.json({ success: true });
   } catch (error) {
-    console.error('Failed to delete graph:', error);
+    log.error('Failed to delete graph', { error: error instanceof Error ? error.message : String(error) });
     return res.status(500).json({ error: 'Failed to delete graph' });
   }
 };

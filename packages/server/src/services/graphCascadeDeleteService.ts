@@ -4,6 +4,9 @@
  */
 
 import { getFirestore } from '@almadar/server';
+import { createLogger } from '@almadar/logger';
+
+const log = createLogger('kflow:server:services:graphCascadeDeleteService');
 import { getGoalsByGraphId, deleteGoal } from './goalService';
 import { deletePlacementTest } from './placementTestService';
 
@@ -44,7 +47,7 @@ async function deleteGraphGoals(uid: string, graphId: string): Promise<void> {
       try {
         await deletePlacementTest(uid, goal.placementTestId);
       } catch (error) {
-        console.warn(`Failed to delete placement test ${goal.placementTestId} for goal ${goal.id}:`, error);
+        log.warn('Failed to delete placement test for goal', { placementTestId: goal.placementTestId, goalId: goal.id, error: error instanceof Error ? error.message : String(error) });
       }
     }
     
@@ -54,9 +57,9 @@ async function deleteGraphGoals(uid: string, graphId: string): Promise<void> {
     } catch (error) {
       // Handle case where goal doesn't exist (might have been deleted already)
       if (error instanceof Error && error.message.includes('not found')) {
-        console.log(`Goal ${goal.id} already deleted or not found for graph ${graphId}`);
+        log.info('Goal already deleted or not found for graph', { goalId: goal.id, graphId });
       } else {
-        console.warn(`Failed to delete goal ${goal.id} for graph ${graphId}:`, error);
+        log.warn('Failed to delete goal for graph', { goalId: goal.id, graphId, error: error instanceof Error ? error.message : String(error) });
       }
     }
   }
@@ -176,7 +179,7 @@ async function deleteGraphEmbeddings(uid: string, graphId: string): Promise<void
     }
   } catch (error) {
     // Embeddings might not exist or might be managed by Python service
-    console.warn(`Failed to delete embeddings for graph ${graphId}:`, error);
+    log.warn('Failed to delete embeddings for graph', { graphId, error: error instanceof Error ? error.message : String(error) });
   }
 }
 
@@ -279,40 +282,40 @@ export async function cascadeDeleteGraph(
     deleteUserProgress = true,
   } = options;
 
-  console.log(`Starting cascade delete for graph ${graphId} (user: ${uid})`);
+  log.info('Starting cascade delete for graph', { graphId, uid });
 
   try {
     // 1. Delete layers (subcollection - will be auto-deleted, but clean up explicitly)
     try {
       await deleteGraphLayers(uid, graphId);
-      console.log(`Deleted layers for graph ${graphId}`);
+      log.info('Deleted layers for graph', { graphId });
     } catch (error) {
-      console.warn(`Failed to delete layers for graph ${graphId}:`, error);
+      log.warn('Failed to delete layers for graph', { graphId, error: error instanceof Error ? error.message : String(error) });
     }
 
     // 2. Delete learning goals (and their associated placement tests)
     try {
       await deleteGraphGoals(uid, graphId);
-      console.log(`Deleted goals for graph ${graphId}`);
+      log.info('Deleted goals for graph', { graphId });
     } catch (error) {
-      console.warn(`Failed to delete goals for graph ${graphId}:`, error);
+      log.warn('Failed to delete goals for graph', { graphId, error: error instanceof Error ? error.message : String(error) });
     }
 
     // 3. Delete any orphaned placement tests
     try {
       await deleteGraphPlacementTests(uid, graphId);
-      console.log(`Deleted placement tests for graph ${graphId}`);
+      log.info('Deleted placement tests for graph', { graphId });
     } catch (error) {
-      console.warn(`Failed to delete placement tests for graph ${graphId}:`, error);
+      log.warn('Failed to delete placement tests for graph', { graphId, error: error instanceof Error ? error.message : String(error) });
     }
 
     // 4. Delete user progress (if enabled)
     if (deleteUserProgress) {
       try {
         await deleteGraphUserProgress(uid, graphId);
-        console.log(`Deleted user progress for graph ${graphId}`);
+        log.info('Deleted user progress for graph', { graphId });
       } catch (error) {
-        console.warn(`Failed to delete user progress for graph ${graphId}:`, error);
+        log.warn('Failed to delete user progress for graph', { graphId, error: error instanceof Error ? error.message : String(error) });
       }
     }
 
@@ -320,9 +323,9 @@ export async function cascadeDeleteGraph(
     if (deleteCourses) {
       try {
         await deleteGraphCourses(graphId);
-        console.log(`Deleted courses for graph ${graphId}`);
+        log.info('Deleted courses for graph', { graphId });
       } catch (error) {
-        console.warn(`Failed to delete courses for graph ${graphId}:`, error);
+        log.warn('Failed to delete courses for graph', { graphId, error: error instanceof Error ? error.message : String(error) });
       }
     }
 
@@ -330,39 +333,39 @@ export async function cascadeDeleteGraph(
     if (deleteEmbeddings) {
       try {
         await deleteGraphEmbeddings(uid, graphId);
-        console.log(`Deleted embeddings for graph ${graphId}`);
+        log.info('Deleted embeddings for graph', { graphId });
       } catch (error) {
-        console.warn(`Failed to delete embeddings for graph ${graphId}:`, error);
+        log.warn('Failed to delete embeddings for graph', { graphId, error: error instanceof Error ? error.message : String(error) });
       }
     }
 
     // 7. Delete path recommendations
     try {
       await deleteGraphPathRecommendations(uid, graphId);
-      console.log(`Deleted path recommendations for graph ${graphId}`);
+      log.info('Deleted path recommendations for graph', { graphId });
     } catch (error) {
-      console.warn(`Failed to delete path recommendations for graph ${graphId}:`, error);
+      log.warn('Failed to delete path recommendations for graph', { graphId, error: error instanceof Error ? error.message : String(error) });
     }
 
     // 8. Delete gap analysis
     try {
       await deleteGraphGapAnalysis(uid, graphId);
-      console.log(`Deleted gap analysis for graph ${graphId}`);
+      log.info('Deleted gap analysis for graph', { graphId });
     } catch (error) {
-      console.warn(`Failed to delete gap analysis for graph ${graphId}:`, error);
+      log.warn('Failed to delete gap analysis for graph', { graphId, error: error instanceof Error ? error.message : String(error) });
     }
 
     // 9. Delete feedback
     try {
       await deleteGraphFeedback(uid, graphId);
-      console.log(`Deleted feedback for graph ${graphId}`);
+      log.info('Deleted feedback for graph', { graphId });
     } catch (error) {
-      console.warn(`Failed to delete feedback for graph ${graphId}:`, error);
+      log.warn('Failed to delete feedback for graph', { graphId, error: error instanceof Error ? error.message : String(error) });
     }
 
-    console.log(`Completed cascade delete for graph ${graphId}`);
+    log.info('Completed cascade delete for graph', { graphId });
   } catch (error) {
-    console.error(`Error during cascade delete for graph ${graphId}:`, error);
+    log.error('Error during cascade delete for graph', { graphId, error: error instanceof Error ? error.message : String(error) });
     // Don't throw - we want to continue with graph deletion even if some cleanup fails
     throw error;
   }

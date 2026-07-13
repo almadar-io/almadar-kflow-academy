@@ -3,6 +3,9 @@ import { AppDispatch } from '../../../app/store';
 import { Concept, UserProgress, BloomLevel } from '../types';
 import { updateConcept } from '../conceptSlice';
 import { userProgressApi } from '../userProgressApi';
+import { createLogger } from '@almadar/logger';
+
+const log = createLogger('kflow:client:concepts:useUserProgress');
 
 interface UseUserProgressParams {
   dispatch: AppDispatch;
@@ -50,7 +53,7 @@ export const useUserProgress = ({
         bloomAnswered: newProgress.bloomAnswered,
         bloomLevelsCompleted: newProgress.bloomLevelsCompleted,
       }).catch((error) => {
-        console.error('Failed to persist user progress:', error);
+        log.error('Failed to persist user progress', { error: error instanceof Error ? error.message : String(error) });
         // Don't throw - allow local state update even if backend fails
       });
 

@@ -1,12 +1,12 @@
 /**
  * Migration Script: Title to Name Property Unification
- * 
+ *
  * Migrates existing NodeBasedKnowledgeGraph data in Firestore to use
  * the unified `name` property instead of `title` or `levelName`.
- * 
+ *
  * Usage:
  *   node -r ts-node/register server/src/scripts/migrateTitleToName.ts [uid] [graphId]
- * 
+ *
  * Examples:
  *   - Migrate all graphs for a user: node -r ts-node/register server/src/scripts/migrateTitleToName.ts user123
  *   - Migrate specific graph: node -r ts-node/register server/src/scripts/migrateTitleToName.ts user123 graph456
@@ -14,10 +14,13 @@
 
 import * as dotenv from 'dotenv';
 import * as path from 'path';
+import { createLogger } from '@almadar/logger';
 
 // Load environment variables from .env file
 // Must be called before importing Firebase Admin or other services that depend on env vars
 dotenv.config({ path: path.join(__dirname, '..', '..', '.env') });
+
+const log = createLogger('kflow:server:scripts:migrateTitleToName');
 
 import { getFirestore } from '@almadar/server';
 import { getNodeBasedKnowledgeGraph, saveNodeBasedKnowledgeGraph } from '@almadar-io/knowledge/server';
@@ -76,13 +79,13 @@ async function migrateGraph(uid: string, graphId: string): Promise<{
           goalNode.properties = props as any;
           goalsMigrated++;
           graphModified = true;
-          console.log(`  ✓ Migrated LearningGoal ${goalId}: "${propsTitle}" → name`);
+          log.info(`Migrated LearningGoal ${goalId}`, { from: propsTitle, to: 'name' });
         } else if (propsTitle && propsName && propsTitle !== propsName) {
           // Both exist but different - log warning, keep name
-          console.warn(`  ⚠ LearningGoal ${goalId} has both title and name (different values). Keeping name: "${propsName}"`);
+          log.warn(`LearningGoal ${goalId} has both title and name`, { title: propsTitle, name: propsName, action: 'keeping name' });
         } else if (propsTitle && propsName && propsTitle === propsName) {
           // Both exist and same - safe to remove title later
-          console.log(`  ℹ LearningGoal ${goalId} has both title and name (same value). Title can be removed.`);
+          log.info(`LearningGoal ${goalId} has both title and name`, { value: propsTitle, note: 'Title can be removed' });
         }
       }
     }
@@ -103,13 +106,13 @@ async function migrateGraph(uid: string, graphId: string): Promise<{
           milestoneNode.properties = props as any;
           milestonesMigrated++;
           graphModified = true;
-          console.log(`  ✓ Migrated Milestone ${milestoneId}: "${propsTitle}" → name`);
+          log.info(`Migrated Milestone ${milestoneId}`, { from: propsTitle, to: 'name' });
         } else if (propsTitle && propsName && propsTitle !== propsName) {
           // Both exist but different - log warning, keep name
-          console.warn(`  ⚠ Milestone ${milestoneId} has both title and name (different values). Keeping name: "${propsName}"`);
+          log.warn(`Milestone ${milestoneId} has both title and name`, { title: propsTitle, name: propsName, action: 'keeping name' });
         } else if (propsTitle && propsName && propsTitle === propsName) {
           // Both exist and same - safe to remove title later
-          console.log(`  ℹ Milestone ${milestoneId} has both title and name (same value). Title can be removed.`);
+          log.info(`Milestone ${milestoneId} has both title and name`, { value: propsTitle, note: 'Title can be removed' });
         }
       }
     }
@@ -132,24 +135,24 @@ async function migrateGraph(uid: string, graphId: string): Promise<{
           layerNode.properties = mutableProps as any;
           layersMigrated++;
           graphModified = true;
-          console.log(`  ✓ Migrated Layer ${layerId}: levelName "${propLevelName}" → name`);
+          log.info(`Migrated Layer ${layerId}`, { from: propLevelName, source: 'levelName' });
         } else if (propGoal && !propName && !propLevelName) {
           layerName = propGoal;
           mutableProps.name = layerName;
           layerNode.properties = mutableProps as any;
           layersMigrated++;
           graphModified = true;
-          console.log(`  ✓ Migrated Layer ${layerId}: goal "${propGoal}" → name`);
+          log.info(`Migrated Layer ${layerId}`, { from: propGoal, source: 'goal' });
         } else if (!propName && !propLevelName && !propGoal && layerNode.properties.layerNumber !== undefined) {
           layerName = `Layer ${layerNode.properties.layerNumber}`;
           mutableProps.name = layerName;
           layerNode.properties = mutableProps as any;
           layersMigrated++;
           graphModified = true;
-          console.log(`  ✓ Migrated Layer ${layerId}: generated name "${layerName}" from layerNumber`);
+          log.info(`Migrated Layer ${layerId}`, { generatedName: layerName, source: 'layerNumber' });
         } else if (mutableProps.levelName && propName && mutableProps.levelName !== propName) {
           // Both exist but different - log warning, keep name
-          console.warn(`  ⚠ Layer ${layerId} has both levelName and name (different values). Keeping name: "${propName}"`);
+          log.warn(`Layer ${layerId} has both levelName and name`, { levelName: mutableProps.levelName, name: propName, action: 'keeping name' });
         }
 
         // Note: We don't remove levelName here - that can be done in a later phase
@@ -160,9 +163,9 @@ async function migrateGraph(uid: string, graphId: string): Promise<{
     // Save graph if modified
     if (graphModified) {
       await saveNodeBasedKnowledgeGraph(uid, graph);
-      console.log(`  ✓ Saved graph ${graphId}`);
+      log.info(`Saved graph ${graphId}`);
     } else {
-      console.log(`  ℹ Graph ${graphId} already migrated (no changes needed)`);
+      log.info(`Graph ${graphId} already migrated`, { status: 'no changes needed' });
     }
 
     return {
@@ -208,14 +211,7 @@ async function migrateTitleToName(uid: string, graphId?: string): Promise<Migrat
     errors: [],
   };
 
-  console.log(`\n🚀 Starting migration: Title → Name Property Unification`);
-  console.log(`   User: ${uid}`);
-  if (graphId) {
-    console.log(`   Graph: ${graphId}`);
-  } else {
-    console.log(`   Scope: All graphs`);
-  }
-  console.log('');
+  log.info('Starting migration: Title → Name Property Unification', { uid, graph: graphId, scope: graphId ? 'single' : 'all' });
 
   try {
     let graphIds: string[];
@@ -226,12 +222,12 @@ async function migrateTitleToName(uid: string, graphId?: string): Promise<Migrat
     } else {
       // Migrate all graphs for user
       graphIds = await getAllGraphIds(uid);
-      console.log(`Found ${graphIds.length} graph(s) to migrate\n`);
+      log.info('Found graphs to migrate', { count: graphIds.length });
     }
 
     // Process each graph
     for (const id of graphIds) {
-      console.log(`Processing graph: ${id}`);
+      log.info(`Processing graph: ${id}`);
       stats.graphsProcessed++;
 
       const result = await migrateGraph(uid, id);
@@ -245,34 +241,29 @@ async function migrateTitleToName(uid: string, graphId?: string): Promise<Migrat
           graphId: id,
           error: result.error || 'Unknown error',
         });
-        console.error(`  ✗ Error migrating graph ${id}: ${result.error}`);
+        log.error(`Error migrating graph ${id}`, { error: result.error });
       }
-
-      console.log('');
     }
 
     // Print summary
-    console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-    console.log('📊 Migration Summary');
-    console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-    console.log(`Graphs processed: ${stats.graphsProcessed}`);
-    console.log(`LearningGoals migrated: ${stats.goalsMigrated}`);
-    console.log(`Milestones migrated: ${stats.milestonesMigrated}`);
-    console.log(`Layers migrated: ${stats.layersMigrated}`);
-    console.log(`Errors: ${stats.errors.length}`);
-    
+    log.info('Migration Summary', {
+      graphsProcessed: stats.graphsProcessed,
+      goalsMigrated: stats.goalsMigrated,
+      milestonesMigrated: stats.milestonesMigrated,
+      layersMigrated: stats.layersMigrated,
+      errors: stats.errors.length
+    });
+
     if (stats.errors.length > 0) {
-      console.log('\nErrors:');
+      log.info('Migration errors:', { count: stats.errors.length });
       stats.errors.forEach(({ graphId, error }) => {
-        console.log(`  - ${graphId}: ${error}`);
+        log.error(`Error in ${graphId}`, { details: error });
       });
     }
-    
-    console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n');
 
     return stats;
   } catch (error) {
-    console.error('Fatal error during migration:', error);
+    log.error('Fatal error during migration', { error: error instanceof Error ? error.message : String(error) });
     throw error;
   }
 }
@@ -280,12 +271,12 @@ async function migrateTitleToName(uid: string, graphId?: string): Promise<Migrat
 // Run migration if called directly
 if (require.main === module) {
   const args = process.argv.slice(2);
-  
+
   if (args.length === 0) {
-    console.error('Usage: node -r ts-node/register server/src/scripts/migrateTitleToName.ts <uid> [graphId]');
-    console.error('Examples:');
-    console.error('  Migrate all graphs: node -r ts-node/register server/src/scripts/migrateTitleToName.ts user123');
-    console.error('  Migrate specific graph: node -r ts-node/register server/src/scripts/migrateTitleToName.ts user123 graph456');
+    log.error('Usage: node -r ts-node/register server/src/scripts/migrateTitleToName.ts <uid> [graphId]');
+    log.error('Examples:');
+    log.error('  Migrate all graphs: node -r ts-node/register server/src/scripts/migrateTitleToName.ts user123');
+    log.error('  Migrate specific graph: node -r ts-node/register server/src/scripts/migrateTitleToName.ts user123 graph456');
     process.exit(1);
   }
 
@@ -294,11 +285,11 @@ if (require.main === module) {
 
   migrateTitleToName(uid, graphId)
     .then(() => {
-      console.log('✅ Migration completed successfully');
+      log.info('Migration completed successfully');
       process.exit(0);
     })
     .catch((error) => {
-      console.error('❌ Migration failed:', error);
+      log.error('Migration failed', { error: error instanceof Error ? error.message : String(error) });
       process.exit(1);
     });
 }

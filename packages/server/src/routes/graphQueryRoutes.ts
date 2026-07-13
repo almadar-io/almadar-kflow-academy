@@ -7,9 +7,11 @@ import {
   extractLearningPathSummary,
 } from '@almadar-io/knowledge/server';
 import { authenticateFirebase } from '@almadar/server';
+import { createLogger } from '@almadar/logger';
 import { graphQueryDeps } from '../utils/graphHandlerDeps';
 import { computeLevelCount } from '../utils/computeLevelCount';
 
+const log = createLogger('kflow:server:routes:graphQueryRoutes');
 const router = Router();
 
 router.use(authenticateFirebase);
@@ -22,6 +24,7 @@ router.get('/learning-paths', async (req, res, next) => {
       return;
     }
     const graphIds = await graphQueryDeps.getAllGraphIds(uid);
+    log.info(`[CHROMA-DEBUG][SEMANTIC] /learning-paths getAll returned ${graphIds.length}`, { graphIds: graphIds.join(',') });
 
     const paths = (await Promise.all(
       graphIds.map(async (graphId) => {
@@ -50,7 +53,9 @@ router.get('/learning-paths', async (req, res, next) => {
         if (!query) continue;
         const otherIds = paths.map(pp => pp.id).filter(id => id !== p.id);
         if (otherIds.length === 0) continue;
+        log.info(`[CHROMA-DEBUG][SEMANTIC] querying for path`, { pathId: p.id, otherCount: otherIds.length, query: query.slice(0, 40) });
         const hits = await access.findSimilarNodesCrossGraph(uid, otherIds, query, 3, ['Concept']);
+        log.info(`[CHROMA-DEBUG][SEMANTIC] hits for path`, { pathId: p.id, hitCount: hits?.length || 0 });
         const graphScores = new Map<string, number>();
         for (const h of hits) {
           if (h.graphId && h.graphId !== p.id) {
@@ -66,7 +71,8 @@ router.get('/learning-paths', async (req, res, next) => {
           }
         }
       }
-    } catch {
+    } catch (e) {
+      log.error('[CHROMA-DEBUG][SEMANTIC] loop error', { error: (e as any)?.message || String(e) });
       // graceful, no semantic
     }
 

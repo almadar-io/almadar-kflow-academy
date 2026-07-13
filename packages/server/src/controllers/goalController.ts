@@ -1,6 +1,9 @@
 import { Request, Response } from 'express';
+import { createLogger } from '@almadar/logger';
 import { singleParam, singleQueryParam } from '../utils/httpParams';
 import { generateGoalQuestions } from '../operations/generateGoalQuestions';
+
+const log = createLogger('kflow:server:controllers:goalController');
 import { generateGoal as generateGoalOperation } from '../operations/generateGoal';
 import {
   saveGoal,
@@ -108,7 +111,7 @@ export async function generateGoalQuestionsHandler(
 
     res.json(result);
   } catch (error) {
-    console.error('Error generating goal questions:', error);
+    log.error('Error generating goal questions', { error: error instanceof Error ? error.message : String(error) });
     res.status(500).json({
       error: 'Failed to generate goal questions',
       message: error instanceof Error ? error.message : 'Unknown error',
@@ -321,7 +324,7 @@ export async function createGraphWithGoalHandler(
               seedConceptId,
             };
           } catch (error) {
-            console.error('Error processing streamed goal with graph:', error);
+            log.error('Error processing streamed goal with graph', { error: error instanceof Error ? error.message : String(error) });
             throw error;
           }
         },
@@ -407,7 +410,7 @@ export async function createGraphWithGoalHandler(
       seedConceptId,
     });
   } catch (error) {
-    console.error('Error creating graph with goal:', error);
+    log.error('Error creating graph with goal', { error: error instanceof Error ? error.message : String(error) });
     res.status(500).json({
       error: 'Failed to create graph with goal',
       message: error instanceof Error ? error.message : 'Unknown error',
@@ -444,7 +447,7 @@ export async function updateGoalHandler(
 
     res.json(updatedGoal);
   } catch (error) {
-    console.error('Error updating goal:', error);
+    log.error('Error updating goal', { error: error instanceof Error ? error.message : String(error) });
     if (error instanceof Error && error.message.includes('not found')) {
       res.status(404).json({
         error: 'Goal not found',
@@ -484,7 +487,7 @@ export async function deleteGoalHandler(
 
     res.json({ message: 'Goal deleted successfully' });
   } catch (error) {
-    console.error('Error deleting goal:', error);
+    log.error('Error deleting goal', { error: error instanceof Error ? error.message : String(error) });
     if (error instanceof Error && error.message.includes('not found')) {
       res.status(404).json({
         error: 'Goal not found',
@@ -526,7 +529,7 @@ export async function getUserGoalsHandler(
       res.json({ goals });
     }
   } catch (error) {
-    console.error('Error getting user goals:', error);
+    log.error('Error getting user goals', { error: error instanceof Error ? error.message : String(error) });
     res.status(500).json({
       error: 'Failed to get goals',
       message: error instanceof Error ? error.message : 'Unknown error',
@@ -564,7 +567,7 @@ export async function getGoalByIdHandler(
 
     res.json({ goal });
   } catch (error) {
-    console.error('Error getting goal:', error);
+    log.error('Error getting goal', { error: error instanceof Error ? error.message : String(error) });
     res.status(500).json({
       error: 'Failed to get goal',
       message: error instanceof Error ? error.message : 'Unknown error',

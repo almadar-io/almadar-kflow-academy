@@ -18,6 +18,7 @@
 import * as dotenv from 'dotenv';
 import * as path from 'path';
 import { getFirestore } from '@almadar/server';
+import { createLogger } from '@almadar/logger';
 import { getUserGraphs } from '../services/graphService';
 import { saveNodeBasedKnowledgeGraph } from '@almadar-io/knowledge/server';
 import { generateGoals } from '@almadar-io/knowledge/server';
@@ -26,6 +27,8 @@ import { GraphMutationService } from '@almadar-io/knowledge/server';
 import type { NodeBasedKnowledgeGraph, GraphNode, NodeTypeIndex } from '../types/nodeBasedKnowledgeGraph';
 import type { MutationContext } from '../types/mutations';
 import type { GraphDifficulty } from '../types/concept';
+
+const log = createLogger('kflow:server:scripts:regenerateGraphsViaApi');
 
 interface RegenerationStats {
   totalGraphs: number;
@@ -146,22 +149,22 @@ async function regenerateGraph(
   oldGraph: any
 ): Promise<{ layers: number }> {
   const graphId = oldGraph.id;
-  
-  console.log(`    Creating empty graph with seed concept...`);
-  
+
+  log.debug(`Creating empty graph with seed concept...`);
+
   // Get seed concept from old graph
   const seedConceptData = oldGraph.concepts?.[oldGraph.seedConceptId];
   if (!seedConceptData) {
     throw new Error('No seed concept found in old graph');
   }
-  
+
   const seedConceptName = seedConceptData.name || oldGraph.seedConceptId;
   const seedConceptDescription = seedConceptData.description || '';
   const focus = oldGraph.focus || '';
-  const difficulty: GraphDifficulty = ['beginner', 'intermediate', 'advanced'].includes(oldGraph.difficulty) 
-    ? oldGraph.difficulty 
+  const difficulty: GraphDifficulty = ['beginner', 'intermediate', 'advanced'].includes(oldGraph.difficulty)
+    ? oldGraph.difficulty
     : 'beginner';
-  
+
   // Create empty graph with seed concept
   let graph = createEmptyGraphWithSeed(
     graphId,
@@ -170,14 +173,14 @@ async function regenerateGraph(
     focus,
     difficulty
   );
-  
+
   const seedConceptId = graph.seedConceptId!;
-  
-  console.log(`    Generating learning goal (title: "${seedConceptName}")...`);
+
+  log.debug(`Generating learning goal (title: "${seedConceptName}")...`);
   
   // Step 1: Generate learning goal
   const mutationContext = createMutationContext(graphId, seedConceptId, graph.nodes, graph.relationships);
-  
+
   const goalResult = await generateGoals({
     graph,
     mutationContext,
@@ -191,25 +194,25 @@ async function regenerateGraph(
     stream: false,
     uid,
   });
-  
+
   // Check if it's a streaming response (shouldn't be since stream: false)
   if ('stream' in goalResult) {
     throw new Error('Unexpected streaming response from generateGoals');
   }
-  
+
   // Apply goal mutations (use safe version to skip invalid mutations like graphId relationships)
   const goalApplyResult = mutationService.applyMutationBatchSafe(graph, goalResult.mutations);
   graph = goalApplyResult.graph;
   if (goalApplyResult.errors.length > 0) {
-    console.log(`    Note: Skipped ${goalApplyResult.errors.length} invalid mutations (expected for graphId relationships)`);
+    log.debug(`Skipped ${goalApplyResult.errors.length} invalid mutations (expected for graphId relationships)`);
   }
-  console.log(`    ✓ Learning goal created with ${goalResult.content.goal.milestones?.length || 0} milestones`);
-  
+  log.debug(`Learning goal created`, { milestonesCount: goalResult.content.goal.milestones?.length || 0 });
+
   // Step 2: Progressive expand - Layer 1
-  console.log(`    Generating Layer 1...`);
+  log.debug(`Generating Layer 1...`);
   
   const expand1Context = createMutationContext(graphId, seedConceptId, graph.nodes, graph.relationships);
-  
+
   const expand1Result = await progressiveExpandMultipleFromText({
     graph,
     mutationContext: expand1Context,
@@ -218,23 +221,26 @@ async function regenerateGraph(
     stream: false,
     uid,
   });
-  
+
   if ('stream' in expand1Result) {
     throw new Error('Unexpected streaming response from progressiveExpand');
   }
-  
+
   // Apply expand mutations (use safe version)
   const expandApplyResult = mutationService.applyMutationBatchSafe(graph, expand1Result.mutations);
   graph = expandApplyResult.graph;
   if (expandApplyResult.errors.length > 0) {
-    console.log(`    Note: Skipped ${expandApplyResult.errors.length} invalid mutations`);
+    log.debug(`Skipped ${expandApplyResult.errors.length} invalid mutations`);
   }
-  console.log(`    ✓ Layer 1 created: "${expand1Result.content.levelName}" with ${expand1Result.content.concepts.length} concepts`);
-  
+  log.debug(`Layer 1 created`, {
+    levelName: expand1Result.content.levelName,
+    conceptsCount: expand1Result.content.concepts.length,
+  });
+
   // Save the regenerated graph (this will overwrite any existing knowledgeGraph)
-  console.log(`    Saving regenerated graph...`);
+  log.debug(`Saving regenerated graph...`);
   await saveNodeBasedKnowledgeGraph(uid, graph);
-  
+
   return { layers: 1 };
 }
 
@@ -242,8 +248,8 @@ async function regenerateGraph(
  * Regenerate graphs for a specific user
  */
 async function regenerateUserGraphs(uid: string): Promise<RegenerationStats> {
-  console.log(`\nRegenerating graphs for user: ${uid}`);
-  
+  log.info(`Regenerating graphs for user: ${uid}`);
+
   const stats: RegenerationStats = {
     totalGraphs: 0,
     successfulRegenerations: 0,
@@ -255,28 +261,28 @@ async function regenerateUserGraphs(uid: string): Promise<RegenerationStats> {
   try {
     const graphs = await getUserGraphs(uid);
     stats.totalGraphs = graphs.length;
-    console.log(`  Found ${graphs.length} graphs to regenerate`);
+    log.info(`Found ${graphs.length} graphs to regenerate`);
 
     for (const graph of graphs) {
       try {
-        console.log(`  Regenerating graph: ${graph.id} (seed: ${graph.seedConceptId || 'unknown'})`);
-        
+        log.info(`Regenerating graph: ${graph.id}`, { seedConceptId: graph.seedConceptId || 'unknown' });
+
         // Delete existing knowledgeGraph if it exists
         const deleted = await deleteExistingKnowledgeGraph(uid, graph.id);
         if (deleted) {
-          console.log(`    Deleted existing knowledgeGraph`);
+          log.debug(`Deleted existing knowledgeGraph`);
         }
-        
+
         const result = await regenerateGraph(uid, graph);
-        
+
         stats.successfulRegenerations++;
         stats.totalLayers += result.layers;
-        
-        console.log(`    ✓ Regenerated successfully with ${result.layers} layers`);
-        
+
+        log.info(`Regenerated successfully`, { graphId: graph.id, layers: result.layers });
+
         // Add a small delay between graphs to avoid rate limiting
         await new Promise(resolve => setTimeout(resolve, 2000));
-        
+
       } catch (error) {
         stats.failedRegenerations++;
         const errorMessage = error instanceof Error ? error.message : 'Unknown error';
@@ -285,11 +291,13 @@ async function regenerateUserGraphs(uid: string): Promise<RegenerationStats> {
           userId: uid,
           error: errorMessage,
         });
-        console.error(`    ✗ Failed to regenerate graph ${graph.id}:`, errorMessage);
+        log.error(`Failed to regenerate graph ${graph.id}`, { error: errorMessage });
       }
     }
   } catch (error) {
-    console.error(`  Error fetching graphs for user ${uid}:`, error);
+    log.error(`Error fetching graphs for user ${uid}`, {
+      error: error instanceof Error ? error.message : String(error),
+    });
     stats.errors.push({
       graphId: 'N/A',
       userId: uid,
@@ -309,15 +317,13 @@ async function main() {
 
   const userId = process.argv[2]; // Optional user ID argument
 
-  console.log('Starting graph regeneration via API flow...');
-  console.log(`Mode: ${userId ? `Single user (${userId})` : 'All users'}`);
-  console.log('');
-  console.log('This script will:');
-  console.log('1. Read old graphs from "graphs" collection');
-  console.log('2. Call generateGoals API with seed concept name as goal title');
-  console.log('3. Call progressiveExpand API once to generate 1 layer');
-  console.log('4. Save results to "knowledgeGraphs" collection (overwriting existing)');
-  console.log('');
+  log.info('Starting graph regeneration via API flow...');
+  log.info(`Mode: ${userId ? `Single user (${userId})` : 'All users'}`);
+  log.info('This script will:');
+  log.info('1. Read old graphs from "graphs" collection');
+  log.info('2. Call generateGoals API with seed concept name as goal title');
+  log.info('3. Call progressiveExpand API once to generate 1 layer');
+  log.info('4. Save results to "knowledgeGraphs" collection (overwriting existing)');
 
   const totalStats: RegenerationStats = {
     totalGraphs: 0,
@@ -344,7 +350,7 @@ async function main() {
   } else {
     // Regenerate graphs for all users
     const userIds = await getAllUserIds();
-    console.log(`\nFound ${userIds.length} users to process`);
+    log.info(`Found ${userIds.length} users to process`);
 
     for (const uid of userIds) {
       const stats = await regenerateUserGraphs(uid);
@@ -356,28 +362,30 @@ async function main() {
   }
 
   // Print summary
-  console.log('\n' + '='.repeat(50));
-  console.log('Regeneration Summary:');
-  console.log('='.repeat(50));
-  console.log(`Total graphs processed: ${totalStats.totalGraphs}`);
-  console.log(`Successful regenerations: ${totalStats.successfulRegenerations}`);
-  console.log(`Failed regenerations: ${totalStats.failedRegenerations}`);
-  console.log(`Total layers generated: ${totalStats.totalLayers}`);
-  
+  log.info('Regeneration Summary', {
+    totalGraphsProcessed: totalStats.totalGraphs,
+    successfulRegenerations: totalStats.successfulRegenerations,
+    failedRegenerations: totalStats.failedRegenerations,
+    totalLayersGenerated: totalStats.totalLayers,
+  });
+
   if (totalStats.errors.length > 0) {
-    console.log('\nErrors:');
+    log.error(`Regeneration completed with ${totalStats.errors.length} errors`);
     totalStats.errors.forEach((error, index) => {
-      console.log(`  ${index + 1}. Graph ${error.graphId} (User: ${error.userId}): ${error.error}`);
+      log.error(`Error ${index + 1}: Graph ${error.graphId} (User: ${error.userId})`, {
+        error: error.error,
+      });
     });
+  } else {
+    log.info('Regeneration completed successfully!');
   }
-  
-  console.log('='.repeat(50));
-  console.log('\nRegeneration completed!');
 }
 
 // Run the script
 main().catch(error => {
-  console.error('Fatal error:', error);
+  log.error('Fatal error', {
+    error: error instanceof Error ? error.message : String(error),
+  });
   process.exit(1);
 });
 

@@ -126,8 +126,8 @@ export function useLearningPathMap(paths: LearningPathInput[], semanticEdges: Ar
   const fingerprint = results.map((r: { dataUpdatedAt?: number }) => r.dataUpdatedAt).join('|');
 
   return useMemo(() => {
-    const conceptIdSets = paths.map(
-      (_, i) => new Set((results[i]?.data?.concepts ?? []).map((c: { id: string }) => c.id))
+    const conceptIdSets: Set<string>[] = paths.map(
+      (_, i) => new Set<string>((results[i]?.data?.concepts ?? []).map((c: { id: string }) => c.id))
     );
     return computeSemanticPathMap(paths, conceptIdSets, semanticEdges);
     // `results` is read above but intentionally NOT a dep (it's a fresh array every render); `fingerprint`

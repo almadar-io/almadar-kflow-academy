@@ -17,9 +17,12 @@
 import * as dotenv from 'dotenv';
 import * as path from 'path';
 import { fileURLToPath } from 'url';
+import { createLogger } from '@almadar/logger';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 dotenv.config({ path: path.resolve(__dirname, '../../.env') });
+
+const log = createLogger('kflow:server:scripts:migrateToGraph');
 
 import { getFirestore } from '@almadar/server';
 import {
@@ -35,7 +38,7 @@ const accessLayer = new KnowledgeGraphAccessLayer();
 
 async function migrateUser(uid: string, sourceGraphId: string): Promise<void> {
   const db = getFirestore();
-  console.log(`\n--- Migrating user ${uid} (source graph ${sourceGraphId}) ---`);
+  log.info(`Migrating user`, { uid, sourceGraphId });
 
   // 1. userProgress
   const progressSnap = await db.collection('users').doc(uid).collection('userProgress').get();
@@ -45,7 +48,7 @@ async function migrateUser(uid: string, sourceGraphId: string): Promise<void> {
       await accessLayer.upsertProgress(uid, sourceGraphId, uid, doc.id, { ...node.properties, graphId: sourceGraphId || undefined });
     }
   }
-  console.log(`  ✓ Progress: ${progressSnap.size} records`);
+  log.info('Progress migrated', { recordCount: progressSnap.size });
 
   // 2. enrollments (collectionGroup)
   const enrollmentsSnap = await db
@@ -58,7 +61,7 @@ async function migrateUser(uid: string, sourceGraphId: string): Promise<void> {
       await accessLayer.upsertEnrollment(uid, sourceGraphId, uid, { ...node.properties, sourceGraphId: sourceGraphId || undefined });
     }
   }
-  console.log(`  ✓ Enrollments: ${enrollmentsSnap.size} records`);
+  log.info('Enrollments migrated', { recordCount: enrollmentsSnap.size });
 
   // 3. placement tests (placementTests/{uid}/tests)
   const testsSnap = await db.collection('placementTests').doc(uid).collection('tests').get();
@@ -77,7 +80,7 @@ async function migrateUser(uid: string, sourceGraphId: string): Promise<void> {
       });
     }
   }
-  console.log(`  ✓ Placement tests: ${testsSnap.size} records`);
+  log.info('Placement tests migrated', { recordCount: testsSnap.size });
 
   // 4. achievements (users/{uid}/achievements)
   const achievementsSnap = await db.collection('users').doc(uid).collection('achievements').get();
@@ -94,7 +97,7 @@ async function migrateUser(uid: string, sourceGraphId: string): Promise<void> {
       });
     }
   }
-  console.log(`  ✓ Achievements: ${achievementsSnap.size} records`);
+  log.info('Achievements migrated', { recordCount: achievementsSnap.size });
 
   // 5. preferences (users/{uid}/preferences/settings)
   const prefsDoc = await db.collection('users').doc(uid).collection('preferences').doc('settings').get();
@@ -109,7 +112,7 @@ async function migrateUser(uid: string, sourceGraphId: string): Promise<void> {
         dailyGoalStartDate: node.properties.dailyGoalStartDate,
       });
     }
-    console.log(`  ✓ Preferences migrated`);
+    log.info('Preferences migrated');
   }
 }
 
@@ -127,18 +130,18 @@ async function main(): Promise<void> {
     await migrateUser(targetUid, targetGraphId);
   } else {
     const entries = await getUserIdsAndGraphIds();
-    console.log(`Found ${entries.length} users to migrate`);
+    log.info('Found users to migrate', { count: entries.length });
     for (const { uid, graphId } of entries) {
       await migrateUser(uid, graphId).catch((err) => {
-        console.error(`Failed to migrate user ${uid}:`, err);
+        log.error('Failed to migrate user', { uid, error: err instanceof Error ? err.message : String(err) });
       });
     }
   }
 
-  console.log('\nMigration complete.');
+  log.info('Migration complete');
 }
 
 main().catch((err) => {
-  console.error('Migration failed:', err);
+  log.error('Migration failed', { error: err instanceof Error ? err.message : String(err) });
   process.exit(1);
 });

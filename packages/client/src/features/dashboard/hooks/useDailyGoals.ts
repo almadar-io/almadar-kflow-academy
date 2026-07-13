@@ -1,5 +1,8 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { getUserPreferences, updateUserPreferences, getDailyProgress, type UserPreferences, type DailyProgress } from '../preferencesApi';
+import { createLogger } from '@almadar/logger';
+
+const log = createLogger('kflow:client:dashboard:useDailyGoals');
 
 export function useDailyGoals() {
   const [preferences, setPreferences] = useState<UserPreferences | null>(null);
@@ -31,7 +34,7 @@ export function useDailyGoals() {
       setDailyProgress(progress);
       hasFetchedRef.current = true;
     } catch (err: any) {
-      console.error('Failed to load daily goals data:', err);
+      log.error('Failed to load daily goals data', { error: err instanceof Error ? err.message : String(err) });
       setError(err.message || 'Failed to load daily goals');
     } finally {
       setIsLoading(false);
@@ -64,7 +67,7 @@ export function useDailyGoals() {
         });
       }
     } catch (err: any) {
-      console.error('Failed to update daily goal:', err);
+      log.error('Failed to update daily goal', { error: err instanceof Error ? err.message : String(err) });
       setError(err.message || 'Failed to update daily goal');
       throw err;
     } finally {
@@ -77,7 +80,7 @@ export function useDailyGoals() {
       const progress = await getDailyProgress();
       setDailyProgress(progress);
     } catch (err: any) {
-      console.error('Failed to refresh daily progress:', err);
+      log.error('Failed to refresh daily progress', { error: err instanceof Error ? err.message : String(err) });
       setError(err.message || 'Failed to refresh progress');
     }
   }, []);

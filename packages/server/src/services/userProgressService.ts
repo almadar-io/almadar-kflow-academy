@@ -1,4 +1,7 @@
 import type { ProgressNodeProperties } from '@almadar-io/knowledge';
+import { createLogger } from '@almadar/logger';
+
+const log = createLogger('kflow:server:services:userProgressService');
 import { hybridCache, CACHE_TTL } from "./cacheService";
 import { CACHE_KEYS, invalidateUserProgress } from "./cacheInvalidation";
 import { accessLayer } from "./studentDataAccess";
@@ -172,7 +175,7 @@ export async function getUserProgress(
 
   if (updateLastStudied) {
     trackConceptAccess(uid, sanitizedConceptId, conceptName ?? conceptId, graphId).catch((error) => {
-      console.warn("Failed to track concept access:", error);
+      log.warn("Failed to track concept access", { error: error instanceof Error ? error.message : String(error) });
     });
   }
 

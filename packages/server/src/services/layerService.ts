@@ -1,4 +1,7 @@
 import { getFirestore } from '@almadar/server';
+import { createLogger } from '@almadar/logger';
+
+const log = createLogger('kflow:server:services:layerService');
 
 export interface PracticeItem {
   type: 'question' | 'project';
@@ -56,7 +59,7 @@ export const saveLayer = async (
     await layersCollection(uid, graphId).doc(`layer-${layerData.layerNumber}`).set(payload);
   } catch (error) {
     if (isFirestoreNotFoundError(typeof error === 'object' ? error : null)) {
-      console.warn('Firestore database not found while saving layer.');
+      log.warn('Firestore database not found while saving layer.');
     }
     throw error;
   }
@@ -78,7 +81,7 @@ export const getGraphLayers = async (
     });
   } catch (error) {
     if (isFirestoreNotFoundError(typeof error === 'object' ? error : null)) {
-      console.warn('Firestore database not found while fetching layers.');
+      log.warn('Firestore database not found while fetching layers.');
       return [];
     }
     throw error;
@@ -104,7 +107,7 @@ export const getLayerByNumber = async (
     return normalizeTimestamps(data);
   } catch (error) {
     if (isFirestoreNotFoundError(typeof error === 'object' ? error : null)) {
-      console.warn('Firestore database not found while fetching layer.');
+      log.warn('Firestore database not found while fetching layer.');
       return null;
     }
     throw error;

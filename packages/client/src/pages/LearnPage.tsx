@@ -8,6 +8,7 @@
  * UI:DELETE_LEARNING_PATH, UI:NAVIGATE_TO_MENTOR).
  */
 
+import { createLogger } from '@almadar/logger';
 import React, { useState, useCallback, useMemo, useRef, useEffect } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { useLocation } from 'react-router';
@@ -31,6 +32,8 @@ import { auth } from '../config/firebase';
 import { apiClient } from '../services/apiClient';
 import type { UiNotifyPayload } from '../app/uiEvents';
 import type { LearnEntity } from '@design-system/organisms/LearnBoard';
+
+const log = createLogger('kflow:client:pages:LearnPage');
 
 export const LearnPage: React.FC = () => {
   const { user } = useAuthContext();
@@ -80,12 +83,12 @@ export const LearnPage: React.FC = () => {
               setParsedConcepts(conceptMatches.map(m => ({ name: m[1].trim(), description: m[2].trim() })));
             },
             onError: (error: string) => {
-              console.error('Expansion stream error:', error);
+              log.error('Expansion stream error', { error });
             },
           }
         );
       } catch (err) {
-        console.error('Initial expansion failed:', err);
+        log.error('Initial expansion failed', { error: err instanceof Error ? err.message : String(err) });
       }
 
       setIsExpanding(false);

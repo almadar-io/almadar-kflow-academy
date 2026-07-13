@@ -1,9 +1,12 @@
+import { createLogger } from '@almadar/logger';
 import { useCallback, useState } from 'react';
 import { useAppDispatch } from '../../../app/hooks';
 import { deleteGraph } from '../conceptSlice';
 import { graphApi } from '../graphApi';
 import { useEventBus } from '@almadar/ui';
 import type { UiNotifyPayload } from '../../../app/uiEvents';
+
+const log = createLogger('kflow:client:concepts:useDeleteGraph');
 
 interface UseDeleteGraphReturn {
   deleteGraph: (graphId: string) => Promise<void>;
@@ -22,7 +25,7 @@ export const useDeleteGraph = (): UseDeleteGraphReturn => {
       dispatch(deleteGraph(graphId));
       emit('UI:NOTIFY', { severity: 'success', message: 'Learning path deleted successfully' } satisfies UiNotifyPayload);
     } catch (error) {
-      console.error('Failed to delete graph:', error);
+      log.error('Failed to delete graph', { error: error instanceof Error ? error.message : String(error) });
       emit('UI:NOTIFY', { severity: 'error', message: 'Failed to delete learning path. Please try again.' } satisfies UiNotifyPayload);
       throw error;
     } finally {

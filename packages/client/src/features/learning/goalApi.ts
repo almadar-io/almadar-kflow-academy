@@ -1,7 +1,7 @@
 /**
  * @deprecated This API is deprecated. Use features/knowledge-graph/hooks instead.
  * This file contains the old goal API and will be removed in a future version.
- * 
+ *
  * Migration guide:
  * - Use useGenerateGoals hook instead of createGoal/createGraphWithGoal
  * - Use MentorGoalForm component instead of GoalForm
@@ -12,6 +12,9 @@ import type { JsonValue } from '@almadar-io/knowledge';
 import { apiClient } from '../../services/apiClient';
 import { auth } from '../../config/firebase';
 import { parseIncrementalJSON } from '../../utils/jsonParser';
+import { createLogger } from '@almadar/logger';
+
+const log = createLogger('kflow:client:learning:goalApi');
 
 // Helper function for auth headers
 const withAuthHeaders = async (): Promise<HeadersInit> => {
@@ -252,7 +255,7 @@ async function handleStreamingGraphWithGoal(
       }
     }
   } catch (error) {
-    console.error('Error during streaming:', error);
+    log.error('Error during streaming', { error: error instanceof Error ? error.message : String(error) });
     throw error;
   }
 
@@ -263,14 +266,14 @@ async function handleStreamingGraphWithGoal(
         const jsonMatch = fullContent.match(/\{[\s\S]*\}/);
         if (jsonMatch) {
           const goalData = JSON.parse(jsonMatch[0]);
-          console.warn('Streaming completed but no final result received. Attempting to parse from full content:', goalData);
+          log.warn('Streaming completed but no final result received. Attempting to parse from full content', { goalData });
           // Note: We can't create the graph from frontend, so this is just for debugging
           // The backend should always send the final result
         }
       } catch (parseError) {
-        console.error('Failed to parse full content as fallback:', parseError);
+        log.error('Failed to parse full content as fallback', { error: parseError instanceof Error ? parseError.message : String(parseError) });
       }
-      console.error('Streaming failed. Full content received (first 500 chars):', fullContent.substring(0, 500));
+      log.error('Streaming failed. Full content received (first 500 chars)', { content: fullContent.substring(0, 500) });
     }
     throw new Error('Streaming graph and goal creation did not return a result. The backend may not have sent the final event properly. Check console for details.');
   }

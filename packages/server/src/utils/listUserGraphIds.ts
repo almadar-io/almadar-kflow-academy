@@ -1,4 +1,7 @@
+import { createLogger } from '@almadar/logger';
 import { getFirestore } from '@almadar/server';
+
+const log = createLogger('kflow:server:utils:listUserGraphIds');
 
 /**
  * The ids of every knowledge graph owned by a user. Goals, learning-path
@@ -6,6 +9,7 @@ import { getFirestore } from '@almadar/server';
  * collection — this is the single source for that scan.
  */
 export async function listUserGraphIds(uid: string): Promise<string[]> {
+  log.info('[CHROMA-DEBUG] listUserGraphIds called', { uid });
   const db = getFirestore();
   const snapshot = await db
     .collection('users')
@@ -13,5 +17,7 @@ export async function listUserGraphIds(uid: string): Promise<string[]> {
     .collection('knowledgeGraphs')
     .select('id')
     .get();
-  return snapshot.docs.map(doc => doc.id);
+  const ids = snapshot.docs.map(doc => doc.id);
+  log.info('[CHROMA-DEBUG] listUserGraphIds result', { count: ids.length, ids: ids.join(',') });
+  return ids;
 }

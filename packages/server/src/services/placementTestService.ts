@@ -1,4 +1,7 @@
 import type { AssessmentSubmissionNodeProperties } from '@almadar-io/knowledge';
+import { createLogger } from '@almadar/logger';
+
+const log = createLogger('kflow:server:services:placementTestService');
 import { accessLayer } from './studentDataAccess';
 import type {
   PlacementTest,
@@ -207,7 +210,7 @@ export async function submitPlacementTest(options: SubmitPlacementTestOptions & 
       await updateGoal(uid, test.goalId, updatedGoal);
     }
   } catch (error) {
-    console.error('Error updating goal with assessment results:', error);
+    log.error('Error updating goal with assessment results', { error: error instanceof Error ? error.message : String(error) });
   }
 
   return result;

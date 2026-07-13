@@ -1,5 +1,8 @@
 import { getFirestore } from '@almadar/server';
 import { accessLayer } from './studentDataAccess';
+import { createLogger } from '@almadar/logger';
+
+const log = createLogger('kflow:server:services:userService');
 
 export interface UserData {
   uid: string;
@@ -30,7 +33,7 @@ export async function upsertUser(uid: string, email: string): Promise<UserData> 
 
     return userData;
   } catch (error) {
-    console.error('Error upserting user:', error);
+    log.error('Error upserting user', { error: error instanceof Error ? error.message : String(error) });
     throw error;
   }
 }
@@ -43,7 +46,7 @@ export async function getUser(uid: string): Promise<UserData | null> {
     if (!userDoc.exists) return null;
     return userDoc.data() as UserData;
   } catch (error) {
-    console.error('Error getting user:', error);
+    log.error('Error getting user', { error: error instanceof Error ? error.message : String(error) });
     return null;
   }
 }

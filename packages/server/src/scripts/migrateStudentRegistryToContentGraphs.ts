@@ -32,9 +32,12 @@ process.env.FIREBASE_PRIVATE_KEY ??= process.env.FB_PRIVATE_KEY;
 
 import * as fs from 'fs';
 import { initializeFirebase, getFirestore } from '@almadar/server';
+import { createLogger } from '@almadar/logger';
 import { KnowledgeGraphAccessLayer } from '@almadar-io/knowledge/server';
 import type { DocumentData, Firestore } from 'firebase-admin/firestore';
 import { invalidateLearningPaths, invalidateJumpBackIn } from '../services/cacheInvalidation';
+
+const log = createLogger('kflow:server:scripts:migrateStudentRegistryToContentGraphs');
 
 const STUDENT_GRAPH = (uid: string) => `student:${uid}`;
 const kgal = new KnowledgeGraphAccessLayer();
@@ -92,7 +95,7 @@ async function resolveOwner(
   return null;
 }
 
-async function processUser(db: Firestore, uid: string, apply: boolean, agg: Stats, log: boolean): Promise<void> {
+async function processUser(db: Firestore, uid: string, apply: boolean, agg: Stats, verbose: boolean): Promise<void> {
   const registryId = STUDENT_GRAPH(uid);
   if (!(await graphExists(db, uid, registryId))) return;
   agg.registries++;
@@ -110,7 +113,7 @@ async function processUser(db: Firestore, uid: string, apply: boolean, agg: Stat
     }
     if (apply) await kgal.upsertEnrollment(owner, graphId, uid, p);
     agg.enrollmentsMoved++;
-    if (log) console.log(`  ${apply ? 'moved' : 'would move'} enrollment ${node.id} → ${owner}/${graphId}`);
+    if (verbose) log.debug(`${apply ? 'Moved' : 'Would move'} enrollment ${node.id} → ${owner}/${graphId}`);
   }
 
   // ── graph-scoped: Progress ──────────────────────────────────────────────
@@ -126,7 +129,7 @@ async function processUser(db: Firestore, uid: string, apply: boolean, agg: Stat
     }
     if (apply) await kgal.upsertProgress(owner, graphId, uid, p.conceptId, p);
     agg.progressMoved++;
-    if (log) console.log(`  ${apply ? 'moved' : 'would move'} progress ${node.id} → ${owner}/${graphId}`);
+    if (verbose) log.debug(`${apply ? 'Moved' : 'Would move'} progress ${node.id} → ${owner}/${graphId}`);
   }
 
   // ── graph-scoped: AssessmentSubmission ──────────────────────────────────
@@ -142,7 +145,7 @@ async function processUser(db: Firestore, uid: string, apply: boolean, agg: Stat
     }
     if (apply) await kgal.recordSubmission(owner, graphId, uid, p.assessmentId, p);
     agg.submissionsMoved++;
-    if (log) console.log(`  ${apply ? 'moved' : 'would move'} submission ${node.id} → ${owner}/${graphId}`);
+    if (verbose) log.debug(`${apply ? 'Moved' : 'Would move'} submission ${node.id} → ${owner}/${graphId}`);
   }
 
   // ── global → Firestore profile doc ──────────────────────────────────────
@@ -151,7 +154,7 @@ async function processUser(db: Firestore, uid: string, apply: boolean, agg: Stat
     const p = node.properties;
     if (apply) await kgal.upsertProfile(uid, { displayName: p.name, email: p.email, phone: p.phone });
     agg.profiles++;
-    if (log) console.log(`  ${apply ? 'moved' : 'would move'} student profile → users/${uid}/profile/student`);
+    if (verbose) log.debug(`${apply ? 'Moved' : 'Would move'} student profile → users/${uid}/profile/student`);
   }
   const prefs = await kgal.getNodesByType(uid, registryId, 'StudentPreferences');
   for (const node of prefs) {
@@ -173,8 +176,16 @@ async function processUser(db: Firestore, uid: string, apply: boolean, agg: Stat
     await invalidateLearningPaths(uid);
     await invalidateJumpBackIn(uid);
   }
-  if (log) {
-    console.log(`  ${uid}: enroll ${agg.enrollmentsMoved}/${enrollments.length}, progress ${agg.progressMoved}/${progress.length}, subs ${agg.submissionsMoved}/${submissions.length}; registry ${apply ? 'deleted' : 'would delete'}`);
+  if (verbose) {
+    log.info(`Migrated enrollments, progress, and submissions for ${uid}`, {
+      enrollmentsMoved: agg.enrollmentsMoved,
+      enrollmentsTotal: enrollments.length,
+      progressMoved: agg.progressMoved,
+      progressTotal: progress.length,
+      submissionsMoved: agg.submissionsMoved,
+      submissionsTotal: submissions.length,
+      registryDeleted: apply,
+    });
   }
 }
 
@@ -184,7 +195,7 @@ async function main() {
   const all = args.includes('--all');
   const uidArg = args.filter(a => !a.startsWith('--'))[0];
   if (!all && !uidArg) {
-    console.error('usage: <uid> [--apply]  |  --all [--apply]');
+    log.error('usage: <uid> [--apply]  |  --all [--apply]');
     process.exit(1);
   }
 
@@ -201,7 +212,11 @@ async function main() {
     fs.mkdirSync(backupDir, { recursive: true });
   }
 
-  console.log(`\n${apply ? '🟢 APPLY' : '🔎 DRY-RUN'}  db=${process.env.FB_DB_ID || '(default)'}  users=${uids.length}${apply ? `  backups→ ${backupDir}` : ''}\n`);
+  log.info(`${apply ? 'APPLY' : 'DRY-RUN'}`, {
+    database: process.env.FB_DB_ID || '(default)',
+    usersCount: uids.length,
+    backupsDir: backupDir || undefined,
+  });
 
   const agg = newStats();
   const verbose = !all;
@@ -211,27 +226,50 @@ async function main() {
       await processUser(db, uid, apply, agg, verbose);
     } catch (err) {
       agg.failed++;
-      console.error(`  ${uid}: failed —`, err instanceof Error ? err.message : err);
+      log.error(`Failed to process user ${uid}`, {
+        error: err instanceof Error ? err.message : String(err),
+      });
     }
     agg.users++;
   }
 
-  console.log(`\n━━ summary (${agg.users} users) ━━`);
-  console.log(`  student registries found: ${agg.registries}`);
-  console.log(`  enrollments ${apply ? 'moved' : 'movable'}: ${agg.enrollmentsMoved}/${agg.enrollments}`);
-  console.log(`  progress ${apply ? 'moved' : 'movable'}: ${agg.progressMoved}/${agg.progress}`);
-  console.log(`  submissions ${apply ? 'moved' : 'movable'}: ${agg.submissionsMoved}/${agg.submissions}`);
-  console.log(`  profiles ${apply ? 'written' : 'to write'}: ${agg.profiles}  preferences: ${agg.preferences}  achievements: ${agg.achievements}`);
-  console.log(`  registries ${apply ? 'deleted' : 'to delete'}: ${apply ? agg.registriesDeleted : agg.registries}`);
-  if (agg.failed) console.log(`  failed: ${agg.failed}`);
+  log.info('Migration summary', {
+    users: agg.users,
+    studentRegistriesFound: agg.registries,
+    enrollmentsMoved: agg.enrollmentsMoved,
+    enrollmentsTotal: agg.enrollments,
+    progressMoved: agg.progressMoved,
+    progressTotal: agg.progress,
+    submissionsMoved: agg.submissionsMoved,
+    submissionsTotal: agg.submissions,
+    profiles: agg.profiles,
+    preferences: agg.preferences,
+    achievements: agg.achievements,
+    registriesDeleted: apply ? agg.registriesDeleted : agg.registries,
+    failed: agg.failed,
+  });
+
   if (agg.orphans.length > 0) {
-    console.log(`\n  ⚠️  ${agg.orphans.length} orphan node(s) cannot be placed${apply ? ' and were dropped with their registry' : ''}:`);
-    for (const o of agg.orphans.slice(0, 50)) console.log(`     - [${o.uid}] ${o.kind} ${o.nodeId} — ${o.reason}`);
-    if (agg.orphans.length > 50) console.log(`     … and ${agg.orphans.length - 50} more`);
+    log.warn(`${agg.orphans.length} orphan node(s) cannot be placed${apply ? ' and were dropped with their registry' : ''}`);
+    for (const o of agg.orphans.slice(0, 50)) {
+      log.debug(`Orphan node: [${o.uid}] ${o.kind} ${o.nodeId} — ${o.reason}`);
+    }
+    if (agg.orphans.length > 50) {
+      log.warn(`... and ${agg.orphans.length - 50} more orphans`);
+    }
   }
-  if (apply) console.log(`\n  backups: ${backupDir}`);
-  if (!apply && agg.registries > 0) console.log(`\n  Re-run with --apply to write the changes.`);
+
+  if (apply) log.info(`Backups saved to: ${backupDir}`);
+  if (!apply && agg.registries > 0) {
+    log.info('Re-run with --apply to write the changes.');
+  }
+
   process.exit(0);
 }
 
-main().catch(e => { console.error(e); process.exit(1); });
+main().catch(e => {
+  log.error('Fatal error', {
+    error: e instanceof Error ? e.message : String(e),
+  });
+  process.exit(1);
+});

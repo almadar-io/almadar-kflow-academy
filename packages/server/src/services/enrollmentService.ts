@@ -1,5 +1,8 @@
 import { getFirestore } from '@almadar/server';
 import type { EnrollmentNodeProperties } from '@almadar-io/knowledge';
+import { createLogger } from '@almadar/logger';
+
+const log = createLogger('kflow:server:services:enrollmentService');
 import { hybridCache, CACHE_TTL } from "./cacheService";
 import { CACHE_KEYS } from "./cacheInvalidation";
 import { accessLayer } from "./studentDataAccess";
@@ -88,7 +91,7 @@ export async function getEnrolledCoursesWithDetails(
         progress: { totalLessons, completedLessons, progressPercentage },
       };
     } catch (error) {
-      console.error(`Failed to load course ${enrollment.courseId}:`, error);
+      log.error('Failed to load course', { courseId: enrollment.courseId, error: error instanceof Error ? error.message : String(error) });
       return null;
     }
   });
@@ -103,7 +106,5 @@ export async function getCourseEnrollment(courseId: string, studentId: string): 
 }
 
 export async function updateEnrollmentsForCourse(mentorId: string, courseId: string): Promise<void> {
-  console.warn(
-    "updateEnrollmentsForCourse is deprecated. " + "Old Firestore course/module/lesson services have been removed."
-  );
+  log.warn("updateEnrollmentsForCourse is deprecated. Old Firestore course/module/lesson services have been removed.");
 }

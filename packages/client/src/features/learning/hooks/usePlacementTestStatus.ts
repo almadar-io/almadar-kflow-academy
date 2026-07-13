@@ -6,6 +6,9 @@ import { useState, useEffect } from 'react';
 import { getUserGoals, getGoalById } from '../goalApi';
 import { placementTestApi } from '../placementTestApi';
 import type { LearningGoal } from '../goalApi';
+import { createLogger } from '@almadar/logger';
+
+const log = createLogger('kflow:client:learning:usePlacementTestStatus');
 
 interface UsePlacementTestStatusOptions {
   graphId?: string;
@@ -69,7 +72,7 @@ export function usePlacementTestStatus(
           const completedTest = testsResponse.tests.find(t => t.completedAt);
           setHasCompletedPlacementTest(!!completedTest);
         } catch (testError) {
-          console.error('Error checking placement test:', testError);
+          log.error('Error checking placement test', { error: testError instanceof Error ? testError.message : String(testError) });
           // If we can't check the test, assume it's not completed
           setHasCompletedPlacementTest(false);
         }
@@ -78,7 +81,7 @@ export function usePlacementTestStatus(
         setHasCompletedPlacementTest(false);
       }
     } catch (err) {
-      console.error('Error fetching goals:', err);
+      log.error('Error fetching goals', { error: err instanceof Error ? err.message : String(err) });
       setError(err instanceof Error ? err.message : 'Failed to check placement test status');
       setGoal(null);
       setHasCompletedPlacementTest(false);

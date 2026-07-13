@@ -9,12 +9,14 @@
     "start": "node dist/server.js",
     "clean": "rm -rf dist",
     "lint": "eslint src/",
-    "test": "node --experimental-vm-modules node_modules/.bin/jest"
+    "test": "node --experimental-vm-modules node_modules/.bin/jest",
+    "backfill:chroma": "tsx src/scripts/backfillChroma.ts"
   },
   "dependencies": {
     "@almadar-io/knowledge": "^0.7.3",
     "@almadar/core": "^10.11.0",
     "@almadar/llm": "^2.24.1",
+    "@almadar/logger": "^1.9.0",
     "@almadar/sdk": "^0.2.0",
     "@almadar/server": "^2.14.2",
     "@kflow-academy/shared": "workspace:*",
