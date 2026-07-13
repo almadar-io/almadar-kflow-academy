@@ -70,7 +70,8 @@ export const DashboardPage: React.FC = () => {
     () => pathSummaries.map(p => ({ graphId: p.id, name: p.title, conceptCount: p.conceptCount })),
     [pathSummaries]
   );
-  const pathMap = useLearningPathMap(pathMapInputs, semanticEdges);
+  const [expandedGroups, setExpandedGroups] = useState<Set<string>>(() => new Set());
+  const pathMap = useLearningPathMap(pathMapInputs, semanticEdges, expandedGroups);
 
   // L2 drill: the concepts of one path, edged by concept parent -> child.
   const { concepts: l2Concepts, loading: l2Loading } = useConceptsByLayer(selectedGraphId ?? '', {
@@ -134,6 +135,10 @@ export const DashboardPage: React.FC = () => {
       setLevel('L1');
       setSelectedGraphId(null);
     });
+    const unsubBadge = on('UI:KNOWLEDGE_NODE_BADGE_CLICK', (event) => {
+      const nodeId = event.payload?.nodeId as string | undefined;
+      if (nodeId) setExpandedGroups((prev) => new Set(prev).add(nodeId));
+    });
     return () => {
       unsubPath();
       unsubCreate();
@@ -142,6 +147,7 @@ export const DashboardPage: React.FC = () => {
       unsubOpen();
       unsubDrill();
       unsubBack();
+      unsubBadge();
     };
   }, [on, navigate, handleDeletePath]);
 

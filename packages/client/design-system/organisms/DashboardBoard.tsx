@@ -129,6 +129,13 @@ export function DashboardBoard({
     }
   }, [emit, level]);
 
+  // Clicking a merged node's count badge expands that cluster (L1 only). The page owns the
+  // expanded-groups set and recomputes the map, so we just emit the group id over the bus.
+  const handleBadgeClick = useCallback((node: GraphNode) => {
+    const mapNode = node as DashboardKnowledgeMapNode;
+    emit('UI:KNOWLEDGE_NODE_BADGE_CLICK', { nodeId: mapNode.id, graphId: mapNode.graphId });
+  }, [emit]);
+
   const handleClearSelected = useCallback(() => {
     setSelectedNode(null);
   }, []);
@@ -224,11 +231,13 @@ export function DashboardBoard({
                       showLabels
                       interactive
                       draggable
-                      repulsion={3000}
-                      linkDistance={200}
+                      repulsion={3200}
+                      linkDistance={220}
+                      nodeSpacing={42}
                       selectedNodeId={selectedNode?.id}
                       onNodeClick={handleKnowledgeNodeClick}
                       onNodeDoubleClick={handleKnowledgeNodeDoubleClick}
+                      onBadgeClick={handleBadgeClick}
                       className="w-full"
                     />
 
