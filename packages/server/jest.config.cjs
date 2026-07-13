@@ -4,13 +4,13 @@ module.exports = {
   extensionsToTreatAsEsm: ['.ts'],
   moduleNameMapper: {
     '^(\\.{1,2}/.*)\\.js$': '$1',
-    '^@almadar/sdk$': '<rootDir>/../../node_modules/@almadar/sdk/dist/index.js',
-    '^@almadar/sdk/client$': '<rootDir>/../../node_modules/@almadar/sdk/dist/client/index.js',
+    '^@almadar/sdk$': '<rootDir>/node_modules/@almadar/sdk/dist/index.js',
+    '^@almadar/sdk/client$': '<rootDir>/node_modules/@almadar/sdk/dist/client/index.js',
     '^@almadar/server$': '<rootDir>/../../node_modules/@almadar/server/dist/index.js',
     '^@almadar-io/knowledge$': '<rootDir>/../../node_modules/@almadar-io/knowledge/dist/index.js',
     '^@almadar-io/knowledge/server$': '<rootDir>/../../node_modules/@almadar-io/knowledge/dist/server.js',
-    '^@kflow-academy/shared$': '<rootDir>/../../node_modules/@kflow-academy/shared/dist/index.js',
-    '^@almadar/llm$': '<rootDir>/../../node_modules/@almadar/llm/dist/index.js',
+    '^@kflow-academy/shared$': '<rootDir>/node_modules/@kflow-academy/shared/dist/index.js',
+    '^@almadar/llm$': '<rootDir>/node_modules/@almadar/llm/dist/index.js',
   },
   transform: {
     '^.+\\.tsx?$': ['ts-jest', { useESM: true }],
