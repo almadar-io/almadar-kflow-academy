@@ -38,10 +38,10 @@ import { createLogger } from '@almadar/logger';
 // Static named imports can resolve to a different copy in pnpm workspaces.
 const almadarServer = await import('@almadar/server');
 almadarServer.initializeFirebase();
-(almadarServer.getFirestore() as any).settings({
-  ignoreUndefinedProperties: true,
-  databaseId: process.env.FB_DB_ID,
-});
+// @almadar/server >=2.25 getFirestore() applies the named-database settings
+// (FIRESTORE_DATABASE_ID / FB_DB_ID) itself, once per instance. Calling
+// settings() again here throws "Firestore has already been initialized".
+almadarServer.getFirestore();
 
 // Import knowledge *dynamically* and *after* we have initialized the server module.
 // This + the auto-init safety net in @almadar/server's getApp (for dev) prevents
@@ -57,7 +57,7 @@ async function main() {
   // Dynamic import after initialization to ensure the right module instance
   const { KnowledgeGraphAccessLayer } = await import('@almadar-io/knowledge/server');
   const access = new KnowledgeGraphAccessLayer();
-  const db = almadarServer.getFirestore() as any;
+  const db = almadarServer.getFirestore();
 
   const snapshot = await db
     .collection('users')
