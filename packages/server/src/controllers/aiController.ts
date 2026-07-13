@@ -575,7 +575,7 @@ export async function generateLayerPracticeHandler(
                     conceptIds: existingLayer?.conceptIds || concepts.map(c => c.id || c.name),
                     practiceExercises: reviewItems,
                   });
-                  log.info('Successfully saved review to layer', { layerNumber });
+                  log.debug('Successfully saved review to layer', { layerNumber });
                 })
                 .catch((error) => {
                   log.error('Failed to save review to layer', { error: error instanceof Error ? error.message : String(error) });
@@ -605,8 +605,8 @@ export async function generateLayerPracticeHandler(
       try {
         // Get existing layer or create new one
         const existingLayer = await getLayerByNumber(uid, graphId, layerNumber);
-        
-        log.info('Saving practice exercises to layer', {
+
+        log.debug('Saving practice exercises to layer', {
           layerNumber,
           graphId,
           itemsCount: practiceResult.items.length,
@@ -621,14 +621,14 @@ export async function generateLayerPracticeHandler(
           conceptIds: existingLayer?.conceptIds || concepts.map(c => c.id || c.name),
           practiceExercises: practiceResult.items,
         });
-        
-        log.info('Successfully saved practice exercises to layer', { layerNumber });
+
+        log.debug('Successfully saved practice exercises to layer', { layerNumber });
       } catch (error) {
         log.error('Failed to save practice exercises to layer', { error: error instanceof Error ? error.message : String(error) });
         // Continue even if saving fails
       }
     } else {
-      log.info('Skipping save: graphId or items missing', {
+      log.debug('Skipping save: graphId or items missing', {
         hasGraphId: !!graphId,
         itemsCount: practiceResult.items?.length || 0,
       });

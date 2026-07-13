@@ -9,7 +9,7 @@ const log = createLogger('kflow:server:utils:listUserGraphIds');
  * collection — this is the single source for that scan.
  */
 export async function listUserGraphIds(uid: string): Promise<string[]> {
-  log.info('[CHROMA-DEBUG] listUserGraphIds called', { uid });
+  log.debug('[CHROMA-DEBUG] listUserGraphIds called', { uid });
   const db = getFirestore();
   const snapshot = await db
     .collection('users')
@@ -18,6 +18,6 @@ export async function listUserGraphIds(uid: string): Promise<string[]> {
     .select('id')
     .get();
   const ids = snapshot.docs.map(doc => doc.id);
-  log.info('[CHROMA-DEBUG] listUserGraphIds result', { count: ids.length, ids: ids.join(',') });
+  log.debug('[CHROMA-DEBUG] listUserGraphIds result', { count: ids.length, ids: ids.join(',') });
   return ids;
 }

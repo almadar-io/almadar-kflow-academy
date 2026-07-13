@@ -39,7 +39,7 @@ export const explanationResolvers = {
       args: ExplainConceptArgs,
       context: GraphQLContext
     ): Promise<ExplainConceptResult> => {
-      log.info('[CHROMA-DEBUG][LESSON] explainConcept called', { graphId: args.graphId, targetNodeId: args.targetNodeId });
+      log.debug('[CHROMA-DEBUG][LESSON] explainConcept called', { graphId: args.graphId, targetNodeId: args.targetNodeId });
       // Verify graph ownership before write operations
       await verifyGraphAccessForResolver(context, args.graphId, 'write');
       
@@ -49,7 +49,7 @@ export const explanationResolvers = {
       // Find target node
       const targetNode = graph.nodes[args.targetNodeId];
       const targetName = (targetNode?.properties as any)?.name || (targetNode as any)?.name || '??';
-      log.info('[CHROMA-DEBUG][LESSON] targetNode', { name: targetName, type: targetNode?.type, graphId: args.graphId });
+      log.debug('[CHROMA-DEBUG][LESSON] targetNode', { name: targetName, type: targetNode?.type, graphId: args.graphId });
       if (!targetNode || targetNode.type !== 'Concept') {
         throw new Error(`Concept node ${args.targetNodeId} not found`);
       }
@@ -66,14 +66,14 @@ export const explanationResolvers = {
       let allUserGraphIds: string[] | undefined;
       try {
         allUserGraphIds = await listUserGraphIds(uid);
-        log.info('[CHROMA-DEBUG][LESSON] listUserGraphIds returned', { count: allUserGraphIds?.length || 0, uid, ids: allUserGraphIds?.join(',') });
+        log.debug('[CHROMA-DEBUG][LESSON] listUserGraphIds returned', { count: allUserGraphIds?.length || 0, uid, ids: allUserGraphIds?.join(',') });
       } catch (e) {
         log.error('[CHROMA-DEBUG][LESSON] listUserGraphIds failed', { error: (e as any)?.message || String(e) });
         /* best effort, no cross priors */
       }
 
       // Execute operation with minimal input
-      log.info('[CHROMA-DEBUG][LESSON] calling @almadar explain', { allUserGraphIdsLen: allUserGraphIds?.length });
+      log.debug('[CHROMA-DEBUG][LESSON] calling @almadar explain', { allUserGraphIdsLen: allUserGraphIds?.length });
       const result = await explain({
         graph,
         mutationContext,
@@ -97,7 +97,7 @@ export const explanationResolvers = {
 
       // Save graph
       await accessLayer.saveGraph(uid, updatedGraph);
-      log.info('[CHROMA-DEBUG][LESSON] saved graph after explain', { mutationCount: result.mutations?.mutations?.length || 0, errorCount: errors.length });
+      log.debug('[CHROMA-DEBUG][LESSON] saved graph after explain', { mutationCount: result.mutations?.mutations?.length || 0, errorCount: errors.length });
 
       // INSTRUMENT + FORCE: try explicit vector registration for any new Lesson/Concept nodes using whatever vector the access has
       try {
@@ -105,9 +105,9 @@ export const explanationResolvers = {
         if (v && typeof v.upsertNodes === 'function') {
           const allNodes = Object.values(updatedGraph.nodes || {});
           const count = await v.upsertNodes(args.graphId, allNodes);
-          log.info('[CHROMA-DEBUG][LESSON] explicit v.upsertNodes after save', { count });
+          log.debug('[CHROMA-DEBUG][LESSON] explicit v.upsertNodes after save', { count });
         } else {
-          log.info('[CHROMA-DEBUG][LESSON] no getVectorService or no upsert on accessLayer (old dep or not wired)');
+          log.debug('[CHROMA-DEBUG][LESSON] no getVectorService or no upsert on accessLayer (old dep or not wired)');
         }
       } catch (e) {
         log.error('[CHROMA-DEBUG][LESSON] explicit upsert attempt error', { error: (e as any)?.message || String(e) });
@@ -156,14 +156,14 @@ export const explanationResolvers = {
       let relatedFromOp: Array<{ graphId: string; nodeId: string; name?: string; text?: string }> | undefined;
       if (allUserGraphIds && allUserGraphIds.length > 0) {
         const otherIds = allUserGraphIds.filter(id => id !== args.graphId);
-        log.info('[CHROMA-DEBUG][ANSWER] related cross', { all: allUserGraphIds.length, other: otherIds.length });
+        log.debug('[CHROMA-DEBUG][ANSWER] related cross', { all: allUserGraphIds.length, other: otherIds.length });
         if (otherIds.length > 0) {
           try {
             const targetNode = graph.nodes[args.targetNodeId] as { properties?: { name?: string; description?: string } } | undefined;
             const props = targetNode?.properties || {};
             const query = `${props.name || ''} ${props.description || ''}`.trim().slice(0, 400);
             const hits = await accessLayer.findSimilarNodesCrossGraph(uid, otherIds, query, 3, ['Concept']);
-            log.info('[CHROMA-DEBUG][ANSWER] related hits', { hitCount: hits?.length || 0 });
+            log.debug('[CHROMA-DEBUG][ANSWER] related hits', { hitCount: hits?.length || 0 });
             relatedFromOp = hits
               .filter((h): h is { graphId: string; name: string } => {
                 return !!(h && h.graphId && h.graphId !== args.graphId && h.name);
@@ -177,7 +177,7 @@ export const explanationResolvers = {
           }
         }
       } else {
-        log.info('[CHROMA-DEBUG][ANSWER] no allUserGraphIds for related');
+        log.debug('[CHROMA-DEBUG][ANSWER] no allUserGraphIds for related');
       }
 
       // Execute operation with minimal input (default to ephemeral)

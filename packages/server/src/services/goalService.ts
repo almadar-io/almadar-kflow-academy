@@ -167,7 +167,7 @@ export async function markMilestoneCompleted(
     updatedMilestones[milestoneIndex] = { ...milestone, completed: true, completedAt: Date.now() };
 
     await updateGoal(uid, goal.id, { milestones: updatedMilestones });
-    log.info('Marked milestone as completed for goal', { title: milestone.title, goalId: goal.id });
+    log.debug('Marked milestone as completed for goal', { title: milestone.title, goalId: goal.id });
   } catch (error) {
     log.error('Failed to mark milestone as completed for graph', { milestoneIndex, graphId, error: error instanceof Error ? error.message : String(error) });
   }
