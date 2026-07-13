@@ -65,12 +65,12 @@ await check('SDK lesson endpoint reachable and authenticated', async () => {
 
   assert(response.status === 200, `expected 200, got ${response.status}: ${JSON.stringify(response.body).slice(0, 160)}`);
   const schema = response.body.schema;
+  // Canonical @almadar/core OrbitalSchema shape: { name, version?, orbitals[] }.
   assert(schema && typeof schema === 'object', `response missing schema: ${JSON.stringify(response.body).slice(0, 160)}`);
-  assert(Array.isArray(schema.organisms) && schema.organisms.length > 0, 'schema.organisms is empty or missing');
-  assert(Array.isArray(schema.behaviors), 'schema.behaviors is missing');
-  assert(schema.rootId || schema.root, 'schema has no root/rootId');
+  assert(typeof schema.name === 'string' && schema.name.length > 0, 'schema.name is missing');
+  assert(Array.isArray(schema.orbitals) && schema.orbitals.length > 0, 'schema.orbitals is empty or missing');
 
-  return `status=${response.status}, organisms=${schema.organisms.length}, behaviors=${schema.behaviors.length}`;
+  return `status=${response.status}, name="${schema.name}", orbitals=${schema.orbitals.length}`;
 });
 
 const skipped = results.filter((r) => r.detail.startsWith('skipped')).length;
