@@ -85,6 +85,12 @@ env:
   - variable: DEEPSEEK_API_KEY
     secret: DEEPSEEK_API_KEY
 
+  # OpenRouter — drives the bge (baai/bge-base-en-v1.5, 768-d) embeddings for the
+  # knowledge vector index. MUST be set: absent it, getEmbeddingClient() falls back
+  # to OpenAI (1536-d), which mismatches the bge vectors already in Chroma Cloud.
+  - variable: OPEN_ROUTER_API_KEY
+    secret: OPEN_ROUTER_API_KEY
+
   # Almadar SDK credentials — used by /api/generate-interactive-orbital
   # to call the Builder Studio agent endpoint.
   - variable: ALMADAR_API_KEY
