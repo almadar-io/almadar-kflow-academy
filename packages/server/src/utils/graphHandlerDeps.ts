@@ -25,6 +25,7 @@ import {
   parseGenerateLayerPracticeContent,
   parseCustomOperationContent,
 } from './graphOperationParsers';
+import { invalidateGraphCaches } from '../services/cacheInvalidation';
 
 const accessLayer = new KnowledgeGraphAccessLayer();
 const mutationService = new GraphMutationService();
@@ -46,6 +47,10 @@ async function verifyAccess(uid: string, graphId: string, level: 'read' | 'write
 
 async function invalidateCache(uid: string, graphId: string): Promise<void> {
   await accessLayer.clearCache(uid, graphId);
+  // Also clear the HTTP-layer hybridCache (learningpaths:{uid}, graphQuery:*) so a
+  // node upsert — which re-embeds to Chroma and can change cross-graph semanticEdges —
+  // doesn't leave the cached /learning-paths payload stale for the full TTL.
+  await invalidateGraphCaches(uid, graphId);
 }
 
 export const graphAccessDeps: GraphAccessDeps = {

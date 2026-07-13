@@ -12,10 +12,15 @@ import { graphQueryApi } from '../api/queryApi';
 import { knowledgeGraphKeys } from './queryKeys';
 import type { LearningPathSummary } from '../api/types';
 
+// Mirror the server-side hybridCache LEARNING_PATHS TTL (10 min) so the client
+// doesn't refetch mid-window only to receive the same cached payload. Mutations
+// still refetch immediately via invalidateLearningPaths (useInvalidateGraph).
+const TEN_MIN = 10 * 60 * 1000;
+
 export interface UseLearningPathsOptions {
   /** Whether to enable the query (default: true) */
   enabled?: boolean;
-  /** Stale time in milliseconds (default: 5 minutes from queryClient) */
+  /** Stale time in milliseconds (default: 10 minutes, mirroring the server cache TTL) */
   staleTime?: number;
 }
 
@@ -35,7 +40,7 @@ export function useLearningPaths(options?: UseLearningPathsOptions) {
       };
     },
     enabled: options?.enabled !== false,
-    staleTime: options?.staleTime,
+    staleTime: options?.staleTime ?? TEN_MIN,
   });
 
   const refetch = async () => {

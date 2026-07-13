@@ -10,15 +10,31 @@ import { authenticateFirebase } from '@almadar/server';
 import { createLogger } from '@almadar/logger';
 import { graphQueryDeps } from '../utils/graphHandlerDeps';
 import { computeLevelCount } from '../utils/computeLevelCount';
+import { hybridCache, CACHE_TTL } from '../services/cacheService';
+import { CACHE_KEYS } from '../services/cacheInvalidation';
 
 const log = createLogger('kflow:server:routes:graphQueryRoutes');
 const router = Router();
+
+type LearningPathsPayload = {
+  learningPaths: Array<ReturnType<typeof extractLearningPathSummary> & { levelCount: number }>;
+  semanticEdges: Array<{ source: string; target: string; weight?: number }>;
+};
 
 router.use(authenticateFirebase);
 
 router.get('/learning-paths', async (req, res, next) => {
   try {
     const uid = graphQueryDeps.getUid(req);
+
+    const cacheKey = CACHE_KEYS.learningPaths(uid);
+    const cached = await hybridCache.get<LearningPathsPayload>(cacheKey);
+    if (cached) {
+      log.debug(`[CHROMA-DEBUG][SEMANTIC] /learning-paths cache hit`, { uid, edges: cached.semanticEdges.length });
+      res.json(cached);
+      return;
+    }
+
     if (!graphQueryDeps.getAllGraphIds) {
       res.status(501).json({ error: 'getAllGraphIds not provided' });
       return;
@@ -72,11 +88,13 @@ router.get('/learning-paths', async (req, res, next) => {
         }
       }
     } catch (e) {
-      log.error('[CHROMA-DEBUG][SEMANTIC] loop error', { error: (e as any)?.message || String(e) });
+      log.error('[CHROMA-DEBUG][SEMANTIC] loop error', { error: e instanceof Error ? e.message : String(e) });
       // graceful, no semantic
     }
 
-    res.json({ learningPaths: paths, semanticEdges });
+    const payload: LearningPathsPayload = { learningPaths: paths, semanticEdges };
+    await hybridCache.set(cacheKey, payload, CACHE_TTL.LEARNING_PATHS);
+    res.json(payload);
   } catch (error) {
     next(error);
   }
