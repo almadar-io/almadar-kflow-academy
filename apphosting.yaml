@@ -94,3 +94,21 @@ env:
     value: "https://studio.almadar.io"
     availability:
       - RUNTIME
+
+  # Chroma Cloud (managed serverless vector store — embeddings + cross-graph
+  # semantic search; when CHROMA_CLOUD_API_KEY is absent the server falls back to
+  # self-host CHROMA_HOST, or no-ops if neither is set)
+  - variable: CHROMA_CLOUD_API_KEY
+    secret: CHROMA_CLOUD_API_KEY
+    availability:
+      - RUNTIME
+
+  - variable: CHROMA_CLOUD_TENANT
+    value: "ad770140-cb46-41d0-a9e7-7c924a0fa24c"
+    availability:
+      - RUNTIME
+
+  - variable: CHROMA_CLOUD_DATABASE_NAME
+    value: kflow
+    availability:
+      - RUNTIME
