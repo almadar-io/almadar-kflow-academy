@@ -10,6 +10,7 @@ import { GraphMutationService } from '@almadar-io/knowledge/server';
 const log = createLogger('kflow:server:graphql:explanationResolvers');
 import { KnowledgeGraphAccessLayer } from '@almadar-io/knowledge/server';
 import { explain, answerQuestion } from '@almadar-io/knowledge/server';
+import type { VectorSearchHit } from '@almadar-io/knowledge/server';
 import type {
   GraphQLContext,
   ExplainConceptArgs,
@@ -165,7 +166,7 @@ export const explanationResolvers = {
             const hits = await accessLayer.findSimilarNodesCrossGraph(uid, otherIds, query, 3, ['Concept']);
             log.debug('[CHROMA-DEBUG][ANSWER] related hits', { hitCount: hits?.length || 0 });
             relatedFromOp = hits
-              .filter((h): h is { graphId: string; name: string } => {
+              .filter((h): h is VectorSearchHit & { name: string } => {
                 return !!(h && h.graphId && h.graphId !== args.graphId && h.name);
               })
               .slice(0, 3)

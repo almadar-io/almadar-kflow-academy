@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       '@almadar-io/knowledge':
-        specifier: ^1.1.1
-        version: 1.1.1(@almadar/core@10.29.0)(@almadar/llm@2.33.0(@almadar/core@10.29.0)(@opentelemetry/api@1.9.1)(ws@8.21.0))(@almadar/server@2.25.0(express@4.22.2))(express@4.22.2)
+        specifier: ^1.4.0
+        version: 1.4.0(@almadar/core@10.29.0)(@almadar/llm@2.33.0(@almadar/core@10.29.0)(@opentelemetry/api@1.9.1)(ws@8.21.0))(@almadar/server@2.25.0(express@4.22.2))(express@4.22.2)
       three:
         specifier: ^0.160.1
         version: 0.160.1
@@ -43,8 +43,8 @@ importers:
   packages/client:
     dependencies:
       '@almadar-io/knowledge':
-        specifier: ^1.3.0
-        version: 1.3.0(@almadar/core@10.28.0)(@almadar/llm@2.33.0(@almadar/core@10.28.0)(@opentelemetry/api@1.9.1)(ws@8.21.0))(@almadar/server@2.25.0(express@4.22.2))(express@4.22.2)
+        specifier: ^1.4.0
+        version: 1.4.0(@almadar/core@10.28.0)(@almadar/llm@2.33.0(@almadar/core@10.28.0)(@opentelemetry/api@1.9.1)(ws@8.21.0))(@almadar/server@2.25.0(express@4.22.2))(express@4.22.2)
       '@almadar/core':
         specifier: ^10.28.0
         version: 10.28.0
@@ -203,8 +203,8 @@ importers:
   packages/server:
     dependencies:
       '@almadar-io/knowledge':
-        specifier: ^1.3.0
-        version: 1.3.0(@almadar/core@10.28.0)(@almadar/llm@2.33.0(@almadar/core@10.28.0)(@opentelemetry/api@1.9.1)(ws@8.21.0))(@almadar/server@2.25.0(express@4.22.2))(express@4.22.2)
+        specifier: ^1.4.0
+        version: 1.4.0(@almadar/core@10.28.0)(@almadar/llm@2.33.0(@almadar/core@10.28.0)(@opentelemetry/api@1.9.1)(ws@8.21.0))(@almadar/server@2.25.0(express@4.22.2))(express@4.22.2)
       '@almadar/core':
         specifier: ^10.28.0
         version: 10.28.0
@@ -315,8 +315,8 @@ importers:
   packages/shared:
     dependencies:
       '@almadar-io/knowledge':
-        specifier: ^1.3.0
-        version: 1.3.0(@almadar/core@10.28.0)(@almadar/llm@2.33.0(@almadar/core@10.28.0)(@opentelemetry/api@1.9.1)(ws@8.21.0))(@almadar/server@2.25.0(express@4.22.2))(express@4.22.2)
+        specifier: ^1.4.0
+        version: 1.4.0(@almadar/core@10.28.0)(@almadar/llm@2.33.0(@almadar/core@10.28.0)(@opentelemetry/api@1.9.1)(ws@8.21.0))(@almadar/server@2.25.0(express@4.22.2))(express@4.22.2)
       '@almadar/core':
         specifier: ^10.28.0
         version: 10.28.0
@@ -337,27 +337,13 @@ packages:
     resolution: {integrity: sha512-UrcABB+4bUrFABwbluTIBErXwvbsU/V7TZWfmbgJfbkwiBuziS9gxdODUyuiecfdGQ85jglMW6juS3+z5TsKLw==}
     engines: {node: '>=10'}
 
-  '@almadar-io/knowledge@1.1.1':
-    resolution: {integrity: sha512-tJMFWavsv6A8VIRzqwhXnhphYZmnM0eKJNRjB2n6UXCkU+M1qCuBmI6RJBi9CSW4g5AhYCVwX2dPcp3w/YOGCg==, tarball: https://npm.pkg.github.com/download/@almadar-io/knowledge/1.1.1/77eed8d2c0f6a9b6a30e95907cf20037400377a0}
+  '@almadar-io/knowledge@1.4.0':
+    resolution: {integrity: sha512-Nj6uHfgJmROSLo/ofIcsQh5zbmC+APE2mj41QLDmaBnEwe3MvVgZzCRrxOQj/ibMJ+Mtxg8XRQof+3nquIIEyw==, tarball: https://npm.pkg.github.com/download/@almadar-io/knowledge/1.4.0/e89ee2405816764d0f611446559d0d72b744a9c2}
     peerDependencies:
       '@almadar/core': ^10.28.0
       '@almadar/llm': ^2.31.0
       '@almadar/server': ^2.24.0
       express: '>=4.0.0'
-    peerDependenciesMeta:
-      express:
-        optional: true
-
-  '@almadar-io/knowledge@1.3.0':
-    resolution: {integrity: sha512-iyxeAyFl4MFfxyGdz+FFT8TIB+f2/7MPyD+5W0+/P4/cDxiIl0wJNYdyeERdwwZHr2YaKXdhcLf8wqb3pAAepw==, tarball: https://npm.pkg.github.com/download/@almadar-io/knowledge/1.3.0/90771a1bae8782313bb2814df6fd3bb64b1f731a}
-    peerDependencies:
-      '@almadar/core': ^10.28.0
-      '@almadar/llm': ^2.31.0
-      '@almadar/server': ^2.24.0
-      express: '>=4.0.0'
-    peerDependenciesMeta:
-      express:
-        optional: true
 
   '@almadar/core@10.28.0':
     resolution: {integrity: sha512-uCXQGCzGoxe0bvO5xZOdz7tfW/3pjiKotxp5zeZ+TFRywVbjKaoHaQ77jnSsECHCqTIu58iMUKLJRc4I8RH9cQ==}
@@ -5851,33 +5837,31 @@ snapshots:
 
   '@alloc/quick-lru@5.2.0': {}
 
-  '@almadar-io/knowledge@1.1.1(@almadar/core@10.29.0)(@almadar/llm@2.33.0(@almadar/core@10.29.0)(@opentelemetry/api@1.9.1)(ws@8.21.0))(@almadar/server@2.25.0(express@4.22.2))(express@4.22.2)':
-    dependencies:
-      '@almadar/core': 10.29.0
-      '@almadar/llm': 2.33.0(@almadar/core@10.29.0)(@opentelemetry/api@1.9.1)(ws@8.21.0)
-      '@almadar/logger': 1.9.0
-      '@almadar/server': 2.25.0(express@4.22.2)
-      chromadb: 3.5.0
-      graphology: 0.26.0(graphology-types@0.24.8)
-      graphology-shortest-path: 2.1.0(graphology-types@0.24.8)
-      graphology-types: 0.24.8
-      zod: 3.25.76
-    optionalDependencies:
-      express: 4.22.2
-
-  '@almadar-io/knowledge@1.3.0(@almadar/core@10.28.0)(@almadar/llm@2.33.0(@almadar/core@10.28.0)(@opentelemetry/api@1.9.1)(ws@8.21.0))(@almadar/server@2.25.0(express@4.22.2))(express@4.22.2)':
+  '@almadar-io/knowledge@1.4.0(@almadar/core@10.28.0)(@almadar/llm@2.33.0(@almadar/core@10.28.0)(@opentelemetry/api@1.9.1)(ws@8.21.0))(@almadar/server@2.25.0(express@4.22.2))(express@4.22.2)':
     dependencies:
       '@almadar/core': 10.28.0
       '@almadar/llm': 2.33.0(@almadar/core@10.28.0)(@opentelemetry/api@1.9.1)(ws@8.21.0)
       '@almadar/logger': 1.9.0
       '@almadar/server': 2.25.0(express@4.22.2)
       chromadb: 3.5.0
+      express: 4.22.2
       graphology: 0.26.0(graphology-types@0.24.8)
       graphology-shortest-path: 2.1.0(graphology-types@0.24.8)
       graphology-types: 0.24.8
       zod: 3.25.76
-    optionalDependencies:
+
+  '@almadar-io/knowledge@1.4.0(@almadar/core@10.29.0)(@almadar/llm@2.33.0(@almadar/core@10.29.0)(@opentelemetry/api@1.9.1)(ws@8.21.0))(@almadar/server@2.25.0(express@4.22.2))(express@4.22.2)':
+    dependencies:
+      '@almadar/core': 10.29.0
+      '@almadar/llm': 2.33.0(@almadar/core@10.29.0)(@opentelemetry/api@1.9.1)(ws@8.21.0)
+      '@almadar/logger': 1.9.0
+      '@almadar/server': 2.25.0(express@4.22.2)
+      chromadb: 3.5.0
       express: 4.22.2
+      graphology: 0.26.0(graphology-types@0.24.8)
+      graphology-shortest-path: 2.1.0(graphology-types@0.24.8)
+      graphology-types: 0.24.8
+      zod: 3.25.76
 
   '@almadar/core@10.28.0':
     dependencies:

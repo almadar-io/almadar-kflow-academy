@@ -1,29 +1,28 @@
 /**
  * useLearningPathMap — top-level knowledge map: one node per learning PATH, with an
  * edge between two paths for every concept they share. Concept ids ARE concept names,
- * so "shared" is a deterministic id-set intersection (no fuzzy/similarity matching).
- * Edges are unlabeled; node `size` scales with the path's concept count.
+ * so "shared" is a deterministic id-set intersection, computed SERVER-SIDE where all
+ * graphs are already loaded and shipped in the /learning-paths payload (no per-path
+ * concept fan-out from the client). Edges are unlabeled; node `size` scales with the
+ * path's concept count.
  *
- * Clustering (for color groups) unions paths that share a concept OR whose direct
- * path↔path cosine similarity (from the server) clears CLUSTER_SIMILARITY. Drawn links
- * use the higher DRAW_SIMILARITY so the canvas stays readable. The FULL similarity
- * matrix is also returned (rewired to rendered node ids) purely for GraphCanvas layout.
+ * Clustering (for color groups) unions paths whose shared-concept jaccard (the server
+ * edge weight) clears CLUSTER_JACCARD, so a single incidental shared concept doesn't
+ * chain the whole map into one color. Cosine similarity is NOT used for grouping: path
+ * embeddings form a continuum (no natural gap to cut), so a cosine threshold chains
+ * everything into one color. Cosine drives the force layout, plus drawn links at the
+ * higher DRAW_SIMILARITY. The FULL similarity matrix is also returned (rewired to
+ * rendered node ids) purely for GraphCanvas layout.
  *
  * Merging (collapse duplicate paths into one node with a count badge) groups paths by
  * EXACT normalized title only — no transitive semantic chaining. A merged group that is
  * not in `expandedGroups` renders as a single representative node carrying `badge`
  * (member count); clicking the badge adds the group id to `expandedGroups` so the
  * members render individually.
- *
- * Each path's concepts are fetched client-side in parallel (useQueries), reusing the same
- * query cache as the per-path concept views.
  */
 import { useMemo } from 'react';
-import { useQueries } from '@tanstack/react-query';
 import type { GraphNode, GraphEdge, GraphSimilarity } from '@almadar/ui';
-import type { PathSimilarityEdge } from '../api/types';
-import { graphQueryApi } from '../api/queryApi';
-import { knowledgeGraphKeys } from './queryKeys';
+import type { PathSimilarityEdge, SharedConceptEdge } from '../api/types';
 
 export interface LearningPathInput {
   graphId: string;
@@ -44,13 +43,8 @@ export interface LearningPathMap {
   similarity: GraphSimilarity[];
 }
 
-const CONCEPT_OPTS = { includeRelationships: false } as const;
-const FIVE_MIN = 5 * 60 * 1000;
-
-/** Cosine ≥ this unions two paths into one color cluster (tight, so groups stay meaningful). */
-const CLUSTER_SIMILARITY = 0.6;
 /** Jaccard (shared-concept overlap) ≥ this unions two paths into one color cluster. */
-const CLUSTER_JACCARD = 0.1;
+const CLUSTER_JACCARD = 0.05;
 /** Cosine ≥ this draws a link on the canvas (higher, so the map stays readable). */
 const DRAW_SIMILARITY = 0.55;
 
@@ -79,17 +73,9 @@ function titleKey(s: string): string {
   return s.toLowerCase().trim().replace(/[^a-z0-9\s]/g, '').replace(/\s+/g, ' ');
 }
 
-function jaccard(a: Set<string>, b: Set<string>): number {
-  if (a.size === 0 && b.size === 0) return 0;
-  const [small, large] = a.size <= b.size ? [a, b] : [b, a];
-  let inter = 0;
-  for (const id of small) if (large.has(id)) inter++;
-  return inter / (a.size + b.size - inter);
-}
-
 export function computeSemanticPathMap(
   paths: LearningPathInput[],
-  conceptIdSets: Set<string>[],
+  sharedConcepts: SharedConceptEdge[] = [],
   similarity: PathSimilarityEdge[] = [],
   expandedGroups: Set<string> = new Set()
 ): LearningPathMap | undefined {
@@ -99,31 +85,33 @@ export function computeSemanticPathMap(
   const indexOf = new Map(paths.map((p, i) => [p.graphId, i] as const));
 
   // --- Cluster union-find → color groups ---------------------------------------------
-  // Drawn edges stay permissive (any shared concept draws a link), but COLOR clusters
-  // require a MEANINGFUL relationship — unioning on a single shared concept chained the
-  // whole map into one color.
+  // A color group = a connected component of the SHARED-CONCEPT graph: two paths are the
+  // same color when linked (transitively) by paths that teach overlapping concepts. The
+  // overlap must clear CLUSTER_JACCARD so a single incidental shared concept doesn't chain
+  // the whole map into one color. Cosine similarity is NOT used for grouping (see below).
   const cluster = makeUnionFind(paths.length);
 
   const sharedEdges: GraphEdge[] = [];
-  const jacVals: number[] = [];
-  for (let i = 0; i < paths.length; i++) {
-    for (let j = i + 1; j < paths.length; j++) {
-      const jv = jaccard(conceptIdSets[i], conceptIdSets[j]);
-      if (jv > 0) {
-        sharedEdges.push({ source: paths[i].graphId, target: paths[j].graphId });
-        jacVals.push(jv);
-        if (jv >= CLUSTER_JACCARD) cluster.union(i, j);
-      }
-    }
-  }
-
-  // Union genuinely similar paths (≥ CLUSTER_SIMILARITY).
-  for (const se of similarity) {
-    if (se.weight < CLUSTER_SIMILARITY) continue;
+  const jacPairs: Array<readonly [number, number, number]> = []; // i, j, jaccard
+  for (const se of sharedConcepts) {
     const si = indexOf.get(se.source);
     const ti = indexOf.get(se.target);
     if (si === undefined || ti === undefined) continue;
-    cluster.union(si, ti);
+    // Drawn unweighted (weight defaults to 1 downstream): the original uniform look.
+    sharedEdges.push({ source: se.source, target: se.target });
+    jacPairs.push([si, ti, se.weight]);
+    if (se.weight >= CLUSTER_JACCARD) cluster.union(si, ti);
+  }
+
+  // Cosine pairs are collected for layout + diagnostics only — NOT for color grouping.
+  // Path embeddings form a continuum here (no natural gap to cut), so a cosine threshold
+  // chains everything into one color; shared concepts are the interpretable grouping signal.
+  const simPairs: Array<readonly [number, number, number]> = []; // i, j, cosine
+  for (const se of similarity) {
+    const si = indexOf.get(se.source);
+    const ti = indexOf.get(se.target);
+    if (si === undefined || ti === undefined) continue;
+    simPairs.push([si, ti, se.weight]);
   }
 
   // Stable cluster ids per path.
@@ -139,24 +127,33 @@ export function computeSemanticPathMap(
     return c;
   });
 
-  // Color groups: only clusters with ≥2 members get a distinct color; singletons share a
-  // neutral group so genuinely-related clusters pop and the legend stays small.
+  // Color groups: only clusters with ≥2 members get a distinct color + cluster gravity;
+  // singletons stay UNGROUPED (GraphCanvas renders them neutral with gentle global
+  // centering only) so genuinely-related clusters pop and the legend stays small.
   const clusterSize = new Map<string, number>();
   for (const c of pathCluster) clusterSize.set(c, (clusterSize.get(c) ?? 0) + 1);
-  const colorGroup = pathCluster.map((c) => (clusterSize.get(c)! >= 2 ? c : 'other'));
+  const colorGroup: (string | undefined)[] = pathCluster.map((c) => (clusterSize.get(c)! >= 2 ? c : undefined));
 
-  // TEMP diagnostic for threshold tuning (remove before ship).
-  const stat = (a: number[]) =>
-    a.length === 0
-      ? { n: 0 }
-      : { n: a.length, min: +a[0].toFixed(3), p50: +a[Math.floor(a.length / 2)].toFixed(3), p90: +a[Math.floor(a.length * 0.9)].toFixed(3), max: +a[a.length - 1].toFixed(3) };
-  console.log('[L1-MAP] clustering', {
-    paths: paths.length,
-    drawnEdges: sharedEdges.length,
-    colorClusters: [...clusterSize.entries()].filter(([, n]) => n >= 2).map(([c, n]) => `${c}:${n}`),
-    singletons: [...clusterSize.values()].filter((n) => n < 2).length,
-    jaccard: stat([...jacVals].sort((a, b) => a - b)),
-    similarity: stat(similarity.map((s) => s.weight).sort((a, b) => a - b)),
+  // TEMP diagnostic: connected-component sizes under candidate cluster rules (remove before ship).
+  const comps = (pairs: Array<readonly [number, number, number]>, thr: number): number[] => {
+    const uf = makeUnionFind(paths.length);
+    for (const [a, b, w] of pairs) if (w >= thr) uf.union(a, b);
+    const sz = new Map<number, number>();
+    for (let i = 0; i < paths.length; i++) {
+      const r = uf.find(i);
+      sz.set(r, (sz.get(r) ?? 0) + 1);
+    }
+    return [...sz.values()].sort((a, b) => b - a);
+  };
+  console.log('[L1-MAP] cluster options (component sizes per rule)', {
+    jac_any: comps(jacPairs, 0),
+    jac_05: comps(jacPairs, 0.05),
+    jac_08: comps(jacPairs, 0.08),
+    jac_12: comps(jacPairs, 0.12),
+    sim_65: comps(simPairs, 0.65),
+    sim_70: comps(simPairs, 0.7),
+    sim_75: comps(simPairs, 0.75),
+    sim_80: comps(simPairs, 0.8),
   });
 
   // --- Merge union-find: near-duplicate paths → collapse into one node --------------
@@ -280,26 +277,11 @@ export function computeSemanticPathMap(
 export function useLearningPathMap(
   paths: LearningPathInput[],
   similarity: PathSimilarityEdge[] = [],
+  sharedConcepts: SharedConceptEdge[] = [],
   expandedGroups: Set<string> = new Set()
 ): LearningPathMap | undefined {
-  const results = useQueries({
-    queries: paths.map((p) => ({
-      queryKey: knowledgeGraphKeys.conceptsByLayer(p.graphId, CONCEPT_OPTS),
-      queryFn: () => graphQueryApi.getConceptsByLayer(p.graphId, CONCEPT_OPTS),
-      enabled: p.graphId.length > 0,
-      staleTime: FIVE_MIN,
-    })),
-  });
-
-  // Recompute only when loaded data actually changes (avoids re-laying-out the force graph every render).
-  const fingerprint = results.map((r: { dataUpdatedAt?: number }) => r.dataUpdatedAt).join('|');
-
-  return useMemo(() => {
-    const conceptIdSets: Set<string>[] = paths.map(
-      (_, i) => new Set<string>((results[i]?.data?.concepts ?? []).map((c: { id: string }) => c.id))
-    );
-    return computeSemanticPathMap(paths, conceptIdSets, similarity, expandedGroups);
-    // `results` is read above but intentionally NOT a dep (it's a fresh array every render); `fingerprint`
-    // captures its loaded-data identity, so the force graph only re-lays-out when concept data changes.
-  }, [fingerprint, paths, similarity, expandedGroups]);
+  return useMemo(
+    () => computeSemanticPathMap(paths, sharedConcepts, similarity, expandedGroups),
+    [paths, sharedConcepts, similarity, expandedGroups]
+  );
 }

@@ -6,7 +6,9 @@ import {
   createGetMindMapHandler,
   extractLearningPathSummary,
   computePathSimilarity,
+  computeSharedConceptEdges,
   type PathSimilarityEdge,
+  type SharedConceptEdge,
 } from '@almadar-io/knowledge/server';
 import { authenticateFirebase } from '@almadar/server';
 import { createLogger } from '@almadar/logger';
@@ -22,6 +24,8 @@ type LearningPathsPayload = {
   learningPaths: Array<ReturnType<typeof extractLearningPathSummary> & { levelCount: number }>;
   /** All-pairs path cosine similarity (0–1) for L1 map layout + clustering. */
   similarity: PathSimilarityEdge[];
+  /** Pairwise shared-concept overlap (jaccard) — L1 map edges + color clustering. */
+  sharedConcepts: SharedConceptEdge[];
 };
 
 router.use(authenticateFirebase);
@@ -32,11 +36,12 @@ router.get('/learning-paths', async (req, res, next) => {
 
     const cacheKey = CACHE_KEYS.learningPaths(uid);
     const cached = await hybridCache.get<LearningPathsPayload>(cacheKey);
-    if (cached) {
+    if (cached && cached.sharedConcepts) { // entries predating sharedConcepts → recompute
       log.debug(`[SIMILARITY] /learning-paths cache hit`, {
         uid,
         pathCount: cached.learningPaths.length,
         pairs: (cached.similarity ?? []).length,
+        sharedPairs: cached.sharedConcepts.length,
       });
       res.json(cached);
       return;
@@ -48,10 +53,12 @@ router.get('/learning-paths', async (req, res, next) => {
     }
     const graphIds = await graphQueryDeps.getAllGraphIds(uid);
 
+    const conceptIdsByGraph = new Map<string, string[]>();
     const paths = (await Promise.all(
       graphIds.map(async (graphId) => {
         try {
           const graph = await graphQueryDeps.accessLayer.getGraph(uid, graphId);
+          conceptIdsByGraph.set(graph.id, graph.nodeTypes?.Concept ?? []);
           return {
             ...extractLearningPathSummary(graph),
             levelCount: computeLevelCount(graph),
@@ -69,11 +76,18 @@ router.get('/learning-paths', async (req, res, next) => {
     // replacing the old path↔concept cross-graph proxy (semanticEdges).
     const similarity = await computePathSimilarity(paths);
 
-    const payload: LearningPathsPayload = { learningPaths: paths, similarity };
+    // Pairwise shared-concept overlap, computed here where every graph is already loaded —
+    // shipped in the payload so the client doesn't fan out one concept request per path.
+    const sharedConcepts = computeSharedConceptEdges(
+      paths.map((p) => ({ id: p.id, conceptIds: conceptIdsByGraph.get(p.id) ?? [] })),
+    );
+
+    const payload: LearningPathsPayload = { learningPaths: paths, similarity, sharedConcepts };
     log.debug(`[SIMILARITY] /learning-paths fresh`, {
       uid,
       pathCount: paths.length,
       pairs: similarity.length,
+      sharedPairs: sharedConcepts.length,
     });
     await hybridCache.set(cacheKey, payload, CACHE_TTL.LEARNING_PATHS);
     res.json(payload);

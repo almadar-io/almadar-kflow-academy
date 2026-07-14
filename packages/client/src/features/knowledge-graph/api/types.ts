@@ -173,10 +173,22 @@ export interface PathSimilarityEdge {
   weight: number;
 }
 
+/** One pair of learning paths that share ≥1 concept, computed server-side. */
+export interface SharedConceptEdge {
+  source: string;
+  target: string;
+  /** Jaccard overlap of the two paths' concept id sets (0–1). */
+  weight: number;
+  /** How many concepts the two paths share. */
+  shared: number;
+}
+
 export interface LearningPathsSummaryResponse {
   learningPaths: LearningPathSummary[];
-  /** All-pairs path cosine similarity (0–1) for L1 map layout + clustering. */
+  /** All-pairs path cosine similarity (0–1) for L1 map layout. */
   similarity?: PathSimilarityEdge[];
+  /** All-pairs shared-concept overlap for L1 map clustering + edges. */
+  sharedConcepts?: SharedConceptEdge[];
 }
 
 /**

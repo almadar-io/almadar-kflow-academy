@@ -261,65 +261,61 @@ describe('useConceptsByLayer', () => {
 });
 
 describe('computeSemanticPathMap (for V2 viz)', () => {
-  it('should merge semantic edges and produce shared cluster even without exact concept overlap', () => {
-    const paths = [
-      { graphId: 'g-beginner', name: 'Beginner Rust', conceptCount: 2 },
-      { graphId: 'g-mid', name: 'Mid Rust', conceptCount: 2 },
-    ];
-    const conceptSets = [new Set(['borrowing']), new Set(['lifetimes'])];
-    const semantic = [{ source: 'g-beginner', target: 'g-mid', weight: 0.9 }];
+  const twoPaths = [
+    { graphId: 'g1', name: 'p1', conceptCount: 2 },
+    { graphId: 'g2', name: 'p2', conceptCount: 2 },
+  ];
 
-    const result = computeSemanticPathMap(paths, conceptSets, semantic);
+  it('draws a shared-concept edge and clusters paths whose jaccard clears the threshold', () => {
+    const shared = [{ source: 'g1', target: 'g2', weight: 0.2, shared: 1 }];
+
+    const result = computeSemanticPathMap(twoPaths, shared);
 
     expect(result).toBeDefined();
     expect(result!.edges).toHaveLength(1);
-    expect(result!.edges[0].weight).toBe(0.9);
-    // Should share cluster via semantic union
+    expect(result!.edges[0].weight).toBe(1); // shared-concept edges are drawn unweighted
     expect(result!.nodes[0].group).toBe(result!.nodes[1].group);
+    expect(result!.nodes[0].group).not.toBeUndefined();
   });
 
-  it('should preserve exact edges and add semantic', () => {
+  it('draws but does not cluster a shared-concept edge below the cluster threshold', () => {
     const paths = [
       { graphId: 'g1', name: 'p1', conceptCount: 2 },
       { graphId: 'g2', name: 'p2', conceptCount: 2 },
+      { graphId: 'g3', name: 'p3', conceptCount: 2 },
     ];
-    const sets = [new Set(['shared']), new Set(['shared', 'other'])];
-    const sem = [{ source: 'g1', target: 'g2', weight: 0.5 }];
+    const shared = [
+      { source: 'g1', target: 'g2', weight: 0.2, shared: 2 }, // ≥ 0.05 → same color
+      { source: 'g1', target: 'g3', weight: 0.02, shared: 1 }, // < 0.05 → linked, not colored
+    ];
 
-    const res = computeSemanticPathMap(paths, sets, sem);
+    const res = computeSemanticPathMap(paths, shared);
 
-    expect(res!.edges.length).toBeGreaterThanOrEqual(1);
+    expect(res!.edges).toHaveLength(2);
+    expect(res!.nodes[0].group).toBe(res!.nodes[1].group);
+    expect(res!.nodes[2].group).not.toBe(res!.nodes[0].group);
   });
 
-  it('does not cluster or draw a low-similarity pair (< 0.45), but keeps it for layout', () => {
-    const paths = [
-      { graphId: 'g1', name: 'p1', conceptCount: 2 },
-      { graphId: 'g2', name: 'p2', conceptCount: 2 },
-    ];
-    const sets = [new Set(['a']), new Set(['b'])]; // no shared concepts
+  it('draws a high-cosine edge but does not cluster on cosine alone', () => {
+    const sim = [{ source: 'g1', target: 'g2', weight: 0.9 }];
+
+    const res = computeSemanticPathMap(twoPaths, [], sim);
+
+    expect(res!.edges).toHaveLength(1);
+    expect(res!.edges[0].weight).toBe(0.9);
+    // Cosine is layout-only: with no shared concepts both stay ungrouped.
+    expect(res!.nodes[0].group).toBeUndefined();
+    expect(res!.nodes[1].group).toBeUndefined();
+  });
+
+  it('keeps a low-cosine pair for layout only (not drawn, not clustered)', () => {
     const sim = [{ source: 'g1', target: 'g2', weight: 0.4 }];
 
-    const res = computeSemanticPathMap(paths, sets, sim);
+    const res = computeSemanticPathMap(twoPaths, [], sim);
 
-    expect(res!.nodes[0].group).not.toBe(res!.nodes[1].group); // not clustered
-    expect(res!.edges).toHaveLength(0); // not drawn
+    expect(res!.edges).toHaveLength(0); // < DRAW_SIMILARITY → not drawn
     expect(res!.similarity).toHaveLength(1); // still present for layout
     expect(res!.similarity[0].weight).toBe(0.4);
-  });
-
-  it('clusters but does not draw a mid-similarity pair (0.45–0.55)', () => {
-    const paths = [
-      { graphId: 'g1', name: 'p1', conceptCount: 2 },
-      { graphId: 'g2', name: 'p2', conceptCount: 2 },
-    ];
-    const sets = [new Set(['a']), new Set(['b'])];
-    const sim = [{ source: 'g1', target: 'g2', weight: 0.5 }];
-
-    const res = computeSemanticPathMap(paths, sets, sim);
-
-    expect(res!.nodes[0].group).toBe(res!.nodes[1].group); // clustered (≥ 0.45)
-    expect(res!.edges).toHaveLength(0); // not drawn (< 0.55)
-    expect(res!.similarity).toHaveLength(1);
   });
 });
 

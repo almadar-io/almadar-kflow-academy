@@ -37,6 +37,7 @@ export function useLearningPaths(options?: UseLearningPathsOptions) {
       return {
         learningPaths: sortedPaths,
         similarity: response.similarity ?? [],
+        sharedConcepts: response.sharedConcepts ?? [],
       };
     },
     enabled: options?.enabled !== false,
@@ -50,6 +51,7 @@ export function useLearningPaths(options?: UseLearningPathsOptions) {
   return {
     learningPaths: query.data?.learningPaths ?? [],
     similarity: query.data?.similarity ?? [],
+    sharedConcepts: query.data?.sharedConcepts ?? [],
     loading: query.isLoading,
     error: query.error?.message ?? null,
     refetch,

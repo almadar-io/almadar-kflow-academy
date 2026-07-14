@@ -58,20 +58,21 @@ export const DashboardPage: React.FC = () => {
   );
 
   const { items: jumpBackInItems, isLoading: isLoadingJumpBackIn } = useJumpBackIn();
-  const { learningPaths: pathSummaries, loading: pathsLoading, similarity = [] } = useLearningPaths();
+  const { learningPaths: pathSummaries, loading: pathsLoading, similarity = [], sharedConcepts = [] } = useLearningPaths();
 
   // Hero map level: L1 = graph-of-paths, L2 = concepts of the drilled path.
   const [level, setLevel] = useState<DashboardMapLevel>('L1');
   const [selectedGraphId, setSelectedGraphId] = useState<string | null>(null);
 
-  // Top-level knowledge map: every learning path is a node, connected to the paths it shares concepts with.
-  // Clustered + laid out by direct path↔path cosine similarity (from the server).
+  // Top-level knowledge map: every learning path is a node, connected to the paths it
+  // shares concepts with (overlap computed server-side). Colors = shared-concept
+  // clusters; path↔path cosine similarity (server) drives the force layout.
   const pathMapInputs = useMemo(
     () => pathSummaries.map(p => ({ graphId: p.id, name: p.title, conceptCount: p.conceptCount })),
     [pathSummaries]
   );
   const [expandedGroups, setExpandedGroups] = useState<Set<string>>(() => new Set());
-  const pathMap = useLearningPathMap(pathMapInputs, similarity, expandedGroups);
+  const pathMap = useLearningPathMap(pathMapInputs, similarity, sharedConcepts, expandedGroups);
 
   // L2 drill: the concepts of one path, edged by concept parent -> child.
   const { concepts: l2Concepts, loading: l2Loading } = useConceptsByLayer(selectedGraphId ?? '', {
