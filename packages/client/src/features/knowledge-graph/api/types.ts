@@ -165,10 +165,18 @@ export interface LearningPathSummary {
   createdAt: number;
 }
 
+/** One pair of learning paths whose cosine similarity cleared the server floor. */
+export interface PathSimilarityEdge {
+  source: string;
+  target: string;
+  /** Cosine similarity (0–1) between two learning paths. */
+  weight: number;
+}
+
 export interface LearningPathsSummaryResponse {
   learningPaths: LearningPathSummary[];
-  /** Semantic edges computed via cross-graph vector search (for L1 viz clustering of similar paths). */
-  semanticEdges?: Array<{ source: string; target: string; weight?: number }>;
+  /** All-pairs path cosine similarity (0–1) for L1 map layout + clustering. */
+  similarity?: PathSimilarityEdge[];
 }
 
 /**

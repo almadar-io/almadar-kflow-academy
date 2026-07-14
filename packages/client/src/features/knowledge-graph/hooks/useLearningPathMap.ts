@@ -4,21 +4,24 @@
  * so "shared" is a deterministic id-set intersection (no fuzzy/similarity matching).
  * Edges are unlabeled; node `size` scales with the path's concept count.
  *
- * Clustering (for color groups) uses union-find over shared-concept + semantic edges.
+ * Clustering (for color groups) unions paths that share a concept OR whose direct
+ * path↔path cosine similarity (from the server) clears CLUSTER_SIMILARITY. Drawn links
+ * use the higher DRAW_SIMILARITY so the canvas stays readable. The FULL similarity
+ * matrix is also returned (rewired to rendered node ids) purely for GraphCanvas layout.
  *
- * Merging (collapse "same thing" paths into one node with a count badge) is a separate,
- * stricter union-find: two paths merge when they are near-duplicates — either a strong
- * semantic edge (cross-graph Chroma vector weight ≥ SEM_MERGE) or very high concept-id
- * overlap (Jaccard ≥ JACC_MERGE). A merged group that is not in `expandedGroups` renders
- * as a single representative node carrying `badge` (member count); clicking the badge
- * adds the group id to `expandedGroups` so the members render individually.
+ * Merging (collapse duplicate paths into one node with a count badge) groups paths by
+ * EXACT normalized title only — no transitive semantic chaining. A merged group that is
+ * not in `expandedGroups` renders as a single representative node carrying `badge`
+ * (member count); clicking the badge adds the group id to `expandedGroups` so the
+ * members render individually.
  *
  * Each path's concepts are fetched client-side in parallel (useQueries), reusing the same
  * query cache as the per-path concept views.
  */
 import { useMemo } from 'react';
 import { useQueries } from '@tanstack/react-query';
-import type { GraphNode, GraphEdge } from '@almadar/ui';
+import type { GraphNode, GraphEdge, GraphSimilarity } from '@almadar/ui';
+import type { PathSimilarityEdge } from '../api/types';
 import { graphQueryApi } from '../api/queryApi';
 import { knowledgeGraphKeys } from './queryKeys';
 
@@ -37,15 +40,17 @@ export type LearningPathMapNode = GraphNode & {
 export interface LearningPathMap {
   nodes: LearningPathMapNode[];
   edges: GraphEdge[];
+  /** Full path-similarity matrix (rewired to rendered node ids) — layout only. */
+  similarity: GraphSimilarity[];
 }
-
-/** Semantic (Chroma) weight at/above which two paths count as "the same thing". */
-const SEM_MERGE = 0.55;
-/** Concept-id Jaccard at/above which two paths count as "the same thing". */
-const JACC_MERGE = 0.3;
 
 const CONCEPT_OPTS = { includeRelationships: false } as const;
 const FIVE_MIN = 5 * 60 * 1000;
+
+/** Cosine ≥ this unions two paths into one color cluster. */
+const CLUSTER_SIMILARITY = 0.45;
+/** Cosine ≥ this draws a link on the canvas (higher, so the map stays readable). */
+const DRAW_SIMILARITY = 0.55;
 
 function makeUnionFind(n: number) {
   const parent = Array.from({ length: n }, (_, i) => i);
@@ -67,8 +72,9 @@ function makeUnionFind(n: number) {
   return { find, union };
 }
 
-function pairKey(a: string, b: string): string {
-  return a < b ? `${a}\0${b}` : `${b}\0${a}`;
+/** Normalize a path title for duplicate detection (case/punctuation/spacing-insensitive). */
+function titleKey(s: string): string {
+  return s.toLowerCase().trim().replace(/[^a-z0-9\s]/g, '').replace(/\s+/g, ' ');
 }
 
 function jaccard(a: Set<string>, b: Set<string>): number {
@@ -82,14 +88,15 @@ function jaccard(a: Set<string>, b: Set<string>): number {
 export function computeSemanticPathMap(
   paths: LearningPathInput[],
   conceptIdSets: Set<string>[],
-  semanticEdges: Array<{ source: string; target: string; weight?: number }> = [],
+  similarity: PathSimilarityEdge[] = [],
   expandedGroups: Set<string> = new Set()
 ): LearningPathMap | undefined {
   if (paths.length === 0) return undefined;
 
   const maxConcepts = Math.max(1, ...paths.map((p) => p.conceptCount));
+  const indexOf = new Map(paths.map((p, i) => [p.graphId, i] as const));
 
-  // --- Cluster union-find: shared concepts + semantic edges → color groups ----------
+  // --- Cluster union-find: shared concepts + high-similarity pairs → color groups ---
   const cluster = makeUnionFind(paths.length);
 
   const sharedEdges: GraphEdge[] = [];
@@ -102,16 +109,14 @@ export function computeSemanticPathMap(
     }
   }
 
-  // Semantic weight lookup for both clustering and merging.
-  const semWeight = new Map<string, number>();
-  for (const se of semanticEdges) {
-    const k = pairKey(se.source, se.target);
-    const w = se.weight ?? 0.75;
-    semWeight.set(k, Math.max(semWeight.get(k) ?? 0, w));
-    cluster.union(
-      paths.findIndex((p) => p.graphId === se.source),
-      paths.findIndex((p) => p.graphId === se.target),
-    );
+  // Union only genuinely similar paths (≥ CLUSTER_SIMILARITY). The old proxy unioned
+  // ANY cross-graph hit regardless of score, chaining whole topic clusters into one badge.
+  for (const se of similarity) {
+    if (se.weight < CLUSTER_SIMILARITY) continue;
+    const si = indexOf.get(se.source);
+    const ti = indexOf.get(se.target);
+    if (si === undefined || ti === undefined) continue;
+    cluster.union(si, ti);
   }
 
   // Stable cluster ids per path.
@@ -131,9 +136,7 @@ export function computeSemanticPathMap(
   const merge = makeUnionFind(paths.length);
   for (let i = 0; i < paths.length; i++) {
     for (let j = i + 1; j < paths.length; j++) {
-      const w = semWeight.get(pairKey(paths[i].graphId, paths[j].graphId)) ?? 0;
-      const jac = jaccard(conceptIdSets[i], conceptIdSets[j]);
-      if (w >= SEM_MERGE || jac >= JACC_MERGE) merge.union(i, j);
+      if (titleKey(paths[i].name) === titleKey(paths[j].name)) merge.union(i, j);
     }
   }
 
@@ -200,22 +203,21 @@ export function computeSemanticPathMap(
     }
   }
 
-  // --- Edges: rewire endpoints to effective ids, drop intra-group self-loops --------
+  const edgeKey = (s: string, t: string) => (s < t ? `${s}\0${t}` : `${t}\0${s}`);
+
+  // --- Drawn edges: shared-concept links + similarity pairs ≥ DRAW_SIMILARITY -------
   const rawEdges: GraphEdge[] = [
     ...sharedEdges,
-    ...semanticEdges.map((se) => ({
-      source: se.source,
-      target: se.target,
-      weight: se.weight ?? 0.75,
-    })),
+    ...similarity
+      .filter((se) => se.weight >= DRAW_SIMILARITY)
+      .map((se) => ({ source: se.source, target: se.target, weight: se.weight })),
   ];
 
-  const edgeKey = (s: string, t: string) => (s < t ? `${s}\0${t}` : `${t}\0${s}`);
   const edgeWeight = new Map<string, number>();
   for (const e of rawEdges) {
-    const si = paths.findIndex((p) => p.graphId === e.source);
-    const ti = paths.findIndex((p) => p.graphId === e.target);
-    if (si < 0 || ti < 0) continue;
+    const si = indexOf.get(e.source);
+    const ti = indexOf.get(e.target);
+    if (si === undefined || ti === undefined) continue;
     const s = effectiveId(si);
     const t = effectiveId(ti);
     if (s === t) continue; // intra-group
@@ -228,12 +230,29 @@ export function computeSemanticPathMap(
     return { source: s, target: t, weight: w };
   });
 
-  return { nodes, edges };
+  // --- Full similarity matrix, rewired to rendered node ids, for layout only --------
+  const simByKey = new Map<string, number>();
+  for (const se of similarity) {
+    const si = indexOf.get(se.source);
+    const ti = indexOf.get(se.target);
+    if (si === undefined || ti === undefined) continue;
+    const s = effectiveId(si);
+    const t = effectiveId(ti);
+    if (s === t) continue;
+    const k = edgeKey(s, t);
+    simByKey.set(k, Math.max(simByKey.get(k) ?? 0, se.weight));
+  }
+  const similarityOut: GraphSimilarity[] = [...simByKey.entries()].map(([k, w]) => {
+    const [s, t] = k.split('\0');
+    return { source: s, target: t, weight: w };
+  });
+
+  return { nodes, edges, similarity: similarityOut };
 }
 
 export function useLearningPathMap(
   paths: LearningPathInput[],
-  semanticEdges: Array<{ source: string; target: string; weight?: number }> = [],
+  similarity: PathSimilarityEdge[] = [],
   expandedGroups: Set<string> = new Set()
 ): LearningPathMap | undefined {
   const results = useQueries({
@@ -252,8 +271,8 @@ export function useLearningPathMap(
     const conceptIdSets: Set<string>[] = paths.map(
       (_, i) => new Set<string>((results[i]?.data?.concepts ?? []).map((c: { id: string }) => c.id))
     );
-    return computeSemanticPathMap(paths, conceptIdSets, semanticEdges, expandedGroups);
+    return computeSemanticPathMap(paths, conceptIdSets, similarity, expandedGroups);
     // `results` is read above but intentionally NOT a dep (it's a fresh array every render); `fingerprint`
     // captures its loaded-data identity, so the force graph only re-lays-out when concept data changes.
-  }, [fingerprint, paths, semanticEdges, expandedGroups]);
+  }, [fingerprint, paths, similarity, expandedGroups]);
 }

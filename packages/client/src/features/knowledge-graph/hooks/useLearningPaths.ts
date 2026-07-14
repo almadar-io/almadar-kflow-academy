@@ -36,7 +36,7 @@ export function useLearningPaths(options?: UseLearningPathsOptions) {
       );
       return {
         learningPaths: sortedPaths,
-        semanticEdges: response.semanticEdges ?? [],
+        similarity: response.similarity ?? [],
       };
     },
     enabled: options?.enabled !== false,
@@ -49,7 +49,7 @@ export function useLearningPaths(options?: UseLearningPathsOptions) {
 
   return {
     learningPaths: query.data?.learningPaths ?? [],
-    semanticEdges: query.data?.semanticEdges ?? [],
+    similarity: query.data?.similarity ?? [],
     loading: query.isLoading,
     error: query.error?.message ?? null,
     refetch,

@@ -58,20 +58,20 @@ export const DashboardPage: React.FC = () => {
   );
 
   const { items: jumpBackInItems, isLoading: isLoadingJumpBackIn } = useJumpBackIn();
-  const { learningPaths: pathSummaries, loading: pathsLoading, semanticEdges = [] } = useLearningPaths();
+  const { learningPaths: pathSummaries, loading: pathsLoading, similarity = [] } = useLearningPaths();
 
   // Hero map level: L1 = graph-of-paths, L2 = concepts of the drilled path.
   const [level, setLevel] = useState<DashboardMapLevel>('L1');
   const [selectedGraphId, setSelectedGraphId] = useState<string | null>(null);
 
   // Top-level knowledge map: every learning path is a node, connected to the paths it shares concepts with.
-  // Augmented with semanticEdges from cross-graph vector search (Chroma) for similar-path clustering.
+  // Clustered + laid out by direct path↔path cosine similarity (from the server).
   const pathMapInputs = useMemo(
     () => pathSummaries.map(p => ({ graphId: p.id, name: p.title, conceptCount: p.conceptCount })),
     [pathSummaries]
   );
   const [expandedGroups, setExpandedGroups] = useState<Set<string>>(() => new Set());
-  const pathMap = useLearningPathMap(pathMapInputs, semanticEdges, expandedGroups);
+  const pathMap = useLearningPathMap(pathMapInputs, similarity, expandedGroups);
 
   // L2 drill: the concepts of one path, edged by concept parent -> child.
   const { concepts: l2Concepts, loading: l2Loading } = useConceptsByLayer(selectedGraphId ?? '', {
@@ -173,7 +173,7 @@ export const DashboardPage: React.FC = () => {
 
   const l1KnowledgeMap = useMemo((): DashboardEntity['knowledgeMap'] => {
     if (!pathMap || pathMap.nodes.length === 0) return undefined;
-    return { nodes: pathMap.nodes, edges: pathMap.edges, graphId: pathSummaries[0]?.id ?? '' };
+    return { nodes: pathMap.nodes, edges: pathMap.edges, similarity: pathMap.similarity, graphId: pathSummaries[0]?.id ?? '' };
   }, [pathMap, pathSummaries]);
 
   // No cross-level fallback: L2 shows ONLY the drilled path's concepts (a loader covers the gap).

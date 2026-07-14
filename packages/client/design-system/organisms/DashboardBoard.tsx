@@ -35,6 +35,7 @@ import {
   type DisplayStateProps,
   type GraphNode,
   type GraphEdge,
+  type GraphSimilarity,
 } from '@almadar/ui';
 
 export interface DashboardLearningPath {
@@ -60,6 +61,8 @@ export interface DashboardEntity {
   knowledgeMap?: {
     nodes: DashboardKnowledgeMapNode[];
     edges: GraphEdge[];
+    /** All-pairs path cosine similarity — layout only (L1 map). */
+    similarity?: GraphSimilarity[];
     /** The graphId these concepts belong to (for click navigation) */
     graphId: string;
   };
@@ -227,6 +230,7 @@ export function DashboardBoard({
                     <GraphCanvas
                       nodes={dash!.knowledgeMap!.nodes}
                       edges={dash!.knowledgeMap!.edges}
+                      similarity={dash!.knowledgeMap!.similarity}
                       height={500}
                       showLabels
                       interactive

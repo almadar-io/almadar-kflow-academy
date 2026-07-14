@@ -290,5 +290,36 @@ describe('computeSemanticPathMap (for V2 viz)', () => {
 
     expect(res!.edges.length).toBeGreaterThanOrEqual(1);
   });
+
+  it('does not cluster or draw a low-similarity pair (< 0.45), but keeps it for layout', () => {
+    const paths = [
+      { graphId: 'g1', name: 'p1', conceptCount: 2 },
+      { graphId: 'g2', name: 'p2', conceptCount: 2 },
+    ];
+    const sets = [new Set(['a']), new Set(['b'])]; // no shared concepts
+    const sim = [{ source: 'g1', target: 'g2', weight: 0.4 }];
+
+    const res = computeSemanticPathMap(paths, sets, sim);
+
+    expect(res!.nodes[0].group).not.toBe(res!.nodes[1].group); // not clustered
+    expect(res!.edges).toHaveLength(0); // not drawn
+    expect(res!.similarity).toHaveLength(1); // still present for layout
+    expect(res!.similarity[0].weight).toBe(0.4);
+  });
+
+  it('clusters but does not draw a mid-similarity pair (0.45–0.55)', () => {
+    const paths = [
+      { graphId: 'g1', name: 'p1', conceptCount: 2 },
+      { graphId: 'g2', name: 'p2', conceptCount: 2 },
+    ];
+    const sets = [new Set(['a']), new Set(['b'])];
+    const sim = [{ source: 'g1', target: 'g2', weight: 0.5 }];
+
+    const res = computeSemanticPathMap(paths, sets, sim);
+
+    expect(res!.nodes[0].group).toBe(res!.nodes[1].group); // clustered (≥ 0.45)
+    expect(res!.edges).toHaveLength(0); // not drawn (< 0.55)
+    expect(res!.similarity).toHaveLength(1);
+  });
 });
 
