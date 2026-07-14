@@ -47,8 +47,10 @@ export interface LearningPathMap {
 const CONCEPT_OPTS = { includeRelationships: false } as const;
 const FIVE_MIN = 5 * 60 * 1000;
 
-/** Cosine ≥ this unions two paths into one color cluster. */
-const CLUSTER_SIMILARITY = 0.45;
+/** Cosine ≥ this unions two paths into one color cluster (tight, so groups stay meaningful). */
+const CLUSTER_SIMILARITY = 0.6;
+/** Jaccard (shared-concept overlap) ≥ this unions two paths into one color cluster. */
+const CLUSTER_JACCARD = 0.1;
 /** Cosine ≥ this draws a link on the canvas (higher, so the map stays readable). */
 const DRAW_SIMILARITY = 0.55;
 
@@ -96,21 +98,26 @@ export function computeSemanticPathMap(
   const maxConcepts = Math.max(1, ...paths.map((p) => p.conceptCount));
   const indexOf = new Map(paths.map((p, i) => [p.graphId, i] as const));
 
-  // --- Cluster union-find: shared concepts + high-similarity pairs → color groups ---
+  // --- Cluster union-find → color groups ---------------------------------------------
+  // Drawn edges stay permissive (any shared concept draws a link), but COLOR clusters
+  // require a MEANINGFUL relationship — unioning on a single shared concept chained the
+  // whole map into one color.
   const cluster = makeUnionFind(paths.length);
 
   const sharedEdges: GraphEdge[] = [];
+  const jacVals: number[] = [];
   for (let i = 0; i < paths.length; i++) {
     for (let j = i + 1; j < paths.length; j++) {
-      if (jaccard(conceptIdSets[i], conceptIdSets[j]) > 0) {
-        cluster.union(i, j);
+      const jv = jaccard(conceptIdSets[i], conceptIdSets[j]);
+      if (jv > 0) {
         sharedEdges.push({ source: paths[i].graphId, target: paths[j].graphId });
+        jacVals.push(jv);
+        if (jv >= CLUSTER_JACCARD) cluster.union(i, j);
       }
     }
   }
 
-  // Union only genuinely similar paths (≥ CLUSTER_SIMILARITY). The old proxy unioned
-  // ANY cross-graph hit regardless of score, chaining whole topic clusters into one badge.
+  // Union genuinely similar paths (≥ CLUSTER_SIMILARITY).
   for (const se of similarity) {
     if (se.weight < CLUSTER_SIMILARITY) continue;
     const si = indexOf.get(se.source);
@@ -130,6 +137,26 @@ export function computeSemanticPathMap(
       clusterOf.set(root, c);
     }
     return c;
+  });
+
+  // Color groups: only clusters with ≥2 members get a distinct color; singletons share a
+  // neutral group so genuinely-related clusters pop and the legend stays small.
+  const clusterSize = new Map<string, number>();
+  for (const c of pathCluster) clusterSize.set(c, (clusterSize.get(c) ?? 0) + 1);
+  const colorGroup = pathCluster.map((c) => (clusterSize.get(c)! >= 2 ? c : 'other'));
+
+  // TEMP diagnostic for threshold tuning (remove before ship).
+  const stat = (a: number[]) =>
+    a.length === 0
+      ? { n: 0 }
+      : { n: a.length, min: +a[0].toFixed(3), p50: +a[Math.floor(a.length / 2)].toFixed(3), p90: +a[Math.floor(a.length * 0.9)].toFixed(3), max: +a[a.length - 1].toFixed(3) };
+  console.log('[L1-MAP] clustering', {
+    paths: paths.length,
+    drawnEdges: sharedEdges.length,
+    colorClusters: [...clusterSize.entries()].filter(([, n]) => n >= 2).map(([c, n]) => `${c}:${n}`),
+    singletons: [...clusterSize.values()].filter((n) => n < 2).length,
+    jaccard: stat([...jacVals].sort((a, b) => a - b)),
+    similarity: stat(similarity.map((s) => s.weight).sort((a, b) => a - b)),
   });
 
   // --- Merge union-find: near-duplicate paths → collapse into one node --------------
@@ -186,7 +213,7 @@ export function computeSemanticPathMap(
         id: gid,
         label: rep.name,
         graphId: rep.graphId,
-        group: pathCluster[i],
+        group: colorGroup[i],
         size: nodeSizeFor(Math.max(...members.map((m) => m.conceptCount))) + 2,
         badge: members.length,
         mergedIds: members.map((m) => m.graphId),
@@ -196,7 +223,7 @@ export function computeSemanticPathMap(
         id: paths[i].graphId,
         label: paths[i].name,
         graphId: paths[i].graphId,
-        group: pathCluster[i],
+        group: colorGroup[i],
         size: nodeSizeFor(paths[i].conceptCount),
       });
       seenNodeId.add(paths[i].graphId);
