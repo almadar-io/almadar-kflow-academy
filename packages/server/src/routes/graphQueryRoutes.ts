@@ -30,7 +30,17 @@ router.get('/learning-paths', async (req, res, next) => {
     const cacheKey = CACHE_KEYS.learningPaths(uid);
     const cached = await hybridCache.get<LearningPathsPayload>(cacheKey);
     if (cached) {
-      log.debug(`[CHROMA-DEBUG][SEMANTIC] /learning-paths cache hit`, { uid, edges: cached.semanticEdges.length });
+      const titleOf = new Map(cached.learningPaths.map(p => [p.id, p.title ?? p.id]));
+      log.debug(`[MERGE-DIAG] /learning-paths cache hit`, {
+        uid,
+        pathCount: cached.learningPaths.length,
+        edges: cached.semanticEdges.length,
+        weighted: cached.semanticEdges.map(e => ({
+          from: titleOf.get(e.source) ?? e.source,
+          to: titleOf.get(e.target) ?? e.target,
+          w: e.weight,
+        })),
+      });
       res.json(cached);
       return;
     }
@@ -93,6 +103,19 @@ router.get('/learning-paths', async (req, res, next) => {
     }
 
     const payload: LearningPathsPayload = { learningPaths: paths, semanticEdges };
+    {
+      const titleOf = new Map(paths.map(p => [p.id, p.title ?? p.id]));
+      log.debug(`[MERGE-DIAG] /learning-paths fresh`, {
+        uid,
+        pathCount: paths.length,
+        edges: semanticEdges.length,
+        weighted: semanticEdges.map(e => ({
+          from: titleOf.get(e.source) ?? e.source,
+          to: titleOf.get(e.target) ?? e.target,
+          w: e.weight,
+        })),
+      });
+    }
     await hybridCache.set(cacheKey, payload, CACHE_TTL.LEARNING_PATHS);
     res.json(payload);
   } catch (error) {

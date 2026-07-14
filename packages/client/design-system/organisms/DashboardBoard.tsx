@@ -231,9 +231,9 @@ export function DashboardBoard({
                       showLabels
                       interactive
                       draggable
-                      repulsion={3200}
-                      linkDistance={220}
-                      nodeSpacing={42}
+                      repulsion={700}
+                      linkDistance={180}
+                      nodeSpacing={48}
                       selectedNodeId={selectedNode?.id}
                       onNodeClick={handleKnowledgeNodeClick}
                       onNodeDoubleClick={handleKnowledgeNodeDoubleClick}

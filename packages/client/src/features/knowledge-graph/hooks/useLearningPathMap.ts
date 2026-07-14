@@ -40,9 +40,9 @@ export interface LearningPathMap {
 }
 
 /** Semantic (Chroma) weight at/above which two paths count as "the same thing". */
-const SEM_MERGE = 0.8;
+const SEM_MERGE = 0.55;
 /** Concept-id Jaccard at/above which two paths count as "the same thing". */
-const JACC_MERGE = 0.6;
+const JACC_MERGE = 0.3;
 
 const CONCEPT_OPTS = { includeRelationships: false } as const;
 const FIVE_MIN = 5 * 60 * 1000;
