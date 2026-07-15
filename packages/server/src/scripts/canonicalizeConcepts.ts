@@ -193,9 +193,11 @@ async function main() {
   log.info('Canonicalization complete', { graphsTouched: changes.size, conceptsUpdated: totalChanges });
 }
 
-main().catch((e) => {
-  log.error('Canonicalize script crashed', {
-    error: e instanceof Error ? e.message : String(e),
+main()
+  .then(() => process.exit(0))
+  .catch((e) => {
+    log.error('Canonicalize script crashed', {
+      error: e instanceof Error ? e.message : String(e),
+    });
+    process.exit(1);
   });
-  process.exit(1);
-});
