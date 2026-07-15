@@ -7,6 +7,7 @@ import {
   extractLearningPathSummary,
   computePathSimilarity,
   computeSharedConceptEdges,
+  canonicalConceptKey,
   type PathSimilarityEdge,
   type SharedConceptEdge,
 } from '@almadar-io/knowledge/server';
@@ -58,7 +59,15 @@ router.get('/learning-paths', async (req, res, next) => {
       graphIds.map(async (graphId) => {
         try {
           const graph = await graphQueryDeps.accessLayer.getGraph(uid, graphId);
-          conceptIdsByGraph.set(graph.id, graph.nodeTypes?.Concept ?? []);
+          // Canonical identity: two concepts with the same canonicalName count as one
+          // shared concept, so the L1 map's overlap edges reflect real overlap.
+          conceptIdsByGraph.set(
+            graph.id,
+            (graph.nodeTypes?.Concept ?? []).map((id) => {
+              const node = graph.nodes[id];
+              return node ? canonicalConceptKey(node) : id;
+            }),
+          );
           return {
             ...extractLearningPathSummary(graph),
             levelCount: computeLevelCount(graph),

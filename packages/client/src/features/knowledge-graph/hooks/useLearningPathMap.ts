@@ -92,27 +92,18 @@ export function computeSemanticPathMap(
   const cluster = makeUnionFind(paths.length);
 
   const sharedEdges: GraphEdge[] = [];
-  const jacPairs: Array<readonly [number, number, number]> = []; // i, j, jaccard
   for (const se of sharedConcepts) {
     const si = indexOf.get(se.source);
     const ti = indexOf.get(se.target);
     if (si === undefined || ti === undefined) continue;
     // Drawn unweighted (weight defaults to 1 downstream): the original uniform look.
     sharedEdges.push({ source: se.source, target: se.target });
-    jacPairs.push([si, ti, se.weight]);
     if (se.weight >= CLUSTER_JACCARD) cluster.union(si, ti);
   }
 
-  // Cosine pairs are collected for layout + diagnostics only — NOT for color grouping.
-  // Path embeddings form a continuum here (no natural gap to cut), so a cosine threshold
-  // chains everything into one color; shared concepts are the interpretable grouping signal.
-  const simPairs: Array<readonly [number, number, number]> = []; // i, j, cosine
-  for (const se of similarity) {
-    const si = indexOf.get(se.source);
-    const ti = indexOf.get(se.target);
-    if (si === undefined || ti === undefined) continue;
-    simPairs.push([si, ti, se.weight]);
-  }
+  // Cosine similarity is NOT used for grouping: path embeddings form a continuum here
+  // (no natural gap to cut), so a cosine threshold chains everything into one color.
+  // Shared concepts are the interpretable grouping signal; cosine drives layout only.
 
   // Stable cluster ids per path.
   const clusterOf = new Map<number, string>();
@@ -133,28 +124,6 @@ export function computeSemanticPathMap(
   const clusterSize = new Map<string, number>();
   for (const c of pathCluster) clusterSize.set(c, (clusterSize.get(c) ?? 0) + 1);
   const colorGroup: (string | undefined)[] = pathCluster.map((c) => (clusterSize.get(c)! >= 2 ? c : undefined));
-
-  // TEMP diagnostic: connected-component sizes under candidate cluster rules (remove before ship).
-  const comps = (pairs: Array<readonly [number, number, number]>, thr: number): number[] => {
-    const uf = makeUnionFind(paths.length);
-    for (const [a, b, w] of pairs) if (w >= thr) uf.union(a, b);
-    const sz = new Map<number, number>();
-    for (let i = 0; i < paths.length; i++) {
-      const r = uf.find(i);
-      sz.set(r, (sz.get(r) ?? 0) + 1);
-    }
-    return [...sz.values()].sort((a, b) => b - a);
-  };
-  console.log('[L1-MAP] cluster options (component sizes per rule)', {
-    jac_any: comps(jacPairs, 0),
-    jac_05: comps(jacPairs, 0.05),
-    jac_08: comps(jacPairs, 0.08),
-    jac_12: comps(jacPairs, 0.12),
-    sim_65: comps(simPairs, 0.65),
-    sim_70: comps(simPairs, 0.7),
-    sim_75: comps(simPairs, 0.75),
-    sim_80: comps(simPairs, 0.8),
-  });
 
   // --- Merge union-find: near-duplicate paths → collapse into one node --------------
   const merge = makeUnionFind(paths.length);

@@ -93,6 +93,7 @@ export const generateGoalDeps: GenerateGoalDeps = {
   mutationApplier: mutationService,
   getUid,
   verifyAccess,
+  getAllGraphIds,
   parseGoalContent,
 };
 
@@ -101,6 +102,7 @@ export const expansionDeps: ExpansionDeps = {
   mutationApplier: mutationService,
   getUid,
   verifyAccess,
+  getAllGraphIds,
   parseExpansionContent: parseProgressiveExpandContent,
 };
 
@@ -128,5 +130,6 @@ export const customOperationDeps: CustomOperationDeps = {
   mutationApplier: mutationService,
   getUid,
   verifyAccess,
+  getAllGraphIds,
   parseCustomOperationContent,
 };

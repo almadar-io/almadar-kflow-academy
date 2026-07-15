@@ -10,10 +10,11 @@
     "clean": "rm -rf dist",
     "lint": "eslint src/",
     "test": "node --experimental-vm-modules node_modules/.bin/jest",
-    "backfill:chroma": "tsx src/scripts/backfillChroma.ts"
+    "backfill:chroma": "tsx src/scripts/backfillChroma.ts",
+    "canonicalize:concepts": "tsx src/scripts/canonicalizeConcepts.ts"
   },
   "dependencies": {
-    "@almadar-io/knowledge": "^1.4.0",
+    "@almadar-io/knowledge": "^1.5.1",
     "@almadar/core": "^10.28.0",
     "@almadar/llm": "^2.33.0",
     "@almadar/logger": "^1.9.0",
