@@ -47,6 +47,9 @@ export interface LearningPathMap {
 const CLUSTER_JACCARD = 0.05;
 /** Cosine ≥ this draws a link on the canvas (higher, so the map stays readable). */
 const DRAW_SIMILARITY = 0.55;
+/** Singletons (share no concepts) stay ungrouped for gravity, but render violet — not the
+ * muted grey that reads as "disabled". Kept off the GraphCanvas group palette. */
+const SINGLETON_COLOR = '#8b5cf6';
 
 function makeUnionFind(n: number) {
   const parent = Array.from({ length: n }, (_, i) => i);
@@ -180,6 +183,7 @@ export function computeSemanticPathMap(
         label: rep.name,
         graphId: rep.graphId,
         group: colorGroup[i],
+        color: colorGroup[i] ? undefined : SINGLETON_COLOR,
         size: nodeSizeFor(Math.max(...members.map((m) => m.conceptCount))) + 2,
         badge: members.length,
         mergedIds: members.map((m) => m.graphId),
@@ -190,6 +194,7 @@ export function computeSemanticPathMap(
         label: paths[i].name,
         graphId: paths[i].graphId,
         group: colorGroup[i],
+        color: colorGroup[i] ? undefined : SINGLETON_COLOR,
         size: nodeSizeFor(paths[i].conceptCount),
       });
       seenNodeId.add(paths[i].graphId);
