@@ -31,7 +31,7 @@ export function useServerEvents(enabled = true) {
     };
 
     ws.onerror = (err) => {
-      log.error('WebSocket error', { error: err.message || String(err) });
+      log.error('WebSocket error', { type: err.type });
     };
 
     return () => {

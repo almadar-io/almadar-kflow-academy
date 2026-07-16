@@ -55,7 +55,7 @@ export const createConceptsPersistenceMiddleware = (): Middleware<{}, RootState>
     }
 
     try {
-      log.debug('Upserting graph to Firestore', { graph: graphToSync });
+      log.debug('Upserting graph to Firestore', { graphId: graphToSync.id, conceptCount: graphToSync.concepts.size });
       await graphApi.upsertGraph(graphToSync);
       scheduleLocalSave(state);
     } catch (error) {

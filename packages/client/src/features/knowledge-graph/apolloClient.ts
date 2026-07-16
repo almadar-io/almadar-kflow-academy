@@ -45,7 +45,7 @@ const authLink = setContext(async (_operation: GraphQLRequest, { headers }: Defa
 const errorLink = onError(({ graphQLErrors, networkError }: ErrorResponse) => {
   if (graphQLErrors) {
     graphQLErrors.forEach(({ message, locations, path }) => {
-      log.error('GraphQL error', { message, locations, path });
+      log.error('GraphQL error', { message, locations: locations?.map(l => `${l.line}:${l.column}`).join(', '), path: path?.map(p => String(p)).join('.') });
     });
   }
 

@@ -166,7 +166,7 @@ export const ConceptsPage: React.FC = () => {
         {
           stream: true,
           onChunk: () => {},
-          onDone: (result) => { log.debug('Layer practice generated', { result }); },
+          onDone: (result) => { log.debug('Layer practice generated', { reviewLength: result.content.review.length, errorCount: result.errors?.length ?? 0 }); },
         }
       );
     } catch (err) {
