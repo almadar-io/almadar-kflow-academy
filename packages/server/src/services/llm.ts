@@ -5,7 +5,7 @@ import {
   type LLMStreamChunk,
 } from '@almadar/llm';
 
-export type LLMProvider = 'openai' | 'gemini' | 'deepseek';
+export type LLMProvider = 'openai' | 'gemini' | 'deepseek' | 'openrouter';
 
 export interface LLMRequest {
   systemPrompt: string;
@@ -74,16 +74,28 @@ export function extractJSONArray(response: string): JsonValue[] {
 }
 
 // Gemini is not supported by @almadar/llm; callers that previously picked
-// gemini fall back to deepseek (the KFlow default).
+// gemini fall back to deepseek (the KFlow default). openrouter is used by the
+// peer-connection AI layer (AI-user replies + moderator) via OPEN_ROUTER_API_KEY.
 function toAlmadarProvider(provider: LLMProvider): AlmadarLLMProvider {
   if (provider === 'openai') return 'openai';
+  if (provider === 'openrouter') return 'openrouter';
   return 'deepseek';
 }
 
 function defaultModelFor(provider: LLMProvider): string {
   if (provider === 'openai') return 'gpt-5-nano';
+  if (provider === 'openrouter') return 'qwen/qwen-2.5-7b-instruct';
   return 'deepseek-chat';
 }
+
+/** AI peer-connection model config (OpenRouter; isolated from the human-facing default). */
+export const AI_LLM = {
+  provider: 'openrouter' as LLMProvider,
+  /** AI-peer conversational replies — 30B MoE / 3B active. */
+  replyModel: 'qwen/qwen3-30b-a3b-instruct-2507',
+  /** Relevance moderator — cheap structured scoring, highest-volume call. */
+  moderatorModel: 'qwen/qwen-2.5-7b-instruct',
+} satisfies { provider: LLMProvider; replyModel: string; moderatorModel: string };
 
 export async function callLLM(request: LLMRequest): Promise<LLMResponse> {
   const kflowProvider = request.provider ?? 'deepseek';

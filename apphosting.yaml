@@ -118,3 +118,10 @@ env:
     value: kflow
     availability:
       - RUNTIME
+
+  # Peer-connections (V2): Cloud Scheduler → POST /api/internal/ai-progress auth.
+  # Create via: firebase apphosting:secrets:set INTERNAL_TOKEN
+  - variable: INTERNAL_TOKEN
+    secret: INTERNAL_TOKEN
+    availability:
+      - RUNTIME

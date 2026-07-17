@@ -157,6 +157,13 @@ export function DashboardBoard({
     emit('UI:KNOWLEDGE_NODE_DRILL', { graphId: selectedNode.graphId });
   }, [emit, selectedNode]);
 
+  const handleConnectSelected = useCallback(() => {
+    if (!selectedNode) return;
+    const kind = level === 'L1' ? 'path' : 'concept';
+    const canonicalId = kind === 'path' ? selectedNode.graphId : (selectedNode.label ?? selectedNode.id);
+    emit('UI:PEER_CONNECT_OPEN', { nodeKey: `${kind}:${canonicalId}` });
+  }, [emit, level, selectedNode]);
+
   const handleBack = useCallback(() => {
     setSelectedNode(null);
     emit('UI:KNOWLEDGE_BACK', {});
@@ -196,6 +203,9 @@ export function DashboardBoard({
                       {t('dashboard.showConcepts')}
                     </Button>
                   )}
+                  <Button onClick={handleConnectSelected} variant="secondary" size="sm">
+                    {t('connections.connect')}
+                  </Button>
                   <Button
                     onClick={handleClearSelected}
                     variant="ghost"

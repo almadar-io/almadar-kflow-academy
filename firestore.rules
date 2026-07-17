@@ -179,6 +179,31 @@ service cloud.firestore {
       allow write: if false;
     }
     
+    // ==================== Peer Connections (V2) ====================
+    // All peer-connection data is accessed exclusively through the REST API (server,
+    // Admin SDK) which enforces anonymity + participant checks. No direct client access.
+    match /node-activity/{nodeKey} {
+      allow read, write: if false; // server-only
+      match /members/{memberId} {
+        allow read, write: if false; // server-only (anonymous presence rows)
+      }
+    }
+    match /peer-tokens/{tokenId} {
+      allow read, write: if false; // server-only (opaque peerRef → uid mapping)
+    }
+    match /ai-users/{uid} {
+      allow read, write: if false; // server-only (AI user registry — persona/domain metadata)
+    }
+    match /connections/{connectionId} {
+      allow read, write: if false; // server-only; participant checks enforced in connectionService
+      match /messages/{messageId} {
+        allow read, write: if false; // server-only
+      }
+    }
+    match /knowledge-fingerprints/{uid} {
+      allow read, write: if false; // server-only (reserved; v1 trajectory data lives in Chroma)
+    }
+
     // Default rule: deny all access
     match /{document=**} {
       allow read, write: if false;

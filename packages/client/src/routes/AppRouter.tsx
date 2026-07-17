@@ -6,10 +6,12 @@ import { ConceptDetailPage } from '../pages/ConceptDetailPage';
 import { LearnPage } from '../pages/LearnPage';
 import { DashboardPage } from '../pages/DashboardPage';
 import { SettingsPage } from '../pages/SettingsPage';
+import { ConnectionPage } from '../pages/ConnectionPage';
 import { Login, ProtectedRoute } from '../features/auth';
 import { useAuthContext } from '../features/auth/AuthContext';
 import { Spinner } from '@almadar/ui';
 import { NavigationHandler } from '../app/NavigationHandler';
+import { ConnectFlowHandler } from '../features/connections/components/ConnectFlowHandler';
 
 /**
  * App Router: Dashboard, Learn, and Concepts pages
@@ -36,6 +38,7 @@ const AppRouter: React.FC = () => {
   return (
     <Router>
       <NavigationHandler />
+      <ConnectFlowHandler />
       <Routes>
         {/* Public Routes (no auth required) */}
         <Route path="/" element={<HomeRoute />} />
@@ -59,6 +62,9 @@ const AppRouter: React.FC = () => {
         } />
         <Route path="/settings" element={
           <ProtectedRoute><SettingsPage /></ProtectedRoute>
+        } />
+        <Route path="/connection/:id" element={
+          <ProtectedRoute><ConnectionPage /></ProtectedRoute>
         } />
 
         <Route path="*" element={<Navigate to="/" replace />} />

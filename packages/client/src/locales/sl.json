@@ -684,5 +684,21 @@
   "landing.cta.title": "Ste pripravljeni preoblikovati učenje?",
   "landing.cta.description": "Pridružite se KFlow in izkusite strukturirane, z umetno inteligenco podprte učne poti, ki se prilagajajo vaši ravni in ciljem.",
   "landing.cta.button": "Začni brezplačno",
-  "landing.footer.copyright": "© 2024 KFlow. Vse pravice pridržane."
+  "landing.footer.copyright": "© 2024 KFlow. Vse pravice pridržane.",
+
+  "connections.title": "Vrstniki, ki študirajo to",
+  "connections.empty": "Tukaj še ni vrstnikov. Preverite kmalu.",
+  "connections.connect": "Poveži",
+  "connections.ai": "AI",
+  "connections.activeNow": "aktivno",
+  "connections.convergence": "{pct}% ujemanje",
+  "connections.concepts": "{count} konceptov",
+  "connections.discussing": "Razpravljate o",
+  "connections.aiPeer": "AI vrstnik",
+  "connections.startDiscussion": "Začnite razpravo — vprašajte o zgornji temi.",
+  "connections.flaggedOffTopic": "izven teme",
+  "connections.composerPlaceholder": "Razpravljajte o temi…",
+  "connections.send": "Pošlji",
+  "connections.back": "Nazaj",
+  "connections.notFound": "Povezava ni najdena."
 }

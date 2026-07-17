@@ -684,5 +684,21 @@
   "landing.cta.title": "Ready to transform your learning?",
   "landing.cta.description": "Join KFlow and experience structured, AI-powered learning paths that adapt to your level and goals.",
   "landing.cta.button": "Get Started Free",
-  "landing.footer.copyright": "© 2024 KFlow. All rights reserved."
+  "landing.footer.copyright": "© 2024 KFlow. All rights reserved.",
+
+  "connections.title": "Peers studying this",
+  "connections.empty": "No peers here yet. Check back soon.",
+  "connections.connect": "Connect",
+  "connections.ai": "AI",
+  "connections.activeNow": "active now",
+  "connections.convergence": "{pct}% match",
+  "connections.concepts": "{count} concepts",
+  "connections.discussing": "Discussing",
+  "connections.aiPeer": "AI peer",
+  "connections.startDiscussion": "Start the discussion — ask about the focus topic above.",
+  "connections.flaggedOffTopic": "off-topic",
+  "connections.composerPlaceholder": "Discuss the focus topic…",
+  "connections.send": "Send",
+  "connections.back": "Back",
+  "connections.notFound": "Connection not found."
 }

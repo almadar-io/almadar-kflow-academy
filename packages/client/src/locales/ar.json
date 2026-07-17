@@ -684,5 +684,21 @@
   "landing.cta.title": "هل أنت مستعد لتحويل تعلمك؟",
   "landing.cta.description": "انضم إلى KFlow واختبر مسارات التعلم المنظمة المدعومة بالذكاء الاصطناعي التي تتكيف مع مستواك وأهدافك.",
   "landing.cta.button": "ابدأ مجاناً",
-  "landing.footer.copyright": "© 2024 KFlow. جميع الحقوق محفوظة."
+  "landing.footer.copyright": "© 2024 KFlow. جميع الحقوق محفوظة.",
+
+  "connections.title": "زملاء يدرسون هذا",
+  "connections.empty": "لا يوجد زملاء بعد. تحقق قريبًا.",
+  "connections.connect": "تواصل",
+  "connections.ai": "AI",
+  "connections.activeNow": "نشط الآن",
+  "connections.convergence": "{pct}% تطابق",
+  "connections.concepts": "{count} مفاهيم",
+  "connections.discussing": "نناقش",
+  "connections.aiPeer": "زميل ذكاء اصطناعي",
+  "connections.startDiscussion": "ابدأ النقاش — اسأل عن الموضوع أعلاه.",
+  "connections.flaggedOffTopic": "خارج الموضوع",
+  "connections.composerPlaceholder": "ناقش الموضوع…",
+  "connections.send": "إرسال",
+  "connections.back": "رجوع",
+  "connections.notFound": "لم يتم العثور على الاتصال."
 }

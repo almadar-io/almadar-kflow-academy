@@ -9,6 +9,8 @@ import { useExplainConcept } from '../features/knowledge-graph/hooks/useExplainC
 import { useAnswerQuestion } from '../features/knowledge-graph/hooks/useAnswerQuestion';
 import { useCustomOperation } from '../features/knowledge-graph/hooks/useCustomOperation';
 import { useUserProgress } from '../features/concepts/hooks/useUserProgress';
+import { useTouchNodeActivity } from '../features/connections/hooks/useConnections';
+import type { NodeKey } from '@kflow-academy/shared';
 import { useServerEvents } from '../features/learning/hooks/useServerEvents';
 import { useConceptsByLayer } from '../features/knowledge-graph/hooks/useConceptsByLayer';
 import { useAuthContext } from '../features/auth/AuthContext';
@@ -54,6 +56,12 @@ export const ConceptDetailPage: React.FC = () => {
   }, [graphId, dispatch]);
 
   const conceptDetail = useConceptDetail(graphId || '', conceptId || '');
+
+  // Presence: touching lastSeenOnNode on mount makes this viewer appear in the peer
+  // pool for this concept (recency, not a heartbeat).
+  const conceptName = conceptDetail.conceptDetail?.concept?.name ?? conceptId;
+  const conceptNodeKey = (graphId && conceptId ? (`concept:${conceptName}` as NodeKey) : null);
+  useTouchNodeActivity(conceptNodeKey);
   const graph = useAppSelector((state) => selectGraphById(state, graphId || ''));
   const { getGraph, loading: isLoadingGraph } = useGetGraph();
   const conceptsData = useConceptsByLayer(graphId || '', {

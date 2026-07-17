@@ -105,7 +105,7 @@ export const explanationResolvers = {
         const v = (accessLayer as any).getVectorService?.();
         if (v && typeof v.upsertNodes === 'function') {
           const allNodes = Object.values(updatedGraph.nodes || {});
-          const count = await v.upsertNodes(args.graphId, allNodes);
+          const count = await v.upsertNodes(args.graphId, allNodes, uid);
           log.debug('[CHROMA-DEBUG][LESSON] explicit v.upsertNodes after save', { count });
         } else {
           log.debug('[CHROMA-DEBUG][LESSON] no getVectorService or no upsert on accessLayer (old dep or not wired)');
