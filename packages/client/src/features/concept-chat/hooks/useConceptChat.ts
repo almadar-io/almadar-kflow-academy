@@ -45,18 +45,20 @@ export function useConceptChat(conceptLabel: string): UseConceptChat {
     },
   });
 
+  const startMutate = startMutation.mutate;
   const start = useCallback(() => {
     setPersona(null);
     setTranscript([]);
-    startMutation.mutate();
-  }, [startMutation]);
+    startMutate();
+  }, [startMutate]);
 
+  const sendMutate = sendMutation.mutate;
   const send = useCallback(
     (message: string) => {
       if (!persona) return;
-      sendMutation.mutate(message);
+      sendMutate(message);
     },
-    [persona, sendMutation],
+    [persona, sendMutate],
   );
 
   const reset = useCallback(() => {
