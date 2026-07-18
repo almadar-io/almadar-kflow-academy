@@ -11,7 +11,6 @@
     "lint": "eslint src/",
     "test": "node --experimental-vm-modules node_modules/.bin/jest",
     "backfill:chroma": "tsx src/scripts/backfillChroma.ts",
-    "seed:ai-users": "tsx src/scripts/seedAiUsers.ts",
     "canonicalize:concepts": "tsx src/scripts/canonicalizeConcepts.ts"
   },
   "dependencies": {

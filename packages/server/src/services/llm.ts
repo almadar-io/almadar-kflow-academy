@@ -73,9 +73,32 @@ export function extractJSONArray(response: string): JsonValue[] {
   throw new Error('Could not extract JSON array from LLM response');
 }
 
+export function extractJSONObject(response: string): Record<string, JsonValue> {
+  const jsonBlockMatch = response.match(/```(?:json)?\s*(\{[\s\S]*?\})\s*```/);
+  if (jsonBlockMatch) {
+    try {
+      return JSON.parse(jsonBlockMatch[1]) as Record<string, JsonValue>;
+    } catch {
+      // fall through
+    }
+  }
+
+  const objectMatch = response.match(/(\{[\s\S]*\})/);
+  if (objectMatch) {
+    try {
+      return JSON.parse(objectMatch[1]) as Record<string, JsonValue>;
+    } catch {
+      // fall through
+    }
+  }
+
+  throw new Error('Could not extract JSON object from LLM response');
+}
+
+
 // Gemini is not supported by @almadar/llm; callers that previously picked
-// gemini fall back to deepseek (the KFlow default). openrouter is used by the
-// peer-connection AI layer (AI-user replies + moderator) via OPEN_ROUTER_API_KEY.
+// gemini fall back to deepseek (the KFlow default). openrouter drives the peer-connection
+// layer (concept-chat personas/replies + badge/relevance moderation) via OPEN_ROUTER_API_KEY.
 function toAlmadarProvider(provider: LLMProvider): AlmadarLLMProvider {
   if (provider === 'openai') return 'openai';
   if (provider === 'openrouter') return 'openrouter';
@@ -88,7 +111,7 @@ function defaultModelFor(provider: LLMProvider): string {
   return 'deepseek-chat';
 }
 
-/** AI peer-connection model config (OpenRouter; isolated from the human-facing default). */
+/** Peer-connection AI model config (OpenRouter; isolated from the human-facing default). */
 export const AI_LLM = {
   provider: 'openrouter' as LLMProvider,
   /** AI-peer conversational replies — 30B MoE / 3B active. */

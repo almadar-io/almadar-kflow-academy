@@ -16,7 +16,6 @@ function pathSeg(nodeKey: string): string {
 export interface NodeMember {
   uid: string;
   anonymousHandle: string;
-  isAi: boolean;
   lastSeenOnNode: number;
 }
 
@@ -24,7 +23,6 @@ export async function touchNodeActivity(
   uid: string,
   nodeKey: NodeKey,
   anonymousHandle: string,
-  isAi: boolean,
 ): Promise<void> {
   const db = getFirestore();
   const ref = db
@@ -33,7 +31,7 @@ export async function touchNodeActivity(
     .collection('members')
     .doc(uid);
   await ref.set(
-    { lastSeenOnNode: Date.now(), anonymousHandle, isAi },
+    { lastSeenOnNode: Date.now(), anonymousHandle },
     { merge: true },
   );
 }
@@ -56,14 +54,12 @@ export async function listRecentMembers(
     if (doc.id === excludeUid) continue;
     const d = doc.data() as {
       anonymousHandle?: string;
-      isAi?: boolean;
       lastSeenOnNode?: number;
     };
     if (typeof d.lastSeenOnNode !== 'number') continue;
     rows.push({
       uid: doc.id,
       anonymousHandle: d.anonymousHandle ?? 'peer',
-      isAi: d.isAi ?? false,
       lastSeenOnNode: d.lastSeenOnNode,
     });
   }

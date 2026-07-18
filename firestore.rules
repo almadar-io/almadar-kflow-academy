@@ -191,9 +191,6 @@ service cloud.firestore {
     match /peer-tokens/{tokenId} {
       allow read, write: if false; // server-only (opaque peerRef → uid mapping)
     }
-    match /ai-users/{uid} {
-      allow read, write: if false; // server-only (AI user registry — persona/domain metadata)
-    }
     match /connections/{connectionId} {
       allow read, write: if false; // server-only; participant checks enforced in connectionService
       match /messages/{messageId} {

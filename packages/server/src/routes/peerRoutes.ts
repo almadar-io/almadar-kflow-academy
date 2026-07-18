@@ -8,7 +8,6 @@ import { listPeersForNode } from '../services/peerMatchService';
 import { anonymousHandleFor } from '../utils/anonymousHandle';
 import * as connectionService from '../services/connectionService';
 import { scoreRelevance } from '../services/moderationService';
-import { generateAiReply } from '../services/aiReplyService';
 
 const log = createLogger('kflow:server:routes:peerRoutes');
 const router = Router();
@@ -41,7 +40,7 @@ router.get('/peers', asyncHandler(async (req: Request, res: Response) => {
 router.post('/node-activity/:nodeKey', asyncHandler(async (req: Request, res: Response) => {
   const viewerUid = getUid(req);
   const nk = param(req.params.nodeKey);
-  await touchNodeActivity(viewerUid, (nk ?? '') as NodeKey, anonymousHandleFor(viewerUid), false);
+  await touchNodeActivity(viewerUid, (nk ?? '') as NodeKey, anonymousHandleFor(viewerUid));
   res.json({ ok: true });
 }));
 
@@ -88,30 +87,10 @@ router.post('/connections/:id/messages', asyncHandler(async (req: Request, res: 
     body.content,
     body.activeBadgeId,
   );
-  // Wave-D hook: if the other participant is an AI, generate + append a reply here.
   // Soft-flag moderation runs after the message is visible (never blocks the sender).
   void scoreRelevance(body.content, activeBadgeLabel)
     .then((moderation) => connectionService.attachModeration(connectionId, messageId, moderation))
     .catch((e) => log.warn('moderation attach failed', { error: e instanceof Error ? e.message : String(e) }));
-
-  // Wave D: if the other participant is an AI user, generate + append its reply, then moderate it.
-  void connectionService
-    .getOtherParticipant(connectionId, viewerUid)
-    .then(async (other) => {
-      if (!other?.isAi) return;
-      const reply = await generateAiReply(other.uid, activeBadgeLabel, body.content);
-      if (!reply) return;
-      const { messageId: replyId, activeBadgeLabel: replyBadge } = await connectionService.appendMessage(
-        connectionId,
-        other.uid,
-        reply,
-        body.activeBadgeId,
-      );
-      void scoreRelevance(reply, replyBadge)
-        .then((m) => connectionService.attachModeration(connectionId, replyId, m))
-        .catch((e) => log.warn('AI reply moderation failed', { error: e instanceof Error ? e.message : String(e) }));
-    })
-    .catch((e) => log.warn('AI reply branch failed', { error: e instanceof Error ? e.message : String(e) }));
 
   res.status(201).json({ messageId });
 }));

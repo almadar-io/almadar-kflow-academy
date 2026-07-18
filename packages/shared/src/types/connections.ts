@@ -23,8 +23,6 @@ export interface PeerDTO {
   convergencePct: number;
   /** Peer was active on this node within ~5 min. */
   activeNow: boolean;
-  /** True for AI users — always labeled to the human. */
-  isAi: boolean;
 }
 
 export interface ConnectionBadge {
@@ -55,7 +53,6 @@ export interface MessageDTO {
 export interface PeerSnapshot {
   anonymousHandle: string;
   conceptsCompleted: number;
-  isAi: boolean;
 }
 
 export interface ConnectionDTO {

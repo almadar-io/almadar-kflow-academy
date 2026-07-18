@@ -700,5 +700,11 @@
   "connections.composerPlaceholder": "Razpravljajte o temi…",
   "connections.send": "Pošlji",
   "connections.back": "Nazaj",
-  "connections.notFound": "Povezava ni najdena."
+  "connections.notFound": "Povezava ni najdena.",
+  "conceptChat.askOriginator": "Vprašaj utemeljitelja",
+  "conceptChat.generating": "Pripravljam utemeljitelja…",
+  "conceptChat.aiLabel": "UI",
+  "conceptChat.thinking": "razmišlja…",
+  "conceptChat.composerPlaceholder": "Vprašaj o tem konceptu…",
+  "conceptChat.send": "Pošlji"
 }

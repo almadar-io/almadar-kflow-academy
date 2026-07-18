@@ -10,6 +10,8 @@ export { PeerModal } from "./organisms/PeerModal";
 export type { PeerModalProps } from "./organisms/PeerModal";
 export { ConnectionThread } from "./organisms/ConnectionThread";
 export type { ConnectionThreadProps } from "./organisms/ConnectionThread";
+export { ConceptChatModal } from "./organisms/ConceptChatModal";
+export type { ConceptChatModalProps } from "./organisms/ConceptChatModal";
 export { LearnBoard } from "./organisms/LearnBoard";
 export { QuizBlock } from "@almadar/ui";
 export { CodeBlock } from "@almadar/ui";

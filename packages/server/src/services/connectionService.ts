@@ -28,7 +28,6 @@ interface StoredBadge {
 interface StoredSnapshot {
   anonymousHandle: string;
   conceptsCompleted: number;
-  isAi: boolean;
 }
 interface StoredConnection {
   callerUid: string;
@@ -107,18 +106,16 @@ export async function createConnection(
     callerSnapshot: {
       anonymousHandle: anonymousHandleFor(callerUid),
       conceptsCompleted: callerSet.count,
-      isAi: false,
     },
     peerSnapshot: {
       anonymousHandle: anonymousHandleFor(resolved.peerUid),
       conceptsCompleted: peerSet.count,
-      isAi: resolved.isAi,
     },
     createdAt: now,
     lastActivityAt: now,
   };
   const ref = await getFirestore().collection('connections').add(conn);
-  log.debug('createConnection', { id: ref.id, peerIsAi: resolved.isAi, badges: badges.length });
+  log.debug('createConnection', { id: ref.id, badges: badges.length });
   return { id: ref.id };
 }
 
@@ -201,12 +198,4 @@ export async function attachModeration(id: string, messageId: string, moderation
     .collection('messages')
     .doc(messageId)
     .update({ moderation });
-}
-
-/** Returns the other participant for a connection (used by the Wave-D AI-reply branch). */
-export async function getOtherParticipant(id: string, viewerUid: string): Promise<{ uid: string; isAi: boolean } | null> {
-  const { conn, isCaller } = await loadAuthorized(id, viewerUid);
-  const snap = isCaller ? conn.peerSnapshot : conn.callerSnapshot;
-  const uid = isCaller ? conn.peerUid : conn.callerUid;
-  return { uid, isAi: snap.isAi };
 }

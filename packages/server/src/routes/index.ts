@@ -27,7 +27,7 @@ import graphQueryRoutes from './graphQueryRoutes';
 import knowledgeGraphAccessRoutes from './knowledgeGraphAccessRoutes';
 import graphOperationRoutes from './graphOperationRoutes';
 import peerRoutes from './peerRoutes';
-import internalRoutes from './internalRoutes';
+import conceptChatRoutes from './conceptChatRoutes';
 
 const router = Router();
 
@@ -51,7 +51,7 @@ router.use('/graph-queries', graphQueryRoutes);
 router.use('/knowledge-graphs-access', knowledgeGraphAccessRoutes);
 router.use('/graph-operations', graphOperationRoutes);
 router.use(peerRoutes);
-router.use('/internal', internalRoutes);
+router.use('/concept-chat', conceptChatRoutes);
 router.post('/explain-concept', authenticateFirebase, explainConcept);
 router.post('/custom-operation', authenticateFirebase, customOperationHandler);
 router.post('/generate-layer-practice', authenticateFirebase, generateLayerPracticeHandler);

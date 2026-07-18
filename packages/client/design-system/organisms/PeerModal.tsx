@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { X, Sparkles, Users } from 'lucide-react';
+import { X, Users } from 'lucide-react';
 import {
   Box,
   VStack,
@@ -76,11 +76,6 @@ export const PeerModal: React.FC<PeerModalProps> = ({ nodeKey, onClose, onConnec
                       <Typography variant="body" weight="semibold" className="truncate">
                         {peer.anonymousHandle}
                       </Typography>
-                      {peer.isAi && (
-                        <Badge variant="secondary" className="flex items-center gap-1">
-                          <Sparkles size={12} /> {t('connections.ai')}
-                        </Badge>
-                      )}
                       {peer.activeNow && (
                         <Badge variant="success">{t('connections.activeNow')}</Badge>
                       )}

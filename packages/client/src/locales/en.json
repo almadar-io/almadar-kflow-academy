@@ -700,5 +700,11 @@
   "connections.composerPlaceholder": "Discuss the focus topic…",
   "connections.send": "Send",
   "connections.back": "Back",
-  "connections.notFound": "Connection not found."
+  "connections.notFound": "Connection not found.",
+  "conceptChat.askOriginator": "Ask the originator",
+  "conceptChat.generating": "Summoning the originator…",
+  "conceptChat.aiLabel": "AI",
+  "conceptChat.thinking": "thinking…",
+  "conceptChat.composerPlaceholder": "Ask about this concept…",
+  "conceptChat.send": "Send"
 }

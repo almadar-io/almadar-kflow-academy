@@ -10,9 +10,8 @@ const log = createLogger('kflow:server:peerMatchService');
 
 /**
  * Build the anonymous peer list for a node: recent human members (node-activity) enriched
- * with Chroma-derived canonical sets + convergence to the caller. AI users appear here too
- * once their daily progression touches node-activity (Wave D). No uid or node text leaves
- * this function — peers are addressed by opaque tokens.
+ * with Chroma-derived canonical sets + convergence to the caller. No uid or node text
+ * leaves this function — peers are addressed by opaque tokens.
  */
 export async function listPeersForNode(
   callerUid: string,
@@ -34,14 +33,13 @@ export async function listPeersForNode(
   const now = Date.now();
   const rows: PeerDTO[] = await Promise.all(
     enriched.map(async ({ m, set }) => ({
-      peerRef: await issuePeerToken(m.uid, nodeKey, m.isAi),
+      peerRef: await issuePeerToken(m.uid, nodeKey),
       anonymousHandle: m.anonymousHandle || anonymousHandleFor(m.uid),
       conceptsCompleted: set.count,
       convergencePct: Math.round(
         convergenceScore(callerSet.canonicalNames, set.canonicalNames) * 100,
       ),
       activeNow: isActiveNow(m.lastSeenOnNode, now),
-      isAi: m.isAi,
     })),
   );
 

@@ -55,9 +55,6 @@ export const ConnectionThread: React.FC<ConnectionThreadProps> = ({ connectionId
       <Box>
         <Typography variant="small" color="secondary">{t('connections.discussing')}</Typography>
         <Typography variant="h4" className="truncate">{conn.origin.canonicalId}</Typography>
-        {conn.peer.isAi && (
-          <Badge variant="secondary" className="mt-1">{t('connections.aiPeer')}</Badge>
-        )}
       </Box>
 
       {conn.badges.length > 0 && (

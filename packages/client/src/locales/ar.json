@@ -700,5 +700,11 @@
   "connections.composerPlaceholder": "ناقش الموضوع…",
   "connections.send": "إرسال",
   "connections.back": "رجوع",
-  "connections.notFound": "لم يتم العثور على الاتصال."
+  "connections.notFound": "لم يتم العثور على الاتصال.",
+  "conceptChat.askOriginator": "اسأل المؤسس",
+  "conceptChat.generating": "جارٍ استحضار المؤسس…",
+  "conceptChat.aiLabel": "ذكاء اصطناعي",
+  "conceptChat.thinking": "يفكّر…",
+  "conceptChat.composerPlaceholder": "اسأل عن هذا المفهوم…",
+  "conceptChat.send": "إرسال"
 }

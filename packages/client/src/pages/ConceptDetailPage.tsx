@@ -1,6 +1,7 @@
 import { createLogger } from '@almadar/logger';
 import React, { useEffect, useMemo, useCallback, useState } from 'react';
 import { useParams, useLocation } from 'react-router';
+import { MessageCircle } from 'lucide-react';
 import { useAppDispatch, useAppSelector } from '../app/hooks';
 import { useConceptDetail } from '../features/knowledge-graph/hooks/useConceptDetail';
 import { useGetGraph, useLessonAnnotations } from '../features/knowledge-graph/hooks';
@@ -20,7 +21,7 @@ import type { Concept, BloomLevel } from '../features/concepts/types';
 import type { QuestionAnswerItem, NoteItem, AnnotationType } from '../features/knowledge-graph/types';
 import type { JsonValue } from '@almadar-io/knowledge';
 import { convertConceptDisplayToConcept } from '../features/concepts/utils/convertConceptDisplay';
-import { useEventBus, useTranslate } from '@almadar/ui';
+import { Box, Button, useEventBus, useTranslate } from '@almadar/ui';
 import { LearnConceptDetailTemplate } from '@design-system/templates/LearnConceptDetailTemplate';
 import type { ConceptDetailTemplateEntity } from '@design-system/templates/LearnConceptDetailTemplate';
 import kflowLogo from '../assets/kflow-logo.svg';
@@ -32,6 +33,7 @@ import type { QuestionAnswerDisplay } from '@design-system/organisms/QuestionWid
 import { NotesWidget } from '@design-system/organisms/NotesWidget';
 import { AnnotationViewModal } from '@design-system/organisms/AnnotationViewModal';
 import type { AnnotationEntity } from '@design-system/organisms/AnnotationViewModal';
+import { ConceptChatModal } from '@design-system/organisms/ConceptChatModal';
 
 const log = createLogger('kflow:client:pages:ConceptDetailPage');
 
@@ -120,6 +122,7 @@ export const ConceptDetailPage: React.FC = () => {
   });
 
   // Local UI state
+  const [showConceptChat, setShowConceptChat] = useState(false);
   const [streamingLessonContent, setStreamingLessonContent] = useState('');
   const [localLessonLoading, setLocalLessonLoading] = useState(false);
   const [isEditingLesson, setIsEditingLesson] = useState(false);
@@ -574,6 +577,16 @@ export const ConceptDetailPage: React.FC = () => {
         isLoading={conceptDetail.loading || isLoadingGraph}
         error={conceptDetail.error ? { message: conceptDetail.error } : null}
       />
+
+      {/* On-the-fly concept chat with the concept's originator (always available) */}
+      <Box className="fixed bottom-6 left-6 z-40">
+        <Button variant="primary" icon={MessageCircle} onClick={() => setShowConceptChat(true)}>
+          {t('conceptChat.askOriginator')}
+        </Button>
+      </Box>
+      {showConceptChat && conceptName && (
+        <ConceptChatModal conceptLabel={conceptName} onClose={() => setShowConceptChat(false)} />
+      )}
     </>
   );
 };
