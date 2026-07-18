@@ -60,8 +60,8 @@ export const ConceptDetailPage: React.FC = () => {
 
   // Presence: touching lastSeenOnNode on mount makes this viewer appear in the peer
   // pool for this concept (recency, not a heartbeat).
-  const conceptName = conceptDetail.conceptDetail?.concept?.name ?? conceptId;
-  const conceptNodeKey = (graphId && conceptId ? (`concept:${conceptName}` as NodeKey) : null);
+  const conceptName = conceptDetail.conceptDetail?.concept?.name;
+  const conceptNodeKey = (graphId && conceptId && conceptName ? (`concept:${conceptName}` as NodeKey) : null);
   useTouchNodeActivity(conceptNodeKey);
   const graph = useAppSelector((state) => selectGraphById(state, graphId || ''));
   const { getGraph, loading: isLoadingGraph } = useGetGraph();

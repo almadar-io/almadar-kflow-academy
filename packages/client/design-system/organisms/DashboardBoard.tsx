@@ -160,7 +160,8 @@ export function DashboardBoard({
   const handleConnectSelected = useCallback(() => {
     if (!selectedNode) return;
     const kind = level === 'L1' ? 'path' : 'concept';
-    const canonicalId = kind === 'path' ? selectedNode.graphId : (selectedNode.label ?? selectedNode.id);
+    const canonicalId = kind === 'path' ? selectedNode.graphId : selectedNode.label;
+    if (!canonicalId) return;
     emit('UI:PEER_CONNECT_OPEN', { nodeKey: `${kind}:${canonicalId}` });
   }, [emit, level, selectedNode]);
 
