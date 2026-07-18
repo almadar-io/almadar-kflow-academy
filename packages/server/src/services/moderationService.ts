@@ -1,5 +1,5 @@
 import { createLogger } from '@almadar/logger';
-import { callLLM, extractJSONArray, AI_LLM } from './llm';
+import { callLLM, extractJSONArray } from './llm';
 import type { JsonValue } from '@almadar/core';
 import type { MessageModeration } from '@kflow-academy/shared';
 
@@ -19,8 +19,6 @@ export async function scoreRelevance(
   if (!activeBadgeLabel) return { score: 1, flagged: false };
   try {
     const resp = await callLLM({
-      provider: AI_LLM.provider,
-      model: AI_LLM.moderatorModel,
       temperature: 0,
       maxTokens: 80,
       systemPrompt:

@@ -1,7 +1,7 @@
 import { getFirestore } from '@almadar/server';
 import { NotFoundError, ForbiddenError } from '@almadar/server';
 import { createLogger } from '@almadar/logger';
-import { callLLM, extractJSONArray, AI_LLM } from './llm';
+import { callLLM, extractJSONArray } from './llm';
 import { resolvePeerToken } from './peerTokenService';
 import { anonymousHandleFor } from '../utils/anonymousHandle';
 import { graphAccessDeps } from '../utils/graphHandlerDeps';
@@ -60,8 +60,6 @@ function vector() {
 async function generateBadges(canonicalId: string, kind: NodeKind): Promise<StoredBadge[]> {
   try {
     const resp = await callLLM({
-      provider: AI_LLM.provider,
-      model: AI_LLM.replyModel,
       temperature: 0.4,
       maxTokens: 200,
       systemPrompt:

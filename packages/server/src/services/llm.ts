@@ -97,8 +97,10 @@ export function extractJSONObject(response: string): Record<string, JsonValue> {
 
 
 // Gemini is not supported by @almadar/llm; callers that previously picked
-// gemini fall back to deepseek (the KFlow default). openrouter drives the peer-connection
-// layer (concept-chat personas/replies + badge/relevance moderation) via OPEN_ROUTER_API_KEY.
+// gemini fall back to deepseek (the KFlow default). openrouter remains for the
+// bge embedding client only (OPEN_ROUTER_API_KEY); all peer-connection text LLM
+// (concept-chat personas/replies, badge sub-topics, relevance moderation) uses
+// the deepseek default (deepseek-chat = v4-flash).
 function toAlmadarProvider(provider: LLMProvider): AlmadarLLMProvider {
   if (provider === 'openai') return 'openai';
   if (provider === 'openrouter') return 'openrouter';
@@ -110,15 +112,6 @@ function defaultModelFor(provider: LLMProvider): string {
   if (provider === 'openrouter') return 'qwen/qwen-2.5-7b-instruct';
   return 'deepseek-chat';
 }
-
-/** Peer-connection AI model config (OpenRouter; isolated from the human-facing default). */
-export const AI_LLM = {
-  provider: 'openrouter' as LLMProvider,
-  /** AI-peer conversational replies — 30B MoE / 3B active. */
-  replyModel: 'qwen/qwen3-30b-a3b-instruct-2507',
-  /** Relevance moderator — cheap structured scoring, highest-volume call. */
-  moderatorModel: 'qwen/qwen-2.5-7b-instruct',
-} satisfies { provider: LLMProvider; replyModel: string; moderatorModel: string };
 
 export async function callLLM(request: LLMRequest): Promise<LLMResponse> {
   const kflowProvider = request.provider ?? 'deepseek';
