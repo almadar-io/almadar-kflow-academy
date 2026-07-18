@@ -28,6 +28,7 @@ function param(v: string | string[] | undefined): string | undefined {
 // GET /api/peers?nodeKey=${kind}:${canonicalId} — anonymous peer list for a node.
 router.get('/peers', asyncHandler(async (req: Request, res: Response) => {
   const nk = typeof req.query.nodeKey === 'string' ? req.query.nodeKey : undefined;
+  log.info('GET /peers', { nodeKey: nk });
   if (!nk) {
     res.status(400).json({ error: 'nodeKey required' });
     return;
