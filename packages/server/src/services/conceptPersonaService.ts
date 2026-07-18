@@ -38,6 +38,11 @@ function cacheKey(conceptLabel: string): string {
   return conceptLabel.toLowerCase().replace(/[^a-z0-9_-]+/g, '_').slice(0, 180) || 'concept';
 }
 
+/** A concept id leaked through as the label (client bug) — the model can't identify it. */
+function looksLikeId(label: string): boolean {
+  return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-/i.test(label) || /^\d+$/.test(label);
+}
+
 /**
  * Look up the originator on Wikipedia (one redirect-resolved call): a verified one-line bio,
  * a real Wikimedia Commons portrait, AND the full lead-section biography used to ground the
@@ -83,10 +88,14 @@ async function fetchWikiPersona(name: string): Promise<{ description?: string; p
  * stays server-side and grounds every reply.
  */
 export async function generatePersona(conceptLabel: string): Promise<PersonaResult> {
+  if (looksLikeId(conceptLabel)) {
+    log.warn('!! concept-chat received an ID/UUID as conceptLabel — client sent an identifier, not a concept name', { conceptLabel });
+  }
   const ref = getFirestore().collection('concept-personas').doc(cacheKey(conceptLabel));
   const cached = await ref.get();
   if (cached.exists) {
     const c = cached.data() as CachedPersona;
+    log.info('generatePersona CACHE HIT', { conceptLabel, name: c.persona.name, isId: looksLikeId(conceptLabel) });
     return { persona: c.persona, greeting: c.greeting };
   }
 
@@ -125,7 +134,7 @@ export async function generatePersona(conceptLabel: string): Promise<PersonaResu
   await ref.set(cachedDoc).catch((e) =>
     log.warn('concept-persona cache write failed', { error: e instanceof Error ? e.message : String(e) }),
   );
-  log.debug('generatePersona', { conceptLabel, name, hasPortrait: !!persona.portraitUrl, bioLen: cachedDoc.bio.length });
+  log.info('generatePersona FRESH', { conceptLabel, name, hasPortrait: !!persona.portraitUrl, isId: looksLikeId(conceptLabel) });
   return result;
 }
 

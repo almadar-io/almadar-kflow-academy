@@ -19,6 +19,7 @@ router.use(authenticateFirebase);
 // POST /api/concept-chat/start — generate the on-the-fly originator persona + greeting.
 router.post('/start', asyncHandler(async (req: Request, res: Response) => {
   const { conceptLabel } = req.body as StartConceptChatRequest;
+  log.info('concept-chat /start', { conceptLabel, uid: req.firebaseUser?.uid });
   if (!conceptLabel?.trim()) {
     res.status(400).json({ error: 'conceptLabel required' });
     return;
@@ -33,6 +34,7 @@ router.post('/start', asyncHandler(async (req: Request, res: Response) => {
 // concept-personas cache by conceptLabel, so the client never round-trips the bio.
 router.post('/message', asyncHandler(async (req: Request, res: Response) => {
   const body = req.body as SendConceptChatRequest;
+  log.info('concept-chat /message', { conceptLabel: body?.conceptLabel, uid: req.firebaseUser?.uid });
   if (!body?.message?.trim() || !body?.conceptLabel?.trim()) {
     res.status(400).json({ error: 'conceptLabel + message required' });
     return;
