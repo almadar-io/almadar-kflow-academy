@@ -1,7 +1,7 @@
 import { createLogger } from '@almadar/logger';
 import React, { useEffect, useMemo, useCallback, useState } from 'react';
 import { useParams, useLocation } from 'react-router';
-import { MessageCircle } from 'lucide-react';
+import { Users } from 'lucide-react';
 import { useAppDispatch, useAppSelector } from '../app/hooks';
 import { useConceptDetail } from '../features/knowledge-graph/hooks/useConceptDetail';
 import { useGetGraph, useLessonAnnotations } from '../features/knowledge-graph/hooks';
@@ -33,7 +33,6 @@ import type { QuestionAnswerDisplay } from '@design-system/organisms/QuestionWid
 import { NotesWidget } from '@design-system/organisms/NotesWidget';
 import { AnnotationViewModal } from '@design-system/organisms/AnnotationViewModal';
 import type { AnnotationEntity } from '@design-system/organisms/AnnotationViewModal';
-import { ConceptChatModal } from '@design-system/organisms/ConceptChatModal';
 
 const log = createLogger('kflow:client:pages:ConceptDetailPage');
 
@@ -122,7 +121,6 @@ export const ConceptDetailPage: React.FC = () => {
   });
 
   // Local UI state
-  const [showConceptChat, setShowConceptChat] = useState(false);
   const [streamingLessonContent, setStreamingLessonContent] = useState('');
   const [localLessonLoading, setLocalLessonLoading] = useState(false);
   const [isEditingLesson, setIsEditingLesson] = useState(false);
@@ -578,14 +576,17 @@ export const ConceptDetailPage: React.FC = () => {
         error={conceptDetail.error ? { message: conceptDetail.error } : null}
       />
 
-      {/* On-the-fly concept chat with the concept's originator (always available) */}
-      <Box className="fixed bottom-6 left-6 z-40">
-        <Button variant="primary" icon={MessageCircle} onClick={() => setShowConceptChat(true)}>
-          {t('conceptChat.askOriginator')}
-        </Button>
-      </Box>
-      {showConceptChat && conceptName && (
-        <ConceptChatModal conceptLabel={conceptName} onClose={() => setShowConceptChat(false)} />
+      {/* Connect: peers + the always-available AI Tutor for this concept */}
+      {conceptNodeKey && (
+        <Box className="fixed bottom-6 left-6 z-40">
+          <Button
+            variant="primary"
+            icon={Users}
+            onClick={() => emit('UI:PEER_CONNECT_OPEN', { nodeKey: conceptNodeKey })}
+          >
+            {t('connections.connect')}
+          </Button>
+        </Box>
       )}
     </>
   );

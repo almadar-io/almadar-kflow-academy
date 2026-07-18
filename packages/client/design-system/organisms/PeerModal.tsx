@@ -32,8 +32,8 @@ function parseNodeKey(nodeKey: NodeKey): { kind: NodeKind; canonicalId: string }
 
 /**
  * Anonymous peer list for a node. Peers are addressed by an opaque `peerRef` only —
- * no uid or identity is ever rendered. The on-the-fly AI originator chat is offered
- * alongside, so a learner can always converse about the concept even with no peers.
+ * no uid or identity is ever rendered. An AI Tutor peer is pinned at the top (always
+ * available) so a learner can always converse about the concept even with no human peers.
  */
 export const PeerModal: React.FC<PeerModalProps> = ({ nodeKey, onClose, onConnected, onChatWithOriginator }) => {
   const { t } = useTranslate();
@@ -64,15 +64,43 @@ export const PeerModal: React.FC<PeerModalProps> = ({ nodeKey, onClose, onConnec
             {origin.canonicalId}
           </Typography>
 
-          {isLoading ? (
-            <VStack align="center" className="py-8"><Spinner /></VStack>
-          ) : !peers || peers.length === 0 ? (
-            <Typography variant="body" color="secondary" className="py-8 text-center">
-              {t('connections.empty')}
-            </Typography>
-          ) : (
-            <VStack gap="sm">
-              {peers.map((peer) => (
+          <VStack gap="sm">
+            {/* AI Tutor — always-available peer (persona generates on chat open) */}
+            {onChatWithOriginator && (
+              <Card padding="sm" className="flex items-center justify-between gap-3 border border-[var(--color-primary)]">
+                <VStack gap="xs" className="min-w-0 flex-1">
+                  <HStack gap="xs" align="center">
+                    <Sparkles size={16} className="text-[var(--color-primary)] shrink-0" />
+                    <Typography variant="body" weight="semibold" className="truncate">
+                      {t('connections.aiTutor')}
+                    </Typography>
+                    <Badge variant="secondary" className="flex items-center gap-1 shrink-0">
+                      <Sparkles size={12} /> {t('connections.ai')}
+                    </Badge>
+                  </HStack>
+                  <Typography variant="small" color="secondary">
+                    {t('connections.aiTutorDesc')}
+                  </Typography>
+                </VStack>
+                <Button
+                  size="sm"
+                  variant="primary"
+                  onClick={() => onChatWithOriginator(origin.canonicalId)}
+                >
+                  {t('connections.chat')}
+                </Button>
+              </Card>
+            )}
+
+            {/* Human peers */}
+            {isLoading ? (
+              <VStack align="center" className="py-6"><Spinner /></VStack>
+            ) : !peers || peers.length === 0 ? (
+              <Typography variant="small" color="secondary" className="py-4 text-center">
+                {t('connections.noOtherPeers')}
+              </Typography>
+            ) : (
+              peers.map((peer) => (
                 <Card key={peer.peerRef} padding="sm" className="flex items-center justify-between gap-3">
                   <VStack gap="xs" className="min-w-0 flex-1">
                     <HStack gap="xs" align="center">
@@ -101,22 +129,9 @@ export const PeerModal: React.FC<PeerModalProps> = ({ nodeKey, onClose, onConnec
                     {t('connections.connect')}
                   </Button>
                 </Card>
-              ))}
-            </VStack>
-          )}
-
-          {onChatWithOriginator && (
-            <Box className="border-t border-[var(--color-border)] pt-3">
-              <Button
-                variant="secondary"
-                icon={Sparkles}
-                className="w-full"
-                onClick={() => onChatWithOriginator(origin.canonicalId)}
-              >
-                {t('connections.chatOriginator')}
-              </Button>
-            </Box>
-          )}
+              ))
+            )}
+          </VStack>
         </VStack>
       </Card>
     </Box>
