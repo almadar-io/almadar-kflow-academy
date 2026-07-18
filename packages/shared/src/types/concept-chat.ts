@@ -5,8 +5,10 @@
 export interface ConceptPersonaDTO {
   /** Historical originator/pioneer most associated with the concept. */
   name: string;
-  /** One short sentence: who they are + key contribution. */
+  /** One short sentence: who they are + key contribution (verified via Wikipedia). */
   description: string;
+  /** Real portrait (Wikimedia Commons thumbnail) when available; monogram fallback otherwise. */
+  portraitUrl?: string;
 }
 
 export interface ConceptChatMessageDTO {

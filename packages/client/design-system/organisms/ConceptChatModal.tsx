@@ -70,12 +70,21 @@ export const ConceptChatModal: React.FC<ConceptChatModalProps> = ({ conceptLabel
         <VStack gap="md" className="min-h-0 flex-1">
           <HStack gap="sm" align="center">
             {persona ? (
-              <Box
-                className="flex items-center justify-center rounded-full w-10 h-10 text-white text-sm font-semibold shrink-0"
-                style={{ backgroundColor: `hsl(${hue} 55% 45%)` }}
-              >
-                {initialsOf(persona.name)}
-              </Box>
+              persona.portraitUrl ? (
+                <img
+                  src={persona.portraitUrl}
+                  alt={persona.name}
+                  referrerPolicy="no-referrer"
+                  className="w-10 h-10 rounded-full object-cover shrink-0"
+                />
+              ) : (
+                <Box
+                  className="flex items-center justify-center rounded-full w-10 h-10 text-white text-sm font-semibold shrink-0"
+                  style={{ backgroundColor: `hsl(${hue} 55% 45%)` }}
+                >
+                  {initialsOf(persona.name)}
+                </Box>
+              )
             ) : (
               <Box className="flex items-center justify-center rounded-full w-10 h-10 bg-[var(--color-muted)] shrink-0">
                 <Spinner size="sm" />
