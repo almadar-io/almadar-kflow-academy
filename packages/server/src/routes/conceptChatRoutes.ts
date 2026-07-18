@@ -8,7 +8,7 @@ import type {
   SendConceptChatRequest,
   SendConceptChatResponse,
 } from '@kflow-academy/shared';
-import { generatePersona, replyAsPersona } from '../services/conceptPersonaService';
+import { generatePersona, loadFullPersona, replyAsPersona } from '../services/conceptPersonaService';
 import { scoreRelevance } from '../services/moderationService';
 
 const log = createLogger('kflow:server:routes:conceptChatRoutes');
@@ -29,17 +29,20 @@ router.post('/start', asyncHandler(async (req: Request, res: Response) => {
 }));
 
 // POST /api/concept-chat/message — moderate (soft, non-blocking) + reply in persona.
+// Persona authority is server-side: the full persona + biography are loaded from the
+// concept-personas cache by conceptLabel, so the client never round-trips the bio.
 router.post('/message', asyncHandler(async (req: Request, res: Response) => {
   const body = req.body as SendConceptChatRequest;
-  if (!body?.message?.trim() || !body?.persona?.name || !body?.conceptLabel?.trim()) {
-    res.status(400).json({ error: 'conceptLabel + persona + message required' });
+  if (!body?.message?.trim() || !body?.conceptLabel?.trim()) {
+    res.status(400).json({ error: 'conceptLabel + message required' });
     return;
   }
   // Relevance check fails open; logged but never blocks the reply.
   void scoreRelevance(body.message, body.conceptLabel).catch((e) =>
     log.warn('concept-chat moderation failed', { error: e instanceof Error ? e.message : String(e) }),
   );
-  const reply = await replyAsPersona(body.persona, body.conceptLabel.trim(), body.history ?? [], body.message);
+  const full = await loadFullPersona(body.conceptLabel.trim());
+  const reply = await replyAsPersona(full, body.conceptLabel.trim(), body.history ?? [], body.message);
   const response: SendConceptChatResponse = { reply };
   res.json(response);
 }));

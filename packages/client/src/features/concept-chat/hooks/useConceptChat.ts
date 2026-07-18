@@ -33,7 +33,6 @@ export function useConceptChat(conceptLabel: string): UseConceptChat {
     mutationFn: (message: string) =>
       sendConceptChatMessage({
         conceptLabel,
-        persona: persona as ConceptPersonaDTO,
         history: transcript,
         message,
       }),

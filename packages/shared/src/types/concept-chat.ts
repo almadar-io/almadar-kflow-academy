@@ -28,7 +28,6 @@ export interface StartConceptChatResponse {
 
 export interface SendConceptChatRequest {
   conceptLabel: string;
-  persona: ConceptPersonaDTO;
   /** Prior turns (excluding the new message), oldest first. */
   history: ConceptChatMessageDTO[];
   message: string;
