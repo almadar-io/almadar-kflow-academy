@@ -39,7 +39,7 @@ function cacheKey(conceptLabel: string): string {
 }
 
 /** A concept id leaked through as the label (client bug) — the model can't identify it. */
-function looksLikeId(label: string): boolean {
+export function looksLikeId(label: string): boolean {
   return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-/i.test(label) || /^\d+$/.test(label);
 }
 

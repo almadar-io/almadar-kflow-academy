@@ -30,6 +30,11 @@ function parseNodeKey(nodeKey: NodeKey): { kind: NodeKind; canonicalId: string }
   return { kind, canonicalId };
 }
 
+/** A concept id is not a concept name — the AI tutor can't address it. */
+function looksLikeId(label: string): boolean {
+  return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-/i.test(label) || /^\d+$/.test(label);
+}
+
 /**
  * Anonymous peer list for a node. Peers are addressed by an opaque `peerRef` only —
  * no uid or identity is ever rendered. An AI Tutor peer is pinned at the top (always
@@ -66,7 +71,7 @@ export const PeerModal: React.FC<PeerModalProps> = ({ nodeKey, onClose, onConnec
 
           <VStack gap="sm">
             {/* AI Tutor — always-available peer (persona generates on chat open) */}
-            {onChatWithOriginator && (
+            {onChatWithOriginator && origin.canonicalId && !looksLikeId(origin.canonicalId) && (
               <Card padding="sm" className="flex items-center justify-between gap-3 border border-[var(--color-primary)]">
                 <VStack gap="xs" className="min-w-0 flex-1">
                   <HStack gap="xs" align="center">

@@ -8,7 +8,7 @@ import type {
   SendConceptChatRequest,
   SendConceptChatResponse,
 } from '@kflow-academy/shared';
-import { generatePersona, loadFullPersona, replyAsPersona } from '../services/conceptPersonaService';
+import { generatePersona, loadFullPersona, replyAsPersona, looksLikeId } from '../services/conceptPersonaService';
 import { scoreRelevance } from '../services/moderationService';
 
 const log = createLogger('kflow:server:routes:conceptChatRoutes');
@@ -20,8 +20,8 @@ router.use(authenticateFirebase);
 router.post('/start', asyncHandler(async (req: Request, res: Response) => {
   const { conceptLabel } = req.body as StartConceptChatRequest;
   log.info('concept-chat /start', { conceptLabel, uid: req.firebaseUser?.uid });
-  if (!conceptLabel?.trim()) {
-    res.status(400).json({ error: 'conceptLabel required' });
+  if (!conceptLabel?.trim() || looksLikeId(conceptLabel.trim())) {
+    res.status(400).json({ error: 'conceptLabel must be a human-readable concept name' });
     return;
   }
   const result = await generatePersona(conceptLabel.trim());
@@ -35,8 +35,8 @@ router.post('/start', asyncHandler(async (req: Request, res: Response) => {
 router.post('/message', asyncHandler(async (req: Request, res: Response) => {
   const body = req.body as SendConceptChatRequest;
   log.info('concept-chat /message', { conceptLabel: body?.conceptLabel, uid: req.firebaseUser?.uid });
-  if (!body?.message?.trim() || !body?.conceptLabel?.trim()) {
-    res.status(400).json({ error: 'conceptLabel + message required' });
+  if (!body?.message?.trim() || !body?.conceptLabel?.trim() || looksLikeId(body.conceptLabel.trim())) {
+    res.status(400).json({ error: 'conceptLabel must be a human-readable concept name' });
     return;
   }
   // Relevance check fails open; logged but never blocks the reply.

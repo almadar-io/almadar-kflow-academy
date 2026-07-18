@@ -39,7 +39,7 @@ function initialsOf(name: string): string {
  */
 export const ConceptChatModal: React.FC<ConceptChatModalProps> = ({ conceptLabel, onClose }) => {
   const { t } = useTranslate();
-  const { persona, transcript, isStarting, isSending, start, send } = useConceptChat(conceptLabel);
+  const { persona, transcript, isStarting, isSending, startError, start, send } = useConceptChat(conceptLabel);
   const [draft, setDraft] = useState('');
   const listEndRef = useRef<HTMLDivElement | null>(null);
 
@@ -105,7 +105,11 @@ export const ConceptChatModal: React.FC<ConceptChatModalProps> = ({ conceptLabel
             </VStack>
           </HStack>
 
-          {persona && (
+          {startError ? (
+            <Typography variant="small" color="secondary" className="py-4 text-center">
+              {startError}
+            </Typography>
+          ) : persona && (
             <Typography variant="small" color="secondary" className="italic">
               {persona.description}
             </Typography>

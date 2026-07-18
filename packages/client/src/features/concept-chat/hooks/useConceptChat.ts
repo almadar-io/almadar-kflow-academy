@@ -8,6 +8,7 @@ export interface UseConceptChat {
   transcript: ConceptChatMessageDTO[];
   isStarting: boolean;
   isSending: boolean;
+  startError: string | null;
   start: () => void;
   send: (message: string) => void;
   reset: () => void;
@@ -20,6 +21,7 @@ export interface UseConceptChat {
 export function useConceptChat(conceptLabel: string): UseConceptChat {
   const [persona, setPersona] = useState<ConceptPersonaDTO | null>(null);
   const [transcript, setTranscript] = useState<ConceptChatMessageDTO[]>([]);
+  const [startError, setStartError] = useState<string | null>(null);
 
   const startMutation = useMutation({
     mutationFn: () => startConceptChat({ conceptLabel }),
@@ -27,6 +29,8 @@ export function useConceptChat(conceptLabel: string): UseConceptChat {
       setPersona(p);
       setTranscript([{ role: 'assistant', content: greeting }]);
     },
+    onError: (e) =>
+      setStartError(e instanceof Error ? e.message : 'Could not start the AI tutor.'),
   });
 
   const sendMutation = useMutation({
@@ -49,6 +53,7 @@ export function useConceptChat(conceptLabel: string): UseConceptChat {
   const start = useCallback(() => {
     setPersona(null);
     setTranscript([]);
+    setStartError(null);
     startMutate();
   }, [startMutate]);
 
@@ -64,6 +69,7 @@ export function useConceptChat(conceptLabel: string): UseConceptChat {
   const reset = useCallback(() => {
     setPersona(null);
     setTranscript([]);
+    setStartError(null);
   }, []);
 
   return {
@@ -71,6 +77,7 @@ export function useConceptChat(conceptLabel: string): UseConceptChat {
     transcript,
     isStarting: startMutation.isPending,
     isSending: sendMutation.isPending,
+    startError,
     start,
     send,
     reset,
