@@ -689,6 +689,7 @@
   "connections.title": "Vrstniki, ki študirajo to",
   "connections.empty": "Tukaj še ni vrstnikov. Preverite kmalu.",
   "connections.connect": "Poveži",
+  "connections.chatOriginator": "Vprašaj utemeljitelja (UI)",
   "connections.ai": "AI",
   "connections.activeNow": "aktivno",
   "connections.convergence": "{pct}% ujemanje",

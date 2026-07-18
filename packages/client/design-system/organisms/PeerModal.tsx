@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { X, Users } from 'lucide-react';
+import { X, Users, Sparkles } from 'lucide-react';
 import {
   Box,
   VStack,
@@ -19,6 +19,8 @@ export interface PeerModalProps {
   nodeKey: NodeKey;
   onClose: () => void;
   onConnected: (connectionId: string) => void;
+  /** Open the on-the-fly AI concept chat for this concept (always available). */
+  onChatWithOriginator?: (conceptLabel: string) => void;
 }
 
 function parseNodeKey(nodeKey: NodeKey): { kind: NodeKind; canonicalId: string } {
@@ -30,9 +32,10 @@ function parseNodeKey(nodeKey: NodeKey): { kind: NodeKind; canonicalId: string }
 
 /**
  * Anonymous peer list for a node. Peers are addressed by an opaque `peerRef` only —
- * no uid or identity is ever rendered. AI peers are labeled (always-labeled policy).
+ * no uid or identity is ever rendered. The on-the-fly AI originator chat is offered
+ * alongside, so a learner can always converse about the concept even with no peers.
  */
-export const PeerModal: React.FC<PeerModalProps> = ({ nodeKey, onClose, onConnected }) => {
+export const PeerModal: React.FC<PeerModalProps> = ({ nodeKey, onClose, onConnected, onChatWithOriginator }) => {
   const { t } = useTranslate();
   const { data: peers, isLoading } = useNodePeers(nodeKey);
   const create = useCreateConnection();
@@ -100,6 +103,19 @@ export const PeerModal: React.FC<PeerModalProps> = ({ nodeKey, onClose, onConnec
                 </Card>
               ))}
             </VStack>
+          )}
+
+          {onChatWithOriginator && (
+            <Box className="border-t border-[var(--color-border)] pt-3">
+              <Button
+                variant="secondary"
+                icon={Sparkles}
+                className="w-full"
+                onClick={() => onChatWithOriginator(origin.canonicalId)}
+              >
+                {t('connections.chatOriginator')}
+              </Button>
+            </Box>
           )}
         </VStack>
       </Card>

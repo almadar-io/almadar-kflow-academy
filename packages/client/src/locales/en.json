@@ -689,6 +689,7 @@
   "connections.title": "Peers studying this",
   "connections.empty": "No peers here yet. Check back soon.",
   "connections.connect": "Connect",
+  "connections.chatOriginator": "Ask the originator (AI)",
   "connections.ai": "AI",
   "connections.activeNow": "active now",
   "connections.convergence": "{pct}% match",
