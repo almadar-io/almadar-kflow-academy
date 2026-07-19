@@ -56,7 +56,7 @@ export const PeerModal: React.FC<PeerModalProps> = ({ nodeKey, onClose, onConnec
   return (
     <Box className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <Overlay onClick={onClose} />
-      <Card className="relative z-50 max-w-2xl w-full max-h-[88vh] overflow-y-auto p-6">
+      <Card className="relative z-50 max-w-2xl w-full max-h-[88vh] overflow-y-auto p-6 animate-modal-in">
         <Box className="absolute top-3 right-3 z-10">
           <Button variant="ghost" size="sm" icon={X} onClick={onClose} aria-label={t('learning.close')} />
         </Box>

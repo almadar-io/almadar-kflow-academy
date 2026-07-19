@@ -216,3 +216,14 @@
     background-color: var(--color-background);
     color: var(--color-foreground);
 }
+
+/* Respect reduced-motion preferences: disable entrance/exit animations. */
+@media (prefers-reduced-motion: reduce) {
+  .animate-modal-in,
+  .animate-modal-out,
+  .animate-overlay-in,
+  .animate-overlay-out,
+  .animate-slide-up {
+    animation: none !important;
+  }
+}
