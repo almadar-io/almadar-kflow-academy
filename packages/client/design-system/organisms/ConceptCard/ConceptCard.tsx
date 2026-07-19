@@ -297,7 +297,7 @@ export const ConceptCard: React.FC<ConceptCardProps> = ({
           </div>
         )}
 
-        {/* Operations + Connect */
+        {/* Operations + Connect */}
         {((operations && operations.length > 0) || onConnect) && (
           <div className="flex gap-2 flex-wrap">
             {operations?.map((op, idx) => (
