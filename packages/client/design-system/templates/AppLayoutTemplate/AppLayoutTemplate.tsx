@@ -279,6 +279,7 @@ export const AppLayoutTemplate: React.FC<AppLayoutTemplateProps> = ({
               href: item.href,
               onClick: () => {
                 item.onClick?.();
+                if (item.href) emit('UI:NAV_CLICK', { href: item.href });
                 if (isMobile) setMobileSidebarOpen(false);
               },
               badge: item.badge,

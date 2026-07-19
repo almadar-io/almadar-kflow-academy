@@ -68,6 +68,10 @@ function isEntityProps(props: FocusModeTemplateProps): props is FocusModeTemplat
   return 'entity' in props && props.entity !== undefined;
 }
 
+// Stable empty similarity so the GraphCanvas layout effect's dependency list
+// doesn't get a fresh array reference every render (which loops setState).
+const NO_SIMILARITY: readonly never[] = [];
+
 export const FocusModeTemplate: React.FC<FocusModeTemplateProps> = (props) => {
   const { emit } = useEventBus();
   const { t } = useTranslate();
@@ -371,7 +375,6 @@ export const FocusModeTemplate: React.FC<FocusModeTemplateProps> = (props) => {
             )}>
             {seedConcept && (
               <Box className="flex items-center gap-2 px-4 pt-4">
-                <Badge variant="primary">{t('concept.seedConcept')}</Badge>
                 <Typography variant="h2" className="flex-1 truncate cursor-pointer" >
                   {seedConcept.name}
                 </Typography>
@@ -398,6 +401,7 @@ export const FocusModeTemplate: React.FC<FocusModeTemplateProps> = (props) => {
                 <GraphCanvas
                   nodes={graphNodes}
                   edges={graphEdges}
+                  similarity={NO_SIMILARITY}
                   height={340}
                   showLabels
                   interactive
@@ -406,6 +410,7 @@ export const FocusModeTemplate: React.FC<FocusModeTemplateProps> = (props) => {
                   linkDistance={120}
                   nodeSpacing={40}
                   onNodeClick={(node) => handleConceptClick(node.id)}
+                  onNodeDoubleClick={(node) => handleConceptClick(node.id)}
                   className="w-full"
                 />
               </Box>
