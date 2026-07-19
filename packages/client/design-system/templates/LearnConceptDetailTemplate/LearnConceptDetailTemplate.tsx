@@ -13,10 +13,12 @@
 
 import React from 'react';
 import { AppLayoutTemplate } from '../AppLayoutTemplate';
-import { Badge, Box, Button, Card, HStack, Typography, VStack, useEventBus, useTranslate } from '@almadar/ui';
+import { Badge, Box, Button, Card, HStack, LoadingState, Typography, VStack, useEventBus, useTranslate } from '@almadar/ui';
 import type { DisplayStateProps } from '@almadar/ui';
-import { ArrowLeft, ChevronLeft, ChevronRight, ArrowRight } from 'lucide-react';
+import { ArrowLeft, ChevronLeft, ChevronRight } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
+import { ExpandableHeader } from '../../molecules/ExpandableHeader';
+import { ConnectButton } from '../../molecules/ConnectButton';
 
 /** Layout-only nav item shape used by this template. */
 export interface ConceptDetailNavItem {
@@ -58,6 +60,8 @@ export interface ConceptDetailTemplateEntity {
   nextConcept?: { id: string; name: string };
   /** CTA shown on seed concepts to start Level 1. */
   seedConceptCta?: SeedConceptCta;
+  /** Canonical Connect affordance — rendered inline in the header. */
+  onConnect?: () => void;
   /** Lesson panel JSX built by the page assembler. */
   lessonPanel?: React.ReactNode;
   backLabel?: string;
@@ -121,15 +125,7 @@ export const LearnConceptDetailTemplate: React.FC<AllProps> = (props) => {
   const logo = !entityMode ? flat?.logo : undefined;
   const logoSrc = entityMode ? props.entity.logoSrc : flat?.logoSrc;
   const brandName = entityMode ? props.entity.brandName : flat?.brandName;
-
-  const seedConceptAction = entityMode
-    ? (props.entity.seedConceptCta
-        ? {
-            label: props.entity.seedConceptCta.label,
-            onClick: () => emit('UI:NAVIGATE', { url: `/concepts/${props.entity.seedConceptCta?.conceptId}` }),
-          }
-        : undefined)
-    : flat?.seedConceptAction;
+  const onConnect = entityMode ? props.entity.onConnect : undefined;
 
   const handleBack = () => {
     if (entityMode) {
@@ -165,12 +161,7 @@ export const LearnConceptDetailTemplate: React.FC<AllProps> = (props) => {
         brandName={brandName}
         contentClassName="w-full md:max-w-4xl md:mx-auto"
       >
-        <div className="min-h-screen flex items-center justify-center">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-            <Typography variant="body" color="muted">{t('learning.loadingConcept')}</Typography>
-          </div>
-        </div>
+        <LoadingState message={t('learning.loadingConcept')} className="min-h-[60vh]" />
       </AppLayoutTemplate>
     );
   }
@@ -216,7 +207,7 @@ export const LearnConceptDetailTemplate: React.FC<AllProps> = (props) => {
         {/* Back Button */}
         <div className="mb-4 sm:mb-6 md:mb-8">
           <Button
-            variant="secondary"
+            variant="ghost"
             onClick={handleBack}
             icon={ArrowLeft}
             size="sm"
@@ -228,37 +219,25 @@ export const LearnConceptDetailTemplate: React.FC<AllProps> = (props) => {
         {/* Concept Header */}
         {concept && (
           <div className="text-center mb-4 sm:mb-8 md:mb-12">
-            <div className="flex items-center justify-center gap-3 mb-4">
-              {concept.isSeed && (
-                <Badge variant="primary">
-                  {t('concept.seedConcept')}
-                </Badge>
-              )}
-              {concept.layer !== undefined && (
-                <Badge variant="default">
-                  {t('learning.levelN', { number: String(concept.layer) })}
-                </Badge>
-              )}
-            </div>
-            <Typography variant="h1" className="mb-4 text-4xl font-bold">
-              {concept.name}
-            </Typography>
-            {concept.description && (
-              <Typography variant="body" color="muted" className="max-w-2xl mx-auto text-lg leading-relaxed">
-                {concept.description}
-              </Typography>
-            )}
-            {concept.isSeed && seedConceptAction && (
-              <div className="mt-6">
-                <Button
-                  variant="primary"
-                  size="lg"
-                  onClick={seedConceptAction.onClick}
-                  className="font-semibold shadow-lg hover:shadow-xl transition-all duration-200 px-8 py-4 rounded-lg"
-                  iconRight={ArrowRight}
-                >
-                  {seedConceptAction.label}
-                </Button>
+            <ExpandableHeader
+              title={concept.name}
+              description={concept.description}
+              badges={
+                <>
+                  {concept.isSeed && (
+                    <Badge variant="primary">{t('concept.seedConcept')}</Badge>
+                  )}
+                  {concept.layer !== undefined && (
+                    <Badge variant="default">
+                      {t('learning.levelN', { number: String(concept.layer) })}
+                    </Badge>
+                  )}
+                </>
+              }
+            />
+            {onConnect && (
+              <div className="mt-6 flex justify-center">
+                <ConnectButton onClick={onConnect} />
               </div>
             )}
           </div>

@@ -1,7 +1,6 @@
 import { createLogger } from '@almadar/logger';
 import React, { useEffect, useMemo, useCallback, useState } from 'react';
 import { useParams, useLocation } from 'react-router';
-import { Users } from 'lucide-react';
 import { useAppDispatch, useAppSelector } from '../app/hooks';
 import { useConceptDetail } from '../features/knowledge-graph/hooks/useConceptDetail';
 import { useGetGraph, useLessonAnnotations } from '../features/knowledge-graph/hooks';
@@ -349,18 +348,6 @@ export const ConceptDetailPage: React.FC = () => {
     if (graphId) navigate(`/concepts/${graphId}/concept/${encodeURIComponent(navConcept.id)}`);
   }, [graphId, navigate]);
 
-  const seedConceptCta = useMemo(() => {
-    if (!concept?.isSeed || !conceptsData.groupedByLayer) return undefined;
-    const level1Concepts = conceptsData.groupedByLayer[1] || [];
-    const firstLevel1Concept = level1Concepts[0];
-    if (!firstLevel1Concept) return undefined;
-    return {
-      label: t('concept.startLearningLevel', { name: firstLevel1Concept.name }),
-      conceptId: firstLevel1Concept.id,
-      conceptName: firstLevel1Concept.name,
-    };
-  }, [concept?.isSeed, conceptsData.groupedByLayer]);
-
   // Bus listeners
   useEffect(() => {
     const unsubGenerate = on('UI:GENERATE_LESSON', (event) => {
@@ -523,13 +510,25 @@ export const ConceptDetailPage: React.FC = () => {
     }));
   }, [lessonNotes]);
 
+  const handleConnect = useCallback(() => {
+    if (!conceptNodeKey) return;
+    const parts: string[] = [];
+    if (concept?.layer != null) parts.push(`learning level ${concept.layer}`);
+    if (pathForGraph?.description) parts.push(`subject: ${pathForGraph.description}`);
+    else if (pathForGraph?.title) parts.push(`subject: ${pathForGraph.title}`);
+    if (pathForGraph?.seedConcept?.name) parts.push(`seed concept: ${pathForGraph.seedConcept.name}`);
+    const parents = conceptDetail.conceptDetail?.relationships?.parents?.map(p => p.name).filter(Boolean);
+    if (parents?.length) parts.push(`related concepts: ${parents.slice(0, 6).join(', ')}`);
+    emit('UI:PEER_CONNECT_OPEN', { nodeKey: conceptNodeKey, context: parts.join('; ') || undefined });
+  }, [conceptNodeKey, concept, pathForGraph, conceptDetail.conceptDetail, emit]);
+
   const entity: ConceptDetailTemplateEntity = {
     concept: concept
       ? { id: concept.id, name: concept.name, description: concept.description, layer: concept.layer, isSeed: concept.isSeed }
       : undefined,
     previousConcept,
     nextConcept,
-    seedConceptCta,
+    onConnect: conceptNodeKey ? handleConnect : undefined,
     lessonPanel,
     backLabel: t('concept.backToConcepts'),
     user: templateUser,
@@ -582,27 +581,7 @@ export const ConceptDetailPage: React.FC = () => {
         error={conceptDetail.error ? { message: conceptDetail.error } : null}
       />
 
-      {/* Connect: peers + the always-available AI Tutor for this concept */}
-      {conceptNodeKey && (
-        <Box className="fixed bottom-6 right-6 z-50">
-          <Button
-            variant="primary"
-            icon={Users}
-            onClick={() => {
-              const parts: string[] = [];
-              if (concept?.layer != null) parts.push(`learning level ${concept.layer}`);
-              if (pathForGraph?.description) parts.push(`subject: ${pathForGraph.description}`);
-              else if (pathForGraph?.title) parts.push(`subject: ${pathForGraph.title}`);
-              if (pathForGraph?.seedConcept?.name) parts.push(`seed concept: ${pathForGraph.seedConcept.name}`);
-              const parents = conceptDetail.conceptDetail?.relationships?.parents?.map(p => p.name).filter(Boolean);
-              if (parents?.length) parts.push(`related concepts: ${parents.slice(0, 6).join(', ')}`);
-              emit('UI:PEER_CONNECT_OPEN', { nodeKey: conceptNodeKey, context: parts.join('; ') || undefined });
-            }}
-          >
-            {t('connections.connect')}
-          </Button>
-        </Box>
-      )}
+      {/* Connect affordance is now inline in the concept header (ConnectButton). */}
     </>
   );
 };
