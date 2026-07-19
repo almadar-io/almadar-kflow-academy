@@ -11,6 +11,7 @@ import { useAnswerQuestion } from '../features/knowledge-graph/hooks/useAnswerQu
 import { useCustomOperation } from '../features/knowledge-graph/hooks/useCustomOperation';
 import { useUserProgress } from '../features/concepts/hooks/useUserProgress';
 import { useTouchNodeActivity } from '../features/connections/hooks/useConnections';
+import { useLearningPaths } from '../features/knowledge-graph/hooks/useLearningPaths';
 import type { NodeKey } from '@kflow-academy/shared';
 import { useServerEvents } from '../features/learning/hooks/useServerEvents';
 import { useConceptsByLayer } from '../features/knowledge-graph/hooks/useConceptsByLayer';
@@ -63,6 +64,11 @@ export const ConceptDetailPage: React.FC = () => {
   const conceptName = conceptDetail.conceptDetail?.concept?.name;
   const conceptNodeKey = (graphId && conceptId && conceptName ? (`concept:${conceptName}` as NodeKey) : null);
   useTouchNodeActivity(conceptNodeKey);
+  const { learningPaths: allPaths } = useLearningPaths();
+  const pathForGraph = useMemo(
+    () => allPaths.find(p => p.id === graphId),
+    [allPaths, graphId],
+  );
   const graph = useAppSelector((state) => selectGraphById(state, graphId || ''));
   const { getGraph, loading: isLoadingGraph } = useGetGraph();
   const conceptsData = useConceptsByLayer(graphId || '', {
@@ -585,6 +591,9 @@ export const ConceptDetailPage: React.FC = () => {
             onClick={() => {
               const parts: string[] = [];
               if (concept?.layer != null) parts.push(`learning level ${concept.layer}`);
+              if (pathForGraph?.description) parts.push(`subject: ${pathForGraph.description}`);
+              else if (pathForGraph?.title) parts.push(`subject: ${pathForGraph.title}`);
+              if (pathForGraph?.seedConcept?.name) parts.push(`seed concept: ${pathForGraph.seedConcept.name}`);
               const parents = conceptDetail.conceptDetail?.relationships?.parents?.map(p => p.name).filter(Boolean);
               if (parents?.length) parts.push(`related concepts: ${parents.slice(0, 6).join(', ')}`);
               emit('UI:PEER_CONNECT_OPEN', { nodeKey: conceptNodeKey, context: parts.join('; ') || undefined });

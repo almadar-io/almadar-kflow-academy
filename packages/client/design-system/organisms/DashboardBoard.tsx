@@ -66,6 +66,8 @@ export interface DashboardEntity {
     /** The graphId these concepts belong to (for click navigation) */
     graphId: string;
   };
+  /** graphId → learning-path goal metadata, used as AI-tutor domain context. */
+  pathMeta?: Record<string, { title?: string; description?: string; seedConcept?: string }>;
 }
 
 export interface DashboardBoardProps extends DisplayStateProps {
@@ -167,8 +169,13 @@ export function DashboardBoard({
       .map((n) => n.label)
       .filter(Boolean)
       .slice(0, 8);
-    const ctx = `knowledge map level ${level}` + (siblings.length ? `; other topics in this map: ${siblings.join(', ')}` : '');
-    emit('UI:PEER_CONNECT_OPEN', { nodeKey: `${kind}:${canonicalId}`, context: ctx });
+    const meta = dash?.pathMeta?.[selectedNode.graphId];
+    const ctxParts = [`knowledge map level ${level}`];
+    if (meta?.description) ctxParts.push(`subject: ${meta.description}`);
+    else if (meta?.title) ctxParts.push(`subject: ${meta.title}`);
+    if (meta?.seedConcept) ctxParts.push(`seed concept: ${meta.seedConcept}`);
+    if (siblings.length) ctxParts.push(`other topics in this map: ${siblings.join(', ')}`);
+    emit('UI:PEER_CONNECT_OPEN', { nodeKey: `${kind}:${canonicalId}`, context: ctxParts.join('; ') });
   }, [emit, level, selectedNode, dash]);
 
   const handleBack = useCallback(() => {

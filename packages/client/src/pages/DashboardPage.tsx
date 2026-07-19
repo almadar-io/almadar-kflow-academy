@@ -157,6 +157,14 @@ export const DashboardPage: React.FC = () => {
     [location.pathname]
   );
 
+  const pathMeta = useMemo((): DashboardEntity['pathMeta'] => {
+    const m: NonNullable<DashboardEntity['pathMeta']> = {};
+    for (const p of pathSummaries) {
+      m[p.id] = { title: p.title, description: p.description, seedConcept: p.seedConcept?.name };
+    }
+    return m;
+  }, [pathSummaries]);
+
   const learningPaths = useMemo(
     () =>
       jumpBackInItems
@@ -190,6 +198,7 @@ export const DashboardPage: React.FC = () => {
     welcomeName: user?.displayName?.split(' ')[0] ?? t('nav.user'),
     learningPaths,
     knowledgeMap,
+    pathMeta,
   };
 
   const entity: DashboardBoardTemplateEntity = {
