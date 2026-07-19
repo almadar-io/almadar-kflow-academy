@@ -363,6 +363,7 @@
   "dashboard.showConcepts": "Show concepts",
   "dashboard.action.browseStories": "Browse Stories",
   "dashboard.action.createPath": "Create Learning Path",
+  "dashboard.conceptsTitle": "Concepts",
   "dashboard.concepts": "{{count}} concepts",
   "dashboard.createPath": "New Path",
   "dashboard.knowledgeMap": "Your knowledge map",

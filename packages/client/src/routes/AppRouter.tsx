@@ -3,7 +3,6 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router';
 import LandingPage from '../pages/LandingPage';
 import { ConceptsPage } from '../pages/ConceptsPage';
 import { ConceptDetailPage } from '../pages/ConceptDetailPage';
-import { LearnPage } from '../pages/LearnPage';
 import { DashboardPage } from '../pages/DashboardPage';
 import { SettingsPage } from '../pages/SettingsPage';
 import { ConnectionPage } from '../pages/ConnectionPage';
@@ -48,9 +47,7 @@ const AppRouter: React.FC = () => {
         <Route path="/home" element={
           <ProtectedRoute><DashboardPage /></ProtectedRoute>
         } />
-        <Route path="/learn" element={
-          <ProtectedRoute><LearnPage /></ProtectedRoute>
-        } />
+        <Route path="/learn" element={<Navigate to="/home" replace />} />
         <Route path="/concepts/:graphId" element={
           <ProtectedRoute><ConceptsPage /></ProtectedRoute>
         } />

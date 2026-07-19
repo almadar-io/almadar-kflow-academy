@@ -37,6 +37,8 @@ import {
   type GraphEdge,
   type GraphSimilarity,
 } from '@almadar/ui';
+import { ConnectButton } from '../molecules/ConnectButton';
+import { ConceptCard } from './ConceptCard';
 
 export interface DashboardLearningPath {
   id: string;
@@ -68,6 +70,8 @@ export interface DashboardEntity {
   };
   /** graphId → learning-path goal metadata, used as AI-tutor domain context. */
   pathMeta?: Record<string, { title?: string; description?: string; seedConcept?: string }>;
+  /** Rich concept data for drilled (L2) concepts — rendered as ConceptCards below the canvas. */
+  l2Concepts?: Array<{ id: string; name: string; description?: string; hasLesson?: boolean; layer?: number }>;
 }
 
 export interface DashboardBoardProps extends DisplayStateProps {
@@ -217,9 +221,7 @@ export function DashboardBoard({
                       {t('dashboard.showConcepts')}
                     </Button>
                   )}
-                  <Button onClick={handleConnectSelected} variant="secondary" size="sm">
-                    {t('connections.connect')}
-                  </Button>
+                  <ConnectButton size="sm" onClick={handleConnectSelected} />
                   <Button
                     onClick={handleClearSelected}
                     variant="ghost"
@@ -285,6 +287,40 @@ export function DashboardBoard({
                   </>
                 )}
               </Box>
+
+              {/* L2: drilled concepts as canonical ConceptCards (unified flow). */}
+              {level === 'L2' && dash?.l2Concepts && dash.l2Concepts.length > 0 && (
+                <VStack gap="sm" className="w-full mt-2">
+                  <Typography variant="h3" className="text-lg font-semibold text-[var(--color-foreground)]">
+                    {t('dashboard.conceptsTitle')}
+                  </Typography>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    {dash.l2Concepts.map(c => {
+                      const gId = dash?.knowledgeMap?.graphId ?? '';
+                      const meta = dash?.pathMeta?.[gId];
+                      const ctx = [
+                        'knowledge map L2',
+                        meta?.description ? `subject: ${meta.description}` : meta?.title ? `subject: ${meta.title}` : '',
+                        c.layer != null ? `level ${c.layer}` : '',
+                      ].filter(Boolean).join('; ');
+                      return (
+                        <ConceptCard
+                          key={c.id}
+                          id={c.id}
+                          name={c.name}
+                          description={c.description}
+                          hasLesson={c.hasLesson}
+                          highlighted={c.hasLesson}
+                          hideLessonBadge
+                          onClick={() => emit('UI:KNOWLEDGE_NODE_OPEN', { graphId: gId, nodeId: c.id })}
+                          onConnect={() => emit('UI:PEER_CONNECT_OPEN', { nodeKey: `concept:${c.name}`, context: ctx })}
+                          className="cursor-pointer"
+                        />
+                      );
+                    })}
+                  </div>
+                </VStack>
+              )}
             </VStack>
 
             {/* Latest learning paths */}

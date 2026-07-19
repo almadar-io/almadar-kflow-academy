@@ -363,6 +363,7 @@
   "dashboard.showConcepts": "عرض المفاهيم",
   "dashboard.action.browseStories": "تصفح القصص",
   "dashboard.action.createPath": "إنشاء مسار تعلم",
+  "dashboard.conceptsTitle": "المفاهيم",
   "dashboard.concepts": "{{count}} مفهوم",
   "dashboard.createPath": "مسار جديد",
   "dashboard.knowledgeMap": "خريطة معرفتك",

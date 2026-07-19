@@ -7,10 +7,11 @@
  * (UI:LEARNING_PATH_CLICK, UI:CREATE_LEARNING_PATH, UI:DELETE_LEARNING_PATH, UI:KNOWLEDGE_NODE_CLICK).
  */
 
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { useLocation } from 'react-router';
-import { useEventBus, useTranslate } from '@almadar/ui';
+import { Box, Button, Card, Overlay, Spinner, Typography, VStack, useEventBus, useTranslate } from '@almadar/ui';
+import { X } from 'lucide-react';
 import kflowLogo from '../assets/kflow-logo.svg';
 import { DashboardBoardTemplate } from '@design-system/templates/DashboardTemplate/DashboardBoardTemplate';
 import type { DashboardBoardTemplateEntity } from '@design-system/templates/DashboardTemplate/DashboardBoardTemplate';
@@ -25,6 +26,10 @@ import { useLearningPathMap } from '../features/knowledge-graph/hooks/useLearnin
 import { useConceptsByLayer } from '../features/knowledge-graph/hooks/useConceptsByLayer';
 import { getNavigationItems, getUserForTemplate, mainNavItems } from '../config/navigation';
 import { useNavigateEvent } from '../hooks/useNavigateEvent';
+import { useAppDispatch } from '../app/hooks';
+import { setCurrentGraphId } from '../features/knowledge-graph/knowledgeGraphSlice';
+import { graphOperationsStreamingApi } from '../features/knowledge-graph/api/streaming';
+import { GoalForm } from '@design-system/organisms/GoalForm';
 import type { DashboardEntity, DashboardMapLevel } from '@design-system/organisms/DashboardBoard';
 
 const L2_CONCEPT_CAP = 60;
@@ -36,6 +41,7 @@ export const DashboardPage: React.FC = () => {
   const queryClient = useQueryClient();
   const { on, emit } = useEventBus();
   const { t } = useTranslate();
+  const dispatch = useAppDispatch();
 
   const handleDeletePath = useCallback(
     async (pathId: string) => {
@@ -56,6 +62,59 @@ export const DashboardPage: React.FC = () => {
     },
     [emit, t, queryClient]
   );
+
+  // Goal/path creation flow (merged from /learn — UI:CREATE_LEARNING_PATH now opens here).
+  const [showGoalForm, setShowGoalForm] = useState(false);
+  const [isExpanding, setIsExpanding] = useState(false);
+  const [parsedConcepts, setParsedConcepts] = useState<Array<{ name: string; description: string }>>([]);
+  const [parsedLevelName, setParsedLevelName] = useState('');
+  const contentAccRef = useRef('');
+
+  const handleGoalFormComplete = useCallback(
+    async (result: { goalId: string; graphId: string }) => {
+      dispatch(setCurrentGraphId(result.graphId));
+      setIsExpanding(true);
+      setParsedConcepts([]);
+      setParsedLevelName('');
+      contentAccRef.current = '';
+      try {
+        await graphOperationsStreamingApi.progressiveExpand(
+          result.graphId,
+          { numConcepts: 10 },
+          {
+            onChunk: (chunk: string) => {
+              contentAccRef.current += chunk;
+              const levelMatch = contentAccRef.current.match(/<level-name>(.*?)<\/level-name>/i);
+              if (levelMatch) setParsedLevelName(levelMatch[1].trim());
+              const conceptMatches = [
+                ...contentAccRef.current.matchAll(/<concept>(.*?)<\/concept>\s*<description>(.*?)<\/description>/gis),
+              ];
+              setParsedConcepts(conceptMatches.map(m => ({ name: m[1].trim(), description: m[2].trim() })));
+            },
+            onError: (error: string) => {
+              console.error('Expansion stream error', error);
+            },
+          }
+        );
+      } catch (err) {
+        console.error('Initial expansion failed', err instanceof Error ? err.message : String(err));
+      }
+      setIsExpanding(false);
+      setParsedConcepts([]);
+      setParsedLevelName('');
+      contentAccRef.current = '';
+      setShowGoalForm(false);
+      navigate(`/concepts/${result.graphId}`);
+      await queryClient.invalidateQueries({ queryKey: JUMP_BACK_IN_QUERY_KEY });
+      await queryClient.invalidateQueries({ queryKey: knowledgeGraphKeys.learningPaths() });
+    },
+    [dispatch, navigate, queryClient]
+  );
+
+  const closeGoalModal = useCallback(() => {
+    setShowGoalForm(false);
+    setIsExpanding(false);
+  }, []);
 
   const { items: jumpBackInItems, isLoading: isLoadingJumpBackIn } = useJumpBackIn();
   const { learningPaths: pathSummaries, loading: pathsLoading, similarity = [], sharedConcepts = [] } = useLearningPaths();
@@ -107,7 +166,7 @@ export const DashboardPage: React.FC = () => {
       if (graphId) navigate(`/concepts/${graphId}`);
     });
     const unsubCreate = on('UI:CREATE_LEARNING_PATH', () => {
-      navigate('/learn');
+      setShowGoalForm(true);
     });
     const unsubDelete = on('UI:DELETE_LEARNING_PATH', (event) => {
       const pathId = event.payload?.pathId as string | undefined;
@@ -199,6 +258,15 @@ export const DashboardPage: React.FC = () => {
     learningPaths,
     knowledgeMap,
     pathMeta,
+    l2Concepts: level === 'L2' && selectedGraphId
+      ? l2Concepts.slice(0, L2_CONCEPT_CAP).map(c => ({
+          id: c.id,
+          name: c.name,
+          description: c.description,
+          hasLesson: Boolean(c.properties?.hasLesson),
+          layer: c.layer,
+        }))
+      : undefined,
   };
 
   const entity: DashboardBoardTemplateEntity = {
@@ -221,7 +289,62 @@ export const DashboardPage: React.FC = () => {
     mapLoading,
   };
 
-  return <DashboardBoardTemplate entity={entity} isLoading={isLoadingJumpBackIn} />;
+  return (
+    <>
+      <DashboardBoardTemplate entity={entity} isLoading={isLoadingJumpBackIn} />
+      {(showGoalForm || isExpanding) && (
+        <Box className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <Overlay onClick={closeGoalModal} />
+          <Card className="relative z-50 max-w-2xl w-full max-h-[90vh] overflow-y-auto overflow-x-hidden p-6 animate-modal-in">
+            <Box className="absolute top-3 right-3 z-10">
+              <Button
+                variant="ghost"
+                size="sm"
+                icon={X}
+                onClick={closeGoalModal}
+                aria-label={t('learning.close')}
+              />
+            </Box>
+            {isExpanding ? (
+              <VStack gap="md" align="center" className="py-8">
+                <Spinner size="lg" />
+                <Typography variant="h3">{t('learn.expanding.title')}</Typography>
+                <Typography variant="body" color="secondary" className="text-center max-w-md">
+                  {parsedConcepts.length > 0
+                    ? t('learn.expanding.progress', { count: String(parsedConcepts.length) })
+                    : t('learn.expanding.building')}
+                </Typography>
+                {(parsedLevelName || parsedConcepts.length > 0) && (
+                  <VStack gap="sm" className="w-full max-h-72 overflow-y-auto">
+                    {parsedLevelName && (
+                      <Card className="px-4 py-2 bg-[var(--color-primary-muted)]">
+                        <Typography variant="small" weight="semibold">
+                          {t('learn.expanding.layer', { name: parsedLevelName })}
+                        </Typography>
+                      </Card>
+                    )}
+                    {parsedConcepts.map((concept, i) => (
+                      <Card key={i} className="px-4 py-3">
+                        <Typography variant="small" weight="medium">{concept.name}</Typography>
+                        <Typography variant="caption" color="secondary" className="line-clamp-2">
+                          {concept.description}
+                        </Typography>
+                      </Card>
+                    ))}
+                  </VStack>
+                )}
+              </VStack>
+            ) : (
+              <GoalForm
+                onComplete={handleGoalFormComplete}
+                onCancel={() => setShowGoalForm(false)}
+              />
+            )}
+          </Card>
+        </Box>
+      )}
+    </>
+  );
 };
 
 DashboardPage.displayName = 'DashboardPage';
