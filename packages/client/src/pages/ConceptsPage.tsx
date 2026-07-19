@@ -301,14 +301,20 @@ export const ConceptsPage: React.FC = () => {
       });
   }, [layers, graph]);
 
-  // Graph nodes/edges for mindmap
+  // Graph nodes/edges for the hero concept canvas (Concept nodes only, grouped by layer).
   const learnGraphNodes = useMemo(() => {
     if (!graph?.nodes) return [];
-    return Object.values(graph.nodes).map(node => ({
-      id: node.id,
-      label: typeof node.properties?.name === 'string' ? node.properties.name : node.id,
-      layer: Number(node.properties?.layer ?? 0),
-    }));
+    return Object.values(graph.nodes)
+      .filter(node => node.type === 'Concept')
+      .map(node => {
+        const layer = Number(node.properties?.layer ?? 0);
+        return {
+          id: node.id,
+          label: typeof node.properties?.name === 'string' ? node.properties.name : node.id,
+          layer,
+          group: `L${layer}`,
+        };
+      });
   }, [graph]);
 
   const learnGraphEdges = useMemo(() => {

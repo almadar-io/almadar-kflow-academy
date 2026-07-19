@@ -12,7 +12,7 @@
 
 import React, { useMemo, useState, useEffect, useRef, useCallback } from 'react';
 import { AppLayoutTemplate } from '../AppLayoutTemplate';
-import { Badge, Button, Card, Modal, Spinner, Typography, useEventBus, useTranslate } from '@almadar/ui';
+import { Badge, Box, Button, Card, GraphCanvas, Modal, Spinner, Typography, useEventBus, useTranslate } from '@almadar/ui';
 import type { DisplayStateProps } from '@almadar/ui';
 import { ConceptCard } from '../../organisms/ConceptCard';
 import { LessonPanel } from '../../organisms/LessonPanel';
@@ -360,27 +360,45 @@ export const FocusModeTemplate: React.FC<FocusModeTemplateProps> = (props) => {
             </div>
           )}
 
-          {/* Seed Concept Card */}
+          {/* Hero: the concept graph (same flow as the Home page). */}
+          {graphNodes.length > 0 && (
+            <Box className="w-full md:max-w-4xl mb-4 sm:mb-6 md:mb-8 rounded-container overflow-hidden border border-border bg-surface animate-slide-up">
+              <GraphCanvas
+                nodes={graphNodes}
+                edges={graphEdges}
+                height={360}
+                showLabels
+                interactive
+                draggable
+                repulsion={500}
+                linkDistance={120}
+                nodeSpacing={40}
+                onNodeClick={(node) => handleConceptClick(node.id)}
+                className="w-full"
+              />
+            </Box>
+          )}
+
+          {/* Seed concept — canonical ConceptCard (start here). */}
           {seedConcept && (
-            <Card className="w-full md:max-w-2xl p-3 sm:p-4 md:p-6 mb-3 sm:mb-6 md:mb-8 border-2 border-border bg-surface">
-              <div className="text-center">
-                <Typography variant="h2" className="mb-2">
-                  {seedConcept.name}
-                </Typography>
-                {seedConcept.description && (
-                  <Typography variant="body" color="muted" className="mb-6">
-                    {seedConcept.description}
-                  </Typography>
-                )}
-                <Button
-                  variant="primary"
-                  onClick={() => handleConceptClick(seedConcept.id)}
-                  iconRight={ArrowRight}
-                >
-                  {t('learning.exploreConcept')}
-                </Button>
-              </div>
-            </Card>
+            <Box className="w-full md:max-w-2xl mb-3 sm:mb-6 md:mb-8">
+              <ConceptCard
+                id={seedConcept.id}
+                name={seedConcept.name}
+                description={seedConcept.description}
+                isCurrent={!seedConcept.completed}
+                isCompleted={seedConcept.completed}
+                hasLesson={seedConcept.hasLesson}
+                highlighted={seedConcept.hasLesson}
+                icon={BookOpen}
+                onClick={() => handleConceptClick(seedConcept.id)}
+                onConnect={() => emit('UI:PEER_CONNECT_OPEN', {
+                  nodeKey: `concept:${seedConcept.name}`,
+                  context: goal?.description ? `subject: ${goal.description}; seed concept` : 'seed concept',
+                })}
+                className="cursor-pointer"
+              />
+            </Box>
           )}
 
           {/* Level Navigation */}
