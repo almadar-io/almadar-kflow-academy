@@ -1,7 +1,7 @@
 import React from 'react';
 import { Button } from '@almadar/ui';
 import { useTranslate } from '@almadar/ui';
-import { Users, type LucideIcon } from 'lucide-react';
+import { MessageCircle, type LucideIcon } from 'lucide-react';
 
 export interface ConnectButtonProps extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, 'onClick'> {
   /** Click handler — call sites emit UI:PEER_CONNECT_OPEN here. */
@@ -12,23 +12,40 @@ export interface ConnectButtonProps extends Omit<React.ButtonHTMLAttributes<HTML
   label?: string;
   /** Override the default icon (rare). */
   icon?: LucideIcon;
+  /** Icon-only affordance (top-right of a card). No label. */
+  iconOnly?: boolean;
   className?: string;
 }
 
 /**
- * The single canonical Connect affordance (G8): same icon + label + variant
- * everywhere — concept cards, the dashboard action-bar, the concept-detail
- * header. Size is the only thing that adapts to context.
+ * The single canonical Connect affordance (G8): same icon + variant everywhere.
+ * `iconOnly` renders a compact ghost icon button (card top-right); otherwise a
+ * primary button with the label (headers, action bars). Size adapts to context.
  */
 export const ConnectButton: React.FC<ConnectButtonProps> = ({
   onClick,
   size = 'md',
   label,
-  icon: Icon = Users,
+  icon: Icon = MessageCircle,
+  iconOnly = false,
   className,
   ...rest
 }) => {
   const { t } = useTranslate();
+  const text = label ?? t('connections.connect');
+  if (iconOnly) {
+    return (
+      <Button
+        variant="ghost"
+        size={size}
+        icon={Icon}
+        onClick={onClick}
+        className={className}
+        aria-label={text}
+        {...rest}
+      />
+    );
+  }
   return (
     <Button
       variant="primary"
@@ -38,7 +55,7 @@ export const ConnectButton: React.FC<ConnectButtonProps> = ({
       className={className}
       {...rest}
     >
-      {label ?? t('connections.connect')}
+      {text}
     </Button>
   );
 };

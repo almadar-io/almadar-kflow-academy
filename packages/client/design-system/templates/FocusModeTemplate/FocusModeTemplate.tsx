@@ -15,6 +15,7 @@ import { AppLayoutTemplate } from '../AppLayoutTemplate';
 import { Badge, Box, Button, Card, GraphCanvas, Modal, Spinner, Typography, useEventBus, useTranslate } from '@almadar/ui';
 import type { DisplayStateProps } from '@almadar/ui';
 import { ConceptCard } from '../../organisms/ConceptCard';
+import { ConnectButton } from '../../molecules/ConnectButton';
 import { LessonPanel } from '../../organisms/LessonPanel';
 import { Check, ArrowRight, Loader2, BookOpen, GraduationCap, Info, Flag } from 'lucide-react';
 import { cn } from '@utils/theme';
@@ -360,45 +361,56 @@ export const FocusModeTemplate: React.FC<FocusModeTemplateProps> = (props) => {
             </div>
           )}
 
-          {/* Hero: the concept graph (same flow as the Home page). */}
-          {graphNodes.length > 0 && (
-            <Box className="w-full md:max-w-4xl mb-4 sm:mb-6 md:mb-8 rounded-container overflow-hidden border border-border bg-surface animate-slide-up">
-              <GraphCanvas
-                nodes={graphNodes}
-                edges={graphEdges}
-                height={360}
-                showLabels
-                interactive
-                draggable
-                repulsion={500}
-                linkDistance={120}
-                nodeSpacing={40}
-                onNodeClick={(node) => handleConceptClick(node.id)}
-                className="w-full"
-              />
-            </Box>
-          )}
-
-          {/* Seed concept — canonical ConceptCard (start here). */}
-          {seedConcept && (
-            <Box className="w-full md:max-w-2xl mb-3 sm:mb-6 md:mb-8">
-              <ConceptCard
-                id={seedConcept.id}
-                name={seedConcept.name}
-                description={seedConcept.description}
-                isCurrent={!seedConcept.completed}
-                isCompleted={seedConcept.completed}
-                hasLesson={seedConcept.hasLesson}
-                highlighted={seedConcept.hasLesson}
-                icon={BookOpen}
-                onClick={() => handleConceptClick(seedConcept.id)}
-                onConnect={() => emit('UI:PEER_CONNECT_OPEN', {
-                  nodeKey: `concept:${seedConcept.name}`,
-                  context: goal?.description ? `subject: ${goal.description}; seed concept` : 'seed concept',
-                })}
-                className="cursor-pointer"
-              />
-            </Box>
+          {/* Seed-concept hero: the graph canvas lives inside the seed concept card
+              (one seamless unit). Connect is the top-right icon; the seed highlights
+              green when it has a lesson (visited). */}
+          {(graphNodes.length > 0 || seedConcept) && (
+            <Card className={cn(
+              'relative w-full md:max-w-4xl mb-4 sm:mb-6 md:mb-8 overflow-hidden animate-slide-up',
+              seedConcept?.hasLesson ? 'border-l-4 border-l-success bg-surface' : 'border border-border bg-surface',
+            )}>
+            {seedConcept && (
+              <Box className="flex items-center gap-2 px-4 pt-4">
+                <Badge variant="primary">{t('concept.seedConcept')}</Badge>
+                <Typography variant="h2" className="flex-1 truncate cursor-pointer" >
+                  {seedConcept.name}
+                </Typography>
+                <ConnectButton
+                  iconOnly
+                  size="sm"
+                  className="text-muted-foreground hover:text-primary"
+                  onClick={() => emit('UI:PEER_CONNECT_OPEN', {
+                    nodeKey: `concept:${seedConcept.name}`,
+                    context: goal?.description ? `subject: ${goal.description}; seed concept` : 'seed concept',
+                  })}
+                />
+              </Box>
+            )}
+            {seedConcept?.description && (
+              <Box className="px-4 pb-2">
+                <Typography variant="small" color="muted" className="line-clamp-2">
+                  {seedConcept.description}
+                </Typography>
+              </Box>
+            )}
+            {graphNodes.length > 0 && (
+              <Box className="mt-1">
+                <GraphCanvas
+                  nodes={graphNodes}
+                  edges={graphEdges}
+                  height={340}
+                  showLabels
+                  interactive
+                  draggable
+                  repulsion={500}
+                  linkDistance={120}
+                  nodeSpacing={40}
+                  onNodeClick={(node) => handleConceptClick(node.id)}
+                  className="w-full"
+                />
+              </Box>
+            )}
+          </Card>
           )}
 
           {/* Level Navigation */}

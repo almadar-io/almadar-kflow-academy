@@ -173,7 +173,7 @@ export const ConceptCard: React.FC<ConceptCardProps> = ({
     <Card
       variant="elevated"
       className={cn(
-        'transition-all duration-200',
+        'relative transition-all duration-200',
         // Highlighted state (lesson ready)
         isHighlighted && !isCurrent && !isCompleted && 'border-l-4 border-l-success bg-surface',
         // Current/active state
@@ -186,6 +186,17 @@ export const ConceptCard: React.FC<ConceptCardProps> = ({
       )}
       onClick={onClick}
     >
+      {onConnect && (
+        <ConnectButton
+          iconOnly
+          size="sm"
+          onClick={(e) => {
+            e.stopPropagation();
+            onConnect();
+          }}
+          className="absolute top-2 right-2 z-10 text-muted-foreground hover:text-primary"
+        />
+      )}
       <div className="space-y-3">
         {/* Header */}
         <div className="flex items-start gap-3">
@@ -297,8 +308,8 @@ export const ConceptCard: React.FC<ConceptCardProps> = ({
           </div>
         )}
 
-        {/* Operations + Connect */}
-        {((operations && operations.length > 0) || onConnect) && (
+        {/* Operations */}
+        {operations && operations.length > 0 && (
           <div className="flex gap-2 flex-wrap">
             {operations?.map((op, idx) => (
               <Button
@@ -314,15 +325,6 @@ export const ConceptCard: React.FC<ConceptCardProps> = ({
                 {op.label}
               </Button>
             ))}
-            {onConnect && (
-              <ConnectButton
-                size="sm"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onConnect();
-                }}
-              />
-            )}
           </div>
         )}
 

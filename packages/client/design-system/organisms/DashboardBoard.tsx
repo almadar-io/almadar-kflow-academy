@@ -16,7 +16,7 @@
 
 import React, { useCallback, useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { Plus, Trash2, Brain, ArrowLeft, X } from 'lucide-react';
+import { Plus, Trash2, Brain, BookOpen, X } from 'lucide-react';
 import {
   Box,
   VStack,
@@ -127,16 +127,11 @@ export function DashboardBoard({
     emit('UI:KNOWLEDGE_NODE_CLICK', { nodeId: mapNode.id, graphId: mapNode.graphId });
   }, [emit]);
 
-  // Double-click is a shortcut for the selected node's primary action: in L1 it drills into
-  // the path's concept map, in L2 it opens the concept. Single-click still just selects.
+  // Double-click navigates straight to the graph detail page (no parallel L2 drill).
   const handleKnowledgeNodeDoubleClick = useCallback((node: GraphNode) => {
     const mapNode = node as DashboardKnowledgeMapNode;
-    if (level === 'L2') {
-      emit('UI:KNOWLEDGE_NODE_OPEN', { graphId: mapNode.graphId, nodeId: mapNode.id });
-    } else {
-      emit('UI:KNOWLEDGE_NODE_DRILL', { graphId: mapNode.graphId });
-    }
-  }, [emit, level]);
+    emit('UI:KNOWLEDGE_NODE_OPEN', { graphId: mapNode.graphId });
+  }, [emit]);
 
   // Clicking a merged node's count badge expands that cluster (L1 only). The page owns the
   // expanded-groups set and recomputes the map, so we just emit the group id over the bus.
@@ -151,21 +146,11 @@ export function DashboardBoard({
 
   const handleOpenSelected = useCallback(() => {
     if (!selectedNode) return;
-    if (level === 'L2') {
-      emit('UI:KNOWLEDGE_NODE_OPEN', { graphId: selectedNode.graphId, nodeId: selectedNode.id });
-    } else {
-      emit('UI:KNOWLEDGE_NODE_OPEN', { graphId: selectedNode.graphId });
-    }
-  }, [emit, level, selectedNode]);
-
-  const handleDrillSelected = useCallback(() => {
-    if (!selectedNode) return;
-    emit('UI:KNOWLEDGE_NODE_DRILL', { graphId: selectedNode.graphId });
+    emit('UI:KNOWLEDGE_NODE_OPEN', { graphId: selectedNode.graphId });
   }, [emit, selectedNode]);
 
   const handleConnectSelected = useCallback(() => {
     if (!selectedNode) return;
-    const kind = level === 'L1' ? 'path' : 'concept';
     const canonicalId = selectedNode.label;
     if (!canonicalId) return;
     const siblings = (dash?.knowledgeMap?.nodes ?? [])
@@ -174,53 +159,43 @@ export function DashboardBoard({
       .filter(Boolean)
       .slice(0, 8);
     const meta = dash?.pathMeta?.[selectedNode.graphId];
-    const ctxParts = [`knowledge map level ${level}`];
+    const ctxParts = ['knowledge map'];
     if (meta?.description) ctxParts.push(`subject: ${meta.description}`);
     else if (meta?.title) ctxParts.push(`subject: ${meta.title}`);
     if (meta?.seedConcept) ctxParts.push(`seed concept: ${meta.seedConcept}`);
-    if (siblings.length) ctxParts.push(`other topics in this map: ${siblings.join(', ')}`);
-    emit('UI:PEER_CONNECT_OPEN', { nodeKey: `${kind}:${canonicalId}`, context: ctxParts.join('; ') });
-  }, [emit, level, selectedNode, dash]);
-
-  const handleBack = useCallback(() => {
-    setSelectedNode(null);
-    emit('UI:KNOWLEDGE_BACK', {});
-  }, [emit]);
+    if (siblings.length) ctxParts.push(`other topics: ${siblings.join(', ')}`);
+    emit('UI:PEER_CONNECT_OPEN', { nodeKey: `path:${canonicalId}`, context: ctxParts.join('; ') });
+  }, [emit, selectedNode, dash]);
 
   const hasMap = (dash?.knowledgeMap?.nodes?.length ?? 0) > 0;
   const paths = dash?.learningPaths ?? [];
 
   return (
     <Container size="lg" padding="sm" className={`py-6 ${className}`}>
-      {/* Selected-node actions render in a viewport-fixed top HUD (not pinned to the
-          scrollable map) so they stay reachable on mobile and when scrolled away. */}
+      {/* Selected-node actions: a top section bar on MOBILE only. Desktop has no
+          action bar — double-click navigates, single-click just highlights. */}
       {selectedNode && typeof document !== 'undefined' &&
         createPortal(
           <Box
-            className={`fixed top-4 inset-x-4 sm:inset-x-0 z-[60] flex justify-center transition-all duration-200 ease-out ${
+            className={`lg:hidden fixed top-0 inset-x-0 z-[60] transition-all duration-200 ease-out ${
               popoverVisible ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-2 pointer-events-none'
             }`}
           >
             <Card
               padding="sm"
-              className="w-full sm:w-auto bg-[var(--color-card)] border border-[var(--color-border)] shadow-[var(--shadow-lg)]"
+              className="w-full rounded-none border-x-0 border-t-0 border-b border-[var(--color-border)] bg-[var(--color-card)] shadow-[var(--shadow-lg)]"
             >
-              <HStack gap="sm" align="center" justify="between" wrap>
+              <HStack gap="sm" align="center" justify="between">
                 <Typography
                   variant="small"
-                  className="font-medium text-[var(--color-foreground)] truncate max-w-[10rem] sm:max-w-[16rem]"
+                  className="font-medium text-[var(--color-foreground)] truncate"
                 >
                   {selectedNode.label ?? selectedNode.id}
                 </Typography>
-                <HStack gap="xs" align="center">
+                <HStack gap="xs" align="center" className="flex-shrink-0">
                   <Button onClick={handleOpenSelected} variant="primary" size="sm">
                     {t('dashboard.open')}
                   </Button>
-                  {level === 'L1' && (
-                    <Button onClick={handleDrillSelected} variant="secondary" size="sm">
-                      {t('dashboard.showConcepts')}
-                    </Button>
-                  )}
                   <ConnectButton size="sm" onClick={handleConnectSelected} />
                   <Button
                     onClick={handleClearSelected}
@@ -271,56 +246,9 @@ export function DashboardBoard({
                       className="w-full"
                     />
 
-                    {/* Back control — overlaid top-left, returns from the L2 concept map to L1. */}
-                    {level === 'L2' && (
-                      <Button
-                        onClick={handleBack}
-                        variant="ghost"
-                        size="sm"
-                        className="absolute top-3 left-3 z-20 flex items-center gap-1 bg-[var(--color-card)] border border-[var(--color-border)] shadow-[var(--shadow-sm)] hover:-translate-y-0.5 hover:shadow-[var(--shadow-hover)] transition-all duration-200"
-                      >
-                        <ArrowLeft size={16} />
-                        {t('dashboard.back')}
-                      </Button>
-                    )}
-
                   </>
                 )}
               </Box>
-
-              {/* L2: drilled concepts as canonical ConceptCards (unified flow). */}
-              {level === 'L2' && dash?.l2Concepts && dash.l2Concepts.length > 0 && (
-                <VStack gap="sm" className="w-full mt-2">
-                  <Typography variant="h3" className="text-lg font-semibold text-[var(--color-foreground)]">
-                    {t('dashboard.conceptsTitle')}
-                  </Typography>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    {dash.l2Concepts.map(c => {
-                      const gId = dash?.knowledgeMap?.graphId ?? '';
-                      const meta = dash?.pathMeta?.[gId];
-                      const ctx = [
-                        'knowledge map L2',
-                        meta?.description ? `subject: ${meta.description}` : meta?.title ? `subject: ${meta.title}` : '',
-                        c.layer != null ? `level ${c.layer}` : '',
-                      ].filter(Boolean).join('; ');
-                      return (
-                        <ConceptCard
-                          key={c.id}
-                          id={c.id}
-                          name={c.name}
-                          description={c.description}
-                          hasLesson={c.hasLesson}
-                          highlighted={c.hasLesson}
-                          hideLessonBadge
-                          onClick={() => emit('UI:KNOWLEDGE_NODE_OPEN', { graphId: gId, nodeId: c.id })}
-                          onConnect={() => emit('UI:PEER_CONNECT_OPEN', { nodeKey: `concept:${c.name}`, context: ctx })}
-                          className="cursor-pointer"
-                        />
-                      );
-                    })}
-                  </div>
-                </VStack>
-              )}
             </VStack>
 
             {/* Latest learning paths */}
@@ -338,48 +266,34 @@ export function DashboardBoard({
               <SimpleGrid minChildWidth="280px" gap="md">
                 {paths.map((path: DashboardLearningPath) => {
                   const handleClick = () => handlePathClick(path.id, path.graphId);
-                  const handleDelete = (e: React.MouseEvent) => {
-                    e.stopPropagation();
-                    handleDeletePath(path.id);
-                  };
+                  const meta = dash?.pathMeta?.[path.graphId];
+                  const desc = [
+                    path.description,
+                    `${path.conceptCount} ${t('dashboard.conceptsLabel')}`,
+                    `${path.levelCount} ${t('dashboard.levelsLabel')}`,
+                  ].filter(Boolean).join(' · ');
                   return (
-                    <Card
+                    <ConceptCard
                       key={path.id}
-                      data-entity-row={path.id}
-                      className="p-4 cursor-pointer border border-[var(--color-border)] shadow-[var(--shadow-sm)] hover:shadow-[var(--shadow-hover)] hover:-translate-y-1 transition-all duration-[var(--transition-normal)]"
+                      id={path.id}
+                      name={path.name}
+                      description={desc}
+                      icon={BookOpen}
+                      hideLessonBadge
                       onClick={handleClick}
-                    >
-                      <VStack gap="sm">
-                        <HStack justify="between" align="start">
-                          <VStack gap="xs" className="flex-1 min-w-0">
-                            <Typography variant="h4" className="font-semibold text-[var(--color-foreground)]">
-                              {path.name}
-                            </Typography>
-                            {path.description && (
-                              <Typography variant="small" className="text-[var(--color-muted-foreground)] line-clamp-2">
-                                {path.description}
-                              </Typography>
-                            )}
-                          </VStack>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={handleDelete}
-                            className="p-1 text-[var(--color-muted-foreground)] hover:text-error flex-shrink-0"
-                          >
-                            <Trash2 size={14} />
-                          </Button>
-                        </HStack>
-                        <HStack gap="sm">
-                          <Badge variant="info" size="sm">
-                            {t('dashboard.concepts', { count: path.conceptCount })}
-                          </Badge>
-                          <Badge variant="default" size="sm">
-                            {t('dashboard.levels', { count: path.levelCount })}
-                          </Badge>
-                        </HStack>
-                      </VStack>
-                    </Card>
+                      onConnect={() => emit('UI:PEER_CONNECT_OPEN', {
+                        nodeKey: `path:${path.name}`,
+                        context: [
+                          'learning path',
+                          meta?.description ? `subject: ${meta.description}` : meta?.title ? `subject: ${meta.title}` : '',
+                          meta?.seedConcept ? `seed concept: ${meta.seedConcept}` : '',
+                        ].filter(Boolean).join('; '),
+                      })}
+                      operations={[
+                        { label: '', icon: Trash2, onClick: () => handleDeletePath(path.id), variant: 'danger' as const },
+                      ]}
+                      className="cursor-pointer"
+                    />
                   );
                 })}
               </SimpleGrid>
