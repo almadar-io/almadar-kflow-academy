@@ -16,7 +16,7 @@ import { Badge, Button, Card, Modal, Spinner, Typography, useEventBus, useTransl
 import type { DisplayStateProps } from '@almadar/ui';
 import { ConceptCard } from '../../organisms/ConceptCard';
 import { LessonPanel } from '../../organisms/LessonPanel';
-import { Check, ArrowRight, Sparkles, Loader2, BookOpen, GraduationCap, Info, Flag } from 'lucide-react';
+import { Check, ArrowRight, Loader2, BookOpen, GraduationCap, Info, Flag } from 'lucide-react';
 import { cn } from '@utils/theme';
 import type { LearnTemplateProps, LearnConcept, LearnGoal, LearnLevel, LearnMilestone } from '../LearnTemplates/types';
 import ConceptLoader from '../../organisms/ConceptLoader';
@@ -544,88 +544,69 @@ export const FocusModeTemplate: React.FC<FocusModeTemplateProps> = (props) => {
                     </div>
                   )}
 
-                  {/* Level Completion Decision Card */}
+                  {/* Inline level progression (G4/G5): one lightweight card —
+                      preserves continue-to-next / generate-next + level summary. */}
                   {selectedLevel.concepts.length > 0 && (
-                    <Card className="mt-3 sm:mt-6 p-3 sm:p-4 md:p-6 bg-surface border-2 border-primary">
-                      <div className="text-center mb-4">
-                        <Typography variant="h3" className="mb-2 text-foreground">
-                          🎉 {t('learning.levelComplete', { number: String(selectedLevel.number) })}
-                        </Typography>
-                        <Typography variant="body" color="muted" className="text-base">
-                          {t('learning.masteredFoundationQuestion')}
-                        </Typography>
-                      </div>
-                      <div className="flex flex-col sm:flex-row gap-3 mt-6">
+                    <Card className={cn(
+                      'mt-4 p-4 sm:p-5 flex flex-col sm:flex-row items-center gap-3 animate-slide-up',
+                      isSelectedLevelComplete ? 'border-2 border-success bg-surface' : 'border border-border bg-surface',
+                    )}>
+                      {isSelectedLevelComplete && (
+                        <div className="flex items-center gap-2 text-success flex-shrink-0">
+                          <span className="inline-flex items-center justify-center w-9 h-9 rounded-full bg-success text-white">
+                            <Check size={18} />
+                          </span>
+                          <Typography variant="small" weight="medium" className="text-success">
+                            {t('learning.levelComplete', { number: String(selectedLevel.number) })}
+                          </Typography>
+                        </div>
+                      )}
+                      <div className="flex flex-1 flex-wrap items-center justify-end gap-2 w-full">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          icon={GraduationCap}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setReviewLevelNumber(selectedLevel.number);
+                            setShowReviewModal(true);
+                            if (!selectedLevel.review) {
+                              handleGenerateLayerPractice(selectedLevel.number).catch((error) => {
+                                console.error('Failed to generate layer practice:', error);
+                              });
+                            }
+                          }}
+                          disabled={isGeneratingLayerPractice}
+                          className="text-muted-foreground"
+                        >
+                          {isGeneratingLayerPractice ? t('learning.generatingSummary') : t('learning.viewLevelSummary')}
+                        </Button>
                         {nextLevel ? (
                           <Button
                             variant="primary"
-                            size="md"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleLevelSelect(nextLevel.id);
-                            }}
-                            className="font-semibold shadow-lg hover:shadow-xl transition-all duration-200 px-6 py-3 rounded-lg flex-1"
+                            size="sm"
                             iconRight={ArrowRight}
+                            onClick={(e) => { e.stopPropagation(); handleLevelSelect(nextLevel.id); }}
                           >
                             {t('learning.continueToLevel', { number: String(nextLevel.number) })}
                           </Button>
                         ) : (
                           <Button
                             variant="primary"
-                            size="md"
+                            size="sm"
+                            iconRight={isLoadingNextLevel ? Loader2 : ArrowRight}
+                            disabled={isLoadingNextLevel}
                             onClick={async (e) => {
                               e.stopPropagation();
                               try {
                                 await handleLoadNextLevel();
-                                setTimeout(() => {
-                                  window.scrollTo({ top: 0, behavior: 'smooth' });
-                                }, 500);
+                                window.scrollTo({ top: 0, behavior: 'smooth' });
                               } catch (error) {
                                 console.error('Failed to load next level:', error);
                               }
                             }}
-                            disabled={isLoadingNextLevel}
-                            className="font-semibold shadow-lg hover:shadow-xl transition-all duration-200 px-6 py-3 rounded-lg flex-1"
-                            iconRight={ArrowRight}
                           >
-                            {isLoadingNextLevel ? (
-                              <>
-                                <Loader2 className="animate-spin mr-2" size={18} />
-                                {t('learning.generatingNextLevel')}
-                              </>
-                            ) : (
-                              t('learning.generateNextLevel')
-                            )}
-                          </Button>
-                        )}
-                        {(entityMode || selectedLevel.review !== undefined || isGeneratingLayerPractice || flatProps?.onGenerateLayerPractice !== undefined) && (
-                          <Button
-                            variant="secondary"
-                            size="md"
-                            onClick={async (e) => {
-                              e.stopPropagation();
-                              setReviewLevelNumber(selectedLevel.number);
-                              setShowReviewModal(true);
-                              if (!selectedLevel.review) {
-                                try {
-                                  await handleGenerateLayerPractice(selectedLevel.number);
-                                } catch (error) {
-                                  console.error('Failed to generate layer practice:', error);
-                                }
-                              }
-                            }}
-                            disabled={isGeneratingLayerPractice}
-                            className="font-semibold shadow-lg hover:shadow-xl transition-all duration-200 px-6 py-3 rounded-lg flex-1"
-                            iconRight={GraduationCap}
-                          >
-                            {isGeneratingLayerPractice ? (
-                              <>
-                                <Loader2 className="animate-spin mr-2" size={18} />
-                                {t('learning.generatingSummary')}
-                              </>
-                            ) : (
-                              t('learning.viewLevelSummary')
-                            )}
+                            {isLoadingNextLevel ? t('learning.generatingNextLevel') : t('learning.generateNextLevel')}
                           </Button>
                         )}
                       </div>
@@ -635,62 +616,6 @@ export const FocusModeTemplate: React.FC<FocusModeTemplateProps> = (props) => {
             </Card>
           )}
 
-          {/* Load Next Level Button */}
-          {selectedLevel && (isSelectedLevelComplete || !nextLevel) && (
-            <Card className="w-full md:max-w-2xl p-3 sm:p-4 md:p-6 mb-3 sm:mb-4 border-2 border-primary bg-surface">
-              <div className="text-center">
-                {isSelectedLevelComplete ? (
-                  <>
-                    <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-success mb-4">
-                      <Check size={24} className="text-white" />
-                    </div>
-                    <Typography variant="h3" className="mb-2">
-                      {t('learning.levelComplete', { number: String(selectedLevel.number) })}
-                    </Typography>
-                    <Typography variant="body" color="muted" className="mb-6">
-                      {nextLevel
-                        ? t('learning.readyToMoveOn', { name: nextLevel.name })
-                        : t('learning.readyToExploreMore')
-                      }
-                    </Typography>
-                  </>
-                ) : (
-                  <>
-                    <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-primary mb-4">
-                      <Sparkles size={24} className="text-primary-foreground" />
-                    </div>
-                    <Typography variant="h3" className="mb-2">
-                      {t('learning.exploreMoreConcepts')}
-                    </Typography>
-                    <Typography variant="body" color="muted" className="mb-6">
-                      {t('learning.generateNextLevelDesc')}
-                    </Typography>
-                  </>
-                )}
-                <Button
-                  variant="primary"
-                  onClick={handleLoadNextLevel}
-                  disabled={isLoadingNextLevel}
-                  iconRight={isLoadingNextLevel ? Loader2 : ArrowRight}
-                  className={cn(
-                    "min-w-[200px]",
-                    isLoadingNextLevel && "opacity-75 cursor-not-allowed"
-                  )}
-                >
-                  {isLoadingNextLevel ? (
-                    <>
-                      <Loader2 size={16} className="inline mr-2 animate-spin" />
-                      {t('learning.loading')}
-                    </>
-                  ) : (
-                    <>
-                      {nextLevel ? t('learning.continueTo', { name: nextLevel.name }) : t('learning.loadNextLevel')}
-                    </>
-                  )}
-                </Button>
-              </div>
-            </Card>
-          )}
         </div>
       </AppLayoutTemplate>
 
