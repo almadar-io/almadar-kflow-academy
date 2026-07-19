@@ -10,6 +10,8 @@ import { apiClient } from '../../../services/apiClient';
 import { auth } from '../../../config/firebase';
 import type {
   LearningPathsSummaryResponse,
+  LearningPathsListParams,
+  LearningPathsListResponse,
   GraphSummary,
   ConceptsByLayerResponse,
   ConceptDetail,
@@ -51,6 +53,22 @@ export const graphQueryApi = {
   getLearningPaths: async (): Promise<LearningPathsSummaryResponse> => {
     const headers = await getAuthHeaders();
     return apiClient.fetch(`${QUERY_BASE_PATH}/learning-paths`, {
+      method: 'GET',
+      headers,
+    });
+  },
+
+  /** Paginated, searchable, filterable learning-path list for the Home card grid. */
+  getLearningPathsList: async (params: LearningPathsListParams): Promise<LearningPathsListResponse> => {
+    const headers = await getAuthHeaders();
+    const qs = new URLSearchParams();
+    if (params.search) qs.set('search', params.search);
+    if (params.sort) qs.set('sort', params.sort);
+    if (params.levelFilter) qs.set('levelFilter', params.levelFilter);
+    if (params.page) qs.set('page', String(params.page));
+    if (params.limit) qs.set('limit', String(params.limit));
+    const query = qs.toString();
+    return apiClient.fetch(`${QUERY_BASE_PATH}/learning-paths/list${query ? `?${query}` : ''}`, {
       method: 'GET',
       headers,
     });

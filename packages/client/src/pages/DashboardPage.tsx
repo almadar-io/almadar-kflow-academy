@@ -16,8 +16,9 @@ import kflowLogo from '../assets/kflow-logo.svg';
 import { DashboardBoardTemplate } from '@design-system/templates/DashboardTemplate/DashboardBoardTemplate';
 import type { DashboardBoardTemplateEntity } from '@design-system/templates/DashboardTemplate/DashboardBoardTemplate';
 import { useAuthContext } from '../features/auth/AuthContext';
-import { useJumpBackIn, JUMP_BACK_IN_QUERY_KEY } from '../features/dashboard/hooks/useJumpBackIn';
+import { JUMP_BACK_IN_QUERY_KEY } from '../features/dashboard/hooks/useJumpBackIn';
 import { useLearningPaths } from '../features/knowledge-graph/hooks/useLearningPaths';
+import { useLearningPathsList } from '../features/knowledge-graph/hooks/useLearningPathsList';
 import { knowledgeGraphKeys } from '../features/knowledge-graph/hooks/queryKeys';
 import { auth } from '../config/firebase';
 import { apiClient } from '../services/apiClient';
@@ -30,7 +31,7 @@ import { useAppDispatch } from '../app/hooks';
 import { setCurrentGraphId } from '../features/knowledge-graph/knowledgeGraphSlice';
 import { graphOperationsStreamingApi } from '../features/knowledge-graph/api/streaming';
 import { GoalForm } from '@design-system/organisms/GoalForm';
-import type { DashboardEntity, DashboardMapLevel } from '@design-system/organisms/DashboardBoard';
+import type { DashboardEntity, DashboardMapLevel, DashboardFilterLabels, DashboardSort, DashboardLevelFilter, DashboardLearningPath } from '@design-system/organisms/DashboardBoard';
 
 const L2_CONCEPT_CAP = 60;
 
@@ -116,8 +117,27 @@ export const DashboardPage: React.FC = () => {
     setIsExpanding(false);
   }, []);
 
-  const { items: jumpBackInItems, isLoading: isLoadingJumpBackIn } = useJumpBackIn();
   const { learningPaths: pathSummaries, loading: pathsLoading, similarity = [], sharedConcepts = [] } = useLearningPaths();
+
+  // Home card grid: server-side search/sort/filter/pagination.
+  const [searchInput, setSearchInput] = useState('');
+  const [search, setSearch] = useState('');
+  const [sort, setSort] = useState<DashboardSort>('recent');
+  const [levelFilter, setLevelFilter] = useState<DashboardLevelFilter>('all');
+  const PAGE_LIMIT = 9;
+
+  // Debounce the search box (300ms) so each keystroke doesn't hit the server.
+  useEffect(() => {
+    const id = setTimeout(() => { setSearch(searchInput); }, 300);
+    return () => clearTimeout(id);
+  }, [searchInput]);
+
+  const list = useLearningPathsList({ search, sort, levelFilter, limit: PAGE_LIMIT });
+  const { fetchNextPage } = list;
+
+  const handleSortChange = useCallback((v: DashboardSort) => { setSort(v); }, []);
+  const handleLevelFilterChange = useCallback((v: DashboardLevelFilter) => { setLevelFilter(v); }, []);
+  const handleLoadMore = useCallback(() => { fetchNextPage(); }, [fetchNextPage]);
 
   // Hero map level: L1 = graph-of-paths, L2 = concepts of the drilled path.
   const [level, setLevel] = useState<DashboardMapLevel>('L1');
@@ -224,20 +244,38 @@ export const DashboardPage: React.FC = () => {
     return m;
   }, [pathSummaries]);
 
-  const learningPaths = useMemo(
+  const pathListItems: DashboardLearningPath[] = useMemo(
     () =>
-      jumpBackInItems
-        .filter(item => item.type === 'learningPath' && item.metadata.graphId)
-        .map(item => ({
-          id: item.id,
-          graphId: item.metadata.graphId ?? item.id,
-          name: item.title,
-          conceptCount: item.metadata.conceptCount ?? 0,
-          levelCount: item.metadata.levelCount ?? 0,
-          description: item.description,
-        })),
-    [jumpBackInItems]
+      list.items.map(p => ({
+        id: p.id,
+        graphId: p.id,
+        name: p.title,
+        conceptCount: p.conceptCount,
+        levelCount: p.levelCount,
+        description: p.description,
+        updatedAt: p.updatedAt,
+      })),
+    [list.items]
   );
+
+  const filterLabels: DashboardFilterLabels = useMemo(() => ({
+    searchPlaceholder: t('dashboard.searchPlaceholder'),
+    all: t('dashboard.filterAll'),
+    one: t('dashboard.filterOne'),
+    twoThree: t('dashboard.filterTwoThree'),
+    fourPlus: t('dashboard.filterFourPlus'),
+    sortLabel: t('dashboard.sortLabel'),
+    results: (count: number) => t('dashboard.resultsCount', { count: String(count) }),
+    range: (s: number, e: number, total: number) => t('dashboard.paginationRange', { start: String(s), end: String(e), total: String(total) }),
+    pageOf: (p: number, total: number) => t('dashboard.pageOf', { page: String(p), total: String(total) }),
+  }), [t]);
+
+  const sortOptions = useMemo(() => [
+    { value: 'recent', label: t('dashboard.sortRecent') },
+    { value: 'oldest', label: t('dashboard.sortOldest') },
+    { value: 'az', label: t('dashboard.sortAz') },
+    { value: 'za', label: t('dashboard.sortZa') },
+  ], [t]);
 
   const l1KnowledgeMap = useMemo((): DashboardEntity['knowledgeMap'] => {
     if (!pathMap || pathMap.nodes.length === 0) return undefined;
@@ -253,9 +291,35 @@ export const DashboardPage: React.FC = () => {
       ? !!selectedGraphId && l2Loading && !conceptMap
       : pathsLoading && !l1KnowledgeMap;
 
+  const stats: DashboardEntity['stats'] = useMemo(() => {
+    const pathCount = pathSummaries.length;
+    const conceptTotal = pathSummaries.reduce((sum, p) => sum + (p.conceptCount ?? 0), 0);
+    const levelTotal = pathSummaries.reduce((sum, p) => sum + (p.levelCount ?? 0), 0);
+    return [
+      { value: pathCount, label: t('dashboard.statPaths'), icon: 'paths' as const },
+      { value: conceptTotal, label: t('dashboard.statConcepts'), icon: 'concepts' as const },
+      { value: levelTotal, label: t('dashboard.statLevels'), icon: 'levels' as const },
+    ];
+  }, [pathSummaries, t]);
+
   const dashboard: DashboardEntity = {
     welcomeName: user?.displayName?.split(' ')[0] ?? t('nav.user'),
-    learningPaths,
+    stats,
+    pathList: {
+      items: pathListItems,
+      total: list.total,
+      totalPages: list.totalPages,
+      isLoading: list.isLoading,
+      isLoadingMore: list.isFetchingNextPage,
+      hasMore: list.hasNextPage,
+    },
+    filter: { search, sort, levelFilter },
+    onSearchChange: setSearchInput,
+    onSortChange: handleSortChange,
+    onLevelFilterChange: handleLevelFilterChange,
+    onLoadMore: handleLoadMore,
+    filterLabels,
+    sortOptions,
     knowledgeMap,
     pathMeta,
     l2Concepts: level === 'L2' && selectedGraphId
@@ -291,7 +355,7 @@ export const DashboardPage: React.FC = () => {
 
   return (
     <>
-      <DashboardBoardTemplate entity={entity} isLoading={isLoadingJumpBackIn} />
+      <DashboardBoardTemplate entity={entity} isLoading={pathsLoading} />
       {(showGoalForm || isExpanding) && (
         <Box className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <Overlay onClick={closeGoalModal} />

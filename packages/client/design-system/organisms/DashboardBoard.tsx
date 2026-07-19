@@ -14,9 +14,9 @@
  * - UI:KNOWLEDGE_BACK — user returns from the L2 concept map to the L1 path map, payload: {}
  */
 
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { Plus, Trash2, Brain, BookOpen, X } from 'lucide-react';
+import { Plus, Trash2, Brain, BookOpen, X, Map, Network, Layers } from 'lucide-react';
 import {
   Box,
   VStack,
@@ -24,7 +24,6 @@ import {
   Card,
   Button,
   Typography,
-  SimpleGrid,
   Container,
   Badge,
   EmptyState,
@@ -38,6 +37,9 @@ import {
   type GraphSimilarity,
 } from '@almadar/ui';
 import { ConnectButton } from '../molecules/ConnectButton';
+import { SearchInput } from '../molecules/SearchInput';
+import { FilterBar } from '../molecules/FilterBar';
+import { StatBadge } from '../molecules/StatBadge';
 import { ConceptCard } from './ConceptCard';
 
 export interface DashboardLearningPath {
@@ -47,6 +49,32 @@ export interface DashboardLearningPath {
   conceptCount: number;
   levelCount: number;
   description?: string;
+  updatedAt?: number;
+}
+
+/** Server-paginated learning-path list state for the Home card grid (infinite scroll). */
+export interface DashboardPathList {
+  items: DashboardLearningPath[];
+  total: number;
+  totalPages: number;
+  isLoading?: boolean;
+  isLoadingMore?: boolean;
+  hasMore?: boolean;
+}
+
+export type DashboardLevelFilter = 'all' | '1' | '2-3' | '4plus';
+export type DashboardSort = 'recent' | 'oldest' | 'az' | 'za';
+
+export interface DashboardFilterLabels {
+  searchPlaceholder: string;
+  all: string;
+  one: string;
+  twoThree: string;
+  fourPlus: string;
+  sortLabel: string;
+  results: (count: number) => string;
+  range: (start: number, end: number, total: number) => string;
+  pageOf: (page: number, total: number) => string;
 }
 
 export type DashboardKnowledgeMapNode = GraphNode & {
@@ -56,9 +84,27 @@ export type DashboardKnowledgeMapNode = GraphNode & {
 /** Which level the hero knowledge map is showing. */
 export type DashboardMapLevel = 'L1' | 'L2';
 
+export interface DashboardStat {
+  value: string | number;
+  label: string;
+  icon?: 'paths' | 'concepts' | 'levels';
+}
+
 export interface DashboardEntity {
-  welcomeName: string;
-  learningPaths: DashboardLearningPath[];
+  /** Display name for the welcome heading. */
+  welcomeName?: string;
+  /** Aggregate stats row (Home header). */
+  stats?: DashboardStat[];
+  /** Server-paginated, searchable, filterable learning-path list (Home card grid). */
+  pathList?: DashboardPathList;
+  /** Current filter state + change handlers (page owns the state). */
+  filter?: { search: string; sort: DashboardSort; levelFilter: DashboardLevelFilter };
+  onSearchChange?: (value: string) => void;
+  onSortChange?: (value: DashboardSort) => void;
+  onLevelFilterChange?: (value: DashboardLevelFilter) => void;
+  onLoadMore?: () => void;
+  filterLabels?: DashboardFilterLabels;
+  sortOptions?: Array<{ value: string; label: string }>;
   /** Pre-built knowledge map for the force-directed graph hero */
   knowledgeMap?: {
     nodes: DashboardKnowledgeMapNode[];
@@ -175,10 +221,40 @@ export function DashboardBoard({
   }, [emit, selectedNode, dash]);
 
   const hasMap = (dash?.knowledgeMap?.nodes?.length ?? 0) > 0;
-  const paths = dash?.learningPaths ?? [];
+  const pathList = dash?.pathList;
+  const paths = pathList?.items ?? [];
+  const hasFilter = !!dash?.filter && (dash.filter.search.trim() !== '' || dash.filter.levelFilter !== 'all');
+
+  // Infinite scroll: when the sentinel enters the viewport (with a 200px lead), load the next page.
+  const sentinelRef = useRef<HTMLDivElement>(null);
+  const onLoadMore = dash?.onLoadMore;
+  const canLoadMore = !!pathList?.hasMore && !pathList?.isLoadingMore;
+  useEffect(() => {
+    const el = sentinelRef.current;
+    if (!el || !onLoadMore) return;
+    // The app shell scrolls an inner overflow-y-auto container (not the window);
+    // find the sentinel's nearest scrollable ancestor and listen there.
+    let root: HTMLElement | null = null;
+    let node = el.parentElement;
+    while (node) {
+      const s = getComputedStyle(node);
+      if (/(auto|scroll)/.test(s.overflowY)) { root = node; break; }
+      node = node.parentElement;
+    }
+    const target: HTMLElement | Window = root ?? window;
+    const onScroll = () => {
+      if (!canLoadMore) return;
+      const rect = el.getBoundingClientRect();
+      const bottom = root ? root.getBoundingClientRect().bottom : window.innerHeight;
+      if (rect.top <= bottom + 300) onLoadMore();
+    };
+    onScroll();
+    target.addEventListener('scroll', onScroll, { passive: true });
+    return () => target.removeEventListener('scroll', onScroll);
+  }, [onLoadMore, canLoadMore]);
 
   return (
-    <Container size="lg" padding="sm" className={`py-6 ${className}`}>
+    <Container size="lg" padding="sm" className={`py-4 ${className}`}>
       {/* Selected-node actions: a top section bar on MOBILE only. Desktop has no
           action bar — double-click navigates, single-click just highlights. */}
       {selectedNode && typeof document !== 'undefined' &&
@@ -218,105 +294,178 @@ export function DashboardBoard({
           </Box>,
           document.body
         )}
-      <VStack gap="xl">
-        {/* Welcome */}
-        <Typography variant="h1" className="text-2xl font-bold text-[var(--color-foreground)]">
-          {t('dashboard.welcome', { name: dash?.welcomeName ?? '' })}
-        </Typography>
-
-        {(hasMap || mapLoading) ? (
+      {typeof document !== 'undefined' && createPortal(
+        <Box className="fixed bottom-6 right-6 z-40">
+          <Button
+            onClick={handleCreatePath}
+            variant="primary"
+            icon={Plus}
+            aria-label={t('dashboard.createPath')}
+            style={{ height: '3.5rem', width: '3.5rem' }}
+            className="rounded-full p-0 shadow-lg flex items-center justify-center"
+          />
+        </Box>,
+        document.body,
+      )}
+      <VStack gap="md">
+        {/* Welcome + aggregate stats */}
+        <VStack gap="sm">
+          <HStack justify="between" align="center">
+            {dash?.welcomeName && (
+              <Typography variant="h1" className="text-2xl font-bold text-[var(--color-foreground)]">
+                {t('dashboard.welcome', { name: dash.welcomeName })}
+              </Typography>
+            )}
+            <Button onClick={handleCreatePath} variant="primary" icon={Plus} className="flex items-center gap-2 shrink-0">
+              {t('dashboard.createPath')}
+            </Button>
+          </HStack>
+          {dash?.stats && dash.stats.length > 0 && (
+            <HStack gap="md" wrap>
+              {dash.stats.map((stat, i) => {
+                const iconMap = { paths: Map, concepts: Network, levels: Layers } as const;
+                return (
+                  <StatBadge
+                    key={i}
+                    value={stat.value}
+                    label={stat.label}
+                    icon={stat.icon ? iconMap[stat.icon] : undefined}
+                  />
+                );
+              })}
+            </HStack>
+          )}
+        </VStack>
+        {(hasMap || mapLoading) && (
           <>
             {/* Hero: the knowledge map */}
-            <VStack gap="sm">
+            <VStack gap="sm" className="mt-4">
               <Box className="relative rounded-[var(--radius-lg)] overflow-hidden border border-[var(--color-border)]">
                 {mapLoading || !hasMap ? (
-                  <Box className="flex items-center justify-center" style={{ height: 500 }}>
+                  <Box className="flex items-center justify-center" style={{ height: 420 }}>
                     <Spinner size="lg" />
                   </Box>
                 ) : (
-                  <>
-                    <GraphCanvas
-                      nodes={dash!.knowledgeMap!.nodes}
-                      edges={dash!.knowledgeMap!.edges}
-                      similarity={dash!.knowledgeMap!.similarity}
-                      height={500}
-                      showLabels
-                      interactive
-                      draggable
-                      repulsion={700}
-                      linkDistance={180}
-                      nodeSpacing={48}
-                      selectedNodeId={selectedNode?.id}
-                      onNodeClick={handleKnowledgeNodeClick}
-                      onNodeDoubleClick={handleKnowledgeNodeDoubleClick}
-                      onBadgeClick={handleBadgeClick}
-                      className="w-full"
-                    />
-
-                  </>
+                  <GraphCanvas
+                    nodes={dash!.knowledgeMap!.nodes}
+                    edges={dash!.knowledgeMap!.edges}
+                    similarity={dash!.knowledgeMap!.similarity}
+                    height={420}
+                    showLabels
+                    interactive
+                    draggable
+                    repulsion={700}
+                    linkDistance={180}
+                    nodeSpacing={48}
+                    selectedNodeId={selectedNode?.id}
+                    onNodeClick={handleKnowledgeNodeClick}
+                    onNodeDoubleClick={handleKnowledgeNodeDoubleClick}
+                    onBadgeClick={handleBadgeClick}
+                    className="w-full"
+                  />
                 )}
               </Box>
             </VStack>
 
-            {/* Latest learning paths */}
-            <VStack gap="sm">
-              <HStack justify="between" align="center">
-                <Typography variant="h3" className="text-lg font-semibold text-[var(--color-foreground)]">
-                  {t('dashboard.learningPaths')}
-                </Typography>
-                <Button onClick={handleCreatePath} variant="primary" size="sm" className="flex items-center gap-1">
-                  <Plus size={16} />
-                  {t('dashboard.createPath')}
-                </Button>
-              </HStack>
+            {/* Learning paths: search + filter + paginated grid */}
+            <VStack gap="md">
+              <SearchInput
+                value={dash?.filter?.search ?? ''}
+                onChange={(v) => dash?.onSearchChange?.(v)}
+                placeholder={dash?.filterLabels?.searchPlaceholder ?? ''}
+              />
+              {dash?.filterLabels && dash.sortOptions && dash.filter && (
+                <FilterBar
+                  levelFilter={dash.filter.levelFilter}
+                  onLevelFilterChange={(v) => dash.onLevelFilterChange?.(v)}
+                  sort={dash.filter.sort}
+                  onSortChange={(v) => dash.onSortChange?.(v)}
+                  labels={{
+                    all: dash.filterLabels.all,
+                    one: dash.filterLabels.one,
+                    twoThree: dash.filterLabels.twoThree,
+                    fourPlus: dash.filterLabels.fourPlus,
+                    sortLabel: dash.filterLabels.sortLabel,
+                    results: dash.filterLabels.results,
+                  }}
+                  resultCount={pathList?.total ?? 0}
+                  sortOptions={dash.sortOptions}
+                />
+              )}
 
-              <SimpleGrid minChildWidth="280px" gap="md">
-                {paths.map((path: DashboardLearningPath) => {
-                  const handleClick = () => handlePathClick(path.id, path.graphId);
-                  const meta = dash?.pathMeta?.[path.graphId];
-                  const desc = [
-                    path.description,
-                    `${path.conceptCount} ${t('dashboard.conceptsLabel')}`,
-                    `${path.levelCount} ${t('dashboard.levelsLabel')}`,
-                  ].filter(Boolean).join(' · ');
-                  return (
-                    <ConceptCard
-                      key={path.id}
-                      id={path.id}
-                      name={path.name}
-                      description={desc}
-                      icon={BookOpen}
-                      hideLessonBadge
-                      onClick={handleClick}
-                      onConnect={() => emit('UI:PEER_CONNECT_OPEN', {
-                        nodeKey: `path:${path.name}`,
-                        context: [
-                          'learning path',
-                          meta?.description ? `subject: ${meta.description}` : meta?.title ? `subject: ${meta.title}` : '',
-                          meta?.seedConcept ? `seed concept: ${meta.seedConcept}` : '',
-                        ].filter(Boolean).join('; '),
-                      })}
-                      operations={[
-                        { label: '', icon: Trash2, onClick: () => handleDeletePath(path.id), variant: 'danger' as const },
-                      ]}
-                      className="cursor-pointer"
+              {pathList?.total === 0 ? (
+                hasFilter ? (
+                  <Box className="flex flex-col items-center justify-center py-16 text-center">
+                    <Typography variant="body" color="muted">
+                      {t('dashboard.noResults')}
+                    </Typography>
+                  </Box>
+                ) : (
+                  <Box className="flex items-center justify-center py-12">
+                    <EmptyState
+                      icon={Brain}
+                      title={t('dashboard.noPathsTitle')}
+                      description={t('dashboard.noPathsDesc')}
+                      actionLabel={t('dashboard.createPath')}
+                      onAction={handleCreatePath}
                     />
-                  );
-                })}
-              </SimpleGrid>
+                  </Box>
+                )
+              ) : pathList?.isLoading && paths.length === 0 ? (
+                <Box className="flex items-center justify-center py-16">
+                  <Spinner size="lg" />
+                </Box>
+              ) : (
+                <>
+                  <VStack gap="md">
+                    {paths.map((path: DashboardLearningPath) => {
+                      const handleClick = () => handlePathClick(path.id, path.graphId);
+                      const meta = dash?.pathMeta?.[path.graphId];
+                      const levelWord = path.levelCount === 1 ? t('dashboard.levelSingular') : t('dashboard.levelsLabel');
+                      const conceptWord = path.conceptCount === 1 ? t('dashboard.conceptSingular') : t('dashboard.conceptsLabel');
+                      const meaningfulDesc = path.description && path.description !== path.name
+                        ? path.description
+                        : meta?.seedConcept ? `${t('dashboard.startsWith')}: ${meta.seedConcept}` : undefined;
+                      return (
+                        <ConceptCard
+                          key={path.id}
+                          id={path.id}
+                          name={path.name}
+                          description={meaningfulDesc}
+                          icon={BookOpen}
+                          hideLessonBadge
+                          metaBadges={[
+                            { label: `${path.levelCount} ${levelWord}`, variant: 'primary' },
+                            { label: `${path.conceptCount} ${conceptWord}` },
+                          ]}
+                          onClick={handleClick}
+                          onConnect={() => emit('UI:PEER_CONNECT_OPEN', {
+                            nodeKey: `path:${path.name}`,
+                            context: [
+                              'learning path',
+                              meta?.description ? `subject: ${meta.description}` : meta?.title ? `subject: ${meta.title}` : '',
+                              meta?.seedConcept ? `seed concept: ${meta.seedConcept}` : '',
+                            ].filter(Boolean).join('; '),
+                          })}
+                          operations={[
+                            { label: '', icon: Trash2, onClick: () => handleDeletePath(path.id), variant: 'danger' as const },
+                          ]}
+                          className="cursor-pointer"
+                        />
+                      );
+                    })}
+                  </VStack>
+
+                  {/* Infinite-scroll sentinel */}
+                  {pathList?.hasMore && (
+                    <Box ref={sentinelRef} className="flex items-center justify-center py-8">
+                      {pathList.isLoadingMore && <Spinner size="md" />}
+                    </Box>
+                  )}
+                </>
+              )}
             </VStack>
           </>
-        ) : (
-          /* No knowledge yet — one clear call to generate the first learning path */
-          <Box className="flex-1 flex items-center justify-center min-h-[50vh]">
-            <EmptyState
-              icon={Brain}
-              title={t('dashboard.noPathsTitle')}
-              description={t('dashboard.noPathsDesc')}
-              actionLabel={t('dashboard.createPath')}
-              onAction={handleCreatePath}
-            />
-          </Box>
         )}
       </VStack>
     </Container>

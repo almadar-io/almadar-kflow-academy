@@ -38,6 +38,8 @@ export { useGenerateLayerPractice } from './useGenerateLayerPractice';
 export { useCustomOperation } from './useCustomOperation';
 
 export { useLearningPaths } from './useLearningPaths';
+export { useLearningPathsList } from './useLearningPathsList';
+export type { UseLearningPathsListParams } from './useLearningPathsList';
 export type { UseLearningPathsOptions } from './useLearningPaths';
 export { useGraphSummary } from './useGraphSummary';
 export type { UseGraphSummaryOptions } from './useGraphSummary';

@@ -13,6 +13,9 @@ export const knowledgeGraphKeys = {
   
   // Learning paths
   learningPaths: () => [...knowledgeGraphKeys.all, 'learning-paths'] as const,
+  // Paginated/filtered learning-path list (Home card grid)
+  learningPathsList: (params: { search: string; sort: string; levelFilter: string; page: number; limit: number }) =>
+    [...knowledgeGraphKeys.all, 'learning-paths-list', params] as const,
   
   // Graph-specific keys
   graph: (graphId: string) => [...knowledgeGraphKeys.all, 'graph', graphId] as const,

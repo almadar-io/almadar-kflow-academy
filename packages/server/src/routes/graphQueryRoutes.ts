@@ -21,13 +21,58 @@ import { CACHE_KEYS } from '../services/cacheInvalidation';
 const log = createLogger('kflow:server:routes:graphQueryRoutes');
 const router = Router();
 
+type PathSummary = ReturnType<typeof extractLearningPathSummary> & { levelCount: number };
+
 type LearningPathsPayload = {
-  learningPaths: Array<ReturnType<typeof extractLearningPathSummary> & { levelCount: number }>;
-  /** All-pairs path cosine similarity (0–1) for L1 map layout + clustering. */
+  learningPaths: PathSummary[];
   similarity: PathSimilarityEdge[];
-  /** Pairwise shared-concept overlap (jaccard) — L1 map edges + color clustering. */
   sharedConcepts: SharedConceptEdge[];
 };
+
+/**
+ * Load every learning-path summary for a user (one pass over all graphs), sorted newest-first.
+ * Cached so the canvas (/learning-paths) and the paginated card list (/learning-paths/list)
+ * don't each fan out a getGraph per path.
+ */
+async function loadPathSummaries(uid: string): Promise<{ paths: PathSummary[]; conceptIdsByGraph: Map<string, string[]> }> {
+  const cacheKey = CACHE_KEYS.pathSummaries(uid);
+  const cached = await hybridCache.get<{ paths: PathSummary[]; conceptIdsByGraph: [string, string[]][] }>(cacheKey);
+  if (cached) {
+    return { paths: cached.paths, conceptIdsByGraph: new Map(cached.conceptIdsByGraph) };
+  }
+
+  if (!graphQueryDeps.getAllGraphIds) {
+    return { paths: [], conceptIdsByGraph: new Map() };
+  }
+  const graphIds = await graphQueryDeps.getAllGraphIds(uid);
+
+  const conceptIdsByGraph = new Map<string, string[]>();
+  const paths = (await Promise.all(
+    graphIds.map(async (graphId) => {
+      try {
+        const graph = await graphQueryDeps.accessLayer.getGraph(uid, graphId);
+        conceptIdsByGraph.set(
+          graph.id,
+          (graph.nodeTypes?.Concept ?? []).map((id) => {
+            const node = graph.nodes[id];
+            return node ? canonicalConceptKey(node) : id;
+          }),
+        );
+        return {
+          ...extractLearningPathSummary(graph),
+          levelCount: computeLevelCount(graph),
+        };
+      } catch {
+        return null;
+      }
+    })
+  )).filter((p): p is PathSummary => p !== null);
+
+  paths.sort((a, b) => b.updatedAt - a.updatedAt);
+
+  await hybridCache.set(cacheKey, { paths, conceptIdsByGraph: [...conceptIdsByGraph.entries()] }, CACHE_TTL.LEARNING_PATHS);
+  return { paths, conceptIdsByGraph };
+}
 
 router.use(authenticateFirebase);
 
@@ -48,45 +93,9 @@ router.get('/learning-paths', async (req, res, next) => {
       return;
     }
 
-    if (!graphQueryDeps.getAllGraphIds) {
-      res.status(501).json({ error: 'getAllGraphIds not provided' });
-      return;
-    }
-    const graphIds = await graphQueryDeps.getAllGraphIds(uid);
+    const { paths, conceptIdsByGraph } = await loadPathSummaries(uid);
 
-    const conceptIdsByGraph = new Map<string, string[]>();
-    const paths = (await Promise.all(
-      graphIds.map(async (graphId) => {
-        try {
-          const graph = await graphQueryDeps.accessLayer.getGraph(uid, graphId);
-          // Canonical identity: two concepts with the same canonicalName count as one
-          // shared concept, so the L1 map's overlap edges reflect real overlap.
-          conceptIdsByGraph.set(
-            graph.id,
-            (graph.nodeTypes?.Concept ?? []).map((id) => {
-              const node = graph.nodes[id];
-              return node ? canonicalConceptKey(node) : id;
-            }),
-          );
-          return {
-            ...extractLearningPathSummary(graph),
-            levelCount: computeLevelCount(graph),
-          };
-        } catch {
-          return null;
-        }
-      })
-    )).filter((p): p is NonNullable<typeof p> => p !== null);
-
-    paths.sort((a, b) => b.updatedAt - a.updatedAt);
-
-    // Direct path↔path similarity via embeddings: one batch, all-pairs cosine.
-    // Owned by @almadar-io/knowledge; degrades to [] when no embedding key is set,
-    // replacing the old path↔concept cross-graph proxy (semanticEdges).
     const similarity = await computePathSimilarity(paths);
-
-    // Pairwise shared-concept overlap, computed here where every graph is already loaded —
-    // shipped in the payload so the client doesn't fan out one concept request per path.
     const sharedConcepts = computeSharedConceptEdges(
       paths.map((p) => ({ id: p.id, conceptIds: conceptIdsByGraph.get(p.id) ?? [] })),
     );
@@ -104,6 +113,63 @@ router.get('/learning-paths', async (req, res, next) => {
     next(error);
   }
 });
+
+type SortOption = 'recent' | 'oldest' | 'az' | 'za';
+type LevelFilter = 'all' | '1' | '2-3' | '4plus';
+
+function matchesLevelFilter(levelCount: number, filter: LevelFilter): boolean {
+  switch (filter) {
+    case '1': return levelCount <= 1;
+    case '2-3': return levelCount >= 2 && levelCount <= 3;
+    case '4plus': return levelCount >= 4;
+    default: return true;
+  }
+}
+
+/**
+ * Paginated, searchable, filterable learning-path list for the Home card grid.
+ * Search/sort/filter/pagination applied server-side over the cached summaries.
+ */
+router.get('/learning-paths/list', async (req, res, next) => {
+  try {
+    const uid = graphQueryDeps.getUid(req);
+    const search = typeof req.query.search === 'string' ? req.query.search.trim().toLowerCase() : '';
+    const sort: SortOption = (['recent', 'oldest', 'az', 'za'].includes(req.query.sort as string) ? req.query.sort : 'recent') as SortOption;
+    const levelFilter: LevelFilter = (['all', '1', '2-3', '4plus'].includes(req.query.levelFilter as string) ? req.query.levelFilter : 'all') as LevelFilter;
+    const page = Math.max(1, Number(req.query.page) || 1);
+    const limit = Math.min(48, Math.max(1, Number(req.query.limit) || 9));
+
+    const { paths } = await loadPathSummaries(uid);
+
+    let items = paths;
+    if (levelFilter !== 'all') {
+      items = items.filter((p) => matchesLevelFilter(p.levelCount, levelFilter));
+    }
+    if (search) {
+      items = items.filter((p) => {
+        const haystack = [p.title, p.description, p.seedConcept?.name ?? ''].join(' ').toLowerCase();
+        return haystack.includes(search);
+      });
+    }
+
+    switch (sort) {
+      case 'oldest': items = [...items].sort((a, b) => a.updatedAt - b.updatedAt); break;
+      case 'az': items = [...items].sort((a, b) => a.title.localeCompare(b.title)); break;
+      case 'za': items = [...items].sort((a, b) => b.title.localeCompare(a.title)); break;
+      default: break; // 'recent' — already newest-first from loadPathSummaries
+    }
+
+    const total = items.length;
+    const totalPages = Math.max(1, Math.ceil(total / limit));
+    const start = (page - 1) * limit;
+    const paged = items.slice(start, start + limit);
+
+    res.json({ items: paged, total, page, limit, totalPages });
+  } catch (error) {
+    next(error);
+  }
+});
+
 router.get('/:graphId/summary', createGetGraphSummaryHandler(graphQueryDeps));
 router.get('/:graphId/concepts', createGetConceptsHandler(graphQueryDeps));
 router.get('/:graphId/concepts/:conceptId', createGetConceptDetailHandler(graphQueryDeps));

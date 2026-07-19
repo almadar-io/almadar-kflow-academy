@@ -191,6 +191,25 @@ export interface LearningPathsSummaryResponse {
   sharedConcepts?: SharedConceptEdge[];
 }
 
+export type LearningPathSortOption = 'recent' | 'oldest' | 'az' | 'za';
+export type LearningPathLevelFilter = 'all' | '1' | '2-3' | '4plus';
+
+export interface LearningPathsListParams {
+  search?: string;
+  sort?: LearningPathSortOption;
+  levelFilter?: LearningPathLevelFilter;
+  page?: number;
+  limit?: number;
+}
+
+export interface LearningPathsListResponse {
+  items: LearningPathSummary[];
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
+}
+
 /**
  * Graph Summary (for MentorConceptListPage header)
  */

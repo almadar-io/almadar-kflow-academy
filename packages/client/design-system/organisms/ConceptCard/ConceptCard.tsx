@@ -7,8 +7,9 @@
 
 import React, { useState } from 'react';
 import type { LucideIcon } from 'lucide-react';
-import { ChevronDown, ChevronRight, Edit, Trash2, Plus, BookOpen, Check, Circle } from 'lucide-react';
-import { Alert, Avatar, Badge, Button, ButtonGroup, Card, Icon, ProgressBar, Typography } from '@almadar/ui';
+import { ChevronDown, ChevronRight, Edit, Trash2, Plus, BookOpen, Check, Circle, MoreVertical } from 'lucide-react';
+import { Alert, Avatar, Badge, Button, ButtonGroup, Card, Icon, Menu, ProgressBar, Typography } from '@almadar/ui';
+import type { MenuItem } from '@almadar/ui';
 import { ConnectButton } from '../../molecules/ConnectButton';
 import { cn } from '@utils/theme';
 
@@ -73,10 +74,14 @@ export interface ConceptCardProps {
    */
   isCompleted?: boolean;
   
-  /**
-   * Hide the lesson status badges (Lesson Ready / No Lesson)
-   */
+  /** Hide the lesson status badges (Lesson Ready / No Lesson) */
   hideLessonBadge?: boolean;
+  /**
+   * Custom metadata badges rendered in the same header slot as the lesson-status
+   * badges — lets non-concept cards (e.g. learning-path cards) share the unified
+   * badge rhythm with concept cards. Ignored when empty.
+   */
+  metaBadges?: Array<{ label: string; variant?: 'default' | 'primary' | 'success' }>;
   
   /**
    * Concept icon
@@ -143,6 +148,7 @@ export const ConceptCard: React.FC<ConceptCardProps> = ({
   isCurrent,
   isCompleted,
   hideLessonBadge,
+  metaBadges,
   icon,
   avatar,
   expanded: controlledExpanded,
@@ -186,18 +192,42 @@ export const ConceptCard: React.FC<ConceptCardProps> = ({
       )}
       onClick={onClick}
     >
-      {onConnect && (
-        <ConnectButton
-          iconOnly
-          size="sm"
-          onClick={(e) => {
-            e.stopPropagation();
-            onConnect();
-          }}
-          className="absolute top-2 right-2 z-10 text-muted-foreground hover:text-primary"
-        />
+      {(onConnect || (operations && operations.length > 0)) && (
+        <div className="absolute top-2 right-2 z-10 flex items-center gap-1" onClick={(e) => e.stopPropagation()}>
+          {onConnect && (
+            <ConnectButton
+              iconOnly
+              size="sm"
+              onClick={(e) => {
+                e.stopPropagation();
+                onConnect();
+              }}
+              className="text-muted-foreground hover:text-primary"
+            />
+          )}
+          {operations && operations.length > 0 && (
+            <Menu
+              trigger={
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  icon={MoreVertical}
+                  aria-label="More actions"
+                  className="text-muted-foreground hover:text-foreground h-8 w-8 p-0"
+                />
+              }
+              items={operations.map((op, idx): MenuItem => ({
+                id: `op-${idx}`,
+                label: op.label || (op.icon === Trash2 ? 'Delete' : `Action ${idx + 1}`),
+                icon: op.icon,
+                onClick: () => op.onClick(),
+              }))}
+              position="bottom-right"
+            />
+          )}
+        </div>
       )}
-      <div className="space-y-3">
+      <div className="flex flex-col gap-3 h-full">
         {/* Header */}
         <div className="flex items-start gap-3">
           {hasChildren && (
@@ -308,22 +338,15 @@ export const ConceptCard: React.FC<ConceptCardProps> = ({
           </div>
         )}
 
-        {/* Operations */}
-        {operations && operations.length > 0 && (
-          <div className="flex gap-2 flex-wrap">
-            {operations?.map((op, idx) => (
-              <Button
-                key={idx}
-                variant={op.variant || 'secondary'}
-                size="sm"
-                icon={op.icon}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  op.onClick();
-                }}
-              >
-                {op.label}
-              </Button>
+        {/* Operations rendered as a kebab menu in the top-right (see above). */}
+
+        {/* Metadata badges (e.g. levels/concepts on learning-path cards) — bottom-right */}
+        {metaBadges && metaBadges.length > 0 && (
+          <div className="flex flex-wrap justify-end items-center gap-2 mt-auto pt-1">
+            {metaBadges.map((mb, i) => (
+              <Badge key={i} variant={mb.variant ?? 'default'} size="sm" className="text-xs">
+                {mb.label}
+              </Badge>
             ))}
           </div>
         )}
