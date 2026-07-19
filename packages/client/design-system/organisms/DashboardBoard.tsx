@@ -121,10 +121,17 @@ export function DashboardBoard({
     emit('UI:DELETE_LEARNING_PATH', { pathId });
   }, [emit]);
 
+  // Single-click: on desktop (no action bar) navigate straight to the detail page;
+  // on mobile, select the node so the top action bar (Open/Connect) appears.
   const handleKnowledgeNodeClick = useCallback((node: GraphNode) => {
     const mapNode = node as DashboardKnowledgeMapNode;
-    setSelectedNode(mapNode);
-    emit('UI:KNOWLEDGE_NODE_CLICK', { nodeId: mapNode.id, graphId: mapNode.graphId });
+    const isDesktop = typeof window !== 'undefined' && window.matchMedia('(min-width: 1024px)').matches;
+    if (isDesktop) {
+      emit('UI:KNOWLEDGE_NODE_OPEN', { graphId: mapNode.graphId });
+    } else {
+      setSelectedNode(mapNode);
+      emit('UI:KNOWLEDGE_NODE_CLICK', { nodeId: mapNode.id, graphId: mapNode.graphId });
+    }
   }, [emit]);
 
   // Double-click navigates straight to the graph detail page (no parallel L2 drill).

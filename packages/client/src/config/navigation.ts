@@ -22,7 +22,7 @@ export interface NavigationItem {
  * Main navigation items for authenticated users
  */
 export const mainNavItems: NavigationItem[] = [
-  { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard, href: '/home' },
+  { id: 'home', label: 'Home', icon: LayoutDashboard, href: '/home' },
 ];
 
 /**
