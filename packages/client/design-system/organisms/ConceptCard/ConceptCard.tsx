@@ -9,6 +9,7 @@ import React, { useState } from 'react';
 import type { LucideIcon } from 'lucide-react';
 import { ChevronDown, ChevronRight, Edit, Trash2, Plus, BookOpen, Check, Circle } from 'lucide-react';
 import { Alert, Avatar, Badge, Button, ButtonGroup, Card, Icon, ProgressBar, Typography } from '@almadar/ui';
+import { ConnectButton } from '../../molecules/ConnectButton';
 import { cn } from '@utils/theme';
 
 export interface ConceptCardProps {
@@ -112,6 +113,12 @@ export interface ConceptCardProps {
   }>;
   
   /**
+   * Canonical Connect affordance (G8). When provided, renders a ConnectButton
+   * in the card's action row — the same affordance used everywhere else.
+   */
+  onConnect?: () => void;
+  
+  /**
    * On concept click
    */
   onClick?: () => void;
@@ -141,6 +148,7 @@ export const ConceptCard: React.FC<ConceptCardProps> = ({
   expanded: controlledExpanded,
   onExpandChange,
   operations,
+  onConnect,
   onClick,
   className,
 }) => {
@@ -289,10 +297,10 @@ export const ConceptCard: React.FC<ConceptCardProps> = ({
           </div>
         )}
 
-        {/* Operations */}
-        {operations && operations.length > 0 && (
-          <div className="flex gap-2">
-            {operations.map((op, idx) => (
+        {/* Operations + Connect */
+        {((operations && operations.length > 0) || onConnect) && (
+          <div className="flex gap-2 flex-wrap">
+            {operations?.map((op, idx) => (
               <Button
                 key={idx}
                 variant={op.variant || 'secondary'}
@@ -306,6 +314,15 @@ export const ConceptCard: React.FC<ConceptCardProps> = ({
                 {op.label}
               </Button>
             ))}
+            {onConnect && (
+              <ConnectButton
+                size="sm"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onConnect();
+                }}
+              />
+            )}
           </div>
         )}
 
