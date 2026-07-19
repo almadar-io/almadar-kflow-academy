@@ -15,9 +15,8 @@ import { AppLayoutTemplate } from '../AppLayoutTemplate';
 import { Badge, Button, Card, Modal, Spinner, Typography, useEventBus, useTranslate } from '@almadar/ui';
 import type { DisplayStateProps } from '@almadar/ui';
 import { ConceptCard } from '../../organisms/ConceptCard';
-import { TreeMap, TreeMapNode } from '../../organisms/TreeMap';
 import { LessonPanel } from '../../organisms/LessonPanel';
-import { Check, ArrowRight, GitBranch, List, Sparkles, Loader2, BookOpen, GraduationCap, Info, Flag } from 'lucide-react';
+import { Check, ArrowRight, Sparkles, Loader2, BookOpen, GraduationCap, Info, Flag } from 'lucide-react';
 import { cn } from '@utils/theme';
 import type { LearnTemplateProps, LearnConcept, LearnGoal, LearnLevel, LearnMilestone } from '../LearnTemplates/types';
 import ConceptLoader from '../../organisms/ConceptLoader';
@@ -121,14 +120,6 @@ export const FocusModeTemplate: React.FC<FocusModeTemplateProps> = (props) => {
       emit('UI:CONCEPT_CLICK', { conceptId });
     } else {
       flatProps?.onConceptClick?.(conceptId);
-    }
-  }, [entityMode, emit, flatProps]);
-
-  const handleViewModeChange = useCallback((mode: 'list' | 'mindmap') => {
-    if (entityMode) {
-      emit('UI:VIEW_MODE_CHANGE', { mode });
-    } else {
-      flatProps?.onViewModeChange?.(mode);
     }
   }, [entityMode, emit, flatProps]);
 
@@ -303,36 +294,6 @@ export const FocusModeTemplate: React.FC<FocusModeTemplateProps> = (props) => {
     if (!goal?.milestones) return null;
     return goal.milestones.find(m => m.levelNumber === levelNumber) || null;
   }, [goal?.milestones]);
-
-  // Build mindmap tree structure if in mindmap view
-  const mindmapData: TreeMapNode | null = useMemo(() => {
-    if (viewMode !== 'mindmap') return null;
-    const rootNode: TreeMapNode = {
-      id: 'root',
-      label: goal?.title || 'Learning Path',
-      isRoot: true,
-      children: [
-        ...(seedConcept ? [{
-          id: seedConcept.id,
-          label: seedConcept.name,
-          description: seedConcept.description,
-          color: '#8b5cf6',
-        }] : []),
-        ...levels.map((level) => ({
-          id: level.id,
-          label: level.name,
-          color: level.completed ? '#22c55e' : (level.id === selectedLevelId ? '#6366f1' : undefined),
-          children: level.concepts.map(concept => ({
-            id: concept.id,
-            label: concept.name,
-            description: concept.description,
-            color: concept.hasLesson ? '#10b981' : undefined,
-          })),
-        })),
-      ],
-    };
-    return rootNode;
-  }, [levels, viewMode, goal, seedConcept, selectedLevelId]);
 
   return (
     <>
@@ -525,36 +486,9 @@ export const FocusModeTemplate: React.FC<FocusModeTemplateProps> = (props) => {
                     </Typography>
                   )}
                 </div>
-                <div className="flex items-center gap-1 ml-4 flex-shrink-0">
-                  <button
-                    onClick={() => handleViewModeChange('list')}
-                    className={cn(
-                      "p-2 rounded-md transition-colors",
-                      viewMode === 'list'
-                        ? "bg-primary text-primary-foreground"
-                        : "text-muted-foreground hover:bg-surface-hover"
-                    )}
-                    title={t('learning.listView')}
-                  >
-                    <List size={18} />
-                  </button>
-                  <button
-                    onClick={() => handleViewModeChange('mindmap')}
-                    className={cn(
-                      "p-2 rounded-md transition-colors",
-                      viewMode === 'mindmap'
-                        ? "bg-primary text-primary-foreground"
-                        : "text-muted-foreground hover:bg-surface-hover"
-                    )}
-                    title={t('learning.mindmapView')}
-                  >
-                    <GitBranch size={18} />
-                  </button>
-                </div>
               </div>
 
-              {viewMode === 'list' ? (
-                <div className="space-y-4">
+              <div className="space-y-4">
                   {selectedLevel.concepts.length > 0 ? (
                     selectedLevel.concepts.map((concept, index) => {
                       const isCurrent = concept.isCurrent || (index === 0 && !currentConcept);
@@ -580,6 +514,12 @@ export const FocusModeTemplate: React.FC<FocusModeTemplateProps> = (props) => {
                             prerequisites={concept.prerequisites}
                             parents={concept.parents}
                             onClick={() => handleConceptClick(concept.id)}
+                            onConnect={() => emit('UI:PEER_CONNECT_OPEN', {
+                              nodeKey: `concept:${concept.name}`,
+                              context: goal?.description
+                                ? `subject: ${goal.description}; level ${selectedLevel.number}`
+                                : `level ${selectedLevel.number}`,
+                            })}
                             operations={isCurrent && !isLastInLevel1 ? [
                               {
                                 label: hasLesson ? t('learning.continueLearning') : t('learning.beginLearningJourney'),
@@ -692,30 +632,6 @@ export const FocusModeTemplate: React.FC<FocusModeTemplateProps> = (props) => {
                     </Card>
                   )}
                 </div>
-              ) : (
-                <div className="h-[500px] border border-border rounded-lg">
-                  {mindmapData ? (
-                    <TreeMap
-                      data={mindmapData}
-                      onNodeClick={(nodeId) => {
-                        const level = levels.find(l => l.id === nodeId);
-                        if (level) { handleLevelSelect(level.id); return; }
-                        if (seedConcept && seedConcept.id === nodeId) { handleConceptClick(seedConcept.id); return; }
-                        for (const lvl of levels) {
-                          const concept = lvl.concepts.find(c => c.id === nodeId);
-                          if (concept) { handleConceptClick(concept.id); return; }
-                        }
-                      }}
-                    />
-                  ) : (
-                    <div className="flex items-center justify-center h-full text-muted-foreground">
-                      <Typography variant="body">
-                        {t('learning.noConceptsToDisplay')}
-                      </Typography>
-                    </div>
-                  )}
-                </div>
-              )}
             </Card>
           )}
 
