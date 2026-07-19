@@ -43,6 +43,37 @@ export function looksLikeId(label: string): boolean {
   return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-/i.test(label) || /^\d+$/.test(label);
 }
 
+const PERSONA_SYSTEM_PROMPT =
+  'You identify the single most historically credited HUMAN originator, inventor, or creator of a ' +
+  'learning concept, then greet a learner in their voice. The concept may be a programming language, ' +
+  'framework, library, algorithm, data structure, mathematical/scientific concept, theory, or technique. ' +
+  'Use the Context (learning level + sibling topics / related concepts) to determine the DISCIPLINE and ' +
+  'disambiguate the concept (e.g. "Sets" alongside "Algorithms, Logic" → computer science; "Pony" ' +
+  'alongside "Rust, Go, Elixir" → a programming language → name its creator). ' +
+  'Reply ONLY with compact JSON: ' +
+  '{"name":<a SPECIFIC REAL HUMAN BEING\'s full canonical name as it would title a Wikipedia article, ' +
+  'e.g. "Isaac Newton", "Brendan Eich">,' +
+  '"description":<one sentence, max ~20 words: who they are + key contribution>,' +
+  '"greeting":<one warm first-person sentence, in character, mentioning the concept>}. ' +
+  'HARD RULES: "name" MUST be a human being. It must NEVER be the concept name itself, nor an animal, ' +
+  'object, place, or product. If the concept is an invention, name its inventor/creator. If no single ' +
+  'person is credited, name the most iconic human contributor or the field\'s founder. ' +
+  'Never invent a fictional person.';
+
+/** The model echoed the concept word back as the persona name (e.g. "Pony" → name "Pony"). */
+export function isDegenerate(name: string, conceptLabel: string): boolean {
+  const n = name.toLowerCase().replace(/[^a-z0-9]/g, '');
+  const c = conceptLabel.toLowerCase().replace(/[^a-z0-9]/g, '');
+  return n.length > 0 && n === c;
+}
+
+function buildUserPrompt(conceptLabel: string, context: string | undefined, correction?: string): string {
+  let p = `Concept: ${conceptLabel}`;
+  if (context) p += `\nContext: ${context}`;
+  if (correction) p += `\n\nIMPORTANT: "${correction}" is the concept itself, not a person. You MUST name the real human being who created or pioneered "${conceptLabel}".`;
+  return p;
+}
+
 /**
  * Look up the originator on Wikipedia (one redirect-resolved call): a verified one-line bio,
  * a real Wikimedia Commons portrait, AND the full lead-section biography used to ground the
@@ -99,47 +130,67 @@ export async function generatePersona(conceptLabel: string, context?: string): P
     return { persona: c.persona, greeting: c.greeting };
   }
 
-  const resp = await callLLM({
+  let resp = await callLLM({
     temperature: 0.3,
-    maxTokens: 220,
-    systemPrompt:
-      'You identify the single most historically credited originator or pioneer of a learning ' +
-      'concept, then greet a learner in their voice. Reply ONLY with compact JSON: ' +
-      '{"name":<full canonical name as it would title a Wikipedia article, e.g. "Isaac Newton">,' +
-      '"description":<one sentence, max ~20 words: who they are + key contribution>,' +
-      '"greeting":<one warm first-person sentence, in character, mentioning the concept>}. ' +
-      'If no single person is credited, pick the most iconic figure associated with it. ' +
-      'If the concept is ambiguous (e.g. "Sets", "Functions"), use the field/related concepts ' +
-      'given in Context to pick the originator in the right discipline, and let the learning level ' +
-      'guide the greeting\'s tone (introductory vs advanced). ' +
-      'Never invent a fictional person.',
-    userPrompt: context
-      ? `Concept: ${conceptLabel}\nContext: ${context}`
-      : `Concept: ${conceptLabel}`,
+    maxTokens: 240,
+    systemPrompt: PERSONA_SYSTEM_PROMPT,
+    userPrompt: buildUserPrompt(conceptLabel, context),
   });
-  const obj = extractJSONObject(resp.content);
-  const name = typeof obj.name === 'string' && obj.name.trim() ? obj.name.trim() : conceptLabel;
-  const llmDescription =
+  let obj = extractJSONObject(resp.content);
+  let name = typeof obj.name === 'string' && obj.name.trim() ? obj.name.trim() : '';
+  let llmDescription =
     typeof obj.description === 'string' && obj.description.trim()
       ? obj.description.trim()
       : `A pioneer associated with ${conceptLabel}.`;
-  const greeting =
+  let greeting =
     typeof obj.greeting === 'string' && obj.greeting.trim()
       ? obj.greeting.trim()
-      : `Hello — I'm ${name}. Ask me anything about ${conceptLabel}.`;
+      : `Hello — ask me anything about ${conceptLabel}.`;
 
-  const wiki = await fetchWikiPersona(name);
-  const persona: ConceptPersonaDTO = {
-    name,
-    description: wiki.description ?? llmDescription,
-    portraitUrl: wiki.portraitUrl,
-  };
+  // Degenerate: the model echoed the concept word as the name (e.g. "Pony" → a horse). Retry once
+  // with an explicit correction; if it still can't name a human, fall back to a neutral tutor and
+  // SKIP the Wikipedia lookup so we never render a portrait of the literal concept (no horse).
+  const retried = !name || isDegenerate(name, conceptLabel);
+  let degenerate = retried;
+  if (retried) {
+    log.warn('generatePersona degenerate name — retrying', { conceptLabel, name });
+    resp = await callLLM({
+      temperature: 0.2,
+      maxTokens: 240,
+      systemPrompt: PERSONA_SYSTEM_PROMPT,
+      userPrompt: buildUserPrompt(conceptLabel, context, name || conceptLabel),
+    });
+    obj = extractJSONObject(resp.content);
+    name = typeof obj.name === 'string' && obj.name.trim() ? obj.name.trim() : '';
+    llmDescription =
+      typeof obj.description === 'string' && obj.description.trim()
+        ? obj.description.trim()
+        : `A pioneer associated with ${conceptLabel}.`;
+    greeting =
+      typeof obj.greeting === 'string' && obj.greeting.trim()
+        ? obj.greeting.trim()
+        : `Hello — ask me anything about ${conceptLabel}.`;
+    degenerate = !name || isDegenerate(name, conceptLabel);
+  }
+
+  const wiki = degenerate ? {} : await fetchWikiPersona(name);
+  const persona: ConceptPersonaDTO = degenerate
+    ? {
+        name: `${conceptLabel} Tutor`,
+        description: `Your AI tutor for ${conceptLabel}.`,
+        portraitUrl: undefined,
+      }
+    : {
+        name,
+        description: wiki.description ?? llmDescription,
+        portraitUrl: wiki.portraitUrl,
+      };
   const result: PersonaResult = { persona, greeting };
   const cachedDoc: CachedPersona = { ...result, bio: wiki.bio ?? '', cachedAt: Date.now() };
   await ref.set(cachedDoc).catch((e) =>
     log.warn('concept-persona cache write failed', { error: e instanceof Error ? e.message : String(e) }),
   );
-  log.info('generatePersona FRESH', { conceptLabel, name, hasPortrait: !!persona.portraitUrl, isId: looksLikeId(conceptLabel) });
+  log.info('generatePersona FRESH', { conceptLabel, name: persona.name, retried, degenerate, hasPortrait: !!persona.portraitUrl, isId: looksLikeId(conceptLabel) });
   return result;
 }
 

@@ -162,8 +162,14 @@ export function DashboardBoard({
     const kind = level === 'L1' ? 'path' : 'concept';
     const canonicalId = selectedNode.label;
     if (!canonicalId) return;
-    emit('UI:PEER_CONNECT_OPEN', { nodeKey: `${kind}:${canonicalId}`, context: `knowledge map level ${level}` });
-  }, [emit, level, selectedNode]);
+    const siblings = (dash?.knowledgeMap?.nodes ?? [])
+      .filter((n) => n.id !== selectedNode.id)
+      .map((n) => n.label)
+      .filter(Boolean)
+      .slice(0, 8);
+    const ctx = `knowledge map level ${level}` + (siblings.length ? `; other topics in this map: ${siblings.join(', ')}` : '');
+    emit('UI:PEER_CONNECT_OPEN', { nodeKey: `${kind}:${canonicalId}`, context: ctx });
+  }, [emit, level, selectedNode, dash]);
 
   const handleBack = useCallback(() => {
     setSelectedNode(null);

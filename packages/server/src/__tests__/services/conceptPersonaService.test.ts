@@ -8,7 +8,7 @@
  */
 import { getFirestore } from '@almadar/server';
 import { callLLM } from '../../services/llm';
-import { generatePersona, looksLikeId } from '../../services/conceptPersonaService';
+import { generatePersona, looksLikeId, isDegenerate } from '../../services/conceptPersonaService';
 
 jest.mock('@almadar/server', () => ({ getFirestore: jest.fn() }));
 jest.mock('@almadar/logger', () => ({ createLogger: () => ({ info: jest.fn(), warn: jest.fn(), debug: jest.fn(), error: jest.fn() }) }));
@@ -18,6 +18,20 @@ jest.mock('../../services/llm', () => ({
 }));
 
 const fakeDoc = { get: jest.fn(), set: jest.fn().mockResolvedValue(undefined) };
+
+describe('isDegenerate', () => {
+  it('flags the model echoing the concept word back as the name', () => {
+    expect(isDegenerate('Pony', 'Pony')).toBe(true);
+    expect(isDegenerate('pony', 'Pony')).toBe(true);
+    expect(isDegenerate('JavaScript', 'javascript')).toBe(true);
+  });
+
+  it('passes real human names', () => {
+    expect(isDegenerate('Brendan Eich', 'JavaScript')).toBe(false);
+    expect(isDegenerate('Sylvan Clebsch', 'Pony')).toBe(false);
+    expect(isDegenerate('Isaac Newton', 'Calculus')).toBe(false);
+  });
+});
 
 describe('looksLikeId', () => {
   it('flags UUIDs and numeric ids', () => {
@@ -102,6 +116,42 @@ describe('generatePersona', () => {
     expect(userPrompt).toContain(ctx);
     const sysPrompt = (callLLM as jest.Mock).mock.calls[0][0].systemPrompt as string;
     expect(sysPrompt.toLowerCase()).toContain('context');
+  });
+
+  it('retries once when the model echoes the concept word, then uses the corrected human', async () => {
+    fakeDoc.get.mockResolvedValue({ exists: false });
+    (callLLM as jest.Mock)
+      .mockResolvedValueOnce({ content: JSON.stringify({ name: 'Pony', description: 'x', greeting: 'hi' }) })
+      .mockResolvedValueOnce({
+        content: JSON.stringify({ name: 'Sylvan Clebsch', description: 'Created Pony.', greeting: 'Welcome.' }),
+      });
+    const wikiBody = { query: { pages: { '1': { description: 'British computer scientist', extract: 'Clebsch created the Pony language.' } } } };
+    const fetchMock = jest.fn().mockResolvedValueOnce({ ok: true, json: async () => wikiBody });
+    Object.assign(globalThis, { fetch: fetchMock });
+
+    const result = await generatePersona('Pony', 'knowledge map level L1; other topics: Rust, Go, Elixir');
+
+    expect(result.persona.name).toBe('Sylvan Clebsch');
+    expect(callLLM).toHaveBeenCalledTimes(2);
+    // The correction message was sent on retry.
+    const retryPrompt = (callLLM as jest.Mock).mock.calls[1][0].userPrompt as string;
+    expect(retryPrompt).toContain('not a person');
+  });
+
+  it('falls back to a neutral tutor and skips Wikipedia if the model still cannot name a human', async () => {
+    fakeDoc.get.mockResolvedValue({ exists: false });
+    (callLLM as jest.Mock)
+      .mockResolvedValue({ content: JSON.stringify({ name: 'Pony', description: 'x', greeting: 'hi' }) });
+    const fetchMock = jest.fn();
+    Object.assign(globalThis, { fetch: fetchMock });
+
+    const result = await generatePersona('Pony');
+
+    expect(result.persona.name).toBe('Pony Tutor');
+    expect(result.persona.portraitUrl).toBeUndefined();
+    // No Wikipedia lookup on the literal concept — no horse.
+    expect(fetchMock).not.toHaveBeenCalled();
+    expect(callLLM).toHaveBeenCalledTimes(2);
   });
 
   it('serves a cached persona without calling the LLM again', async () => {
