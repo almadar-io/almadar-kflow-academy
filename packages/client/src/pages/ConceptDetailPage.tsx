@@ -578,7 +578,7 @@ export const ConceptDetailPage: React.FC = () => {
 
       {/* Connect: peers + the always-available AI Tutor for this concept */}
       {conceptNodeKey && (
-        <Box className="fixed bottom-6 left-6 z-40">
+        <Box className="fixed bottom-6 right-6 z-50">
           <Button
             variant="primary"
             icon={Users}
