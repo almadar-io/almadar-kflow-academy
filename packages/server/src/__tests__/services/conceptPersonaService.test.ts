@@ -81,6 +81,29 @@ describe('generatePersona', () => {
     expect(callLLM).toHaveBeenCalledTimes(1);
   });
 
+  it('passes learning context into the LLM prompt for disambiguation', async () => {
+    fakeDoc.get.mockResolvedValueOnce({ exists: false });
+    (callLLM as jest.Mock).mockResolvedValueOnce({
+      content: JSON.stringify({
+        name: 'Georg Cantor',
+        description: 'Founder of set theory.',
+        greeting: "Welcome.",
+      }),
+    });
+    const wikiBody = { query: { pages: { '1': { description: 'German mathematician', extract: 'Cantor founded set theory.' } } } };
+    const fetchMock = jest.fn().mockResolvedValueOnce({ ok: true, json: async () => wikiBody });
+    Object.assign(globalThis, { fetch: fetchMock });
+
+    const ctx = 'learning level 1; related concepts: Logic, Proof Techniques';
+    await generatePersona('Sets', ctx);
+
+    const userPrompt = (callLLM as jest.Mock).mock.calls[0][0].userPrompt as string;
+    expect(userPrompt).toContain('Sets');
+    expect(userPrompt).toContain(ctx);
+    const sysPrompt = (callLLM as jest.Mock).mock.calls[0][0].systemPrompt as string;
+    expect(sysPrompt.toLowerCase()).toContain('context');
+  });
+
   it('serves a cached persona without calling the LLM again', async () => {
     const cached = {
       persona: { name: 'Isaac Newton', description: 'English polymath' },

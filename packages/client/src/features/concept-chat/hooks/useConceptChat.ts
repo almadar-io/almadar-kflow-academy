@@ -18,13 +18,13 @@ export interface UseConceptChat {
  * On-the-fly concept chat: generates the originator persona on open, holds persona +
  * transcript in memory, and replies in character. Stateless server-side by design.
  */
-export function useConceptChat(conceptLabel: string): UseConceptChat {
+export function useConceptChat(conceptLabel: string, context?: string): UseConceptChat {
   const [persona, setPersona] = useState<ConceptPersonaDTO | null>(null);
   const [transcript, setTranscript] = useState<ConceptChatMessageDTO[]>([]);
   const [startError, setStartError] = useState<string | null>(null);
 
   const startMutation = useMutation({
-    mutationFn: () => startConceptChat({ conceptLabel }),
+    mutationFn: () => startConceptChat({ conceptLabel, context }),
     onSuccess: ({ persona: p, greeting }) => {
       setPersona(p);
       setTranscript([{ role: 'assistant', content: greeting }]);

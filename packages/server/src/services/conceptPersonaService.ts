@@ -87,7 +87,7 @@ async function fetchWikiPersona(name: string): Promise<{ description?: string; p
  * calls happen at most once per concept. The client receives the light persona; the full bio
  * stays server-side and grounds every reply.
  */
-export async function generatePersona(conceptLabel: string): Promise<PersonaResult> {
+export async function generatePersona(conceptLabel: string, context?: string): Promise<PersonaResult> {
   if (looksLikeId(conceptLabel)) {
     log.warn('!! concept-chat received an ID/UUID as conceptLabel — client sent an identifier, not a concept name', { conceptLabel });
   }
@@ -109,8 +109,13 @@ export async function generatePersona(conceptLabel: string): Promise<PersonaResu
       '"description":<one sentence, max ~20 words: who they are + key contribution>,' +
       '"greeting":<one warm first-person sentence, in character, mentioning the concept>}. ' +
       'If no single person is credited, pick the most iconic figure associated with it. ' +
+      'If the concept is ambiguous (e.g. "Sets", "Functions"), use the field/related concepts ' +
+      'given in Context to pick the originator in the right discipline, and let the learning level ' +
+      'guide the greeting\'s tone (introductory vs advanced). ' +
       'Never invent a fictional person.',
-    userPrompt: `Concept: ${conceptLabel}`,
+    userPrompt: context
+      ? `Concept: ${conceptLabel}\nContext: ${context}`
+      : `Concept: ${conceptLabel}`,
   });
   const obj = extractJSONObject(resp.content);
   const name = typeof obj.name === 'string' && obj.name.trim() ? obj.name.trim() : conceptLabel;

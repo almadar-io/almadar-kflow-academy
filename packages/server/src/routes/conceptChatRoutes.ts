@@ -18,13 +18,13 @@ router.use(authenticateFirebase);
 
 // POST /api/concept-chat/start — generate the on-the-fly originator persona + greeting.
 router.post('/start', asyncHandler(async (req: Request, res: Response) => {
-  const { conceptLabel } = req.body as StartConceptChatRequest;
-  log.info('concept-chat /start', { conceptLabel, uid: req.firebaseUser?.uid });
+  const { conceptLabel, context } = req.body as StartConceptChatRequest;
+  log.info('concept-chat /start', { conceptLabel, hasContext: !!context, uid: req.firebaseUser?.uid });
   if (!conceptLabel?.trim() || looksLikeId(conceptLabel.trim())) {
     res.status(400).json({ error: 'conceptLabel must be a human-readable concept name' });
     return;
   }
-  const result = await generatePersona(conceptLabel.trim());
+  const result = await generatePersona(conceptLabel.trim(), context?.trim() || undefined);
   const response: StartConceptChatResponse = result;
   res.json(response);
 }));

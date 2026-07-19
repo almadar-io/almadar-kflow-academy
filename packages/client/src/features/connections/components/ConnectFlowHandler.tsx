@@ -14,12 +14,16 @@ export const ConnectFlowHandler: React.FC = () => {
   const { on } = useEventBus();
   const navigate = useNavigateEvent();
   const [nodeKey, setNodeKey] = useState<NodeKey | null>(null);
+  const [connectContext, setConnectContext] = useState<string | undefined>(undefined);
   const [chatLabel, setChatLabel] = useState<string | null>(null);
 
   useEffect(() => {
     const unsub = on('UI:PEER_CONNECT_OPEN', (event) => {
       const nk = event.payload?.nodeKey as NodeKey | undefined;
-      if (nk) setNodeKey(nk);
+      if (nk) {
+        setNodeKey(nk);
+        setConnectContext(typeof event.payload?.context === 'string' ? event.payload.context : undefined);
+      }
     });
     return () => unsub();
   }, [on]);
@@ -43,7 +47,7 @@ export const ConnectFlowHandler: React.FC = () => {
         />
       )}
       {chatLabel && (
-        <ConceptChatModal conceptLabel={chatLabel} onClose={() => setChatLabel(null)} />
+        <ConceptChatModal conceptLabel={chatLabel} context={connectContext} onClose={() => setChatLabel(null)} />
       )}
     </>
   );

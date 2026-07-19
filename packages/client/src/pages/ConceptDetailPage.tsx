@@ -582,7 +582,13 @@ export const ConceptDetailPage: React.FC = () => {
           <Button
             variant="primary"
             icon={Users}
-            onClick={() => emit('UI:PEER_CONNECT_OPEN', { nodeKey: conceptNodeKey })}
+            onClick={() => {
+              const parts: string[] = [];
+              if (concept?.layer != null) parts.push(`learning level ${concept.layer}`);
+              const parents = conceptDetail.conceptDetail?.relationships?.parents?.map(p => p.name).filter(Boolean);
+              if (parents?.length) parts.push(`related concepts: ${parents.slice(0, 6).join(', ')}`);
+              emit('UI:PEER_CONNECT_OPEN', { nodeKey: conceptNodeKey, context: parts.join('; ') || undefined });
+            }}
           >
             {t('connections.connect')}
           </Button>

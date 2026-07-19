@@ -18,6 +18,8 @@ export interface ConceptChatMessageDTO {
 
 export interface StartConceptChatRequest {
   conceptLabel: string;
+  /** Optional learning context (level + related concepts/field) to disambiguate + tailor. */
+  context?: string;
 }
 
 export interface StartConceptChatResponse {

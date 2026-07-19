@@ -16,6 +16,7 @@ import { useConceptChat } from '../../src/features/concept-chat/hooks/useConcept
 
 export interface ConceptChatModalProps {
   conceptLabel: string;
+  context?: string;
   onClose: () => void;
 }
 
@@ -37,9 +38,9 @@ function initialsOf(name: string): string {
  * Always-available concept chat: an on-the-fly AI persona (the concept's originator)
  * generated when the modal opens. Held in memory for the session; no scheduler or pool.
  */
-export const ConceptChatModal: React.FC<ConceptChatModalProps> = ({ conceptLabel, onClose }) => {
+export const ConceptChatModal: React.FC<ConceptChatModalProps> = ({ conceptLabel, context, onClose }) => {
   const { t } = useTranslate();
-  const { persona, transcript, isStarting, isSending, startError, start, send } = useConceptChat(conceptLabel);
+  const { persona, transcript, isStarting, isSending, startError, start, send } = useConceptChat(conceptLabel, context);
   const [draft, setDraft] = useState('');
   const listEndRef = useRef<HTMLDivElement | null>(null);
 

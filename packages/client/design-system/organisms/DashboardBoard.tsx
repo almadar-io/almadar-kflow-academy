@@ -162,7 +162,7 @@ export function DashboardBoard({
     const kind = level === 'L1' ? 'path' : 'concept';
     const canonicalId = selectedNode.label;
     if (!canonicalId) return;
-    emit('UI:PEER_CONNECT_OPEN', { nodeKey: `${kind}:${canonicalId}` });
+    emit('UI:PEER_CONNECT_OPEN', { nodeKey: `${kind}:${canonicalId}`, context: `knowledge map level ${level}` });
   }, [emit, level, selectedNode]);
 
   const handleBack = useCallback(() => {
