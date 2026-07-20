@@ -120,17 +120,11 @@ export const DashboardPage: React.FC = () => {
   const { learningPaths: pathSummaries, loading: pathsLoading, similarity = [], sharedConcepts = [] } = useLearningPaths();
 
   // Home card grid: server-side search/sort/filter/pagination.
-  const [searchInput, setSearchInput] = useState('');
+  // Search debouncing lives in <SearchInput> so keystrokes never re-render the page.
   const [search, setSearch] = useState('');
   const [sort, setSort] = useState<DashboardSort>('recent');
   const [levelFilter, setLevelFilter] = useState<DashboardLevelFilter>('all');
   const PAGE_LIMIT = 9;
-
-  // Debounce the search box (300ms) so each keystroke doesn't hit the server.
-  useEffect(() => {
-    const id = setTimeout(() => { setSearch(searchInput); }, 300);
-    return () => clearTimeout(id);
-  }, [searchInput]);
 
   const list = useLearningPathsList({ search, sort, levelFilter, limit: PAGE_LIMIT });
   const { fetchNextPage } = list;
@@ -314,7 +308,7 @@ export const DashboardPage: React.FC = () => {
       hasMore: list.hasNextPage,
     },
     filter: { search, sort, levelFilter },
-    onSearchChange: setSearchInput,
+    onSearchChange: setSearch,
     onSortChange: handleSortChange,
     onLevelFilterChange: handleLevelFilterChange,
     onLoadMore: handleLoadMore,

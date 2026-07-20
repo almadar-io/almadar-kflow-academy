@@ -15,6 +15,7 @@ import { AppLayoutTemplate } from '../AppLayoutTemplate';
 import { Badge, Box, Button, Card, GraphCanvas, Modal, Spinner, Typography, useEventBus, useTranslate } from '@almadar/ui';
 import type { DisplayStateProps } from '@almadar/ui';
 import { ConceptCard } from '../../organisms/ConceptCard';
+import { GraphHeroTemplate } from '../GraphHeroTemplate';
 import { ConnectButton } from '../../molecules/ConnectButton';
 import { LessonPanel } from '../../organisms/LessonPanel';
 import { Check, ArrowRight, Loader2, BookOpen, GraduationCap, Info, Flag } from 'lucide-react';
@@ -317,13 +318,13 @@ export const FocusModeTemplate: React.FC<FocusModeTemplateProps> = (props) => {
         logo={!entityMode ? (props as LearnTemplateProps).logo : undefined}
         logoSrc={logoSrc}
         brandName={brandName}
-        contentClassName="w-full md:max-w-4xl md:mx-auto"
+        contentClassName="w-full"
         contentPadding={false}
       >
-        <div className="min-h-screen flex flex-col items-center py-2 sm:py-4 md:py-8 px-1 sm:px-2 md:px-4">
-          {/* Goal Header */}
-          {goal && (
-            <div className="text-center mb-3 sm:mb-6 md:mb-8 w-full">
+        <GraphHeroTemplate
+          className="py-2 sm:py-4 md:py-8 px-1 sm:px-2 md:px-4"
+          heroSlot={goal ? (
+            <div className="text-center w-full">
               <div className="flex items-center justify-center gap-2 mb-3">
                 <Typography variant="h1" className="text-2xl sm:text-3xl md:text-4xl font-bold">
                   {goal.title}
@@ -363,14 +364,11 @@ export const FocusModeTemplate: React.FC<FocusModeTemplateProps> = (props) => {
                 />
               </div>
             </div>
-          )}
+          ) : undefined}
 
-          {/* Seed-concept hero: the graph canvas lives inside the seed concept card
-              (one seamless unit). Connect is the top-right icon; the seed highlights
-              green when it has a lesson (visited). */}
-          {(graphNodes.length > 0 || seedConcept) && (
+          canvasSlot={(graphNodes.length > 0 || seedConcept) ? (
             <Card className={cn(
-              'relative w-full md:max-w-4xl mb-4 sm:mb-6 md:mb-8 overflow-hidden animate-slide-up',
+              'relative w-full overflow-hidden animate-slide-up',
               seedConcept?.hasLesson ? 'border-l-4 border-l-success bg-surface' : 'border border-border bg-surface',
             )}>
             {seedConcept && (
@@ -416,11 +414,10 @@ export const FocusModeTemplate: React.FC<FocusModeTemplateProps> = (props) => {
               </Box>
             )}
           </Card>
-          )}
+          ) : undefined}
 
-          {/* Level Navigation */}
-          {levels.length > 1 && (
-            <div className="w-full mb-4 sm:mb-6 md:mb-8 -mx-1 sm:mx-0">
+          toolbarSlot={levels.length > 1 ? (
+            <div className="w-full -mx-1 sm:mx-0">
               <div className="flex items-center gap-1 overflow-x-auto pt-2 pb-2 px-1 sm:px-2 sm:justify-center scrollbar-hide">
                 <div className="flex items-center gap-1 flex-nowrap">
                   {levels.map((level, index) => {
@@ -479,11 +476,10 @@ export const FocusModeTemplate: React.FC<FocusModeTemplateProps> = (props) => {
                 </div>
               </div>
             </div>
-          )}
+          ) : undefined}
 
-          {/* Selected Level Section */}
-          {selectedLevel && (
-            <Card className="w-full md:max-w-2xl p-2 sm:p-4 md:p-6 mb-3 sm:mb-6 md:mb-8">
+          listSlot={selectedLevel ? (
+            <Card className="w-full p-2 sm:p-4 md:p-6">
               <div className="flex items-start justify-between mb-6">
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-2">
@@ -649,9 +645,8 @@ export const FocusModeTemplate: React.FC<FocusModeTemplateProps> = (props) => {
                   )}
                 </div>
             </Card>
-          )}
-
-        </div>
+          ) : undefined}
+        />
       </AppLayoutTemplate>
 
       {/* Goal & Milestone Details Modal */}

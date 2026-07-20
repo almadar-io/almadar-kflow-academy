@@ -52,6 +52,8 @@ export function useLearningPathsList(params: UseLearningPathsListParams) {
     items,
     total: last?.total ?? 0,
     totalPages: last?.totalPages ?? 1,
+    // `isLoading` (RQ: isPending && isFetching) is true only on the first fetch with
+    // no cached data — use it (not total) to gate the skeleton vs. empty state.
     isLoading: query.isLoading,
     isFetchingNextPage: query.isFetchingNextPage,
     hasNextPage: query.hasNextPage,

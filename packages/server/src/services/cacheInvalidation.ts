@@ -36,5 +36,6 @@ export async function invalidateGraphCaches(uid: string, graphId: string): Promi
   await hybridCache.deletePattern(`graphology:${uid}:${graphId}`);
   await hybridCache.deletePattern(CACHE_KEYS.graphQuery(uid, graphId));
   await hybridCache.delete(CACHE_KEYS.learningPaths(uid));
+  await hybridCache.delete(CACHE_KEYS.pathSummaries(uid));
   await invalidateJumpBackIn(uid);
 }

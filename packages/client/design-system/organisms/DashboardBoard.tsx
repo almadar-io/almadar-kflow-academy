@@ -28,6 +28,7 @@ import {
   Badge,
   EmptyState,
   GraphCanvas,
+  Skeleton,
   Spinner,
   useEventBus,
   useTranslate,
@@ -41,6 +42,7 @@ import { SearchInput } from '../molecules/SearchInput';
 import { FilterBar } from '../molecules/FilterBar';
 import { StatBadge } from '../molecules/StatBadge';
 import { ConceptCard } from './ConceptCard';
+import { GraphHeroTemplate } from '../templates/GraphHeroTemplate/GraphHeroTemplate';
 
 export interface DashboardLearningPath {
   id: string;
@@ -307,167 +309,168 @@ export function DashboardBoard({
         </Box>,
         document.body,
       )}
-      <VStack gap="md">
-        {/* Welcome + aggregate stats */}
-        <VStack gap="sm">
-          <HStack justify="between" align="center">
-            {dash?.welcomeName && (
-              <Typography variant="h1" className="text-2xl font-bold text-[var(--color-foreground)]">
-                {t('dashboard.welcome', { name: dash.welcomeName })}
-              </Typography>
-            )}
-            <Button onClick={handleCreatePath} variant="primary" icon={Plus} className="flex items-center gap-2 shrink-0">
-              {t('dashboard.createPath')}
-            </Button>
-          </HStack>
-          {dash?.stats && dash.stats.length > 0 && (
-            <HStack gap="md" wrap>
-              {dash.stats.map((stat, i) => {
-                const iconMap = { paths: Map, concepts: Network, levels: Layers } as const;
-                return (
-                  <StatBadge
-                    key={i}
-                    value={stat.value}
-                    label={stat.label}
-                    icon={stat.icon ? iconMap[stat.icon] : undefined}
-                  />
-                );
-              })}
-            </HStack>
-          )}
-        </VStack>
-        {(hasMap || mapLoading) && (
-          <>
-            {/* Hero: the knowledge map */}
-            <VStack gap="sm" className="mt-4">
-              <Box className="relative rounded-[var(--radius-lg)] overflow-hidden border border-[var(--color-border)]">
-                {mapLoading || !hasMap ? (
-                  <Box className="flex items-center justify-center" style={{ height: 420 }}>
-                    <Spinner size="lg" />
-                  </Box>
-                ) : (
-                  <GraphCanvas
-                    nodes={dash!.knowledgeMap!.nodes}
-                    edges={dash!.knowledgeMap!.edges}
-                    similarity={dash!.knowledgeMap!.similarity}
-                    height={420}
-                    showLabels
-                    interactive
-                    draggable
-                    repulsion={700}
-                    linkDistance={180}
-                    nodeSpacing={48}
-                    selectedNodeId={selectedNode?.id}
-                    onNodeClick={handleKnowledgeNodeClick}
-                    onNodeDoubleClick={handleKnowledgeNodeDoubleClick}
-                    onBadgeClick={handleBadgeClick}
-                    className="w-full"
-                  />
-                )}
-              </Box>
-            </VStack>
-
-            {/* Learning paths: search + filter + paginated grid */}
-            <VStack gap="md">
-              <SearchInput
-                value={dash?.filter?.search ?? ''}
-                onChange={(v) => dash?.onSearchChange?.(v)}
-                placeholder={dash?.filterLabels?.searchPlaceholder ?? ''}
-              />
-              {dash?.filterLabels && dash.sortOptions && dash.filter && (
-                <FilterBar
-                  levelFilter={dash.filter.levelFilter}
-                  onLevelFilterChange={(v) => dash.onLevelFilterChange?.(v)}
-                  sort={dash.filter.sort}
-                  onSortChange={(v) => dash.onSortChange?.(v)}
-                  labels={{
-                    all: dash.filterLabels.all,
-                    one: dash.filterLabels.one,
-                    twoThree: dash.filterLabels.twoThree,
-                    fourPlus: dash.filterLabels.fourPlus,
-                    sortLabel: dash.filterLabels.sortLabel,
-                    results: dash.filterLabels.results,
-                  }}
-                  resultCount={pathList?.total ?? 0}
-                  sortOptions={dash.sortOptions}
-                />
+      <GraphHeroTemplate
+        heroSlot={
+          <VStack gap="sm">
+            <HStack justify="between" align="center">
+              {dash?.welcomeName && (
+                <Typography variant="h1" className="text-2xl font-bold text-[var(--color-foreground)]">
+                  {t('dashboard.welcome', { name: dash.welcomeName })}
+                </Typography>
               )}
-
-              {pathList?.total === 0 ? (
-                hasFilter ? (
-                  <Box className="flex flex-col items-center justify-center py-16 text-center">
-                    <Typography variant="body" color="muted">
-                      {t('dashboard.noResults')}
-                    </Typography>
-                  </Box>
-                ) : (
-                  <Box className="flex items-center justify-center py-12">
-                    <EmptyState
-                      icon={Brain}
-                      title={t('dashboard.noPathsTitle')}
-                      description={t('dashboard.noPathsDesc')}
-                      actionLabel={t('dashboard.createPath')}
-                      onAction={handleCreatePath}
+              <Button onClick={handleCreatePath} variant="primary" icon={Plus} className="flex items-center gap-2 shrink-0">
+                {t('dashboard.createPath')}
+              </Button>
+            </HStack>
+            {dash?.stats && dash.stats.length > 0 && (
+              <HStack gap="md" wrap>
+                {dash.stats.map((stat, i) => {
+                  const iconMap = { paths: Map, concepts: Network, levels: Layers } as const;
+                  return (
+                    <StatBadge
+                      key={i}
+                      value={stat.value}
+                      label={stat.label}
+                      icon={stat.icon ? iconMap[stat.icon] : undefined}
                     />
-                  </Box>
-                )
-              ) : pathList?.isLoading && paths.length === 0 ? (
-                <Box className="flex items-center justify-center py-16">
-                  <Spinner size="lg" />
+                  );
+                })}
+              </HStack>
+            )}
+          </VStack>
+        }
+        canvasSlot={(hasMap || mapLoading) ? (
+          <Card className="relative overflow-hidden border border-[var(--color-border)]">
+            {mapLoading || !hasMap ? (
+              <Box className="flex items-center justify-center" style={{ height: 420 }}>
+                <Spinner size="lg" />
+              </Box>
+            ) : (
+              <GraphCanvas
+                nodes={dash!.knowledgeMap!.nodes}
+                edges={dash!.knowledgeMap!.edges}
+                similarity={dash!.knowledgeMap!.similarity}
+                height={420}
+                showLabels
+                interactive
+                draggable
+                repulsion={700}
+                linkDistance={180}
+                nodeSpacing={48}
+                selectedNodeId={selectedNode?.id}
+                onNodeClick={handleKnowledgeNodeClick}
+                onNodeDoubleClick={handleKnowledgeNodeDoubleClick}
+                onBadgeClick={handleBadgeClick}
+                className="w-full"
+              />
+            )}
+          </Card>
+        ) : undefined}
+        toolbarSlot={(hasMap || mapLoading) ? (
+          <VStack gap="sm">
+            <SearchInput
+              value={dash?.filter?.search ?? ''}
+              onChange={(v) => dash?.onSearchChange?.(v)}
+              placeholder={dash?.filterLabels?.searchPlaceholder ?? ''}
+            />
+            {dash?.filterLabels && dash.sortOptions && dash.filter && (
+              <FilterBar
+                levelFilter={dash.filter.levelFilter}
+                onLevelFilterChange={(v) => dash.onLevelFilterChange?.(v)}
+                sort={dash.filter.sort}
+                onSortChange={(v) => dash.onSortChange?.(v)}
+                labels={{
+                  all: dash.filterLabels.all,
+                  one: dash.filterLabels.one,
+                  twoThree: dash.filterLabels.twoThree,
+                  fourPlus: dash.filterLabels.fourPlus,
+                  sortLabel: dash.filterLabels.sortLabel,
+                  results: dash.filterLabels.results,
+                }}
+                resultCount={pathList?.total ?? 0}
+                sortOptions={dash.sortOptions}
+              />
+            )}
+          </VStack>
+        ) : undefined}
+        listSlot={(hasMap || mapLoading) ? (
+          <Card className="p-2 sm:p-4 md:p-6">
+            {pathList?.isLoading && paths.length === 0 ? (
+              <VStack gap="md">
+                {Array.from({ length: 5 }).map((_, i) => (
+                  <Skeleton key={i} variant="card" />
+                ))}
+              </VStack>
+            ) : pathList?.total === 0 ? (
+              hasFilter ? (
+                <Box className="flex flex-col items-center justify-center py-16 text-center">
+                  <Typography variant="body" color="muted">
+                    {t('dashboard.noResults')}
+                  </Typography>
                 </Box>
               ) : (
-                <>
-                  <VStack gap="md">
-                    {paths.map((path: DashboardLearningPath) => {
-                      const handleClick = () => handlePathClick(path.id, path.graphId);
-                      const meta = dash?.pathMeta?.[path.graphId];
-                      const levelWord = path.levelCount === 1 ? t('dashboard.levelSingular') : t('dashboard.levelsLabel');
-                      const conceptWord = path.conceptCount === 1 ? t('dashboard.conceptSingular') : t('dashboard.conceptsLabel');
-                      const meaningfulDesc = path.description && path.description !== path.name
-                        ? path.description
-                        : meta?.seedConcept ? `${t('dashboard.startsWith')}: ${meta.seedConcept}` : undefined;
-                      return (
-                        <ConceptCard
-                          key={path.id}
-                          id={path.id}
-                          name={path.name}
-                          description={meaningfulDesc}
-                          icon={BookOpen}
-                          hideLessonBadge
-                          metaBadges={[
-                            { label: `${path.levelCount} ${levelWord}`, variant: 'primary' },
-                            { label: `${path.conceptCount} ${conceptWord}` },
-                          ]}
-                          onClick={handleClick}
-                          onConnect={() => emit('UI:PEER_CONNECT_OPEN', {
-                            nodeKey: `path:${path.name}`,
-                            context: [
-                              'learning path',
-                              meta?.description ? `subject: ${meta.description}` : meta?.title ? `subject: ${meta.title}` : '',
-                              meta?.seedConcept ? `seed concept: ${meta.seedConcept}` : '',
-                            ].filter(Boolean).join('; '),
-                          })}
-                          operations={[
-                            { label: '', icon: Trash2, onClick: () => handleDeletePath(path.id), variant: 'danger' as const },
-                          ]}
-                          className="cursor-pointer"
-                        />
-                      );
-                    })}
-                  </VStack>
+                <Box className="flex items-center justify-center py-12">
+                  <EmptyState
+                    icon={Brain}
+                    title={t('dashboard.noPathsTitle')}
+                    description={t('dashboard.noPathsDesc')}
+                    actionLabel={t('dashboard.createPath')}
+                    onAction={handleCreatePath}
+                  />
+                </Box>
+              )
+            ) : (
+              <>
+                <VStack gap="md">
+                  {paths.map((path: DashboardLearningPath) => {
+                    const handleClick = () => handlePathClick(path.id, path.graphId);
+                    const meta = dash?.pathMeta?.[path.graphId];
+                    const levelWord = path.levelCount === 1 ? t('dashboard.levelSingular') : t('dashboard.levelsLabel');
+                    const conceptWord = path.conceptCount === 1 ? t('dashboard.conceptSingular') : t('dashboard.conceptsLabel');
+                    const meaningfulDesc = path.description && path.description !== path.name
+                      ? path.description
+                      : meta?.seedConcept ? `${t('dashboard.startsWith')}: ${meta.seedConcept}` : undefined;
+                    return (
+                      <ConceptCard
+                        key={path.id}
+                        id={path.id}
+                        name={path.name}
+                        description={meaningfulDesc}
+                        icon={BookOpen}
+                        hideLessonBadge
+                        metaBadges={[
+                          { label: `${path.levelCount} ${levelWord}`, variant: 'primary' },
+                          { label: `${path.conceptCount} ${conceptWord}` },
+                        ]}
+                        onClick={handleClick}
+                        onConnect={() => emit('UI:PEER_CONNECT_OPEN', {
+                          nodeKey: `path:${path.name}`,
+                          context: [
+                            'learning path',
+                            meta?.description ? `subject: ${meta.description}` : meta?.title ? `subject: ${meta.title}` : '',
+                            meta?.seedConcept ? `seed concept: ${meta.seedConcept}` : '',
+                          ].filter(Boolean).join('; '),
+                        })}
+                        operations={[
+                          { label: '', icon: Trash2, onClick: () => handleDeletePath(path.id), variant: 'danger' as const },
+                        ]}
+                        className="cursor-pointer"
+                      />
+                    );
+                  })}
+                </VStack>
 
-                  {/* Infinite-scroll sentinel */}
-                  {pathList?.hasMore && (
-                    <Box ref={sentinelRef} className="flex items-center justify-center py-8">
-                      {pathList.isLoadingMore && <Spinner size="md" />}
-                    </Box>
-                  )}
-                </>
-              )}
-            </VStack>
-          </>
-        )}
-      </VStack>
+                {/* Infinite-scroll sentinel */}
+                {pathList?.hasMore && (
+                  <Box ref={sentinelRef} className="flex items-center justify-center py-8">
+                    {pathList.isLoadingMore && <Spinner size="md" />}
+                  </Box>
+                )}
+              </>
+            )}
+          </Card>
+        ) : undefined}
+      />
     </Container>
   );
 }

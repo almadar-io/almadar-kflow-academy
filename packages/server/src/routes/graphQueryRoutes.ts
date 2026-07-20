@@ -8,6 +8,7 @@ import {
   computePathSimilarity,
   computeSharedConceptEdges,
   canonicalConceptKey,
+  rankPathsByQuery,
   type PathSimilarityEdge,
   type SharedConceptEdge,
 } from '@almadar-io/knowledge/server';
@@ -133,7 +134,7 @@ function matchesLevelFilter(levelCount: number, filter: LevelFilter): boolean {
 router.get('/learning-paths/list', async (req, res, next) => {
   try {
     const uid = graphQueryDeps.getUid(req);
-    const search = typeof req.query.search === 'string' ? req.query.search.trim().toLowerCase() : '';
+    const search = typeof req.query.search === 'string' ? req.query.search.trim() : '';
     const sort: SortOption = (['recent', 'oldest', 'az', 'za'].includes(req.query.sort as string) ? req.query.sort : 'recent') as SortOption;
     const levelFilter: LevelFilter = (['all', '1', '2-3', '4plus'].includes(req.query.levelFilter as string) ? req.query.levelFilter : 'all') as LevelFilter;
     const page = Math.max(1, Number(req.query.page) || 1);
@@ -145,18 +146,23 @@ router.get('/learning-paths/list', async (req, res, next) => {
     if (levelFilter !== 'all') {
       items = items.filter((p) => matchesLevelFilter(p.levelCount, levelFilter));
     }
-    if (search) {
-      items = items.filter((p) => {
-        const haystack = [p.title, p.description, p.seedConcept?.name ?? ''].join(' ').toLowerCase();
-        return haystack.includes(search);
-      });
-    }
 
-    switch (sort) {
-      case 'oldest': items = [...items].sort((a, b) => a.updatedAt - b.updatedAt); break;
-      case 'az': items = [...items].sort((a, b) => a.title.localeCompare(b.title)); break;
-      case 'za': items = [...items].sort((a, b) => b.title.localeCompare(a.title)); break;
-      default: break; // 'recent' — already newest-first from loadPathSummaries
+    if (search) {
+      // Semantic search: embed the query, find the closest concept/goal/lesson nodes across
+      // the in-scope graphs, and rank paths by their best-matching node's score. Relevance
+      // defines the order during search (the sort dropdown is a no-op while searching).
+      const ranking = await rankPathsByQuery(graphQueryDeps.accessLayer.getVectorService(), items.map((p) => p.id), search);
+      const byId = new Map(items.map((p) => [p.id, p] as const));
+      items = ranking.rankedGraphIds
+        .map((gid) => byId.get(gid))
+        .filter((p): p is PathSummary => p !== undefined);
+    } else {
+      switch (sort) {
+        case 'oldest': items = [...items].sort((a, b) => a.updatedAt - b.updatedAt); break;
+        case 'az': items = [...items].sort((a, b) => a.title.localeCompare(b.title)); break;
+        case 'za': items = [...items].sort((a, b) => b.title.localeCompare(a.title)); break;
+        default: break; // 'recent' — already newest-first from loadPathSummaries
+      }
     }
 
     const total = items.length;

@@ -2,6 +2,7 @@ import React from 'react';
 import { Button } from '@almadar/ui';
 import { useTranslate } from '@almadar/ui';
 import { MessageCircle, type LucideIcon } from 'lucide-react';
+import { cn } from '@utils/theme';
 
 export interface ConnectButtonProps extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, 'onClick'> {
   /** Click handler — call sites emit UI:PEER_CONNECT_OPEN here. */
@@ -40,8 +41,14 @@ export const ConnectButton: React.FC<ConnectButtonProps> = ({
         size={size}
         icon={Icon}
         onClick={onClick}
-        className={className}
         aria-label={text}
+        className={cn(
+          className,
+          // Own the hover treatment so the icon stays visible: the ghost variant
+          // fills the button with primary on hover, so the icon must flip to
+          // primary-foreground (not primary, which would vanish on primary bg).
+          'hover:!bg-primary hover:!border-primary hover:!text-primary-foreground',
+        )}
         {...rest}
       />
     );

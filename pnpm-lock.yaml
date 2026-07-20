@@ -43,8 +43,8 @@ importers:
   packages/client:
     dependencies:
       '@almadar-io/knowledge':
-        specifier: ^2.0.1
-        version: 2.0.1(@almadar/core@10.28.0)(@almadar/llm@2.34.0(@almadar/core@10.28.0)(@opentelemetry/api@1.9.1)(ws@8.21.0))(@almadar/server@2.25.0(express@4.22.2))(express@4.22.2)
+        specifier: ^2.0.5
+        version: 2.0.5(@almadar/core@10.28.0)(@almadar/llm@2.34.0(@almadar/core@10.28.0)(@opentelemetry/api@1.9.1)(ws@8.21.0))(@almadar/server@2.25.0(express@4.22.2))(express@4.22.2)
       '@almadar/core':
         specifier: ^10.28.0
         version: 10.28.0
@@ -203,8 +203,8 @@ importers:
   packages/server:
     dependencies:
       '@almadar-io/knowledge':
-        specifier: ^2.0.1
-        version: 2.0.1(@almadar/core@10.28.0)(@almadar/llm@2.34.0(@almadar/core@10.28.0)(@opentelemetry/api@1.9.1)(ws@8.21.0))(@almadar/server@2.25.0(express@4.22.2))(express@4.22.2)
+        specifier: ^2.0.5
+        version: 2.0.5(@almadar/core@10.28.0)(@almadar/llm@2.34.0(@almadar/core@10.28.0)(@opentelemetry/api@1.9.1)(ws@8.21.0))(@almadar/server@2.25.0(express@4.22.2))(express@4.22.2)
       '@almadar/core':
         specifier: ^10.28.0
         version: 10.28.0
@@ -339,6 +339,17 @@ packages:
 
   '@almadar-io/knowledge@2.0.1':
     resolution: {integrity: sha512-PHci1qE3qUAHj73z644KFx3HOuB9x1Y/pCqQvo2rDP0tJ22wTptdAT779PkTwWv/xwBVmzNDsxur9mhS6ZIVkw==, tarball: https://npm.pkg.github.com/download/@almadar-io/knowledge/2.0.1/d9ef2a162e8ad613b785ab18908113172087a3c5}
+    peerDependencies:
+      '@almadar/core': ^10.28.0
+      '@almadar/llm': ^2.34.0
+      '@almadar/server': ^2.24.0
+      express: '>=4.0.0'
+    peerDependenciesMeta:
+      express:
+        optional: true
+
+  '@almadar-io/knowledge@2.0.5':
+    resolution: {integrity: sha512-36OBhvGt3D/PCwoXWK6XQSu1cH2RG3ElPJft5l3P842JlmtnFexvpSt0zYlZfv98P/Mllv8L++fGc12QASE6Bw==, tarball: https://npm.pkg.github.com/download/@almadar-io/knowledge/2.0.5/bb1b3c325180a082eb899331f52f77cca12dc84f}
     peerDependencies:
       '@almadar/core': ^10.28.0
       '@almadar/llm': ^2.34.0
@@ -5843,16 +5854,30 @@ snapshots:
       '@almadar/llm': 2.34.0(@almadar/core@10.28.0)(@opentelemetry/api@1.9.1)(ws@8.21.0)
       '@almadar/logger': 1.9.0
       '@almadar/server': 2.25.0(express@4.22.2)
-      express: 4.22.2
       graphology: 0.26.0(graphology-types@0.24.8)
       graphology-shortest-path: 2.1.0(graphology-types@0.24.8)
       graphology-types: 0.24.8
       zod: 3.25.76
+    optionalDependencies:
+      express: 4.22.2
 
   '@almadar-io/knowledge@2.0.1(@almadar/core@10.29.0)(@almadar/llm@2.34.0(@almadar/core@10.29.0)(@opentelemetry/api@1.9.1)(ws@8.21.0))(@almadar/server@2.25.0(express@4.22.2))(express@4.22.2)':
     dependencies:
       '@almadar/core': 10.29.0
       '@almadar/llm': 2.34.0(@almadar/core@10.29.0)(@opentelemetry/api@1.9.1)(ws@8.21.0)
+      '@almadar/logger': 1.9.0
+      '@almadar/server': 2.25.0(express@4.22.2)
+      graphology: 0.26.0(graphology-types@0.24.8)
+      graphology-shortest-path: 2.1.0(graphology-types@0.24.8)
+      graphology-types: 0.24.8
+      zod: 3.25.76
+    optionalDependencies:
+      express: 4.22.2
+
+  '@almadar-io/knowledge@2.0.5(@almadar/core@10.28.0)(@almadar/llm@2.34.0(@almadar/core@10.28.0)(@opentelemetry/api@1.9.1)(ws@8.21.0))(@almadar/server@2.25.0(express@4.22.2))(express@4.22.2)':
+    dependencies:
+      '@almadar/core': 10.28.0
+      '@almadar/llm': 2.34.0(@almadar/core@10.28.0)(@opentelemetry/api@1.9.1)(ws@8.21.0)
       '@almadar/logger': 1.9.0
       '@almadar/server': 2.25.0(express@4.22.2)
       express: 4.22.2

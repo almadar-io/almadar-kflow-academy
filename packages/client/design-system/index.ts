@@ -19,3 +19,5 @@ export { MarkdownContent, type MarkdownContentProps } from "@almadar/ui";
 export { CodeRunnerPanel } from "@almadar/ui";
 export type { CodeSimulationOutput, CodeRunnerPanelProps } from "@almadar/ui";
 export { AppShellTemplate } from "./templates/AppShellTemplate";
+export { GraphHeroTemplate } from "./templates/GraphHeroTemplate";
+export type { GraphHeroTemplateProps } from "./templates/GraphHeroTemplate";
