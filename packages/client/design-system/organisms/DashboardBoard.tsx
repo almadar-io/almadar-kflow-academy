@@ -41,7 +41,7 @@ import { ConnectButton } from '../molecules/ConnectButton';
 import { SearchInput } from '../molecules/SearchInput';
 import { FilterBar } from '../molecules/FilterBar';
 import { StatBadge } from '../molecules/StatBadge';
-import { ConceptCard } from './ConceptCard';
+import { LearningPathCard } from './LearningPathCard';
 import { GraphHeroTemplate } from '../templates/GraphHeroTemplate/GraphHeroTemplate';
 
 export interface DashboardLearningPath {
@@ -431,10 +431,11 @@ export function DashboardBoard({
                       ? path.description
                       : meta?.seedConcept ? `${t('dashboard.startsWith')}: ${meta.seedConcept}` : undefined;
                     return (
-                      <ConceptCard
+                      <LearningPathCard
                         key={path.id}
                         id={path.id}
                         name={path.name}
+                        imageKey={meta?.seedConcept}
                         description={meaningfulDesc}
                         icon={BookOpen}
                         hideLessonBadge

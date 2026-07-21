@@ -9,6 +9,8 @@ import React, { useState } from 'react';
 import type { LucideIcon } from 'lucide-react';
 import { ChevronDown, ChevronRight, Edit, Trash2, Plus, BookOpen, Check, Circle, MoreVertical } from 'lucide-react';
 import { Alert, Avatar, Badge, Button, ButtonGroup, Card, Icon, Menu, ProgressBar, Typography, useTranslate } from '@almadar/ui';
+import { Icon as IconifyIcon } from '@iconify/react';
+import type { ConceptIcon } from '@features/knowledge-graph/hooks/useConceptIcon';
 import type { MenuItem } from '@almadar/ui';
 import { ConnectButton } from '../../molecules/ConnectButton';
 import { cn } from '@utils/theme';
@@ -87,6 +89,12 @@ export interface ConceptCardProps {
    * Concept icon
    */
   icon?: LucideIcon;
+
+  /**
+   * Iconify icon (id + color tone) for the topic's logo/representative icon. Rendered in
+   * its original colors on a contrasting circle background chosen by `tone`.
+   */
+  iconifyIcon?: ConceptIcon;
   
   /**
    * Concept avatar
@@ -150,6 +158,7 @@ export const ConceptCard: React.FC<ConceptCardProps> = ({
   hideLessonBadge,
   metaBadges,
   icon,
+  iconifyIcon,
   avatar,
   expanded: controlledExpanded,
   onExpandChange,
@@ -257,10 +266,17 @@ export const ConceptCard: React.FC<ConceptCardProps> = ({
                 isCompleted && "bg-success text-success-foreground",
                 isCurrent && !isCompleted && "bg-primary text-primary-foreground",
                 isHighlighted && !isCompleted && !isCurrent && "bg-success text-success-foreground",
-                !isHighlighted && !isCompleted && !isCurrent && "bg-muted text-muted-foreground"
+                iconifyIcon && !isCompleted && (
+                  iconifyIcon.tone === 'themed' ? "bg-surface text-primary"
+                  : iconifyIcon.tone === 'light' ? "bg-slate-900"
+                  : "bg-white"
+                ),
+                !isHighlighted && !isCompleted && !isCurrent && !iconifyIcon && "bg-muted text-muted-foreground"
               )}>
                 {isCompleted ? (
                   <Check size={18} />
+                ) : iconifyIcon ? (
+                  <IconifyIcon icon={iconifyIcon.icon} width={18} height={18} />
                 ) : isHighlighted ? (
                   <BookOpen size={16} />
                 ) : (
@@ -275,6 +291,7 @@ export const ConceptCard: React.FC<ConceptCardProps> = ({
                 alt={avatar.alt}
                 initials={avatar.initials}
                 size="md"
+                className="rounded-full"
               />
             )}
 

@@ -20,6 +20,7 @@
     "@almadar/syntax": "^1.11.0",
     "@almadar/ui": "^5.121.4",
     "@apollo/client": "^3.14.0",
+    "@iconify/react": "^6.0.2",
     "@kflow-academy/shared": "workspace:*",
     "@react-three/drei": "^10.7.7",
     "@react-three/fiber": "^9.5.0",

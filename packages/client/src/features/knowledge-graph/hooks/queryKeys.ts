@@ -13,8 +13,8 @@ export const knowledgeGraphKeys = {
   
   // Learning paths
   learningPaths: () => [...knowledgeGraphKeys.all, 'learning-paths'] as const,
-  // Concept topic image (Wikipedia lead image, cached server-side)
-  conceptImage: (label: string) => [...knowledgeGraphKeys.all, 'concept-image', label] as const,
+  // Concept topic icon (Iconify devicon logo / representative icon, cached server-side)
+  conceptIcon: (label: string) => [...knowledgeGraphKeys.all, 'concept-icon', label] as const,
   // Paginated/filtered learning-path list (Home card grid)
   learningPathsList: (params: { search: string; sort: string; levelFilter: string; page: number; limit: number }) =>
     [...knowledgeGraphKeys.all, 'learning-paths-list', params] as const,
