@@ -18,7 +18,7 @@
     "@almadar/logger": "^1.9.0",
     "@almadar/sdk": "^0.2.4",
     "@almadar/syntax": "^1.11.0",
-    "@almadar/ui": "^5.122.5",
+    "@almadar/ui": "^5.122.7",
     "@apollo/client": "^3.14.0",
     "@iconify/react": "^6.0.2",
     "@kflow-academy/shared": "workspace:*",

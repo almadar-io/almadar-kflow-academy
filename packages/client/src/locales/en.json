@@ -1,12 +1,13 @@
 {
-  "$meta": { "locale": "en", "direction": "ltr" },
+  "$meta": {
+    "locale": "en",
+    "direction": "ltr"
+  },
   "$extends": "@almadar/ui",
-
   "adventure.level": "Level",
   "adventure.movement": "Movement",
   "adventure.objective": "Objective",
   "adventure.reachGoal": "Navigate your hero to the goal",
-
   "knowledge.graph": "Knowledge Graph",
   "knowledge.concept": "Concept",
   "knowledge.layer": "Layer",
@@ -180,9 +181,7 @@
   "catalog.all": "All",
   "catalog.noStories": "No stories found in this category",
   "catalog.series": "Series",
-
   "creator.seriesCount": "{{count}} series",
-
   "battle.answerCorrectly": "Answer correctly to deal damage",
   "battle.claimReward": "Claim Reward",
   "battle.combatLog": "Combat Log",
@@ -192,23 +191,19 @@
   "battle.turn": "Turn {{current}}",
   "battle.victory": "Victory!",
   "battle.wrongAnswer": "Wrong answer",
-
   "bloom.question": "Question",
-
   "challenge.hint": "Hint",
   "challenge.reward": "Reward",
   "challenge.tier.battle": "Battle",
   "challenge.tier.eventHandler": "Event Handler",
   "challenge.tier.sequencer": "Sequencer",
   "challenge.tier.stateArchitect": "State Architect",
-
   "concept.layer": "Layer",
   "concept.level": "Level",
   "concept.practice": "Practice",
   "concept.tab.lesson": "Lesson",
   "concept.tab.overview": "Overview",
   "concept.tab.practice": "Practice",
-
   "daily.allCaughtUp": "All caught up!",
   "daily.challenges": "Challenges",
   "daily.explored": "Explored",
@@ -224,13 +219,11 @@
   "daily.title": "Today",
   "daily.whatsNext": "What's Next",
   "daily.worldMap": "World Map",
-
   "discoveries.bonus": "Bonus",
   "discoveries.new": "New",
   "discoveries.noDiscoveries": "No discoveries yet",
   "discoveries.noDiscoveriesDesc": "Keep exploring to find cross-domain connections.",
   "discoveries.title": "Discoveries",
-
   "explorer.completion": "Completion",
   "explorer.generateStory": "Generate a story",
   "explorer.noSubjects": "No subjects found",
@@ -240,11 +233,9 @@
   "explorer.subtitle": "Explore knowledge domains",
   "explorer.title": "Explorer",
   "explorer.weakest": "Weakest",
-
   "flashcard.cardProgress": "Card Progress",
   "flashcard.completedAllCards": "You completed all cards!",
   "flashcard.studiedCount": "{{count}} studied",
-
   "path.depth": "Depth",
   "path.from": "From",
   "path.noPath": "No learning path",
@@ -253,7 +244,6 @@
   "path.stepsLabel": "{{count}} steps",
   "path.title": "Learning Path",
   "path.to": "To",
-
   "physics.availablePresets": "Available Presets",
   "physics.labTitle": "Physics Lab",
   "physics.measurements": "Measurements",
@@ -261,13 +251,11 @@
   "physics.running": "Running",
   "physics.selectPreset": "Select a preset",
   "physics.target": "Target",
-
   "review.reviewed": "Reviewed",
   "review.sessionComplete": "Session complete!",
   "review.showAnswer": "Show Answer",
   "review.skipped": "Skipped",
   "review.title": "Review",
-
   "episode.backToSeries": "Back to Series",
   "episode.continue": "Continue",
   "episode.continueStory": "Continue",
@@ -276,7 +264,6 @@
   "episode.nextSeason": "Next Season",
   "episode.seriesComplete": "Series Complete!",
   "episode.storyCount": "{{count}} stories",
-
   "nav.dashboard": "Home",
   "nav.explore": "Explore",
   "nav.knowledge": "Knowledge",
@@ -287,11 +274,9 @@
   "nav.signOut": "Sign Out",
   "nav.stories": "Stories",
   "nav.user": "User",
-
   "sidebar.expand": "Expand sidebar",
   "sidebar.collapse": "Collapse sidebar",
   "sidebar.close": "Close sidebar",
-
   "story.battleDefeat": "Defeated! Try again?",
   "story.browseCatalog": "Browse Stories",
   "story.browsePrompt": "Browse the catalog to start a new story.",
@@ -308,9 +293,7 @@
   "story.scrollToBegin": "Scroll to begin",
   "story.series": "Series",
   "story.wantMore": "Want More?",
-
   "season.tabLabel": "S{{number}}: {{title}}{{completion}}",
-
   "series.completion": "Complete",
   "series.duration": "Duration",
   "series.durationHoursMinutes": "{{hours}}h {{minutes}}m",
@@ -325,14 +308,12 @@
   "series.subscribe": "Subscribe",
   "series.subscribers": "{{count}} subscribers",
   "series.unsubscribe": "Unsubscribe",
-
   "streaming.estimatedTime": "Estimated Time",
   "streaming.hours": "hours",
   "streaming.milestones": "Milestones",
   "streaming.showRawJson": "Show Raw JSON",
   "streaming.target": "Target",
   "streaming.type": "Type",
-
   "subject.allConcepts": "All Concepts",
   "subject.depth": "Depth",
   "subject.depthDistribution": "Depth Distribution",
@@ -348,7 +329,6 @@
   "subject.resources": "Resources",
   "subject.topLevelConcepts": "Top-level Concepts",
   "subject.tree": "Tree",
-
   "worldMap.challenge": "Challenge",
   "worldMap.challenges": "Challenges",
   "worldMap.challengesTitle": "Region Challenges",
@@ -360,7 +340,6 @@
   "worldMap.natural": "Natural",
   "worldMap.social": "Social",
   "worldMap.start": "Start",
-
   "dashboard.achievements": "Achievements",
   "dashboard.back": "Back",
   "dashboard.open": "Open",
@@ -402,7 +381,6 @@
   "dashboard.statPaths": "Learning Paths",
   "dashboard.statConcepts": "Concepts",
   "dashboard.statLevels": "Levels",
-
   "learn.concepts": "{{count}} concepts",
   "learn.createPath": "New Path",
   "learn.deleteError": "Failed to delete learning path. Please try again.",
@@ -418,7 +396,6 @@
   "learn.retry": "Retry",
   "learn.subtitle": "Explore knowledge through structured learning paths",
   "learn.title": "Learning Paths",
-
   "annotation.answer": "Answer:",
   "annotation.context": "Context:",
   "annotation.created": "Created: {{date}}",
@@ -426,15 +403,12 @@
   "annotation.question": "Question:",
   "annotation.titleNote": "Note",
   "annotation.titleQuestion": "Question & Answer",
-
   "lesson.bilingual": "Bilingual",
   "lesson.retryTranslation": "Retry",
   "lesson.translating": "Translating...",
-
   "locale.en": "English",
   "locale.ar": "العربية",
   "locale.sl": "Slovenščina",
-
   "settings.language": "Language",
   "settings.appearance": "Appearance",
   "settings.themeStyle": "Theme",
@@ -443,7 +417,6 @@
   "settings.themeLight": "Light",
   "settings.themeDark": "Dark",
   "settings.font": "Font",
-
   "knowledge.searchTitle": "Knowledge Search",
   "knowledge.searchPlaceholder": "Search concepts, subjects, disciplines...",
   "knowledge.searchEmptyTitle": "Search your knowledge",
@@ -452,12 +425,9 @@
   "knowledge.searchNoResultsDesc": "No results found for \"{{query}}\".",
   "knowledge.searchShowingOf": "Showing {{shown}} of {{total}} results",
   "knowledge.searchResultCount": "{{count}} results",
-
   "subject.loading": "Loading subject...",
-
   "common.loading": "Loading...",
   "common.or": "OR",
-
   "auth.alreadyHaveAccount": "Already have an account? Sign in",
   "auth.completeSignIn": "Complete sign-in",
   "auth.createAccount": "Create your account",
@@ -475,7 +445,6 @@
   "auth.signUp": "Sign Up",
   "auth.signingIn": "Signing in...",
   "auth.user": "User",
-
   "concept.conceptsBeingGenerated": "Concepts Being Generated",
   "concept.creatingLearningPath": "Creating Your Learning Path",
   "concept.delete": "Delete",
@@ -506,7 +475,6 @@
   "concept.backToConcepts": "Back to Concepts",
   "concept.startLearningLevel": "Start Learning Level 1: {{name}}",
   "concept.levelLabel": "Level {{number}}",
-
   "dashboard.activeCourses": "Active Courses",
   "dashboard.complete": "Complete",
   "dashboard.coursesCompleted": "Courses Completed",
@@ -539,7 +507,6 @@
   "dashboard.stat.streakTooltip": "Consecutive days of learning activity",
   "dashboard.todaysActivities": "Today's Activities",
   "dashboard.unlockAchievementsHint": "Complete lessons and courses to unlock achievements!",
-
   "learning.allOfTheAbove": "All of the above",
   "learning.answerQuestionsDesc": "Answer questions to help us create a tailored goal",
   "learning.answeredSkipped": "{{answered}} answered, {{skipped}} skipped",
@@ -630,7 +597,6 @@
   "learning.close": "Close",
   "learning.loadingConcept": "Loading concept...",
   "learning.error": "Error",
-
   "level.advanced": "Advanced",
   "level.advancedDesc": "I have significant experience and want to deepen my knowledge",
   "level.beginner": "Beginner",
@@ -641,7 +607,6 @@
   "level.level": "Level",
   "level.tailorDesc": "Help us tailor your learning path to your experience level",
   "level.whatsYourLevel": "What's Your Current Level?",
-
   "placement.advancedQuestions": "Advanced Questions",
   "placement.answerDesc": "Answer these questions to help us tailor your learning path to your current level.",
   "placement.answered": "{{count}} answered",
@@ -660,11 +625,9 @@
   "placement.testComplete": "Placement Test Complete!",
   "placement.title": "Placement Test",
   "placement.yourLevel": "Your Level",
-
   "explorer.domain.formal": "Formal Sciences",
   "explorer.domain.natural": "Natural Sciences",
   "explorer.domain.social": "Social Sciences",
-
   "landing.getStarted": "Get Started",
   "landing.hero.headline": "Stop learning in isolation.",
   "landing.hero.subheadline": "Start building knowledge that connects.",
@@ -713,7 +676,6 @@
   "landing.cta.description": "Join KFlow and experience structured, AI-powered learning paths that adapt to your level and goals.",
   "landing.cta.button": "Get Started Free",
   "landing.footer.copyright": "© 2024 KFlow. All rights reserved.",
-
   "connections.title": "Peers studying this",
   "connections.empty": "No peers here yet. Check back soon.",
   "connections.connect": "Connect",
@@ -737,5 +699,12 @@
   "conceptChat.aiLabel": "AI",
   "conceptChat.thinking": "thinking…",
   "conceptChat.composerPlaceholder": "Ask about this concept…",
-  "conceptChat.send": "Send"
+  "conceptChat.send": "Send",
+  "aria.openMenu": "Open menu",
+  "aria.closeMenu": "Close menu",
+  "nav.menu": "Menu",
+  "aria.changeLanguage": "Change language",
+  "aria.settings": "Settings",
+  "aria.switchToLight": "Switch to light mode",
+  "aria.switchToDark": "Switch to dark mode"
 }

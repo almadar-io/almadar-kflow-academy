@@ -1,12 +1,13 @@
 {
-  "$meta": { "locale": "ar", "direction": "rtl" },
+  "$meta": {
+    "locale": "ar",
+    "direction": "rtl"
+  },
   "$extends": "@almadar/ui",
-
   "adventure.level": "المستوى",
   "adventure.movement": "الحركة",
   "adventure.objective": "الهدف",
   "adventure.reachGoal": "قُد بطلك نحو الهدف",
-
   "knowledge.graph": "خريطة المعرفة",
   "knowledge.concept": "مفهوم",
   "knowledge.layer": "طبقة",
@@ -180,9 +181,7 @@
   "catalog.all": "الكل",
   "catalog.noStories": "لا توجد قصص في هذه الفئة",
   "catalog.series": "سلاسل",
-
   "creator.seriesCount": "{{count}} سلسلة",
-
   "battle.answerCorrectly": "أجب بشكل صحيح لإلحاق الضرر",
   "battle.claimReward": "احصل على المكافأة",
   "battle.combatLog": "سجل القتال",
@@ -192,23 +191,19 @@
   "battle.turn": "الدور {{current}}",
   "battle.victory": "النصر!",
   "battle.wrongAnswer": "إجابة خاطئة",
-
   "bloom.question": "السؤال",
-
   "challenge.hint": "تلميح",
   "challenge.reward": "المكافأة",
   "challenge.tier.battle": "معركة",
   "challenge.tier.eventHandler": "معالج الأحداث",
   "challenge.tier.sequencer": "المتسلسل",
   "challenge.tier.stateArchitect": "مهندس الحالة",
-
   "concept.layer": "الطبقة",
   "concept.level": "المستوى",
   "concept.practice": "التدريب",
   "concept.tab.lesson": "الدرس",
   "concept.tab.overview": "نظرة عامة",
   "concept.tab.practice": "التدريب",
-
   "daily.allCaughtUp": "أنت على اطلاع بكل شيء!",
   "daily.challenges": "التحديات",
   "daily.explored": "مستكشَف",
@@ -224,13 +219,11 @@
   "daily.title": "اليوم",
   "daily.whatsNext": "ماذا بعد",
   "daily.worldMap": "خريطة العالم",
-
   "discoveries.bonus": "مكافأة",
   "discoveries.new": "جديد",
   "discoveries.noDiscoveries": "لا توجد اكتشافات بعد",
   "discoveries.noDiscoveriesDesc": "واصل الاستكشاف للعثور على روابط بين المجالات.",
   "discoveries.title": "الاكتشافات",
-
   "explorer.completion": "الإتمام",
   "explorer.generateStory": "إنشاء قصة",
   "explorer.noSubjects": "لم يتم العثور على مواضيع",
@@ -240,11 +233,9 @@
   "explorer.subtitle": "استكشف مجالات المعرفة",
   "explorer.title": "المستكشف",
   "explorer.weakest": "الأضعف",
-
   "flashcard.cardProgress": "تقدم البطاقة",
   "flashcard.completedAllCards": "أكملت جميع البطاقات!",
   "flashcard.studiedCount": "{{count}} مدروس",
-
   "path.depth": "العمق",
   "path.from": "من",
   "path.noPath": "لا يوجد مسار تعلم",
@@ -253,7 +244,6 @@
   "path.stepsLabel": "{{count}} خطوات",
   "path.title": "مسار التعلم",
   "path.to": "إلى",
-
   "physics.availablePresets": "الإعدادات المسبقة المتاحة",
   "physics.labTitle": "مختبر الفيزياء",
   "physics.measurements": "القياسات",
@@ -261,13 +251,11 @@
   "physics.running": "يعمل",
   "physics.selectPreset": "اختر إعداداً مسبقاً",
   "physics.target": "الهدف",
-
   "review.reviewed": "مراجَع",
   "review.sessionComplete": "اكتملت الجلسة!",
   "review.showAnswer": "أظهر الإجابة",
   "review.skipped": "متخطى",
   "review.title": "المراجعة",
-
   "episode.backToSeries": "العودة إلى السلسلة",
   "episode.continue": "متابعة",
   "episode.continueStory": "متابعة",
@@ -276,7 +264,6 @@
   "episode.nextSeason": "الموسم التالي",
   "episode.seriesComplete": "اكتملت السلسلة!",
   "episode.storyCount": "{{count}} قصة",
-
   "nav.dashboard": "الرئيسية",
   "nav.explore": "استكشاف",
   "nav.knowledge": "المعرفة",
@@ -287,11 +274,9 @@
   "nav.signOut": "تسجيل الخروج",
   "nav.stories": "القصص",
   "nav.user": "مستخدم",
-
   "sidebar.expand": "توسيع الشريط الجانبي",
   "sidebar.collapse": "طي الشريط الجانبي",
   "sidebar.close": "إغلاق الشريط الجانبي",
-
   "story.battleDefeat": "مهزوم! هل تريد المحاولة مجدداً؟",
   "story.browseCatalog": "تصفح القصص",
   "story.browsePrompt": "تصفح الفهرس لبدء قصة جديدة.",
@@ -308,9 +293,7 @@
   "story.scrollToBegin": "مرر للبدء",
   "story.series": "السلسلة",
   "story.wantMore": "تريد المزيد؟",
-
   "season.tabLabel": "م{{number}}: {{title}}{{completion}}",
-
   "series.completion": "مكتمل",
   "series.duration": "المدة",
   "series.durationHoursMinutes": "{{hours}}س {{minutes}}د",
@@ -325,14 +308,12 @@
   "series.subscribe": "اشتراك",
   "series.subscribers": "{{count}} مشترك",
   "series.unsubscribe": "إلغاء الاشتراك",
-
   "streaming.estimatedTime": "الوقت المقدر",
   "streaming.hours": "ساعات",
   "streaming.milestones": "المعالم",
   "streaming.showRawJson": "إظهار JSON الخام",
   "streaming.target": "الهدف",
   "streaming.type": "النوع",
-
   "subject.allConcepts": "جميع المفاهيم",
   "subject.depth": "العمق",
   "subject.depthDistribution": "توزيع العمق",
@@ -348,7 +329,6 @@
   "subject.resources": "الموارد",
   "subject.topLevelConcepts": "المفاهيم الرئيسية",
   "subject.tree": "الشجرة",
-
   "worldMap.challenge": "تحدي",
   "worldMap.challenges": "التحديات",
   "worldMap.challengesTitle": "تحديات المنطقة",
@@ -360,7 +340,6 @@
   "worldMap.natural": "طبيعي",
   "worldMap.social": "اجتماعي",
   "worldMap.start": "ابدأ",
-
   "dashboard.achievements": "الإنجازات",
   "dashboard.back": "رجوع",
   "dashboard.open": "فتح",
@@ -402,7 +381,6 @@
   "dashboard.statPaths": "مسارات التعلّم",
   "dashboard.statConcepts": "مفاهيم",
   "dashboard.statLevels": "مستويات",
-
   "learn.concepts": "{{count}} مفهوم",
   "learn.createPath": "مسار جديد",
   "learn.deleteError": "فشل حذف مسار التعلم. يرجى المحاولة مجدداً.",
@@ -418,7 +396,6 @@
   "learn.retry": "إعادة المحاولة",
   "learn.subtitle": "استكشف المعرفة من خلال مسارات تعلم منظمة",
   "learn.title": "مسارات التعلم",
-
   "annotation.answer": "الإجابة:",
   "annotation.context": "السياق:",
   "annotation.created": "أُنشئ: {{date}}",
@@ -426,15 +403,12 @@
   "annotation.question": "السؤال:",
   "annotation.titleNote": "ملاحظة",
   "annotation.titleQuestion": "سؤال وجواب",
-
   "lesson.bilingual": "ثنائي اللغة",
   "lesson.retryTranslation": "إعادة المحاولة",
   "lesson.translating": "جارٍ الترجمة...",
-
   "locale.en": "English",
   "locale.ar": "العربية",
   "locale.sl": "Slovenščina",
-
   "settings.language": "اللغة",
   "settings.appearance": "المظهر",
   "settings.themeStyle": "السمة",
@@ -443,7 +417,6 @@
   "settings.themeLight": "فاتح",
   "settings.themeDark": "داكن",
   "settings.font": "الخط",
-
   "knowledge.searchTitle": "بحث في المعرفة",
   "knowledge.searchPlaceholder": "ابحث عن المفاهيم والمواضيع والتخصصات...",
   "knowledge.searchEmptyTitle": "ابحث في معرفتك",
@@ -452,12 +425,9 @@
   "knowledge.searchNoResultsDesc": "لا توجد نتائج لـ \"{{query}}\".",
   "knowledge.searchShowingOf": "عرض {{shown}} من {{total}} نتيجة",
   "knowledge.searchResultCount": "{{count}} نتيجة",
-
   "subject.loading": "جارٍ تحميل الموضوع...",
-
   "common.loading": "جارٍ التحميل...",
   "common.or": "أو",
-
   "auth.alreadyHaveAccount": "هل لديك حساب بالفعل؟ سجل الدخول",
   "auth.completeSignIn": "أكمل تسجيل الدخول",
   "auth.createAccount": "أنشئ حسابك",
@@ -475,7 +445,6 @@
   "auth.signUp": "إنشاء حساب",
   "auth.signingIn": "جارٍ تسجيل الدخول...",
   "auth.user": "المستخدم",
-
   "concept.conceptsBeingGenerated": "المفاهيم قيد الإنشاء",
   "concept.creatingLearningPath": "إنشاء مسار التعلم الخاص بك",
   "concept.delete": "حذف",
@@ -506,7 +475,6 @@
   "concept.backToConcepts": "العودة إلى المفاهيم",
   "concept.startLearningLevel": "ابدأ تعلم المستوى 1: {{name}}",
   "concept.levelLabel": "المستوى {{number}}",
-
   "dashboard.activeCourses": "الدورات النشطة",
   "dashboard.complete": "مكتمل",
   "dashboard.coursesCompleted": "الدورات المكتملة",
@@ -539,7 +507,6 @@
   "dashboard.stat.streakTooltip": "الأيام المتتالية من نشاط التعلم",
   "dashboard.todaysActivities": "أنشطة اليوم",
   "dashboard.unlockAchievementsHint": "أكمل الدروس والدورات لفتح الإنجازات!",
-
   "learning.allOfTheAbove": "جميع ما سبق",
   "learning.answerQuestionsDesc": "أجب على الأسئلة لمساعدتنا في إنشاء هدف مخصص",
   "learning.answeredSkipped": "{{answered}} أُجيب، {{skipped}} مُتخطى",
@@ -630,7 +597,6 @@
   "learning.close": "إغلاق",
   "learning.loadingConcept": "جارٍ تحميل المفهوم...",
   "learning.error": "خطأ",
-
   "level.advanced": "متقدم",
   "level.advancedDesc": "لدي خبرة كبيرة وأريد تعميق معرفتي",
   "level.beginner": "مبتدئ",
@@ -641,7 +607,6 @@
   "level.level": "المستوى",
   "level.tailorDesc": "ساعدنا في تخصيص مسار التعلم وفق مستواك الحالي",
   "level.whatsYourLevel": "ما هو مستواك الحالي؟",
-
   "placement.advancedQuestions": "أسئلة المستوى المتقدم",
   "placement.answerDesc": "أجب على هذه الأسئلة لمساعدتنا في تخصيص مسار التعلم وفق مستواك الحالي.",
   "placement.answered": "{{count}} أُجيب",
@@ -660,11 +625,9 @@
   "placement.testComplete": "اكتمل اختبار التحديد!",
   "placement.title": "اختبار التحديد",
   "placement.yourLevel": "مستواك",
-
   "explorer.domain.formal": "العلوم الرسمية",
   "explorer.domain.natural": "العلوم الطبيعية",
   "explorer.domain.social": "العلوم الاجتماعية",
-
   "landing.getStarted": "ابدأ الآن",
   "landing.hero.headline": "توقف عن التعلم بمعزل.",
   "landing.hero.subheadline": "ابدأ بناء معرفة مترابطة.",
@@ -713,7 +676,6 @@
   "landing.cta.description": "انضم إلى KFlow واختبر مسارات التعلم المنظمة المدعومة بالذكاء الاصطناعي التي تتكيف مع مستواك وأهدافك.",
   "landing.cta.button": "ابدأ مجاناً",
   "landing.footer.copyright": "© 2024 KFlow. جميع الحقوق محفوظة.",
-
   "connections.title": "زملاء يدرسون هذا",
   "connections.empty": "لا يوجد زملاء بعد. تحقق قريبًا.",
   "connections.connect": "تواصل",
@@ -737,5 +699,12 @@
   "conceptChat.aiLabel": "ذكاء اصطناعي",
   "conceptChat.thinking": "يفكّر…",
   "conceptChat.composerPlaceholder": "اسأل عن هذا المفهوم…",
-  "conceptChat.send": "إرسال"
+  "conceptChat.send": "إرسال",
+  "aria.openMenu": "فتح القائمة",
+  "aria.closeMenu": "إغلاق القائمة",
+  "nav.menu": "القائمة",
+  "aria.changeLanguage": "تغيير اللغة",
+  "aria.settings": "الإعدادات",
+  "aria.switchToLight": "التبديل إلى الوضع الفاتح",
+  "aria.switchToDark": "التبديل إلى الوضع الداكن"
 }

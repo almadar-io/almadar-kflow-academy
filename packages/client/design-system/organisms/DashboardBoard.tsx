@@ -40,7 +40,7 @@ import {
 import { ConnectButton } from '../molecules/ConnectButton';
 import { SearchInput } from '../molecules/SearchInput';
 import { FilterBar } from '../molecules/FilterBar';
-import { StatBadge } from '../molecules/StatBadge';
+import { StatBadge, StatBadgeSkeleton } from '../molecules/StatBadge';
 import { LearningPathCard } from './LearningPathCard';
 import { GraphHeroTemplate } from '../templates/GraphHeroTemplate/GraphHeroTemplate';
 
@@ -134,6 +134,7 @@ export function DashboardBoard({
   entity,
   level = 'L1',
   mapLoading = false,
+  isLoading = false,
   className = '',
 }: DashboardBoardProps): React.JSX.Element {
   const dash = (entity && typeof entity === 'object' && !Array.isArray(entity)) ? entity as DashboardEntity : undefined;
@@ -322,7 +323,13 @@ export function DashboardBoard({
                 {t('dashboard.createPath')}
               </Button>
             </HStack>
-            {dash?.stats && dash.stats.length > 0 && (
+            {isLoading ? (
+              <HStack gap="md" wrap>
+                {Array.from({ length: 3 }).map((_, i) => (
+                  <StatBadgeSkeleton key={i} />
+                ))}
+              </HStack>
+            ) : dash?.stats && dash.stats.length > 0 ? (
               <HStack gap="md" wrap>
                 {dash.stats.map((stat, i) => {
                   const iconMap = { paths: Map, concepts: Network, levels: Layers } as const;
@@ -336,7 +343,7 @@ export function DashboardBoard({
                   );
                 })}
               </HStack>
-            )}
+            ) : null}
           </VStack>
         }
         canvasSlot={(hasMap || mapLoading) ? (
@@ -393,7 +400,7 @@ export function DashboardBoard({
             )}
           </VStack>
         ) : undefined}
-        listSlot={(hasMap || mapLoading) ? (
+        listSlot={(hasMap || mapLoading || !!pathList) ? (
           <Card className="p-2 sm:p-4 md:p-6">
             {pathList?.isLoading && paths.length === 0 ? (
               <VStack gap="md">

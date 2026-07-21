@@ -35,3 +35,20 @@ export const StatBadge: React.FC<StatBadgeProps> = ({ value, label, icon }) => {
 };
 
 StatBadge.displayName = 'StatBadge';
+
+const shimmer = 'almadar-shimmer animate-shimmer rounded';
+
+/** Skeleton mirroring {@link StatBadge} — icon circle + value + label. */
+export const StatBadgeSkeleton: React.FC = () => {
+  return (
+    <Card padding="sm" className="flex-1 min-w-[8rem] flex items-center gap-3">
+      <Box className={`flex-shrink-0 w-10 h-10 rounded-full ${shimmer}`} />
+      <VStack gap="none" className="flex-1">
+        <Box className={`h-6 w-8 ${shimmer}`} />
+        <Box className={`h-3 w-16 mt-1 ${shimmer}`} />
+      </VStack>
+    </Card>
+  );
+};
+
+StatBadgeSkeleton.displayName = 'StatBadgeSkeleton';

@@ -6,8 +6,31 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="color-scheme" content="dark light" />
     <title>KFlow Academy</title>
+    <script>
+      // Apply theme BEFORE first paint to avoid a light→dark flash (FOUC).
+      // Mirrors ThemeProvider's resolution: localStorage 'theme'/'theme-mode',
+      // defaultMode 'dark'. Runs synchronously in <head> so <body> never paints light.
+      (function () {
+        try {
+          var theme = localStorage.getItem('theme') || 'kflow';
+          var mode = localStorage.getItem('theme-mode');
+          if (mode !== 'light' && mode !== 'dark' && mode !== 'system') mode = 'dark';
+          var resolved = mode === 'system'
+            ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
+            : mode;
+          var root = document.documentElement;
+          root.classList.add(resolved);
+          root.setAttribute('data-theme', theme + '-' + resolved);
+          root.style.colorScheme = resolved;
+        } catch (_) {
+          document.documentElement.classList.add('dark');
+          document.documentElement.setAttribute('data-theme', 'kflow-dark');
+          document.documentElement.style.colorScheme = 'dark';
+        }
+      })();
+    </script>
   </head>
-  <body class="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors">
+  <body class="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
     <div id="root"></div>
     <script type="module" src="/src/index.tsx"></script>
   </body>

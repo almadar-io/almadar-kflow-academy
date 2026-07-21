@@ -3,6 +3,7 @@
 import './index.css';
 
 export { AppShellBoard } from "./organisms/AppShellBoard";
+export { TopNavShell } from "./organisms/TopNavShell";
 export { InteractiveOrbitalPanel } from "./organisms/InteractiveOrbitalPanel";
 export type { InteractiveOrbitalPanelProps } from "./organisms/InteractiveOrbitalPanel";
 export { DashboardBoard } from "./organisms/DashboardBoard";

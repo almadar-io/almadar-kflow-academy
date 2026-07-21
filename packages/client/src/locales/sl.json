@@ -1,12 +1,13 @@
 {
-  "$meta": { "locale": "sl", "direction": "ltr" },
+  "$meta": {
+    "locale": "sl",
+    "direction": "ltr"
+  },
   "$extends": "@almadar/ui",
-
   "adventure.level": "Raven",
   "adventure.movement": "Gibanje",
   "adventure.objective": "Cilj",
   "adventure.reachGoal": "Popelji svojega junaka do cilja",
-
   "knowledge.graph": "Graf znanja",
   "knowledge.concept": "Pojem",
   "knowledge.layer": "Plast",
@@ -180,9 +181,7 @@
   "catalog.all": "Vse",
   "catalog.noStories": "V tej kategoriji ni zgodb",
   "catalog.series": "Serije",
-
   "creator.seriesCount": "{{count}} serij",
-
   "battle.answerCorrectly": "Odgovorite pravilno za povzročitev poškodbe",
   "battle.claimReward": "Prevzemi nagrado",
   "battle.combatLog": "Dnevnik boja",
@@ -192,23 +191,19 @@
   "battle.turn": "Poteza {{current}}",
   "battle.victory": "Zmaga!",
   "battle.wrongAnswer": "Napačen odgovor",
-
   "bloom.question": "Vprašanje",
-
   "challenge.hint": "Namig",
   "challenge.reward": "Nagrada",
   "challenge.tier.battle": "Bitka",
   "challenge.tier.eventHandler": "Upravljalec dogodkov",
   "challenge.tier.sequencer": "Zaporednik",
   "challenge.tier.stateArchitect": "Arhitekt stanj",
-
   "concept.layer": "Plast",
   "concept.level": "Raven",
   "concept.practice": "Vadba",
   "concept.tab.lesson": "Lekcija",
   "concept.tab.overview": "Pregled",
   "concept.tab.practice": "Vadba",
-
   "daily.allCaughtUp": "Ste na tekočem!",
   "daily.challenges": "Izzivi",
   "daily.explored": "Raziskano",
@@ -224,13 +219,11 @@
   "daily.title": "Danes",
   "daily.whatsNext": "Kaj je naslednje",
   "daily.worldMap": "Zemljevid sveta",
-
   "discoveries.bonus": "Bonus",
   "discoveries.new": "Novo",
   "discoveries.noDiscoveries": "Še ni odkritij",
   "discoveries.noDiscoveriesDesc": "Nadaljujte z raziskovanjem za meddomenske povezave.",
   "discoveries.title": "Odkritja",
-
   "explorer.completion": "Dokončanje",
   "explorer.generateStory": "Ustvari zgodbo",
   "explorer.noSubjects": "Ni najdenih predmetov",
@@ -240,11 +233,9 @@
   "explorer.subtitle": "Raziščite področja znanja",
   "explorer.title": "Raziskovalec",
   "explorer.weakest": "Najslabše",
-
   "flashcard.cardProgress": "Napredek kartice",
   "flashcard.completedAllCards": "Dokončali ste vse kartice!",
   "flashcard.studiedCount": "{{count}} preučeno",
-
   "path.depth": "Globina",
   "path.from": "Iz",
   "path.noPath": "Ni učne poti",
@@ -253,7 +244,6 @@
   "path.stepsLabel": "{{count}} korakov",
   "path.title": "Učna pot",
   "path.to": "Do",
-
   "physics.availablePresets": "Razpoložljive prednastavitve",
   "physics.labTitle": "Fizikalni laboratorij",
   "physics.measurements": "Meritve",
@@ -261,13 +251,11 @@
   "physics.running": "V teku",
   "physics.selectPreset": "Izberite prednastavitev",
   "physics.target": "Cilj",
-
   "review.reviewed": "Pregledano",
   "review.sessionComplete": "Seja dokončana!",
   "review.showAnswer": "Pokaži odgovor",
   "review.skipped": "Preskočeno",
   "review.title": "Pregled",
-
   "episode.backToSeries": "Nazaj na serijo",
   "episode.continue": "Nadaljuj",
   "episode.continueStory": "Nadaljuj",
@@ -276,7 +264,6 @@
   "episode.nextSeason": "Naslednja sezona",
   "episode.seriesComplete": "Serija dokončana!",
   "episode.storyCount": "{{count}} zgodb",
-
   "nav.dashboard": "Domov",
   "nav.explore": "Raziskuj",
   "nav.knowledge": "Znanje",
@@ -287,11 +274,9 @@
   "nav.signOut": "Odjava",
   "nav.stories": "Zgodbe",
   "nav.user": "Uporabnik",
-
   "sidebar.expand": "Razšani stransko vrstico",
   "sidebar.collapse": "Skrči stransko vrstico",
   "sidebar.close": "Zapri stransko vrstico",
-
   "story.battleDefeat": "Poražen! Poskusi znova?",
   "story.browseCatalog": "Brskaj po zgodbah",
   "story.browsePrompt": "Brskajte po katalogu za začetek nove zgodbe.",
@@ -308,9 +293,7 @@
   "story.scrollToBegin": "Pomakni se za začetek",
   "story.series": "Serija",
   "story.wantMore": "Želite več?",
-
   "season.tabLabel": "S{{number}}: {{title}}{{completion}}",
-
   "series.completion": "Dokončano",
   "series.duration": "Trajanje",
   "series.durationHoursMinutes": "{{hours}}h {{minutes}}min",
@@ -325,14 +308,12 @@
   "series.subscribe": "Naroči se",
   "series.subscribers": "{{count}} naročnikov",
   "series.unsubscribe": "Odjavi naročnino",
-
   "streaming.estimatedTime": "Ocenjeni čas",
   "streaming.hours": "ure",
   "streaming.milestones": "Mejniki",
   "streaming.showRawJson": "Prikaži surovi JSON",
   "streaming.target": "Cilj",
   "streaming.type": "Vrsta",
-
   "subject.allConcepts": "Vsi pojmi",
   "subject.depth": "Globina",
   "subject.depthDistribution": "Porazdelitev globine",
@@ -348,7 +329,6 @@
   "subject.resources": "Viri",
   "subject.topLevelConcepts": "Pojmi najvišje ravni",
   "subject.tree": "Drevo",
-
   "worldMap.challenge": "Izziv",
   "worldMap.challenges": "Izzivi",
   "worldMap.challengesTitle": "Izzivi regije",
@@ -360,7 +340,6 @@
   "worldMap.natural": "Naravno",
   "worldMap.social": "Socialno",
   "worldMap.start": "Začni",
-
   "dashboard.achievements": "Dosežki",
   "dashboard.back": "Nazaj",
   "dashboard.open": "Odpri",
@@ -402,7 +381,6 @@
   "dashboard.statPaths": "Učne poti",
   "dashboard.statConcepts": "Koncepti",
   "dashboard.statLevels": "Ravni",
-
   "learn.concepts": "{{count}} pojmov",
   "learn.createPath": "Nova pot",
   "learn.deleteError": "Brisanje učne poti ni uspelo. Prosimo, poskusite znova.",
@@ -418,7 +396,6 @@
   "learn.retry": "Poskusi znova",
   "learn.subtitle": "Raziščite znanje skozi strukturirane učne poti",
   "learn.title": "Učne poti",
-
   "annotation.answer": "Odgovor:",
   "annotation.context": "Kontekst:",
   "annotation.created": "Ustvarjeno: {{date}}",
@@ -426,15 +403,12 @@
   "annotation.question": "Vprašanje:",
   "annotation.titleNote": "Opomba",
   "annotation.titleQuestion": "Vprašanje in odgovor",
-
   "lesson.bilingual": "Dvojezično",
   "lesson.retryTranslation": "Poskusi znova",
   "lesson.translating": "Prevajanje...",
-
   "locale.en": "English",
   "locale.ar": "العربية",
   "locale.sl": "Slovenščina",
-
   "settings.language": "Jezik",
   "settings.appearance": "Videz",
   "settings.themeStyle": "Tema",
@@ -443,7 +417,6 @@
   "settings.themeLight": "Svetlo",
   "settings.themeDark": "Temno",
   "settings.font": "Pisava",
-
   "knowledge.searchTitle": "Iskanje znanja",
   "knowledge.searchPlaceholder": "Iščite pojme, predmete, discipline...",
   "knowledge.searchEmptyTitle": "Iščite po vašem znanju",
@@ -452,12 +425,9 @@
   "knowledge.searchNoResultsDesc": "Za \"{{query}}\" ni najdenih rezultatov.",
   "knowledge.searchShowingOf": "Prikazano {{shown}} od {{total}} rezultatov",
   "knowledge.searchResultCount": "{{count}} rezultatov",
-
   "subject.loading": "Nalaganje predmeta...",
-
   "common.loading": "Nalaganje...",
   "common.or": "ALI",
-
   "auth.alreadyHaveAccount": "Že imate račun? Prijavite se",
   "auth.completeSignIn": "Dokončaj prijavo",
   "auth.createAccount": "Ustvarite račun",
@@ -475,7 +445,6 @@
   "auth.signUp": "Registracija",
   "auth.signingIn": "Prijavljanje...",
   "auth.user": "Uporabnik",
-
   "concept.conceptsBeingGenerated": "Pojmi v ustvarjanju",
   "concept.creatingLearningPath": "Ustvarjanje vaše učne poti",
   "concept.delete": "Izbriši",
@@ -506,7 +475,6 @@
   "concept.backToConcepts": "Nazaj na pojme",
   "concept.startLearningLevel": "Začni z učenjem ravni 1: {{name}}",
   "concept.levelLabel": "Raven {{number}}",
-
   "dashboard.activeCourses": "Aktivni tečaji",
   "dashboard.complete": "Dokončano",
   "dashboard.coursesCompleted": "Dokončani tečaji",
@@ -539,7 +507,6 @@
   "dashboard.stat.streakTooltip": "Zaporedni dnevi učne dejavnosti",
   "dashboard.todaysActivities": "Današnje dejavnosti",
   "dashboard.unlockAchievementsHint": "Dokončajte lekcije in tečaje za odklepanje dosežkov!",
-
   "learning.allOfTheAbove": "Vse navedeno",
   "learning.answerQuestionsDesc": "Odgovorite na vprašanja, da nam pomagate ustvariti prilagojeni cilj",
   "learning.answeredSkipped": "{{answered}} odgovorjenih, {{skipped}} preskočenih",
@@ -630,7 +597,6 @@
   "learning.close": "Zapri",
   "learning.loadingConcept": "Nalaganje pojma...",
   "learning.error": "Napaka",
-
   "level.advanced": "Napreden",
   "level.advancedDesc": "Imam precejšnje izkušnje in želim poglobiti znanje",
   "level.beginner": "Začetnik",
@@ -641,7 +607,6 @@
   "level.level": "Raven",
   "level.tailorDesc": "Pomagajte nam prilagoditi vašo učno pot glede na vašo izkušnjo",
   "level.whatsYourLevel": "Katera je vaša trenutna raven?",
-
   "placement.advancedQuestions": "Napredna vprašanja",
   "placement.answerDesc": "Odgovorite na ta vprašanja, da nam pomagate prilagoditi vašo učno pot glede na vašo raven.",
   "placement.answered": "{{count}} odgovorjenih",
@@ -660,11 +625,9 @@
   "placement.testComplete": "Razporeditveni test dokončan!",
   "placement.title": "Razporeditveni test",
   "placement.yourLevel": "Vaša raven",
-
   "explorer.domain.formal": "Formalne vede",
   "explorer.domain.natural": "Naravne vede",
   "explorer.domain.social": "Družbene vede",
-
   "landing.getStarted": "Začni",
   "landing.hero.headline": "Nehaj se učiti v izolaciji.",
   "landing.hero.subheadline": "Začni graditi znanje, ki se povezuje.",
@@ -713,7 +676,6 @@
   "landing.cta.description": "Pridružite se KFlow in izkusite strukturirane, z umetno inteligenco podprte učne poti, ki se prilagajajo vaši ravni in ciljem.",
   "landing.cta.button": "Začni brezplačno",
   "landing.footer.copyright": "© 2024 KFlow. Vse pravice pridržane.",
-
   "connections.title": "Vrstniki, ki študirajo to",
   "connections.empty": "Tukaj še ni vrstnikov. Preverite kmalu.",
   "connections.connect": "Poveži",
@@ -737,5 +699,12 @@
   "conceptChat.aiLabel": "UI",
   "conceptChat.thinking": "razmišlja…",
   "conceptChat.composerPlaceholder": "Vprašaj o tem konceptu…",
-  "conceptChat.send": "Pošlji"
+  "conceptChat.send": "Pošlji",
+  "aria.openMenu": "Odpri meni",
+  "aria.closeMenu": "Zapri meni",
+  "nav.menu": "Meni",
+  "aria.changeLanguage": "Spremeni jezik",
+  "aria.settings": "Nastavitve",
+  "aria.switchToLight": "Preklopi na svetli način",
+  "aria.switchToDark": "Preklopi na temni način"
 }

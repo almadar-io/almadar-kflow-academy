@@ -1,33 +1,21 @@
 /**
  * AppShellBoard Organism
  *
- * Universal app chrome with sidebar navigation, mobile header,
- * theme toggle, and user section. Manages sidebar collapse/open state.
+ * Universal app chrome. Now renders the TopNavShell (top bar + slide-in nav
+ * drawer) instead of a left sidebar. Keeps the same entity contract and event
+ * emissions so pages/NavigationHandler are unaffected.
  *
  * Events Emitted:
  * - UI:NAV_CLICK — user clicks a navigation item, payload: { href }
- * - UI:TOGGLE_SIDEBAR — sidebar collapsed/expanded
- * - UI:TOGGLE_THEME — theme switch requested
- * - UI:SIGN_OUT — user signs out
- * - UI:USER_MENU — user avatar clicked
+ * - UI:LOGO_CLICK — user clicks the brand
+ * - UI:TOGGLE_THEME — theme switch requested (via ThemeToggle)
+ * - UI:SIGN_OUT — user signs out (via ProfilePopup)
  */
 
-import React, { useState, useCallback, useEffect } from "react";
-import { Settings, type LucideIcon } from "lucide-react";
-import {
-  Box,
-  Sidebar,
-  Header,
-  Overlay,
-  ThemeToggle,
-  useEventBus,
-  useEventListener,
-  useTranslate,
-  cn,
-  type SidebarItem,
-  type DisplayStateProps,
-} from "@almadar/ui";
-import { ProfilePopup } from "./ProfilePopup/ProfilePopup";
+import React, { useCallback } from "react";
+import { type LucideIcon } from "lucide-react";
+import { useEventBus, useTranslate, type DisplayStateProps } from "@almadar/ui";
+import { TopNavShell, type TopNavItem } from "./TopNavShell/TopNavShell";
 
 export interface AppShellNavItem {
   id: string;
@@ -71,56 +59,23 @@ export function AppShellBoard({
       : undefined;
   const { emit } = useEventBus();
   const { t } = useTranslate();
-  const [collapsed, setCollapsed] = useState(app?.sidebarCollapsed ?? false);
-  const [mobileOpen, setMobileOpen] = useState(false);
-
-  useEffect(() => {
-    if (app?.sidebarCollapsed !== undefined) {
-      setCollapsed(app?.sidebarCollapsed);
-    }
-  }, [app?.sidebarCollapsed]);
 
   const handleNavClick = useCallback(
     (href: string) => {
       emit("UI:NAV_CLICK", { href });
-      setMobileOpen(false);
     },
     [emit],
   );
-
-  // Listen for sidebar collapse events from the Sidebar organism
-  useEventListener(
-    "UI:SIDEBAR_COLLAPSE",
-    useCallback(
-      (event: { payload?: { collapsed?: boolean } }) => {
-        const newCollapsed = event.payload?.collapsed ?? !collapsed;
-        setCollapsed(newCollapsed);
-        emit("UI:TOGGLE_SIDEBAR", { collapsed: newCollapsed });
-      },
-      [collapsed, emit],
-    ),
-  );
-
-  // Listen for sidebar close events (mobile)
-  useEventListener(
-    "UI:SIDEBAR_CLOSE",
-    useCallback(() => {
-      setMobileOpen(false);
-    }, []),
-  );
-
-  const handleCloseMobileMenu = useCallback(() => {
-    setMobileOpen(false);
-  }, []);
 
   const handleLogoClick = useCallback(() => {
     emit("UI:LOGO_CLICK", {});
   }, [emit]);
 
-  // Listen for logo click events from the Sidebar organism
-  useEventListener("UI:SIDEBAR_LOGO", handleLogoClick);
+  const handleSettingsClick = useCallback(() => {
+    emit("UI:NAV_CLICK", { href: "/settings" });
+  }, [emit]);
 
-  const sidebarItems: SidebarItem[] = (app?.navigationItems ?? []).map(
+  const navItems: TopNavItem[] = (app?.navigationItems ?? []).map(
     (item: AppShellNavItem) => ({
       id: item.id,
       label: t(item.label),
@@ -131,126 +86,18 @@ export function AppShellBoard({
     }),
   );
 
-  const userInitials =
-    app?.user?.name
-      ?.split(" ")
-      .map((n) => n[0])
-      .join("")
-      .toUpperCase()
-      .slice(0, 2) ?? "U";
-
-  const userSection = app?.user ? (
-    <ProfilePopup
-      userName={app.user.name}
-      userEmail={app.user.email}
-      userAvatar={app.user.avatar}
-      trigger={
-        <button
-          type="button"
-          className={cn(
-            "flex items-center gap-2 cursor-pointer hover:opacity-80 transition-opacity",
-            !collapsed ? "w-full text-start" : "justify-center",
-          )}
-        >
-          {app.user.avatar ? (
-            <img
-              src={app.user.avatar}
-              alt={app.user.name}
-              className="h-8 w-8 rounded-full object-cover flex-shrink-0"
-            />
-          ) : (
-            <span className="h-8 w-8 rounded-full bg-primary flex items-center justify-center text-primary-foreground text-sm font-bold flex-shrink-0">
-              {userInitials}
-            </span>
-          )}
-          {!collapsed && (
-            <span className="text-sm text-[var(--color-muted-foreground)] truncate max-w-[120px]">
-              {app.user.name}
-            </span>
-          )}
-        </button>
-      }
-      position="top-right"
-    />
-  ) : undefined;
-
-  const settingsActive = app?.activeRoute === "/settings";
-  const footerContent = (
-    <Box className="flex flex-row flex-wrap items-center justify-center gap-2 w-full">
-      <ThemeToggle />
-      <button
-        type="button"
-        onClick={() => handleNavClick("/settings")}
-        aria-label="Settings"
-        title="Settings"
-        className={cn(
-          "flex items-center justify-center p-2 rounded-md transition-colors",
-          settingsActive
-            ? "text-[var(--color-foreground)] bg-[var(--color-muted)]"
-            : "text-[var(--color-muted-foreground)] hover:text-[var(--color-foreground)] hover:bg-[var(--color-muted)]",
-        )}
-      >
-        <Settings size={18} />
-      </button>
-    </Box>
-  );
-
   return (
-    <Box
-      className={cn("flex h-screen bg-[var(--color-background)]", className)}
+    <TopNavShell
+      brandName={app?.brandName ?? "KFlow"}
+      logo={app?.logo}
+      navigationItems={navItems}
+      user={app?.user}
+      onLogoClick={handleLogoClick}
+      onSettingsClick={handleSettingsClick}
+      className={className}
     >
-      {/* Desktop sidebar */}
-      <Box className="hidden lg:flex flex-shrink-0">
-        <Sidebar
-          logo={app?.logo}
-          logoSrc={app?.logoSrc}
-          brandName={app?.brandName ?? "KFlow"}
-          items={sidebarItems}
-          collapsed={collapsed}
-          collapseChangeEvent="UI:SIDEBAR_COLLAPSE"
-          userSection={userSection}
-          footerContent={footerContent}
-          logoClickEvent="UI:SIDEBAR_LOGO"
-        />
-      </Box>
-
-      {/* Mobile sidebar overlay */}
-      {mobileOpen && (
-        <Box className="lg:hidden fixed inset-0 z-40">
-          <Overlay onClick={handleCloseMobileMenu} />
-          <Box className="absolute start-0 top-0 bottom-0 w-64 z-50">
-            <Sidebar
-              logo={app?.logo}
-              logoSrc={app?.logoSrc}
-              brandName={app?.brandName ?? "KFlow"}
-              items={sidebarItems}
-              userSection={userSection}
-              footerContent={footerContent}
-              showCloseButton
-              closeEvent="UI:SIDEBAR_CLOSE"
-              logoClickEvent="UI:SIDEBAR_LOGO"
-            />
-          </Box>
-        </Box>
-      )}
-
-      {/* Main content area */}
-      <Box className="flex-1 flex flex-col min-w-0 overflow-hidden">
-        {/* Mobile header */}
-        <Header
-          brandName={app?.brandName ?? "KFlow"}
-          logo={app?.logo}
-          logoSrc={app?.logoSrc}
-          isMenuOpen={mobileOpen}
-          onMenuToggle={() => setMobileOpen(!mobileOpen)}
-          onLogoClick={handleLogoClick}
-          actions={<ThemeToggle />}
-        />
-
-        {/* Page content */}
-        <Box className="flex-1 overflow-y-auto">{children}</Box>
-      </Box>
-    </Box>
+      {children}
+    </TopNavShell>
   );
 }
 
