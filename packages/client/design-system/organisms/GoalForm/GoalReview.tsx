@@ -168,7 +168,7 @@ export const GoalReview: React.FC<GoalReviewProps> = ({ goal, onConfirm }) => {
       </Stack>
 
       {/* Action Buttons */}
-      <Box className="mt-6 pt-4 border-t border-border">
+      <Box className="mt-6 pt-4 -mx-6 -mb-6 px-6 pb-4 border-t border-border bg-surface">
         <Stack direction="horizontal" justify="end" gap="md">
           <Button variant="primary" onClick={onConfirm} disabled={isEditing}>
             {t('learning.confirmAndContinue')}

@@ -528,7 +528,7 @@ export const GoalForm: React.FC<GoalFormProps> = ({ onComplete, onCancel }) => {
         </Box>
 
         {/* Action Buttons */}
-        <Box className="mt-6 pt-4 border-t border-border">
+        <Box className="mt-6 pt-4 -mx-6 -mb-6 px-6 pb-4 border-t border-border bg-surface">
           <Stack direction="horizontal" justify="between" gap="md">
             <Button
               variant="secondary"
@@ -589,15 +589,17 @@ export const GoalForm: React.FC<GoalFormProps> = ({ onComplete, onCancel }) => {
           </Box>
 
           {/* Action Buttons */}
-          <Stack direction="horizontal" justify="end" gap="md">
-            <Button
-              variant="primary"
-              onClick={handleAnchorSubmit}
-              disabled={!anchorAnswer.trim() || isGeneratingQuestions}
-            >
-              {t('episode.continue')}
-            </Button>
-          </Stack>
+          <Box className="mt-6 pt-4 -mx-6 -mb-6 px-6 pb-4 border-t border-border bg-surface">
+            <Stack direction="horizontal" justify="end" gap="md">
+              <Button
+                variant="primary"
+                onClick={handleAnchorSubmit}
+                disabled={!anchorAnswer.trim() || isGeneratingQuestions}
+              >
+                {t('episode.continue')}
+              </Button>
+            </Stack>
+          </Box>
         </Box>
       )}
 
@@ -737,7 +739,7 @@ export const GoalForm: React.FC<GoalFormProps> = ({ onComplete, onCancel }) => {
           )}
 
           {/* Navigation Buttons */}
-          <Box className="mt-6 pt-4 border-t border-border">
+          <Box className="mt-6 pt-4 -mx-6 -mb-6 px-6 pb-4 border-t border-border bg-surface">
             <Stack direction="horizontal" justify="between" align="center">
               <Stack direction="horizontal" gap="sm">
                 {currentQuestionIndex > 0 && (

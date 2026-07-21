@@ -29,6 +29,7 @@ export const LevelSelection: React.FC<LevelSelectionProps> = ({
     label: string;
     description: string;
     tint: string;
+    hoverTint: string;
     selectedTint: string;
     dot: string;
   }> = [
@@ -37,6 +38,7 @@ export const LevelSelection: React.FC<LevelSelectionProps> = ({
       label: t('level.beginner'),
       description: t('level.beginnerDesc'),
       tint: 'bg-success/10 border-success/20',
+      hoverTint: 'hover:border-success',
       selectedTint: 'bg-success/20 border-success',
       dot: 'border-success bg-success',
     },
@@ -45,6 +47,7 @@ export const LevelSelection: React.FC<LevelSelectionProps> = ({
       label: t('level.intermediate'),
       description: t('level.intermediateDesc'),
       tint: 'bg-info/10 border-info/20',
+      hoverTint: 'hover:border-info',
       selectedTint: 'bg-info/20 border-info',
       dot: 'border-info bg-info',
     },
@@ -53,6 +56,7 @@ export const LevelSelection: React.FC<LevelSelectionProps> = ({
       label: t('level.advanced'),
       description: t('level.advancedDesc'),
       tint: 'bg-accent/10 border-accent/20',
+      hoverTint: 'hover:border-accent',
       selectedTint: 'bg-accent/20 border-accent',
       dot: 'border-accent bg-accent',
     },
@@ -69,7 +73,7 @@ export const LevelSelection: React.FC<LevelSelectionProps> = ({
         </Typography>
       </Box>
 
-      <Stack direction="vertical" gap="md" className="mb-8">
+      <Stack direction="vertical" gap="xl" className="mb-8">
         {levels.map((level) => {
           const isSelected = selectedLevel === level.value;
           return (
@@ -78,7 +82,7 @@ export const LevelSelection: React.FC<LevelSelectionProps> = ({
               variant="ghost"
               disabled={isSubmitting}
               onClick={() => setSelectedLevel(level.value)}
-              className={`h-auto w-full justify-start p-6 border-2 rounded-lg text-start transition-all ${isSelected ? level.selectedTint : `${level.tint}`} ${isSubmitting ? 'opacity-50 pointer-events-none' : ''}`}}
+              className={`!h-auto w-full justify-start p-6 border-2 rounded-lg text-start text-foreground transition-all hover:bg-transparent hover:text-inherit ${isSelected ? level.selectedTint : `${level.tint} ${level.hoverTint}`} ${isSubmitting ? 'opacity-50 pointer-events-none' : ''}`}
             >
               <Stack direction="horizontal" align="center" gap="md" className="w-full">
                 <Box className={`flex-shrink-0 w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all ${isSelected ? level.dot : 'border-border bg-transparent'}`}>
@@ -99,7 +103,7 @@ export const LevelSelection: React.FC<LevelSelectionProps> = ({
       </Stack>
 
       {/* Action Buttons */}
-      <Box className="mt-6 pt-4 border-t border-border">
+      <Box className="mt-6 pt-4 -mx-6 -mb-6 px-6 pb-4 border-t border-border bg-surface">
         <Stack direction="horizontal" justify="end" gap="md">
           {onSkip && (
             <Button variant="secondary" onClick={onSkip} disabled={isSubmitting}>

@@ -71,7 +71,12 @@ async function loadPathSummaries(uid: string): Promise<{ paths: PathSummary[]; c
 
   paths.sort((a, b) => b.updatedAt - a.updatedAt);
 
-  await hybridCache.set(cacheKey, { paths, conceptIdsByGraph: [...conceptIdsByGraph.entries()] }, CACHE_TTL.LEARNING_PATHS);
+  // Only cache non-empty results — a transient empty read (Firestore eventual
+  // consistency, a momentary getGraph failure) must never poison the cache for
+  // the full TTL (that was the flaky empty-list symptom).
+  if (paths.length > 0) {
+    await hybridCache.set(cacheKey, { paths, conceptIdsByGraph: [...conceptIdsByGraph.entries()] }, CACHE_TTL.LEARNING_PATHS);
+  }
   return { paths, conceptIdsByGraph };
 }
 
@@ -108,7 +113,10 @@ router.get('/learning-paths', async (req, res, next) => {
       pairs: similarity.length,
       sharedPairs: sharedConcepts.length,
     });
-    await hybridCache.set(cacheKey, payload, CACHE_TTL.LEARNING_PATHS);
+    // Only cache non-empty result sets (see loadPathSummaries).
+    if (paths.length > 0) {
+      await hybridCache.set(cacheKey, payload, CACHE_TTL.LEARNING_PATHS);
+    }
     res.json(payload);
   } catch (error) {
     next(error);
