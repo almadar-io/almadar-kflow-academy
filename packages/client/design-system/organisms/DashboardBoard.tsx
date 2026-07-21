@@ -262,7 +262,7 @@ export function DashboardBoard({
       {selectedNode && typeof document !== 'undefined' &&
         createPortal(
           <Box
-            className={`lg:hidden fixed top-0 inset-x-0 z-[60] transition-all duration-200 ease-out ${
+            className={`lg:hidden fixed top-0 inset-x-0 z-[60] transition-all duration-fast ease-standard ${
               popoverVisible ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-2 pointer-events-none'
             }`}
           >

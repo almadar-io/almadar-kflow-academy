@@ -223,7 +223,7 @@ export const NotesWidget: React.FC<NotesWidgetProps> = ({
       {showFloatingButton && (
         <button
           onClick={handleOpen}
-          className="fixed bottom-6 end-32 z-50 p-4 bg-success text-success-foreground rounded-full shadow-lg hover:opacity-90 transition-all duration-200 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-success focus:ring-offset-2"
+          className="fixed bottom-6 end-32 z-50 p-4 bg-success text-success-foreground rounded-full shadow-lg hover:opacity-90 transition-all duration-fast hover:scale-110 focus:outline-none focus:ring-2 focus:ring-success focus:ring-offset-2"
           aria-label="Add or edit notes"
           title="Add or edit notes for this lesson"
         >

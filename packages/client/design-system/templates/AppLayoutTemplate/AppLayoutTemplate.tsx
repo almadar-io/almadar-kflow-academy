@@ -264,7 +264,7 @@ export const AppLayoutTemplate: React.FC<AppLayoutTemplateProps> = ({
         <aside
           className={cn(
             'fixed lg:sticky lg:top-0 lg:h-screen inset-y-0 start-0 z-[60]',
-            'transition-all duration-300 ease-in-out',
+            'transition-all duration-normal ease-standard',
             sidebarOpen ? 'lg:w-64' : 'lg:w-20',
             mobileSidebarOpen
               ? 'translate-x-0 w-64 rtl:translate-x-0'

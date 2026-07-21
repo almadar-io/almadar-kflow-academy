@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { X, Users, Sparkles } from 'lucide-react';
 import {
   Box,
@@ -8,7 +8,7 @@ import {
   Button,
   Typography,
   Badge,
-  Overlay,
+  Modal,
   Spinner,
   useTranslate,
 } from '@almadar/ui';
@@ -45,6 +45,10 @@ export const PeerModal: React.FC<PeerModalProps> = ({ nodeKey, onClose, onConnec
   const { data: peers, isLoading } = useNodePeers(nodeKey);
   const create = useCreateConnection();
   const origin = useMemo(() => parseNodeKey(nodeKey), [nodeKey]);
+  // Self-managed exit: closing flips open→false (Modal plays the exit
+  // animation), then onExited fires the parent's onClose to unmount.
+  const [open, setOpen] = useState(true);
+  const requestClose = () => setOpen(false);
 
   const handleConnect = (peerRef: string) => {
     create.mutate(
@@ -54,11 +58,10 @@ export const PeerModal: React.FC<PeerModalProps> = ({ nodeKey, onClose, onConnec
   };
 
   return (
-    <Box className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      <Overlay onClick={onClose} />
-      <Card className="relative z-50 max-w-2xl w-full max-h-[88vh] overflow-y-auto p-6 animate-modal-in">
+    <Modal isOpen={open} onClose={requestClose} onExited={onClose} showCloseButton={false} size="lg">
+      <Box className="relative">
         <Box className="absolute top-3 end-3 z-10">
-          <Button variant="ghost" size="sm" icon={X} onClick={onClose} aria-label={t('learning.close')} />
+          <Button variant="ghost" size="sm" icon={X} onClick={requestClose} aria-label={t('learning.close')} />
         </Box>
         <VStack gap="md">
           <HStack gap="sm" align="center">
@@ -138,7 +141,7 @@ export const PeerModal: React.FC<PeerModalProps> = ({ nodeKey, onClose, onConnec
             )}
           </VStack>
         </VStack>
-      </Card>
-    </Box>
+      </Box>
+    </Modal>
   );
 };

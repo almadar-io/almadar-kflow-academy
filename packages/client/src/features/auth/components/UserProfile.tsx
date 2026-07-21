@@ -52,7 +52,7 @@ const UserProfile: React.FC = () => {
   return (
     <Menu
       trigger={
-        <div className="flex items-center gap-3 cursor-pointer hover:opacity-80 transition-opacity duration-200">
+        <div className="flex items-center gap-3 cursor-pointer hover:opacity-80 transition-opacity duration-fast">
           {user.photoURL ? (
             <img
               className="h-8 w-8 rounded-full ring-2 ring-border shadow-sm"

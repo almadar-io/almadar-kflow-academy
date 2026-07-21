@@ -211,7 +211,7 @@ export const QuestionWidget: React.FC<QuestionWidgetProps> = ({
       {showFloatingButton && onOpen && (
         <button
           onClick={onOpen}
-          className="fixed bottom-6 end-6 z-50 p-4 bg-primary text-primary-foreground rounded-full shadow-lg hover:bg-primary-hover transition-all duration-200 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+          className="fixed bottom-6 end-6 z-50 p-4 bg-primary text-primary-foreground rounded-full shadow-lg hover:bg-primary-hover transition-all duration-fast hover:scale-110 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
           aria-label="Ask a question"
           title="Ask a question about this lesson"
         >

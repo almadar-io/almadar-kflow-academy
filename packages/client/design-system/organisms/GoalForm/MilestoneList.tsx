@@ -23,7 +23,7 @@ export const MilestoneList: React.FC<MilestoneListProps> = ({ milestones }) => {
                 return (
                     <Box key={milestone.id} className={`group relative flex gap-4 ${isCompleted ? 'opacity-75 hover:opacity-100 transition-opacity' : ''}`}>
                         {/* Icon/Status Indicator */}
-                        <Box className={`flex-shrink-0 w-10 h-10 rounded-full border-4 flex items-center justify-center bg-card transition-colors duration-300 ${isCompleted
+                        <Box className={`flex-shrink-0 w-10 h-10 rounded-full border-4 flex items-center justify-center bg-card transition-colors duration-normal ${isCompleted
                                 ? 'border-success/30 text-success'
                                 : isNext
                                     ? 'border-primary/30 text-primary ring-2 ring-primary/20'
@@ -37,7 +37,7 @@ export const MilestoneList: React.FC<MilestoneListProps> = ({ milestones }) => {
                         </Box>
 
                         {/* Content Card */}
-                        <Box className={`flex-1 min-w-0 rounded-xl border p-4 transition-all duration-200 ${isNext
+                        <Box className={`flex-1 min-w-0 rounded-xl border p-4 transition-all duration-fast ${isNext
                                 ? 'bg-card border-primary/40 shadow-sm'
                                 : 'bg-muted/20 border-border'
                             }`}>

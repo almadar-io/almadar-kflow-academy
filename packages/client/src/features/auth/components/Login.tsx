@@ -152,7 +152,7 @@ const Login: React.FC = () => {
                   required
                   value={emailForLinkCompletion}
                   onChange={(e) => setEmailForLinkCompletion(e.target.value)}
-                  className="appearance-none rounded-md relative block w-full px-3 py-2 border border-border placeholder:text-[var(--color-placeholder)] text-foreground bg-card focus:outline-none focus:ring-primary focus:border-primary focus:z-10 sm:text-sm transition-colors duration-200"
+                  className="appearance-none rounded-md relative block w-full px-3 py-2 border border-border placeholder:text-[var(--color-placeholder)] text-foreground bg-card focus:outline-none focus:ring-primary focus:border-primary focus:z-10 sm:text-sm transition-colors duration-fast"
                   placeholder={t('auth.enterYourEmail')}
                 />
               </div>
@@ -166,7 +166,7 @@ const Login: React.FC = () => {
               <button
                 type="submit"
                 disabled={loading || !emailForLinkCompletion.trim()}
-                className="group relative w-full flex justify-center items-center gap-2 py-2 px-4 border border-transparent text-sm font-medium rounded-md text-primary-foreground bg-primary hover:bg-primary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary disabled:opacity-50 transition-colors duration-200"
+                className="group relative w-full flex justify-center items-center gap-2 py-2 px-4 border border-transparent text-sm font-medium rounded-md text-primary-foreground bg-primary hover:bg-primary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary disabled:opacity-50 transition-colors duration-fast"
               >
                 {loading ? t('auth.signingIn') : t('auth.completeSignIn')}
               </button>
@@ -181,7 +181,7 @@ const Login: React.FC = () => {
                 <button
                   onClick={handleGoogleSignIn}
                   disabled={loading}
-                  className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-primary-foreground bg-primary hover:bg-primary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary disabled:opacity-50 transition-colors duration-200"
+                  className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-primary-foreground bg-primary hover:bg-primary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary disabled:opacity-50 transition-colors duration-fast"
                 >
                   {loading ? t('auth.signingIn') : t('auth.signInWithGoogle')}
                 </button>
@@ -210,7 +210,7 @@ const Login: React.FC = () => {
                     name="displayName"
                     type="text"
                     required={isSignUp}
-                    className="appearance-none rounded-md relative block w-full px-3 py-2 border border-border placeholder:text-[var(--color-placeholder)] text-foreground bg-card focus:outline-none focus:ring-primary focus:border-primary focus:z-10 sm:text-sm transition-colors duration-200"
+                    className="appearance-none rounded-md relative block w-full px-3 py-2 border border-border placeholder:text-[var(--color-placeholder)] text-foreground bg-card focus:outline-none focus:ring-primary focus:border-primary focus:z-10 sm:text-sm transition-colors duration-fast"
                     placeholder={t('auth.displayName')}
                     value={displayName}
                     onChange={(e) => setDisplayName(e.target.value)}
@@ -228,7 +228,7 @@ const Login: React.FC = () => {
                   type="email"
                   autoComplete="email"
                   required
-                  className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-700 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm transition-colors duration-200"
+                  className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-700 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm transition-colors duration-fast"
                   placeholder={t('auth.emailAddress')}
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
@@ -245,7 +245,7 @@ const Login: React.FC = () => {
                   type="password"
                   autoComplete={isSignUp ? "new-password" : "current-password"}
                   required
-                  className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-700 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm transition-colors duration-200"
+                  className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-700 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm transition-colors duration-fast"
                   placeholder={t('auth.password')}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
@@ -262,7 +262,7 @@ const Login: React.FC = () => {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-primary-foreground bg-primary hover:bg-primary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary disabled:opacity-50 transition-colors duration-200"
+                  className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-primary-foreground bg-primary hover:bg-primary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary disabled:opacity-50 transition-colors duration-fast"
                 >
                   {loading ? t('auth.processing') : (isSignUp ? t('auth.signUp') : t('auth.signIn'))}
                 </button>
@@ -272,7 +272,7 @@ const Login: React.FC = () => {
                 <div className="text-center mt-4">
                   <button
                     onClick={() => setIsSignUp(!isSignUp)}
-                    className="text-primary hover:text-primary transition-colors duration-200 font-medium text-sm"
+                    className="text-primary hover:text-primary transition-colors duration-fast font-medium text-sm"
                   >
                     {isSignUp ? t('auth.alreadyHaveAccount') : t('auth.dontHaveAccount')}
                   </button>

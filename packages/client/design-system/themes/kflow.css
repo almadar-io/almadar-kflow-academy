@@ -89,11 +89,21 @@
     --icon-stroke-width: 1.75;
     --icon-color: #1d4ed8;
 
-    /* Transitions */
+    /* Motion axis — duration + easing. Concrete values (the legacy
+       --transition-* are kept as aliases for any unmigrated consumer). */
     --transition-fast: 150ms;
     --transition-normal: 250ms;
     --transition-slow: 400ms;
     --transition-timing: cubic-bezier(0.4, 0, 0.2, 1);
+    --duration-instant: 0ms;
+    --duration-fast: var(--transition-fast);
+    --duration-normal: var(--transition-normal);
+    --duration-slow: var(--transition-slow);
+    --duration-dramatic: 600ms;
+    --easing-linear: linear;
+    --easing-standard: var(--transition-timing);
+    --easing-emphasized: cubic-bezier(0.2, 0, 0, 1);
+    --easing-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
 
     /* Hover/Active transforms */
     --hover-scale: 1.02;
@@ -195,11 +205,21 @@
     --icon-stroke-width: 1.75;
     --icon-color: #3b82f6;
 
-    /* Transitions */
+    /* Motion axis — duration + easing. Concrete values (the legacy
+       --transition-* are kept as aliases for any unmigrated consumer). */
     --transition-fast: 150ms;
     --transition-normal: 250ms;
     --transition-slow: 400ms;
     --transition-timing: cubic-bezier(0.4, 0, 0.2, 1);
+    --duration-instant: 0ms;
+    --duration-fast: var(--transition-fast);
+    --duration-normal: var(--transition-normal);
+    --duration-slow: var(--transition-slow);
+    --duration-dramatic: 600ms;
+    --easing-linear: linear;
+    --easing-standard: var(--transition-timing);
+    --easing-emphasized: cubic-bezier(0.2, 0, 0, 1);
+    --easing-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
 
     /* Hover/Active transforms */
     --hover-scale: 1.02;
@@ -215,15 +235,4 @@
 
     background-color: var(--color-background);
     color: var(--color-foreground);
-}
-
-/* Respect reduced-motion preferences: disable entrance/exit animations. */
-@media (prefers-reduced-motion: reduce) {
-  .animate-modal-in,
-  .animate-modal-out,
-  .animate-overlay-in,
-  .animate-overlay-out,
-  .animate-slide-up {
-    animation: none !important;
-  }
 }

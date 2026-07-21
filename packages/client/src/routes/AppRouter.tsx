@@ -1,5 +1,5 @@
-import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router';
+import React, { Suspense } from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router';
 import LandingPage from '../pages/LandingPage';
 import { ConceptsPage } from '../pages/ConceptsPage';
 import { ConceptDetailPage } from '../pages/ConceptDetailPage';
@@ -8,7 +8,7 @@ import { SettingsPage } from '../pages/SettingsPage';
 import { ConnectionPage } from '../pages/ConnectionPage';
 import { Login, ProtectedRoute } from '../features/auth';
 import { useAuthContext } from '../features/auth/AuthContext';
-import { Spinner } from '@almadar/ui';
+import { Spinner, PageTransition } from '@almadar/ui';
 import { NavigationHandler } from '../app/NavigationHandler';
 import { ConnectFlowHandler } from '../features/connections/components/ConnectFlowHandler';
 
@@ -33,39 +33,60 @@ const HomeRoute: React.FC = () => {
   return <LandingPage />;
 };
 
+/** Route-loading fallback shown while a page chunk resolves. */
+const RouteFallback: React.FC = () => (
+  <Spinner className="min-h-screen bg-background" />
+);
+
+/**
+ * Location-keyed routes. `PageTransition` remounts on pathname change so each
+ * page plays the `--motion-page-*` enter animation; `Suspense` covers chunk
+ * fetch with the themed fallback.
+ */
+const AnimatedRoutes: React.FC = () => {
+  const location = useLocation();
+  return (
+    <PageTransition locationKey={location.pathname}>
+      <Suspense fallback={<RouteFallback />}>
+        <Routes location={location}>
+          {/* Public Routes (no auth required) */}
+          <Route path="/" element={<HomeRoute />} />
+          <Route path="/login" element={<Login />} />
+
+          {/* Protected routes */}
+          <Route path="/home" element={
+            <ProtectedRoute><DashboardPage /></ProtectedRoute>
+          } />
+          <Route path="/learn" element={<Navigate to="/home" replace />} />
+          <Route path="/concepts/:graphId" element={
+            <ProtectedRoute><ConceptsPage /></ProtectedRoute>
+          } />
+          <Route path="/concepts/:graphId/concept/:conceptId/prerequisite/:prereqId" element={
+            <ProtectedRoute><ConceptDetailPage /></ProtectedRoute>
+          } />
+          <Route path="/concepts/:graphId/concept/:conceptId" element={
+            <ProtectedRoute><ConceptDetailPage /></ProtectedRoute>
+          } />
+          <Route path="/settings" element={
+            <ProtectedRoute><SettingsPage /></ProtectedRoute>
+          } />
+          <Route path="/connection/:id" element={
+            <ProtectedRoute><ConnectionPage /></ProtectedRoute>
+          } />
+
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </Suspense>
+    </PageTransition>
+  );
+};
+
 const AppRouter: React.FC = () => {
   return (
     <Router>
       <NavigationHandler />
       <ConnectFlowHandler />
-      <Routes>
-        {/* Public Routes (no auth required) */}
-        <Route path="/" element={<HomeRoute />} />
-        <Route path="/login" element={<Login />} />
-
-        {/* Protected routes */}
-        <Route path="/home" element={
-          <ProtectedRoute><DashboardPage /></ProtectedRoute>
-        } />
-        <Route path="/learn" element={<Navigate to="/home" replace />} />
-        <Route path="/concepts/:graphId" element={
-          <ProtectedRoute><ConceptsPage /></ProtectedRoute>
-        } />
-        <Route path="/concepts/:graphId/concept/:conceptId/prerequisite/:prereqId" element={
-          <ProtectedRoute><ConceptDetailPage /></ProtectedRoute>
-        } />
-        <Route path="/concepts/:graphId/concept/:conceptId" element={
-          <ProtectedRoute><ConceptDetailPage /></ProtectedRoute>
-        } />
-        <Route path="/settings" element={
-          <ProtectedRoute><SettingsPage /></ProtectedRoute>
-        } />
-        <Route path="/connection/:id" element={
-          <ProtectedRoute><ConnectionPage /></ProtectedRoute>
-        } />
-
-        <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
+      <AnimatedRoutes />
     </Router>
   );
 };

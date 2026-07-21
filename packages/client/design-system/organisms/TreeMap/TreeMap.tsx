@@ -781,7 +781,7 @@ export const TreeMap: React.FC<TreeMapProps> = ({
             <div
               key={node.id}
               className={cn(
-                'absolute transition-shadow duration-200',
+                'absolute transition-shadow duration-fast',
                 'rounded-lg shadow-md cursor-pointer',
                 'bg-card',
                 'border-2',

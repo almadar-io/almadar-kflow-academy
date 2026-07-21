@@ -284,7 +284,7 @@ export const LessonPanel: React.FC<LessonPanelProps> = ({
                 "hover:opacity-90",
                 "text-white font-semibold rounded-lg",
                 "shadow-lg hover:shadow-xl",
-                "transition-all duration-200",
+                "transition-all duration-fast",
                 "disabled:opacity-75 disabled:cursor-not-allowed",
                 "text-lg"
               )}

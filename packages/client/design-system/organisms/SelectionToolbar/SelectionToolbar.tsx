@@ -288,7 +288,7 @@ export const SelectionToolbar: React.FC<SelectionToolbarProps> = ({
           'flex items-center justify-between px-3 py-2',
           'bg-primary',
           'shadow-lg',
-          'animate-in slide-in-from-top duration-200',
+          'animate-in slide-in-from-top duration-fast',
           className
         )}
       >
@@ -346,7 +346,7 @@ export const SelectionToolbar: React.FC<SelectionToolbarProps> = ({
         'bg-card',
         'rounded-lg shadow-lg',
         'border border-border',
-        'animate-in fade-in-0 zoom-in-95 duration-150',
+        'animate-in fade-in-0 zoom-in-95 duration-fast',
         className
       )}
       style={{

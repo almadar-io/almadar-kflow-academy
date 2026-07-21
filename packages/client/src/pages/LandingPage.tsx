@@ -68,7 +68,7 @@ const LandingPage: React.FC = () => {
             </div>
             <button
               onClick={() => navigate('/login')}
-              className="px-6 py-2 bg-primary text-primary-foreground rounded-lg font-medium hover:bg-primary transition-all duration-200 shadow-sm hover:shadow-md"
+              className="px-6 py-2 bg-primary text-primary-foreground rounded-lg font-medium hover:bg-primary transition-all duration-fast shadow-sm hover:shadow-md"
             >
               {t('landing.getStarted')}
             </button>
@@ -92,7 +92,7 @@ const LandingPage: React.FC = () => {
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
             <button
               onClick={() => navigate('/login')}
-              className="group px-8 py-4 bg-primary text-primary-foreground rounded-lg font-semibold text-lg hover:bg-primary transition-all duration-200 shadow-lg hover:shadow-xl flex items-center gap-2"
+              className="group px-8 py-4 bg-primary text-primary-foreground rounded-lg font-semibold text-lg hover:bg-primary transition-all duration-fast shadow-lg hover:shadow-xl flex items-center gap-2"
             >
               {t('landing.hero.cta')}
               <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
@@ -102,7 +102,7 @@ const LandingPage: React.FC = () => {
                 const featuresSection = document.getElementById('features');
                 featuresSection?.scrollIntoView({ behavior: 'smooth' });
               }}
-              className="px-8 py-4 border-2 border-border text-foreground rounded-lg font-semibold text-lg hover:border-primary hover:text-primary transition-all duration-200"
+              className="px-8 py-4 border-2 border-border text-foreground rounded-lg font-semibold text-lg hover:border-primary hover:text-primary transition-all duration-fast"
             >
               {t('landing.hero.learnMore')}
             </button>
@@ -210,7 +210,7 @@ const LandingPage: React.FC = () => {
           {features.map((feature, index) => (
             <div
               key={index}
-              className="group p-6 bg-card rounded-xl border border-border hover:border-primary transition-all duration-200 hover:shadow-lg"
+              className="group p-6 bg-card rounded-xl border border-border hover:border-primary transition-all duration-fast hover:shadow-lg"
             >
               <div className="w-12 h-12 bg-surface rounded-lg flex items-center justify-center mb-4 group-hover:bg-primary transition-colors">
                 <feature.icon className="w-6 h-6 text-primary group-hover:text-primary-foreground transition-colors" />
@@ -269,7 +269,7 @@ const LandingPage: React.FC = () => {
           {useCases.map((useCase, index) => (
             <div
               key={index}
-              className="flex flex-col items-center p-6 bg-card rounded-xl border border-border hover:border-primary transition-all duration-200"
+              className="flex flex-col items-center p-6 bg-card rounded-xl border border-border hover:border-primary transition-all duration-fast"
             >
               <useCase.icon className="w-10 h-10 text-primary mb-3" />
               <p className="text-foreground font-medium text-center">
@@ -292,7 +292,7 @@ const LandingPage: React.FC = () => {
           </p>
           <button
             onClick={() => navigate('/login')}
-            className="group px-8 py-4 bg-card text-primary rounded-lg font-semibold text-lg hover:bg-surface-hover transition-all duration-200 shadow-lg hover:shadow-xl flex items-center gap-2 mx-auto"
+            className="group px-8 py-4 bg-card text-primary rounded-lg font-semibold text-lg hover:bg-surface-hover transition-all duration-fast shadow-lg hover:shadow-xl flex items-center gap-2 mx-auto"
           >
             {t('landing.cta.button')}
             <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />

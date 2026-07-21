@@ -114,7 +114,7 @@ export const ConceptDescription: React.FC<ConceptDescriptionProps> = ({
 
   return (
     <div
-      className={`hover:text-primary hover:bg-surface-hover px-2 py-1 rounded cursor-pointer transition-all duration-200 ${className}`}
+      className={`hover:text-primary hover:bg-surface-hover px-2 py-1 rounded cursor-pointer transition-all duration-fast ${className}`}
       style={{ minHeight: '24px' }}
       onClick={handleClick}
       title="Click to edit description"

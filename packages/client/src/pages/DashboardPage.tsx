@@ -10,7 +10,7 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { useLocation } from 'react-router';
-import { Box, Button, Card, Overlay, Spinner, Typography, VStack, useEventBus, useTranslate } from '@almadar/ui';
+import { Box, Button, Card, Modal, Spinner, Typography, VStack, useEventBus, useTranslate } from '@almadar/ui';
 import { X } from 'lucide-react';
 import kflowLogo from '../assets/kflow-logo.svg';
 import { DashboardBoardTemplate } from '@design-system/templates/DashboardTemplate/DashboardBoardTemplate';
@@ -350,10 +350,8 @@ export const DashboardPage: React.FC = () => {
   return (
     <>
       <DashboardBoardTemplate entity={entity} isLoading={pathsLoading} />
-      {(showGoalForm || isExpanding) && (
-        <Box className="fixed inset-0 z-50 flex items-center justify-center p-4">
-          <Overlay onClick={closeGoalModal} />
-          <Card className="relative z-50 max-w-2xl w-full max-h-[90vh] overflow-y-auto overflow-x-hidden p-6 animate-modal-in">
+      <Modal isOpen={showGoalForm || isExpanding} onClose={closeGoalModal} showCloseButton={false} size="lg">
+        <Box className="relative">
             <Box className="absolute top-3 end-3 z-10">
               <Button
                 variant="ghost"
@@ -398,9 +396,8 @@ export const DashboardPage: React.FC = () => {
                 onCancel={() => setShowGoalForm(false)}
               />
             )}
-          </Card>
         </Box>
-      )}
+      </Modal>
     </>
   );
 };

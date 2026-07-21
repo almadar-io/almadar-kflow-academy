@@ -8,7 +8,7 @@ import {
   Button,
   Typography,
   Badge,
-  Overlay,
+  Modal,
   Spinner,
   useTranslate,
 } from '@almadar/ui';
@@ -60,13 +60,16 @@ export const ConceptChatModal: React.FC<ConceptChatModalProps> = ({ conceptLabel
   };
 
   const hue = persona ? hueFor(persona.name) : 0;
+  // Self-managed exit: closing flips open→false (Modal plays the exit
+  // animation), then onExited fires the parent's onClose to unmount.
+  const [open, setOpen] = useState(true);
+  const requestClose = () => setOpen(false);
 
   return (
-    <Box className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      <Overlay onClick={onClose} />
-      <Card className="relative z-50 max-w-2xl w-full max-h-[88vh] flex flex-col p-6 animate-modal-in">
+    <Modal isOpen={open} onClose={requestClose} onExited={onClose} showCloseButton={false} size="lg">
+      <Box className="relative flex flex-col max-h-[80vh]">
         <Box className="absolute top-3 end-3 z-10">
-          <Button variant="ghost" size="sm" icon={X} onClick={onClose} aria-label={t('learning.close')} />
+          <Button variant="ghost" size="sm" icon={X} onClick={requestClose} aria-label={t('learning.close')} />
         </Box>
         <VStack gap="md" className="min-h-0 flex-1">
           <HStack gap="sm" align="center">
@@ -166,7 +169,7 @@ export const ConceptChatModal: React.FC<ConceptChatModalProps> = ({ conceptLabel
             </Button>
           </HStack>
         </VStack>
-      </Card>
-    </Box>
+      </Box>
+    </Modal>
   );
 };

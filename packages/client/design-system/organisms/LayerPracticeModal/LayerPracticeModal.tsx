@@ -78,14 +78,14 @@ export const LayerPracticeModal: React.FC<LayerPracticeModalProps> = ({
 
   return (
     <Box
-      className={`fixed inset-0 bg-black bg-opacity-50 z-50 flex items-end transition-all duration-300 ${
+      className={`fixed inset-0 bg-black bg-opacity-50 z-50 flex items-end transition-all duration-normal ${
         isOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'
       }`}
       onClick={onClose}
     >
       <Box
         ref={modalRef}
-        className={`bg-card w-full h-full rounded-t-3xl shadow-2xl transform transition-transform duration-300 ease-out ${
+        className={`bg-card w-full h-full rounded-t-3xl shadow-2xl transform transition-transform duration-normal ease-standard ${
           isOpen ? 'translate-y-0' : 'translate-y-full'
         }`}
         onClick={(e) => e.stopPropagation()}

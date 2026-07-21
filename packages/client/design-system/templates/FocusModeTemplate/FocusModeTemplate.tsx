@@ -359,7 +359,7 @@ export const FocusModeTemplate: React.FC<FocusModeTemplateProps> = (props) => {
               </div>
               <div className="mt-4 w-48 sm:w-64 mx-auto h-1.5 bg-muted rounded-full overflow-hidden">
                 <div
-                  className="h-full bg-primary transition-all duration-500"
+                  className="h-full bg-primary transition-all duration-slow"
                   style={{ width: `${progressPercentage}%` }}
                 />
               </div>
@@ -689,7 +689,7 @@ export const FocusModeTemplate: React.FC<FocusModeTemplateProps> = (props) => {
             </div>
             <div className="mt-3 h-2 bg-muted rounded-full overflow-hidden">
               <div
-                className="h-full bg-primary transition-all duration-500"
+                className="h-full bg-primary transition-all duration-slow"
                 style={{ width: `${progressPercentage}%` }}
               />
             </div>

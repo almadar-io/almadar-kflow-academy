@@ -189,7 +189,7 @@ export const ConceptCard: React.FC<ConceptCardProps> = ({
     <Card
       variant="elevated"
       className={cn(
-        'relative transition-all duration-200',
+        'relative transition-all duration-fast',
         // Highlighted state (lesson ready)
         isHighlighted && !isCurrent && !isCompleted && 'border-s-4 border-s-success bg-surface',
         // Current/active state
