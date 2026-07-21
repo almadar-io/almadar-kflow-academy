@@ -706,5 +706,7 @@
   "aria.changeLanguage": "تغيير اللغة",
   "aria.settings": "الإعدادات",
   "aria.switchToLight": "التبديل إلى الوضع الفاتح",
-  "aria.switchToDark": "التبديل إلى الوضع الداكن"
+  "aria.switchToDark": "التبديل إلى الوضع الداكن",
+  "nav.yourPaths": "مساراتك",
+  "dashboard.untitledPath": "مسار بدون عنوان"
 }

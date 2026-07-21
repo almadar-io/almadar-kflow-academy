@@ -336,6 +336,12 @@ export const DashboardPage: React.FC = () => {
         href: item.href,
         active: item.active,
       })),
+      pinnedItems: pathSummaries.slice(0, 5).map(p => ({
+        id: p.id,
+        label: p.title || p.seedConcept?.name || t('dashboard.untitledPath'),
+        href: `/concepts/${p.id}`,
+        active: location.pathname === `/concepts/${p.id}`,
+      })),
       user: templateUser,
       logoSrc: kflowLogo,
       brandName: 'KFlow',

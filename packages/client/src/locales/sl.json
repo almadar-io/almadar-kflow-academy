@@ -706,5 +706,7 @@
   "aria.changeLanguage": "Spremeni jezik",
   "aria.settings": "Nastavitve",
   "aria.switchToLight": "Preklopi na svetli način",
-  "aria.switchToDark": "Preklopi na temni način"
+  "aria.switchToDark": "Preklopi na temni način",
+  "nav.yourPaths": "Tvoje poti",
+  "dashboard.untitledPath": "Brezimna pot"
 }

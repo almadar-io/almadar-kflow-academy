@@ -12,6 +12,13 @@
       // defaultMode 'dark'. Runs synchronously in <head> so <body> never paints light.
       (function () {
         try {
+          // Locale → text direction (set before paint so RTL layout + the drawer
+          // edge are correct immediately, matching the theme no-flash below).
+          var loc = localStorage.getItem('kflow-locale');
+          var dir = loc === 'ar' ? 'rtl' : 'ltr';
+          document.documentElement.dir = dir;
+          document.documentElement.lang = loc || 'en';
+          // Theme (avoid light→dark flash).
           var theme = localStorage.getItem('theme') || 'kflow';
           var mode = localStorage.getItem('theme-mode');
           if (mode !== 'light' && mode !== 'dark' && mode !== 'system') mode = 'dark';

@@ -53,6 +53,10 @@ export interface TopNavShellProps {
   onLogoClick?: () => void;
   /** Click handler for the settings gear (top-right cluster). */
   onSettingsClick?: () => void;
+  /** Secondary “pinned” items rendered below a divider (e.g. recent learning paths). */
+  pinnedItems?: TopNavItem[];
+  /** Label for the pinned section. */
+  pinnedSectionLabel?: string;
   /** Optional desktop page header rendered above the content slot. */
   pageHeader?: React.ReactNode;
   contentPadding?: boolean;
@@ -71,13 +75,15 @@ export const TopNavShell: React.FC<TopNavShellProps> = ({
   user,
   onLogoClick,
   onSettingsClick,
+  pinnedItems = [],
+  pinnedSectionLabel,
   pageHeader,
   contentPadding = true,
   contentClassName,
   className,
   children,
 }) => {
-  const { t, locale } = useTranslate();
+  const { t, locale, direction } = useTranslate();
   const { emit } = useEventBus();
   const { resolvedMode, toggleMode } = useTheme();
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -85,9 +91,9 @@ export const TopNavShell: React.FC<TopNavShellProps> = ({
   const lastScrollTop = useRef(0);
 
   // Drawer position is physical (left/right) in @almadar/ui — resolve from the
-  // document direction so the drawer slides in from the same edge as the hamburger.
-  const isRtl = typeof document !== 'undefined' && document.documentElement.dir === 'rtl';
-  const drawerPosition = isRtl ? 'right' : 'left';
+  // reactive text direction so the drawer slides in from the same edge as the
+  // hamburger (left in LTR, right in RTL).
+  const drawerPosition = direction === 'rtl' ? 'right' : 'left';
 
   // Hide-on-scroll-down / reveal-on-scroll-up. Attached to the scrolling
   // content area (onScroll), not window — the content box owns the scroll.
@@ -238,7 +244,7 @@ export const TopNavShell: React.FC<TopNavShellProps> = ({
                 trigger={
                   <button
                     type="button"
-                    className="ms-1 cursor-pointer rounded-full transition-opacity hover:opacity-80"
+                    className="flex h-8 w-8 items-center justify-center rounded-full transition-opacity hover:opacity-80"
                     aria-label={user.name}
                   >
                     {user.avatar ? (
@@ -303,6 +309,37 @@ export const TopNavShell: React.FC<TopNavShellProps> = ({
             );
           })}
         </VStack>
+        {pinnedItems.length > 0 && (
+          <>
+            <Box className="my-2 border-t border-[var(--color-border)]" />
+            {pinnedSectionLabel && (
+              <Typography variant="small" color="muted" weight="medium" className="px-3 pb-1">
+                {pinnedSectionLabel}
+              </Typography>
+            )}
+            <VStack gap="xs">
+              {pinnedItems.map((item) => {
+                const Icon = item.icon;
+                return (
+                  <button
+                    key={item.id}
+                    type="button"
+                    onClick={() => handleItemClick(item)}
+                    className={cn(
+                      'flex w-full items-center gap-3 rounded-md px-3 py-2 text-start text-sm transition-colors',
+                      item.active
+                        ? 'bg-[var(--color-primary-muted)] text-[var(--color-foreground)] font-medium'
+                        : 'text-[var(--color-muted-foreground)] hover:bg-[var(--color-muted)] hover:text-[var(--color-foreground)]',
+                    )}
+                  >
+                    {Icon && <Icon size={16} className="flex-shrink-0" />}
+                    <span className="flex-1 truncate">{item.label}</span>
+                  </button>
+                );
+              })}
+            </VStack>
+          </>
+        )}
       </Drawer>
     </Box>
   );

@@ -706,5 +706,7 @@
   "aria.changeLanguage": "Change language",
   "aria.settings": "Settings",
   "aria.switchToLight": "Switch to light mode",
-  "aria.switchToDark": "Switch to dark mode"
+  "aria.switchToDark": "Switch to dark mode",
+  "nav.yourPaths": "Your paths",
+  "dashboard.untitledPath": "Untitled path"
 }

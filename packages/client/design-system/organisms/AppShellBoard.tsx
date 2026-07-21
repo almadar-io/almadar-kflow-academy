@@ -34,6 +34,7 @@ export interface AppShellUser {
 
 export interface AppShellEntity {
   navigationItems: AppShellNavItem[];
+  pinnedItems?: AppShellNavItem[];
   user?: AppShellUser;
   logo?: React.ReactNode;
   logoSrc?: string;
@@ -86,11 +87,24 @@ export function AppShellBoard({
     }),
   );
 
+  const pinnedItems: TopNavItem[] = (app?.pinnedItems ?? []).map(
+    (item: AppShellNavItem) => ({
+      id: item.id,
+      label: t(item.label),
+      icon: item.icon,
+      badge: item.badge,
+      active: item.active ?? item.href === app?.activeRoute,
+      onClick: () => handleNavClick(item.href),
+    }),
+  );
+
   return (
     <TopNavShell
       brandName={app?.brandName ?? "KFlow"}
       logo={app?.logo}
       navigationItems={navItems}
+      pinnedItems={pinnedItems}
+      pinnedSectionLabel={t('nav.yourPaths')}
       user={app?.user}
       onLogoClick={handleLogoClick}
       onSettingsClick={handleSettingsClick}
