@@ -288,13 +288,13 @@ export const PlacementTest: React.FC<PlacementTestProps> = ({
       <Box className="mb-6 relative">
         {/* Skip button in top right */}
         {onSkip && (
-          <Box className="absolute top-0 right-0">
+          <Box className="absolute top-0 end-0">
             <Button variant="secondary" size="sm" onClick={handleSkip}>
               {t('placement.skipTest')}
             </Button>
           </Box>
         )}
-        <Typography variant="h2" weight="bold" className="text-foreground mb-2 pr-32">
+        <Typography variant="h2" weight="bold" className="text-foreground mb-2 pe-32">
           {t('placement.title')}
         </Typography>
         <Typography variant="body" className="text-muted-foreground">
@@ -334,9 +334,9 @@ export const PlacementTest: React.FC<PlacementTestProps> = ({
                   key={index}
                   as="button"
                   onClick={() => handleAnswerSelect(currentQuestion.id, option)}
-                  className={`w-full flex items-center p-4 border-2 rounded-lg cursor-pointer text-left transition ${isSelected ? 'border-primary bg-primary/10' : 'border-border hover:border-border-hover'}`}
+                  className={`w-full flex items-center p-4 border-2 rounded-lg cursor-pointer text-start transition ${isSelected ? 'border-primary bg-primary/10' : 'border-border hover:border-border-hover'}`}
                 >
-                  <Box className={`mr-3 w-4 h-4 rounded-full border-2 flex items-center justify-center flex-shrink-0 ${isSelected ? 'border-primary' : 'border-border'}`}>
+                  <Box className={`me-3 w-4 h-4 rounded-full border-2 flex items-center justify-center flex-shrink-0 ${isSelected ? 'border-primary' : 'border-border'}`}>
                     {isSelected && <Box className="w-2 h-2 rounded-full bg-primary" />}
                   </Box>
                   <Typography as="span" variant="body" className="flex-1 text-foreground">{option}</Typography>
@@ -355,9 +355,9 @@ export const PlacementTest: React.FC<PlacementTestProps> = ({
                   key={option}
                   as="button"
                   onClick={() => handleAnswerSelect(currentQuestion.id, option)}
-                  className={`w-full flex items-center p-4 border-2 rounded-lg cursor-pointer text-left transition ${isSelected ? 'border-primary bg-primary/10' : 'border-border hover:border-border-hover'}`}
+                  className={`w-full flex items-center p-4 border-2 rounded-lg cursor-pointer text-start transition ${isSelected ? 'border-primary bg-primary/10' : 'border-border hover:border-border-hover'}`}
                 >
-                  <Box className={`mr-3 w-4 h-4 rounded-full border-2 flex items-center justify-center flex-shrink-0 ${isSelected ? 'border-primary' : 'border-border'}`}>
+                  <Box className={`me-3 w-4 h-4 rounded-full border-2 flex items-center justify-center flex-shrink-0 ${isSelected ? 'border-primary' : 'border-border'}`}>
                     {isSelected && <Box className="w-2 h-2 rounded-full bg-primary" />}
                   </Box>
                   <Typography as="span" variant="body" className="flex-1 text-foreground">{option}</Typography>

@@ -23,7 +23,7 @@
 
 import React, { useState, useEffect } from 'react';
 import type { LucideIcon } from 'lucide-react';
-import { Avatar, Header, Sidebar, ThemeToggle, useEventBus } from '@almadar/ui';
+import { Avatar, Header, Sidebar, ThemeToggle, useEventBus, useTranslate } from '@almadar/ui';
 import { ProfilePopup } from '../../organisms/ProfilePopup/ProfilePopup';
 import { cn } from '@utils/theme';
 import type { UiSidebarCollapsePayload } from '@app/uiEvents';
@@ -158,6 +158,7 @@ export const AppLayoutTemplate: React.FC<AppLayoutTemplateProps> = ({
   className,
 }) => {
   const { emit, on } = useEventBus();
+  const { t } = useTranslate();
   const [sidebarOpen, setSidebarOpen] = useState(!defaultSidebarCollapsed);
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
@@ -202,7 +203,7 @@ export const AppLayoutTemplate: React.FC<AppLayoutTemplateProps> = ({
             type="button"
             className={cn(
               'flex items-center gap-2 cursor-pointer hover:opacity-80 transition-opacity',
-              sidebarOpen ? 'w-full text-left' : 'justify-center'
+              sidebarOpen ? 'w-full text-start' : 'justify-center'
             )}
           >
             <Avatar
@@ -262,10 +263,12 @@ export const AppLayoutTemplate: React.FC<AppLayoutTemplateProps> = ({
       {!hideSidebar && (
         <aside
           className={cn(
-            'fixed lg:sticky lg:top-0 lg:h-screen inset-y-0 left-0 z-[60]',
+            'fixed lg:sticky lg:top-0 lg:h-screen inset-y-0 start-0 z-[60]',
             'transition-all duration-300 ease-in-out',
             sidebarOpen ? 'lg:w-64' : 'lg:w-20',
-            mobileSidebarOpen ? 'translate-x-0 w-64' : '-translate-x-full lg:translate-x-0'
+            mobileSidebarOpen
+              ? 'translate-x-0 w-64 rtl:translate-x-0'
+              : '-translate-x-full rtl:translate-x-full lg:translate-x-0'
           )}
         >
           <Sidebar
@@ -274,7 +277,7 @@ export const AppLayoutTemplate: React.FC<AppLayoutTemplateProps> = ({
             brandName={brandName}
             items={navigationItems.map(item => ({
               id: item.id,
-              label: item.label,
+              label: t(item.label),
               icon: item.icon,
               href: item.href,
               onClick: () => {

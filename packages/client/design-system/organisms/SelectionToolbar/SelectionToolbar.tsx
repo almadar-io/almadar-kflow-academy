@@ -284,7 +284,7 @@ export const SelectionToolbar: React.FC<SelectionToolbarProps> = ({
       <div
         ref={toolbarRef}
         className={cn(
-          'fixed top-0 left-0 right-0 z-[9999]',
+          'fixed top-0 start-0 end-0 z-[9999]',
           'flex items-center justify-between px-3 py-2',
           'bg-primary',
           'shadow-lg',
@@ -326,7 +326,7 @@ export const SelectionToolbar: React.FC<SelectionToolbarProps> = ({
           
           <button
             onClick={handleClose}
-            className="p-1.5 rounded-md hover:bg-white/20 text-white/80 hover:text-white transition-colors ml-1"
+            className="p-1.5 rounded-md hover:bg-white/20 text-white/80 hover:text-white transition-colors ms-1"
             title="Close"
           >
             <X size={18} />

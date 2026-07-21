@@ -354,7 +354,7 @@ export const DashboardPage: React.FC = () => {
         <Box className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <Overlay onClick={closeGoalModal} />
           <Card className="relative z-50 max-w-2xl w-full max-h-[90vh] overflow-y-auto overflow-x-hidden p-6 animate-modal-in">
-            <Box className="absolute top-3 right-3 z-10">
+            <Box className="absolute top-3 end-3 z-10">
               <Button
                 variant="ghost"
                 size="sm"

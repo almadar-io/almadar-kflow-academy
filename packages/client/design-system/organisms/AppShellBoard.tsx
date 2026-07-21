@@ -22,6 +22,7 @@ import {
   ThemeToggle,
   useEventBus,
   useEventListener,
+  useTranslate,
   cn,
   type SidebarItem,
   type DisplayStateProps,
@@ -69,6 +70,7 @@ export function AppShellBoard({
       ? (entity as AppShellEntity)
       : undefined;
   const { emit } = useEventBus();
+  const { t } = useTranslate();
   const [collapsed, setCollapsed] = useState(app?.sidebarCollapsed ?? false);
   const [mobileOpen, setMobileOpen] = useState(false);
 
@@ -121,7 +123,7 @@ export function AppShellBoard({
   const sidebarItems: SidebarItem[] = (app?.navigationItems ?? []).map(
     (item: AppShellNavItem) => ({
       id: item.id,
-      label: item.label,
+      label: t(item.label),
       icon: item.icon,
       badge: item.badge,
       active: item.active ?? item.href === app?.activeRoute,
@@ -147,7 +149,7 @@ export function AppShellBoard({
           type="button"
           className={cn(
             "flex items-center gap-2 cursor-pointer hover:opacity-80 transition-opacity",
-            !collapsed ? "w-full text-left" : "justify-center",
+            !collapsed ? "w-full text-start" : "justify-center",
           )}
         >
           {app.user.avatar ? (
@@ -216,7 +218,7 @@ export function AppShellBoard({
       {mobileOpen && (
         <Box className="lg:hidden fixed inset-0 z-40">
           <Overlay onClick={handleCloseMobileMenu} />
-          <Box className="absolute left-0 top-0 bottom-0 w-64 z-50">
+          <Box className="absolute start-0 top-0 bottom-0 w-64 z-50">
             <Sidebar
               logo={app?.logo}
               logoSrc={app?.logoSrc}

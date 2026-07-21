@@ -18,7 +18,7 @@ export const StatBadge: React.FC<StatBadgeProps> = ({ value, label, icon }) => {
   return (
     <Card padding="sm" className="flex-1 min-w-[8rem] flex items-center gap-3">
       {icon && (
-        <Box className="flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center bg-[var(--color-primary-muted)] text-[var(--color-primary)]">
+        <Box className="flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center bg-surface text-primary">
           <Icon icon={icon} size="md" />
         </Box>
       )}

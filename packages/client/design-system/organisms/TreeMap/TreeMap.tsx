@@ -138,7 +138,7 @@ export interface TreeMapProps {
   className?: string;
   
   /**
-   * Callback when a node is right-clicked (for context menu)
+   * Callback when a node is end-clicked (for context menu)
    */
   onNodeRightClick?: (nodeId: string, node: TreeMapNode, event: React.MouseEvent) => void;
   
@@ -698,7 +698,7 @@ export const TreeMap: React.FC<TreeMapProps> = ({
     >
       {/* Zoom Controls */}
       {showZoomControls && (
-        <div className="absolute top-4 left-4 z-20 flex flex-col gap-1">
+        <div className="absolute top-4 start-4 z-20 flex flex-col gap-1">
           <Button
             variant="secondary"
             size="sm"
@@ -818,7 +818,7 @@ export const TreeMap: React.FC<TreeMapProps> = ({
                 {collapsible && hasChildren && (
                   <button
                     onClick={(e) => handleToggleExpand(node, e)}
-                    className="mr-2 p-1 rounded hover:bg-surface-hover transition-colors"
+                    className="me-2 p-1 rounded hover:bg-surface-hover transition-colors"
                   >
                     {isExpanded ? (
                       <ChevronDown className="w-4 h-4 text-muted-foreground" />
@@ -830,7 +830,7 @@ export const TreeMap: React.FC<TreeMapProps> = ({
                 
                 {/* Color indicator */}
                 <div
-                  className="w-3 h-3 rounded-full mr-2 flex-shrink-0"
+                  className="w-3 h-3 rounded-full me-2 flex-shrink-0"
                   style={{ backgroundColor: nodeColor }}
                 />
                 

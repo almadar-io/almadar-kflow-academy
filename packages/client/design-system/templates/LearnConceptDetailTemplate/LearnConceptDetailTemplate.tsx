@@ -260,7 +260,7 @@ export const LearnConceptDetailTemplate: React.FC<AllProps> = (props) => {
                 icon={ChevronLeft}
                 className="h-auto py-3 px-4 gap-3"
               >
-                <VStack gap="none" align="start" className="min-w-0 text-left">
+                <VStack gap="none" align="start" className="min-w-0 text-start">
                   <Typography variant="caption" color="muted">{t('lesson.previous')}</Typography>
                   <Typography variant="small" weight="medium" className="truncate">{previousConcept.name}</Typography>
                 </VStack>
@@ -275,7 +275,7 @@ export const LearnConceptDetailTemplate: React.FC<AllProps> = (props) => {
                 iconRight={ChevronRight}
                 className="h-auto py-3 px-4 gap-3"
               >
-                <VStack gap="none" align="end" className="min-w-0 text-right">
+                <VStack gap="none" align="end" className="min-w-0 text-end">
                   <Typography variant="caption" className="opacity-80">{t('lesson.next')}</Typography>
                   <Typography variant="small" weight="medium" className="truncate">{nextConcept.name}</Typography>
                 </VStack>

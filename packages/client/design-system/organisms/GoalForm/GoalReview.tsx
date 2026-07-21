@@ -152,7 +152,7 @@ export const GoalReview: React.FC<GoalReviewProps> = ({ goal, onConfirm }) => {
                     <Typography key={milestone.id} variant="body" className="text-muted-foreground">
                       • {milestone.title}
                       {milestone.description && (
-                        <Typography as="span" variant="small" className="text-muted-foreground ml-2">
+                        <Typography as="span" variant="small" className="text-muted-foreground ms-2">
                           - {milestone.description}
                         </Typography>
                       )}
@@ -168,7 +168,7 @@ export const GoalReview: React.FC<GoalReviewProps> = ({ goal, onConfirm }) => {
       </Stack>
 
       {/* Action Buttons - Fixed to bottom */}
-      <Box className="sticky bottom-0 left-0 right-0 bg-card border-t border-border py-4 -mx-6 px-6 -mb-6">
+      <Box className="sticky bottom-0 start-0 end-0 bg-card border-t border-border py-4 -mx-6 px-6 -mb-6">
         <Stack direction="horizontal" justify="end" gap="md">
           <Button variant="primary" onClick={onConfirm} disabled={isEditing}>
             {t('learning.confirmAndContinue')}

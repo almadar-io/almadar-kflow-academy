@@ -65,7 +65,7 @@ export const ConceptChatModal: React.FC<ConceptChatModalProps> = ({ conceptLabel
     <Box className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <Overlay onClick={onClose} />
       <Card className="relative z-50 max-w-2xl w-full max-h-[88vh] flex flex-col p-6 animate-modal-in">
-        <Box className="absolute top-3 right-3 z-10">
+        <Box className="absolute top-3 end-3 z-10">
           <Button variant="ghost" size="sm" icon={X} onClick={onClose} aria-label={t('learning.close')} />
         </Box>
         <VStack gap="md" className="min-h-0 flex-1">

@@ -28,6 +28,7 @@ import knowledgeGraphAccessRoutes from './knowledgeGraphAccessRoutes';
 import graphOperationRoutes from './graphOperationRoutes';
 import peerRoutes from './peerRoutes';
 import conceptChatRoutes from './conceptChatRoutes';
+import conceptImageRoutes from './conceptImageRoutes';
 
 const router = Router();
 
@@ -52,6 +53,7 @@ router.use('/knowledge-graphs-access', knowledgeGraphAccessRoutes);
 router.use('/graph-operations', graphOperationRoutes);
 router.use(peerRoutes);
 router.use('/concept-chat', conceptChatRoutes);
+router.use('/concept-image', conceptImageRoutes);
 router.post('/explain-concept', authenticateFirebase, explainConcept);
 router.post('/custom-operation', authenticateFirebase, customOperationHandler);
 router.post('/generate-layer-practice', authenticateFirebase, generateLayerPracticeHandler);

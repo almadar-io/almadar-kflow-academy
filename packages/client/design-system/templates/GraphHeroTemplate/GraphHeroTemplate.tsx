@@ -36,7 +36,7 @@ export const GraphHeroTemplate: React.FC<GraphHeroTemplateProps> = ({
   footerSlot,
   className,
 }) => (
-  <VStack gap="md" className={className}>
+  <VStack gap="xl" className={className}>
     {heroSlot && <div className="w-full">{heroSlot}</div>}
     {canvasSlot && <div className="w-full max-w-4xl mx-auto">{canvasSlot}</div>}
     {toolbarSlot && <div className="w-full max-w-2xl mx-auto">{toolbarSlot}</div>}

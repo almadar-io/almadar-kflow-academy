@@ -288,6 +288,10 @@
   "nav.stories": "القصص",
   "nav.user": "مستخدم",
 
+  "sidebar.expand": "توسيع الشريط الجانبي",
+  "sidebar.collapse": "طي الشريط الجانبي",
+  "sidebar.close": "إغلاق الشريط الجانبي",
+
   "story.battleDefeat": "مهزوم! هل تريد المحاولة مجدداً؟",
   "story.browseCatalog": "تصفح القصص",
   "story.browsePrompt": "تصفح الفهرس لبدء قصة جديدة.",
@@ -581,6 +585,7 @@
   "learning.titleLabel": "العنوان",
   "learning.type": "النوع",
   "learning.typeAnswerHere": "اكتب إجابتك هنا...",
+  "learning.anchorQuestion": "ما الشيء الذي كنت تتمنى دائمًا تعلّمه؟",
   "learning.youWantToLearn": "تريد تعلم:",
   "learning.generatingNextLevelConcepts": "جارٍ إنشاء مفاهيم المستوى التالي...",
   "learning.viewGoalDetails": "عرض تفاصيل الهدف",

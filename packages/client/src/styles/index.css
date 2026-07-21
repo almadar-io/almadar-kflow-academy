@@ -58,11 +58,11 @@
   }
 
   .lesson-markdown ul {
-    @apply list-disc pl-6 mt-3 mb-4 space-y-2;
+    @apply list-disc ps-6 mt-3 mb-4 space-y-2;
   }
 
   .lesson-markdown ol {
-    @apply list-decimal pl-6 mt-3 mb-4 space-y-2;
+    @apply list-decimal ps-6 mt-3 mb-4 space-y-2;
   }
 
   .lesson-markdown li {
@@ -79,7 +79,7 @@
   }
 
   .lesson-markdown blockquote {
-    @apply border-l-4 border-border pl-4 italic text-muted-foreground my-4;
+    @apply border-s-4 border-border ps-4 italic text-muted-foreground my-4;
   }
 
   .lesson-markdown table {
@@ -87,7 +87,7 @@
   }
 
   .lesson-markdown th {
-    @apply border border-border bg-surface font-semibold px-3 py-2 text-left text-foreground;
+    @apply border border-border bg-surface font-semibold px-3 py-2 text-start text-foreground;
   }
 
   .lesson-markdown td {

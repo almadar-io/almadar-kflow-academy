@@ -223,7 +223,7 @@ export const NotesWidget: React.FC<NotesWidgetProps> = ({
       {showFloatingButton && (
         <button
           onClick={handleOpen}
-          className="fixed bottom-6 right-32 z-50 p-4 bg-success text-success-foreground rounded-full shadow-lg hover:opacity-90 transition-all duration-200 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-success focus:ring-offset-2"
+          className="fixed bottom-6 end-32 z-50 p-4 bg-success text-success-foreground rounded-full shadow-lg hover:opacity-90 transition-all duration-200 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-success focus:ring-offset-2"
           aria-label="Add or edit notes"
           title="Add or edit notes for this lesson"
         >
@@ -250,7 +250,7 @@ export const NotesWidget: React.FC<NotesWidgetProps> = ({
 
           {/* Selected Text Display */}
           {preservedSelectedText && preservedSelectedText.trim() && (
-            <div className="bg-surface border-l-4 border-success p-3 rounded-r-md">
+            <div className="bg-surface border-s-4 border-success p-3 rounded-e-md">
               <Typography variant="small" className="text-[var(--color-success)] mb-1 font-medium">
                 Selected text:
               </Typography>

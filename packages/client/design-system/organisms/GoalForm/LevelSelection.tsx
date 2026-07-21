@@ -74,7 +74,7 @@ export const LevelSelection: React.FC<LevelSelectionProps> = ({
               key={level.value}
               as="button"
               onClick={() => setSelectedLevel(level.value)}
-              className={`w-full p-6 border-2 rounded-lg text-left transition-all ${isSelected ? level.selectedTint : `${level.tint} hover:border-opacity-60`}`}
+              className={`w-full p-6 border-2 rounded-lg text-start transition-all ${isSelected ? level.selectedTint : `${level.tint} hover:border-opacity-60`}`}
             >
               <Stack direction="horizontal" align="center" gap="md">
                 <Box className={`flex-shrink-0 w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all ${isSelected ? level.dot : 'border-border bg-transparent'}`}>
@@ -95,7 +95,7 @@ export const LevelSelection: React.FC<LevelSelectionProps> = ({
       </Stack>
 
       {/* Action Buttons - Fixed to bottom */}
-      <Box className="sticky bottom-0 left-0 right-0 bg-card border-t border-border py-4 -mx-6 px-6 -mb-6">
+      <Box className="sticky bottom-0 start-0 end-0 bg-card border-t border-border py-4 -mx-6 px-6 -mb-6">
         <Stack direction="horizontal" justify="end" gap="md">
           {onSkip && (
             <Button variant="secondary" onClick={onSkip}>

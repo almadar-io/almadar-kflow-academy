@@ -11,7 +11,7 @@ import { Edit3, ClipboardList } from 'lucide-react';
 import { Box, Stack, Typography, Button, Textarea, ProgressBar, Spinner, useTranslate } from '@almadar/ui';
 
 // Anchor question constant (matches backend)
-const ANCHOR_QUESTION = "What's something you've always wanted to learn?";
+const ANCHOR_QUESTION_KEY = 'learning.anchorQuestion';
 
 interface GoalFormProps {
   onComplete?: (result: { goalId: string; graphId: string }) => void;
@@ -508,7 +508,7 @@ export const GoalForm: React.FC<GoalFormProps> = ({ onComplete, onCancel }) => {
                   <ClipboardList size={24} />
                 )}
               </Box>
-              <Box className="flex-1 text-left">
+              <Box className="flex-1 text-start">
                 <Typography variant="h4" weight="semibold" className="text-foreground mb-1">
                   {isGeneratingQuestions ? t('learning.generatingQuestionsShort') : t('learning.takeGoalForm')}
                 </Typography>
@@ -523,7 +523,7 @@ export const GoalForm: React.FC<GoalFormProps> = ({ onComplete, onCancel }) => {
         </Box>
 
         {/* Action Buttons - Fixed to bottom */}
-        <Box className="sticky bottom-0 left-0 right-0 bg-card border-t border-border py-4 -mx-6 px-6 -mb-6">
+        <Box className="sticky bottom-0 start-0 end-0 bg-card border-t border-border py-4 -mx-6 px-6 -mb-6">
           <Stack direction="horizontal" justify="between" gap="md">
             <Button
               variant="secondary"
@@ -570,7 +570,7 @@ export const GoalForm: React.FC<GoalFormProps> = ({ onComplete, onCancel }) => {
       {/* Anchor Question Step */}
       {step === 'anchor' && (
         <Box className="w-full">
-          <Typography variant="h2" weight="bold" className="text-foreground mb-4 sm:mb-6">{ANCHOR_QUESTION}</Typography>
+          <Typography variant="h2" weight="bold" className="text-foreground mb-4 sm:mb-6">{t(ANCHOR_QUESTION_KEY)}</Typography>
 
           <Box className="mb-6">
             <Textarea
@@ -601,14 +601,14 @@ export const GoalForm: React.FC<GoalFormProps> = ({ onComplete, onCancel }) => {
         <Box className="w-full relative">
           {/* Skip button in top right */}
           {currentQuestion.allowSkip && (
-            <Box className="absolute top-0 right-0">
+            <Box className="absolute top-0 end-0">
               <Button variant="secondary" size="sm" onClick={() => handleSkip(currentQuestion.id)}>
                 {t('activation.skipForNow')}
               </Button>
             </Box>
           )}
 
-          <Box className="mb-6 pr-20">
+          <Box className="mb-6 pe-20">
             <Typography variant="h4" weight="semibold" className="text-foreground mb-2">
               {currentQuestion.question}
             </Typography>
@@ -635,9 +635,9 @@ export const GoalForm: React.FC<GoalFormProps> = ({ onComplete, onCancel }) => {
                             key={index}
                             as="button"
                             onClick={() => handleAnswerSelect(currentQuestion.id, option, true)}
-                            className={`w-full flex items-center p-4 border-2 rounded-lg cursor-pointer text-left transition ${isSelected ? 'border-primary bg-primary/10' : 'border-border hover:border-border-hover'}`}
+                            className={`w-full flex items-center p-4 border-2 rounded-lg cursor-pointer text-start transition ${isSelected ? 'border-primary bg-primary/10' : 'border-border hover:border-border-hover'}`}
                           >
-                            <Box className={`mr-3 w-4 h-4 rounded-full border-2 flex items-center justify-center flex-shrink-0 ${isSelected ? 'border-primary' : 'border-border'}`}>
+                            <Box className={`me-3 w-4 h-4 rounded-full border-2 flex items-center justify-center flex-shrink-0 ${isSelected ? 'border-primary' : 'border-border'}`}>
                               {isSelected && <Box className="w-2 h-2 rounded-full bg-primary" />}
                             </Box>
                             <Typography as="span" variant="body" className="flex-1 text-foreground">{option}</Typography>
@@ -666,9 +666,9 @@ export const GoalForm: React.FC<GoalFormProps> = ({ onComplete, onCancel }) => {
                           key={index}
                           as="button"
                           onClick={() => handleAnswerSelect(currentQuestion.id, option, false)}
-                          className={`w-full flex items-center p-4 border-2 rounded-lg cursor-pointer text-left transition ${isSelected ? 'border-primary bg-primary/10' : 'border-border hover:border-border-hover'}`}
+                          className={`w-full flex items-center p-4 border-2 rounded-lg cursor-pointer text-start transition ${isSelected ? 'border-primary bg-primary/10' : 'border-border hover:border-border-hover'}`}
                         >
-                          <Box className={`mr-3 w-4 h-4 rounded border-2 flex items-center justify-center flex-shrink-0 ${isSelected ? 'border-primary bg-primary' : 'border-border'}`}>
+                          <Box className={`me-3 w-4 h-4 rounded border-2 flex items-center justify-center flex-shrink-0 ${isSelected ? 'border-primary bg-primary' : 'border-border'}`}>
                             {isSelected && <Box className="w-2 h-2 bg-primary-foreground" />}
                           </Box>
                           <Typography as="span" variant="body" className="flex-1 text-foreground">{option}</Typography>
@@ -691,9 +691,9 @@ export const GoalForm: React.FC<GoalFormProps> = ({ onComplete, onCancel }) => {
                         <Box
                           as="button"
                           onClick={() => handleSelectAll(currentQuestion.id)}
-                          className={`w-full flex items-center p-4 border-2 rounded-lg cursor-pointer text-left transition ${allSelected ? 'border-primary bg-primary/10' : 'border-border hover:border-border-hover'}`}
+                          className={`w-full flex items-center p-4 border-2 rounded-lg cursor-pointer text-start transition ${allSelected ? 'border-primary bg-primary/10' : 'border-border hover:border-border-hover'}`}
                         >
-                          <Box className={`mr-3 w-4 h-4 rounded border-2 flex items-center justify-center flex-shrink-0 ${allSelected ? 'border-primary bg-primary' : 'border-border'}`}>
+                          <Box className={`me-3 w-4 h-4 rounded border-2 flex items-center justify-center flex-shrink-0 ${allSelected ? 'border-primary bg-primary' : 'border-border'}`}>
                             {allSelected && <Box className="w-2 h-2 bg-primary-foreground" />}
                           </Box>
                           <Typography as="span" variant="body" weight="medium" className="flex-1 text-foreground">{t('learning.allOfTheAbove')}</Typography>
@@ -710,9 +710,9 @@ export const GoalForm: React.FC<GoalFormProps> = ({ onComplete, onCancel }) => {
                   <Box
                     as="button"
                     onClick={() => handleOtherToggle(currentQuestion.id, currentQuestion.selectionType === 'single')}
-                    className="w-full flex items-center mb-3 cursor-pointer text-left"
+                    className="w-full flex items-center mb-3 cursor-pointer text-start"
                   >
-                    <Box className={`mr-3 w-4 h-4 ${currentQuestion.selectionType === 'single' ? 'rounded-full' : 'rounded'} border-2 flex items-center justify-center flex-shrink-0 ${currentAnswer?.isOther ? 'border-primary bg-primary' : 'border-border'}`}>
+                    <Box className={`me-3 w-4 h-4 ${currentQuestion.selectionType === 'single' ? 'rounded-full' : 'rounded'} border-2 flex items-center justify-center flex-shrink-0 ${currentAnswer?.isOther ? 'border-primary bg-primary' : 'border-border'}`}>
                       {currentAnswer?.isOther && <Box className={`w-2 h-2 ${currentQuestion.selectionType === 'single' ? 'rounded-full bg-primary-foreground' : 'bg-primary-foreground'}`} />}
                     </Box>
                     <Typography as="span" variant="body" className="text-foreground">{t('learning.otherSpecify')}</Typography>
@@ -732,7 +732,7 @@ export const GoalForm: React.FC<GoalFormProps> = ({ onComplete, onCancel }) => {
           )}
 
           {/* Navigation Buttons - Fixed to bottom */}
-          <Box className="sticky bottom-0 left-0 right-0 bg-card border-t border-border py-4 -mx-6 px-6 -mb-6">
+          <Box className="sticky bottom-0 start-0 end-0 bg-card border-t border-border py-4 -mx-6 px-6 -mb-6">
             <Stack direction="horizontal" justify="between" align="center">
               <Stack direction="horizontal" gap="sm">
                 {currentQuestionIndex > 0 && (

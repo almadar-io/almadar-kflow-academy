@@ -109,7 +109,7 @@ export const HighlightedSegmentRenderer: React.FC<HighlightedSegmentRendererProp
             {selectedQuestion.selectedText && (
               <Box
                 padding="sm"
-                className="bg-surface border-l-4 border-[var(--color-info)] rounded-r-md"
+                className="bg-surface border-s-4 border-[var(--color-info)] rounded-e-md"
               >
                 <Typography variant="caption" weight="medium" className="text-[var(--color-info)] mb-1">
                   Context:

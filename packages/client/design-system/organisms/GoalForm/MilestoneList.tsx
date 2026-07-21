@@ -14,7 +14,7 @@ export const MilestoneList: React.FC<MilestoneListProps> = ({ milestones }) => {
     return (
         <Box className="space-y-6 relative">
             {/* Vertical Line for Timeline Effect */}
-            <Box className="absolute left-[19px] top-4 bottom-4 w-0.5 bg-border -z-10" />
+            <Box className="absolute start-[19px] top-4 bottom-4 w-0.5 bg-border -z-10" />
 
             {milestones.map((milestone, index) => {
                 const isCompleted = milestone.completed;

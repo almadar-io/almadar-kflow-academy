@@ -120,7 +120,7 @@ export function DailyGoalsCard(): React.JSX.Element {
               <Typography variant="body2" color="muted">
                 {t('dashboard.lessonsToday')}
               </Typography>
-              <HStack gap="xs" justify="end" className="ml-auto">
+              <HStack gap="xs" justify="end" className="ms-auto">
                 <Button variant="primary" size="sm" disabled={isUpdating} onClick={handleSaveGoal}>
                   {isUpdating ? t('learningGoal.saving') : t('learningGoal.save')}
                 </Button>

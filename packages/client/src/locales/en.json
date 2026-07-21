@@ -288,6 +288,10 @@
   "nav.stories": "Stories",
   "nav.user": "User",
 
+  "sidebar.expand": "Expand sidebar",
+  "sidebar.collapse": "Collapse sidebar",
+  "sidebar.close": "Close sidebar",
+
   "story.battleDefeat": "Defeated! Try again?",
   "story.browseCatalog": "Browse Stories",
   "story.browsePrompt": "Browse the catalog to start a new story.",
@@ -581,6 +585,7 @@
   "learning.titleLabel": "Title",
   "learning.type": "Type",
   "learning.typeAnswerHere": "Type your answer here...",
+  "learning.anchorQuestion": "What's something you've always wanted to learn?",
   "learning.youWantToLearn": "You want to learn:",
   "learning.generatingNextLevelConcepts": "Generating next level concepts...",
   "learning.viewGoalDetails": "View goal details",

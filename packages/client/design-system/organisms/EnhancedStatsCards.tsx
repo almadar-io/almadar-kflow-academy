@@ -55,7 +55,7 @@ function StatTile({ stat }: { stat: EnhancedStat }): React.JSX.Element {
         icon={stat.icon}
         iconColor={stat.iconClass}
       />
-      <Box className="absolute right-3 top-3">
+      <Box className="absolute end-3 top-3">
         <Tooltip content={stat.tooltip}>
           <Icon icon={Info} size="sm" color="muted" />
         </Tooltip>

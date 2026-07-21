@@ -297,7 +297,7 @@ export function DashboardBoard({
           document.body
         )}
       {typeof document !== 'undefined' && createPortal(
-        <Box className="fixed bottom-6 right-6 z-40">
+        <Box className="fixed bottom-6 end-6 z-40">
           <Button
             onClick={handleCreatePath}
             variant="primary"
@@ -311,10 +311,10 @@ export function DashboardBoard({
       )}
       <GraphHeroTemplate
         heroSlot={
-          <VStack gap="sm">
+          <VStack gap="md">
             <HStack justify="between" align="center">
               {dash?.welcomeName && (
-                <Typography variant="h1" className="text-2xl font-bold text-[var(--color-foreground)]">
+                <Typography variant="h1" className="text-2xl font-bold text-foreground">
                   {t('dashboard.welcome', { name: dash.welcomeName })}
                 </Typography>
               )}
@@ -367,7 +367,7 @@ export function DashboardBoard({
           </Card>
         ) : undefined}
         toolbarSlot={(hasMap || mapLoading) ? (
-          <VStack gap="sm">
+          <VStack gap="md">
             <SearchInput
               value={dash?.filter?.search ?? ''}
               onChange={(v) => dash?.onSearchChange?.(v)}

@@ -369,7 +369,7 @@ export const FocusModeTemplate: React.FC<FocusModeTemplateProps> = (props) => {
           canvasSlot={(graphNodes.length > 0 || seedConcept) ? (
             <Card className={cn(
               'relative w-full overflow-hidden animate-slide-up',
-              seedConcept?.hasLesson ? 'border-l-4 border-l-success bg-surface' : 'border border-border bg-surface',
+              seedConcept?.hasLesson ? 'border-s-4 border-s-success bg-surface' : 'border border-border bg-surface',
             )}>
             {seedConcept && (
               <Box className="flex items-center gap-2 px-4 pt-4">

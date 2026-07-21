@@ -8,7 +8,7 @@
 import React, { useState } from 'react';
 import type { LucideIcon } from 'lucide-react';
 import { ChevronDown, ChevronRight, Edit, Trash2, Plus, BookOpen, Check, Circle, MoreVertical } from 'lucide-react';
-import { Alert, Avatar, Badge, Button, ButtonGroup, Card, Icon, Menu, ProgressBar, Typography } from '@almadar/ui';
+import { Alert, Avatar, Badge, Button, ButtonGroup, Card, Icon, Menu, ProgressBar, Typography, useTranslate } from '@almadar/ui';
 import type { MenuItem } from '@almadar/ui';
 import { ConnectButton } from '../../molecules/ConnectButton';
 import { cn } from '@utils/theme';
@@ -158,6 +158,7 @@ export const ConceptCard: React.FC<ConceptCardProps> = ({
   onClick,
   className,
 }) => {
+  const { t } = useTranslate();
   const [internalExpanded, setInternalExpanded] = useState(false);
   const expanded = controlledExpanded !== undefined ? controlledExpanded : internalExpanded;
   const hasChildren = Array.isArray(childConcepts) && childConcepts.length > 0;
@@ -181,19 +182,19 @@ export const ConceptCard: React.FC<ConceptCardProps> = ({
       className={cn(
         'relative transition-all duration-200',
         // Highlighted state (lesson ready)
-        isHighlighted && !isCurrent && !isCompleted && 'border-l-4 border-l-success bg-surface',
+        isHighlighted && !isCurrent && !isCompleted && 'border-s-4 border-s-success bg-surface',
         // Current/active state
-        isCurrent && !isCompleted && 'ring-2 ring-primary border-l-4 border-l-primary bg-surface',
+        isCurrent && !isCompleted && 'ring-2 ring-primary border-s-4 border-s-primary bg-surface',
         // Completed state
         isCompleted && 'opacity-60',
         // Default non-highlighted state
-        !isHighlighted && !isCurrent && !isCompleted && 'border-l-4 border-l-border',
+        !isHighlighted && !isCurrent && !isCompleted && 'border-s-4 border-s-border',
         className
       )}
       onClick={onClick}
     >
       {(onConnect || (operations && operations.length > 0)) && (
-        <div className="absolute top-2 right-2 z-10 flex items-center gap-1" onClick={(e) => e.stopPropagation()}>
+        <div className="absolute top-2 end-2 z-10 flex items-center gap-1" onClick={(e) => e.stopPropagation()}>
           {onConnect && (
             <ConnectButton
               iconOnly
@@ -229,106 +230,113 @@ export const ConceptCard: React.FC<ConceptCardProps> = ({
       )}
       <div className="flex flex-col gap-3 h-full">
         {/* Header */}
-        <div className="flex items-start gap-3">
-          {hasChildren && (
-            <button
-              type="button"
-              onClick={(e) => {
-                e.stopPropagation();
-                handleExpand();
-              }}
-              className="flex-shrink-0 mt-1"
-            >
-              <Icon
-                icon={expanded ? ChevronDown : ChevronRight}
-                size="sm"
-                className="text-muted-foreground"
+        <div className="flex flex-col gap-2">
+          {/* Title row: leading visual + name, vertically centered on one line */}
+          <div className="flex items-center gap-3">
+            {hasChildren && (
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleExpand();
+                }}
+                className="flex-shrink-0"
+              >
+                <Icon
+                  icon={expanded ? ChevronDown : ChevronRight}
+                  size="sm"
+                  className="text-muted-foreground"
+                />
+              </button>
+            )}
+
+            {/* Status indicator - shows lesson/completion status */}
+            {!avatar && !icon && (
+              <div className={cn(
+                "flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center",
+                isCompleted && "bg-success text-success-foreground",
+                isCurrent && !isCompleted && "bg-primary text-primary-foreground",
+                isHighlighted && !isCompleted && !isCurrent && "bg-success text-success-foreground",
+                !isHighlighted && !isCompleted && !isCurrent && "bg-muted text-muted-foreground"
+              )}>
+                {isCompleted ? (
+                  <Check size={18} />
+                ) : isHighlighted ? (
+                  <BookOpen size={16} />
+                ) : (
+                  <Circle size={18} />
+                )}
+              </div>
+            )}
+
+            {avatar && (
+              <Avatar
+                src={avatar.src}
+                alt={avatar.alt}
+                initials={avatar.initials}
+                size="md"
               />
-            </button>
-          )}
+            )}
 
-          {/* Status indicator - shows lesson/completion status */}
-          {!avatar && !icon && (
-            <div className={cn(
-              "flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center",
-              isCompleted && "bg-success text-success-foreground",
-              isCurrent && !isCompleted && "bg-primary text-primary-foreground",
-              isHighlighted && !isCompleted && !isCurrent && "bg-success text-success-foreground",
-              !isHighlighted && !isCompleted && !isCurrent && "bg-muted text-muted-foreground"
-            )}>
-              {isCompleted ? (
-                <Check size={18} />
-              ) : isHighlighted ? (
-                <BookOpen size={16} />
-              ) : (
-                <Circle size={18} />
-              )}
-            </div>
-          )}
+            {icon && !avatar && (
+              <div className="flex-shrink-0 flex items-center">
+                <Icon icon={icon} size="md" />
+              </div>
+            )}
 
-          {avatar && (
-            <Avatar
-              src={avatar.src}
-              alt={avatar.alt}
-              initials={avatar.initials}
-              size="md"
-            />
-          )}
-
-          {icon && !avatar && (
-            <div className="flex-shrink-0">
-              <Icon icon={icon} size="md" />
-            </div>
-          )}
-
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2 mb-1">
+            <div className="flex-1 min-w-0 flex items-center gap-2 flex-wrap">
               <Typography variant="h6">
                 {name}
               </Typography>
               {!hideLessonBadge && isHighlighted && !isCompleted && (
                 <Badge variant="success" size="sm" className="bg-surface text-success text-xs">
-                  Lesson Ready
+                  {t('concept.lessonReady')}
                 </Badge>
               )}
               {!hideLessonBadge && !isHighlighted && !isCompleted && (
                 <Badge variant="default" size="sm" className="bg-muted text-muted-foreground text-xs">
-                  No Lesson
+                  {t('concept.noLesson')}
                 </Badge>
               )}
             </div>
-            {description && (
-              <Typography variant="small" color="secondary" className="mb-2">
-                {description}
-              </Typography>
-            )}
-            {/* Prerequisites displayed under description - more prominent */}
-            {prerequisites && prerequisites.length > 0 && (
-              <div className="flex flex-wrap items-center gap-2 mt-2 mb-1">
-                <Typography variant="small" weight="semibold" className="text-xs text-primary">
-                  Prerequisites:
-                </Typography>
-                {prerequisites.map((prereq, idx) => (
-                  <Badge key={idx} variant="primary" size="sm" className="font-medium">
-                    {prereq}
-                  </Badge>
-                ))}
-              </div>
-            )}
-            {/* Parents displayed under description - less prominent */}
-            {parents && parents.length > 0 && (
-              <div className="flex flex-wrap items-center gap-2 mt-1">
-                <Typography variant="small" color="muted" className="text-xs">
-                  Parents:
-                </Typography>
-                {parents.map((parent, idx) => (
-                  <Badge key={idx} variant="default" size="sm" className="bg-muted text-foreground">
-                    {parent}
-                  </Badge>
-                ))}
-              </div>
-            )}
           </div>
+
+          {/* Description + relationships — below the title */}
+          {(description || (prerequisites && prerequisites.length > 0) || (parents && parents.length > 0)) && (
+            <div className="min-w-0 flex flex-col gap-1.5">
+              {description && (
+                <Typography variant="small" color="secondary">
+                  {description}
+                </Typography>
+              )}
+              {/* Prerequisites displayed under description - more prominent */}
+              {prerequisites && prerequisites.length > 0 && (
+                <div className="flex flex-wrap items-center gap-2">
+                  <Typography variant="small" weight="semibold" className="text-xs text-primary">
+                    {t('concept.prerequisites')}
+                  </Typography>
+                  {prerequisites.map((prereq, idx) => (
+                    <Badge key={idx} variant="primary" size="sm" className="font-medium">
+                      {prereq}
+                    </Badge>
+                  ))}
+                </div>
+              )}
+              {/* Parents displayed under description - less prominent */}
+              {parents && parents.length > 0 && (
+                <div className="flex flex-wrap items-center gap-2">
+                  <Typography variant="small" color="muted" className="text-xs">
+                    {t('concept.parents')}
+                  </Typography>
+                  {parents.map((parent, idx) => (
+                    <Badge key={idx} variant="default" size="sm" className="bg-muted text-foreground">
+                      {parent}
+                    </Badge>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
         </div>
 
         {/* Progress Bar */}
@@ -353,7 +361,7 @@ export const ConceptCard: React.FC<ConceptCardProps> = ({
 
         {/* Children */}
         {hasChildren && expanded && Array.isArray(childConcepts) && (
-          <div className="pl-6 border-l-2 border-border space-y-2 mt-3">
+          <div className="ps-6 border-s-2 border-border space-y-2 mt-3">
             {childConcepts
               .filter((child): child is ConceptCardProps => 
                 child != null && 

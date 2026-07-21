@@ -14,11 +14,11 @@
   },
   "dependencies": {
     "@almadar-io/knowledge": "^2.0.5",
-    "@almadar/core": "^10.28.0",
+    "@almadar/core": "^10.30.0",
     "@almadar/logger": "^1.9.0",
     "@almadar/sdk": "^0.2.4",
     "@almadar/syntax": "^1.11.0",
-    "@almadar/ui": "^5.121.3",
+    "@almadar/ui": "^5.121.4",
     "@apollo/client": "^3.14.0",
     "@kflow-academy/shared": "workspace:*",
     "@react-three/drei": "^10.7.7",

@@ -60,7 +60,7 @@ export const FilterBar: React.FC<FilterBarProps> = ({
             {labels[pill.key]}
           </Button>
         ))}
-        <Typography variant="small" color="muted" className="ml-2 hidden sm:block">
+        <Typography variant="small" color="muted" className="ms-2 hidden sm:block">
           {labels.results(resultCount)}
         </Typography>
       </HStack>

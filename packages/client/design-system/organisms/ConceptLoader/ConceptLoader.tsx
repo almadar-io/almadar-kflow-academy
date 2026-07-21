@@ -99,7 +99,7 @@ const ConceptLoader: React.FC<ConceptLoaderProps> = ({
           <div
             ref={scrollContainerRef}
             onScroll={handleScroll}
-            className="max-h-96 overflow-y-auto overflow-x-hidden pr-2 space-y-4 custom-scrollbar"
+            className="max-h-96 overflow-y-auto overflow-x-hidden pe-2 space-y-4 custom-scrollbar"
           >
             {parsedConcepts.map((concept, index) => (
               <Card key={`${concept.name}-${index}`} padding="md" className="bg-muted border-border">

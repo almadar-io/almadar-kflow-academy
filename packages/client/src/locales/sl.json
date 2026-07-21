@@ -288,6 +288,10 @@
   "nav.stories": "Zgodbe",
   "nav.user": "Uporabnik",
 
+  "sidebar.expand": "Razšani stransko vrstico",
+  "sidebar.collapse": "Skrči stransko vrstico",
+  "sidebar.close": "Zapri stransko vrstico",
+
   "story.battleDefeat": "Poražen! Poskusi znova?",
   "story.browseCatalog": "Brskaj po zgodbah",
   "story.browsePrompt": "Brskajte po katalogu za začetek nove zgodbe.",
@@ -581,6 +585,7 @@
   "learning.titleLabel": "Naslov",
   "learning.type": "Vrsta",
   "learning.typeAnswerHere": "Vnesite odgovor tukaj...",
+  "learning.anchorQuestion": "Kaj ste si vedno želeli naučiti?",
   "learning.youWantToLearn": "Želite se naučiti:",
   "learning.generatingNextLevelConcepts": "Ustvarjanje pojmov naslednje ravni...",
   "learning.viewGoalDetails": "Ogled podrobnosti cilja",
