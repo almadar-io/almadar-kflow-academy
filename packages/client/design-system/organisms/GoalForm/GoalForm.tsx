@@ -30,6 +30,7 @@ export const GoalForm: React.FC<GoalFormProps> = ({ onComplete, onCancel }) => {
   const [createdGoal, setCreatedGoal] = useState<{ goalId: string; graphId: string; topic: string; goal: LearningGoal } | null>(null);
   const [placementTestSkipped, setPlacementTestSkipped] = useState(false);
   const [placementTestStarted, setPlacementTestStarted] = useState(false);
+  const [isSubmittingLevel, setIsSubmittingLevel] = useState(false);
 
   const { questions: questionsData, isLoading: isGeneratingQuestions, error: questionsError, generateQuestions } = useGoalQuestions();
   const { isLoading: isSubmitting, error: submitError, createWithGraph, partialGoal } = useCreateGoal();
@@ -355,6 +356,7 @@ export const GoalForm: React.FC<GoalFormProps> = ({ onComplete, onCancel }) => {
   // Level selection step
   if (step === 'level-selection' && createdGoal) {
     const handleLevelSelect = async (level: 'beginner' | 'intermediate' | 'advanced') => {
+      setIsSubmittingLevel(true);
       try {
         // Update goal with selected level
         await updateGoal(createdGoal.goalId, {
@@ -370,12 +372,15 @@ export const GoalForm: React.FC<GoalFormProps> = ({ onComplete, onCancel }) => {
         }
       } catch (error) {
         console.error('Error updating goal level:', error);
+      } finally {
+        setIsSubmittingLevel(false);
       }
     };
 
     return (
       <LevelSelection
         onSelectLevel={handleLevelSelect}
+        isSubmitting={isSubmittingLevel}
         onSkip={() => {
           // Skip level selection, call onComplete directly
           if (onComplete) {
@@ -522,8 +527,8 @@ export const GoalForm: React.FC<GoalFormProps> = ({ onComplete, onCancel }) => {
           </Box>
         </Box>
 
-        {/* Action Buttons - Fixed to bottom */}
-        <Box className="sticky bottom-0 start-0 end-0 bg-card border-t border-border py-4 -mx-6 px-6 -mb-6">
+        {/* Action Buttons */}
+        <Box className="mt-6 pt-4 border-t border-border">
           <Stack direction="horizontal" justify="between" gap="md">
             <Button
               variant="secondary"
@@ -731,8 +736,8 @@ export const GoalForm: React.FC<GoalFormProps> = ({ onComplete, onCancel }) => {
             </Stack>
           )}
 
-          {/* Navigation Buttons - Fixed to bottom */}
-          <Box className="sticky bottom-0 start-0 end-0 bg-card border-t border-border py-4 -mx-6 px-6 -mb-6">
+          {/* Navigation Buttons */}
+          <Box className="mt-6 pt-4 border-t border-border">
             <Stack direction="horizontal" justify="between" align="center">
               <Stack direction="horizontal" gap="sm">
                 {currentQuestionIndex > 0 && (

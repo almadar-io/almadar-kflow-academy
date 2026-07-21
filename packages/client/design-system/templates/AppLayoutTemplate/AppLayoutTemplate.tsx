@@ -18,11 +18,12 @@
  * ```
  */
 
-import React from 'react';
+import React, { useCallback } from 'react';
 import type { LucideIcon } from 'lucide-react';
 import { useEventBus, useTranslate } from '@almadar/ui';
 import { cn } from '@utils/theme';
-import { TopNavShell, type TopNavItem } from '../../organisms/TopNavShell/TopNavShell';
+import { TopNavShell, type TopNavItem, type TopNavPathItem } from '../../organisms/TopNavShell/TopNavShell';
+import { usePinnedPaths } from '@features/knowledge-graph/hooks/usePinnedPaths';
 
 export interface AppLayoutTemplateProps {
   /** Main content to display */
@@ -100,9 +101,27 @@ export const AppLayoutTemplate: React.FC<AppLayoutTemplateProps> = ({
   const { emit } = useEventBus();
   const { t } = useTranslate();
 
-  const handleSettingsClick = React.useCallback(() => {
+  const handleSettingsClick = useCallback(() => {
     emit('UI:NAV_CLICK', { href: '/settings' });
   }, [emit]);
+
+  // Logo click always routes home via the NavigationHandler (UI:LOGO_CLICK),
+  // even when no explicit onLogoClick is passed (e.g. concept-detail pages).
+  const handleLogoClick = useCallback(() => {
+    onLogoClick?.();
+    emit('UI:LOGO_CLICK', {});
+  }, [emit, onLogoClick]);
+
+  // Pinned paths are universal — loaded at the shell level so every page's
+  // drawer shows them.
+  const pinnedPaths = usePinnedPaths();
+  const pinnedItems: TopNavPathItem[] = pinnedPaths.map((p) => ({
+    id: p.id,
+    label: p.label,
+    iconLabel: p.iconLabel,
+    active: p.active,
+    onClick: () => emit('UI:NAV_CLICK', { href: p.href }),
+  }));
 
   const navItems: TopNavItem[] = navigationItems.map((item) => ({
     id: item.id,
@@ -122,8 +141,9 @@ export const AppLayoutTemplate: React.FC<AppLayoutTemplateProps> = ({
       logo={logo}
       navigationItems={navItems}
       user={user}
-      onLogoClick={onLogoClick}
+      onLogoClick={handleLogoClick}
       onSettingsClick={handleSettingsClick}
+      pinnedItems={pinnedItems}
       pageHeader={pageHeader}
       contentPadding={contentPadding}
       contentClassName={contentClassName}

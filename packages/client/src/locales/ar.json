@@ -708,5 +708,6 @@
   "aria.switchToLight": "التبديل إلى الوضع الفاتح",
   "aria.switchToDark": "التبديل إلى الوضع الداكن",
   "nav.yourPaths": "مساراتك",
-  "dashboard.untitledPath": "مسار بدون عنوان"
+  "dashboard.untitledPath": "مسار بدون عنوان",
+  "aria.changeTheme": "تغيير السمة"
 }

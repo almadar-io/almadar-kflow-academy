@@ -15,7 +15,8 @@
 import React, { useCallback } from "react";
 import { type LucideIcon } from "lucide-react";
 import { useEventBus, useTranslate, type DisplayStateProps } from "@almadar/ui";
-import { TopNavShell, type TopNavItem } from "./TopNavShell/TopNavShell";
+import { TopNavShell, type TopNavItem, type TopNavPathItem } from "./TopNavShell/TopNavShell";
+import { usePinnedPaths } from "@features/knowledge-graph/hooks/usePinnedPaths";
 
 export interface AppShellNavItem {
   id: string;
@@ -34,7 +35,6 @@ export interface AppShellUser {
 
 export interface AppShellEntity {
   navigationItems: AppShellNavItem[];
-  pinnedItems?: AppShellNavItem[];
   user?: AppShellUser;
   logo?: React.ReactNode;
   logoSrc?: string;
@@ -87,16 +87,16 @@ export function AppShellBoard({
     }),
   );
 
-  const pinnedItems: TopNavItem[] = (app?.pinnedItems ?? []).map(
-    (item: AppShellNavItem) => ({
-      id: item.id,
-      label: t(item.label),
-      icon: item.icon,
-      badge: item.badge,
-      active: item.active ?? item.href === app?.activeRoute,
-      onClick: () => handleNavClick(item.href),
-    }),
-  );
+  // Pinned paths are universal — loaded at the shell level so every page's
+  // drawer shows them (shares the useLearningPaths react-query cache).
+  const pinnedPaths = usePinnedPaths();
+  const pinnedItems: TopNavPathItem[] = pinnedPaths.map((p) => ({
+    id: p.id,
+    label: p.label,
+    iconLabel: p.iconLabel,
+    active: p.active,
+    onClick: () => handleNavClick(p.href),
+  }));
 
   return (
     <TopNavShell
@@ -104,7 +104,6 @@ export function AppShellBoard({
       logo={app?.logo}
       navigationItems={navItems}
       pinnedItems={pinnedItems}
-      pinnedSectionLabel={t('nav.yourPaths')}
       user={app?.user}
       onLogoClick={handleLogoClick}
       onSettingsClick={handleSettingsClick}

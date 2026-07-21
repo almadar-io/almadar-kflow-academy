@@ -6,16 +6,17 @@
  * slide-in Drawer for the nav items. The bar is in normal flow (not fixed):
  * it collapses via max-height so the content area reflows to fill the space.
  *
- * Composed entirely from @almadar/ui primitives (Drawer, Avatar, ThemeToggle,
- * Box, Stack, Typography) + the kflow ProfilePopup. RTL-aware via logical
- * properties; all labels run through useTranslate.
+ * Composed entirely from @almadar/ui primitives (Button, Drawer, Avatar,
+ * Popover, Box, Stack, Typography) + the kflow ProfilePopup. RTL-aware via
+ * logical properties; all labels run through useTranslate.
  */
 
 import React, { useCallback, useRef, useState } from 'react';
-import { Menu, Settings, Languages, Sun, Moon, Check, type LucideIcon } from 'lucide-react';
+import { Menu, Settings, Languages, Palette, Sun, Moon, Check, type LucideIcon } from 'lucide-react';
 import {
   Avatar,
   Box,
+  Button,
   Drawer,
   HStack,
   Popover,
@@ -27,6 +28,7 @@ import {
 } from '@almadar/ui';
 import { useTheme } from '@almadar/ui/context';
 import { ProfilePopup } from '../ProfilePopup/ProfilePopup';
+import { DrawerPathItem } from './DrawerPathItem';
 import kflowLogo from '../../../src/assets/kflow-logo.svg';
 import kflowLogoWhite from '../../../src/assets/kflow-logo-white.svg';
 
@@ -45,6 +47,15 @@ export interface TopNavUser {
   avatar?: string;
 }
 
+/** Shape of a pinned drawer item (carries a seed-concept label for its Iconify logo). */
+export interface TopNavPathItem {
+  id: string;
+  label: string;
+  iconLabel?: string;
+  active?: boolean;
+  onClick: () => void;
+}
+
 export interface TopNavShellProps {
   brandName?: string;
   logo?: React.ReactNode;
@@ -53,10 +64,8 @@ export interface TopNavShellProps {
   onLogoClick?: () => void;
   /** Click handler for the settings gear (top-right cluster). */
   onSettingsClick?: () => void;
-  /** Secondary “pinned” items rendered below a divider (e.g. recent learning paths). */
-  pinnedItems?: TopNavItem[];
-  /** Label for the pinned section. */
-  pinnedSectionLabel?: string;
+  /** Secondary “pinned” items rendered below a divider (recent learning paths). */
+  pinnedItems?: TopNavPathItem[];
   /** Optional desktop page header rendered above the content slot. */
   pageHeader?: React.ReactNode;
   contentPadding?: boolean;
@@ -68,6 +77,13 @@ export interface TopNavShellProps {
 /** Collapse the bar once the user scrolls past this many px. */
 const SCROLL_THRESHOLD = 8;
 
+// Shared Button overrides for the top-bar icon cluster: square, muted, subtle hover.
+const iconBtnClass =
+  'h-8 w-8 p-0 rounded-md border-transparent text-[var(--color-muted-foreground)] hover:bg-[var(--color-muted)] hover:text-[var(--color-foreground)] hover:border-transparent';
+// Shared Button overrides for full-width menu/list rows inside popovers + drawer.
+const rowBtnBase =
+  'w-full justify-start px-3 py-2 font-normal border-transparent rounded-md text-[var(--color-muted-foreground)] hover:bg-[var(--color-muted)] hover:text-[var(--color-foreground)] hover:border-transparent';
+
 export const TopNavShell: React.FC<TopNavShellProps> = ({
   brandName = 'KFlow',
   logo,
@@ -76,7 +92,6 @@ export const TopNavShell: React.FC<TopNavShellProps> = ({
   onLogoClick,
   onSettingsClick,
   pinnedItems = [],
-  pinnedSectionLabel,
   pageHeader,
   contentPadding = true,
   contentClassName,
@@ -85,7 +100,7 @@ export const TopNavShell: React.FC<TopNavShellProps> = ({
 }) => {
   const { t, locale, direction } = useTranslate();
   const { emit } = useEventBus();
-  const { resolvedMode, toggleMode } = useTheme();
+  const { theme, setTheme, availableThemes, resolvedMode, toggleMode } = useTheme();
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
   const lastScrollTop = useRef(0);
@@ -110,13 +125,10 @@ export const TopNavShell: React.FC<TopNavShellProps> = ({
     lastScrollTop.current = y;
   }, []);
 
-  const handleItemClick = useCallback(
-    (item: TopNavItem) => {
-      item.onClick();
-      setDrawerOpen(false);
-    },
-    [],
-  );
+  const handleItemClick = useCallback((item: TopNavItem) => {
+    item.onClick();
+    setDrawerOpen(false);
+  }, []);
 
   // Locale options for the hover-reveal language menu (native names — conventional for language pickers).
   const localeOptions: Array<{ code: 'en' | 'ar' | 'sl'; label: string }> = [
@@ -130,6 +142,18 @@ export const TopNavShell: React.FC<TopNavShellProps> = ({
       emit('UI:SET_LOCALE', { locale: code });
     },
     [emit],
+  );
+
+  // Theme presets (wireframe, minimalist, kflow, …) for the hover-reveal menu.
+  // Pruned: game themes + trait-wars aren't relevant here.
+  const themeOptions = availableThemes.filter(
+    (th) => !th.name.startsWith('game-') && th.name !== 'trait-wars',
+  );
+  const handleSelectTheme = useCallback(
+    (name: string) => {
+      setTheme(name);
+    },
+    [setTheme],
   );
 
   const userInitials =
@@ -152,19 +176,20 @@ export const TopNavShell: React.FC<TopNavShellProps> = ({
       >
         <HStack className="h-14 items-center justify-between gap-2 px-4">
           <HStack className="items-center gap-1">
-            <button
-              type="button"
-              onClick={() => setDrawerOpen((v) => !v)}
+            <Button
+              variant="ghost"
+              size="sm"
+              icon={Menu}
               aria-label={drawerOpen ? t('aria.closeMenu') : t('aria.openMenu')}
               aria-expanded={drawerOpen}
-              className="flex items-center justify-center rounded-md p-2 text-[var(--color-muted-foreground)] transition-colors hover:bg-[var(--color-muted)] hover:text-[var(--color-foreground)]"
-            >
-              <Menu size={20} />
-            </button>
-            <button
-              type="button"
+              onClick={() => setDrawerOpen((v) => !v)}
+              className={iconBtnClass}
+            />
+            <Button
+              variant="ghost"
+              size="sm"
               onClick={onLogoClick}
-              className="flex items-center gap-2 rounded-md px-2 py-1 transition-colors hover:bg-[var(--color-muted)]"
+              className="gap-2 rounded-md border-transparent px-2 text-[var(--color-foreground)] hover:bg-[var(--color-muted)] hover:border-transparent"
             >
               {logo ?? (
                 <img
@@ -173,10 +198,10 @@ export const TopNavShell: React.FC<TopNavShellProps> = ({
                   className="h-6 w-6 flex-shrink-0"
                 />
               )}
-              <Typography variant="h6" weight="bold" as="span" className="text-[var(--color-foreground)]">
+              <Typography variant="h6" weight="bold" as="span">
                 {brandName}
               </Typography>
-            </button>
+            </Button>
           </HStack>
 
           <HStack className="items-center gap-1">
@@ -188,52 +213,91 @@ export const TopNavShell: React.FC<TopNavShellProps> = ({
               content={
                 <VStack gap="none" className="min-w-[10rem]">
                   {localeOptions.map((opt) => (
-                    <button
+                    <Button
                       key={opt.code}
-                      type="button"
+                      variant="ghost"
+                      size="sm"
                       onClick={() => handleSelectLocale(opt.code)}
                       className={cn(
-                        'flex w-full items-center justify-between gap-2 rounded-md px-3 py-2 text-start text-sm transition-colors',
+                        rowBtnBase,
+                        'justify-between',
                         locale === opt.code
                           ? 'bg-[var(--color-primary-muted)] font-medium text-[var(--color-foreground)]'
-                          : 'text-[var(--color-muted-foreground)] hover:bg-[var(--color-muted)] hover:text-[var(--color-foreground)]',
+                          : '',
                       )}
                     >
                       <span>{opt.label}</span>
                       {locale === opt.code && <Check size={14} className="text-[var(--color-primary)]" />}
-                    </button>
+                    </Button>
                   ))}
                 </VStack>
               }
             >
-              <button
-                type="button"
+              <Button
+                variant="ghost"
+                size="sm"
+                icon={Languages}
                 aria-label={t('aria.changeLanguage')}
                 title={`${t('aria.changeLanguage')} (${locale.toUpperCase()})`}
-                className="flex items-center justify-center rounded-md p-2 text-[var(--color-muted-foreground)] transition-colors hover:bg-[var(--color-muted)] hover:text-[var(--color-foreground)]"
-              >
-                <Languages size={20} />
-              </button>
+                className={iconBtnClass}
+              />
             </Popover>
-            <button
-              type="button"
-              onClick={toggleMode}
+            <Popover
+              trigger="hover"
+              position="bottom"
+              showArrow={false}
+              className="p-1"
+              content={
+                <VStack gap="none" className="min-w-[10rem]">
+                  {themeOptions.map((th) => (
+                    <Button
+                      key={th.name}
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => handleSelectTheme(th.name)}
+                      className={cn(
+                        rowBtnBase,
+                        'justify-between',
+                        theme === th.name
+                          ? 'bg-[var(--color-primary-muted)] font-medium text-[var(--color-foreground)]'
+                          : '',
+                      )}
+                    >
+                      <span>{th.displayName}</span>
+                      {theme === th.name && <Check size={14} className="text-[var(--color-primary)]" />}
+                    </Button>
+                  ))}
+                </VStack>
+              }
+            >
+              <Button
+                variant="ghost"
+                size="sm"
+                icon={Palette}
+                aria-label={t('aria.changeTheme')}
+                title={t('aria.changeTheme')}
+                className={iconBtnClass}
+              />
+            </Popover>
+            <Button
+              variant="ghost"
+              size="sm"
+              icon={resolvedMode === 'dark' ? Sun : Moon}
               aria-label={resolvedMode === 'dark' ? t('aria.switchToLight') : t('aria.switchToDark')}
               title={resolvedMode === 'dark' ? t('aria.switchToLight') : t('aria.switchToDark')}
-              className="flex items-center justify-center rounded-md p-2 text-[var(--color-muted-foreground)] transition-colors hover:bg-[var(--color-muted)] hover:text-[var(--color-foreground)]"
-            >
-              {resolvedMode === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
-            </button>
+              onClick={toggleMode}
+              className={iconBtnClass}
+            />
             {onSettingsClick && (
-              <button
-                type="button"
-                onClick={onSettingsClick}
+              <Button
+                variant="ghost"
+                size="sm"
+                icon={Settings}
                 aria-label={t('aria.settings')}
                 title={t('aria.settings')}
-                className="flex items-center justify-center rounded-md p-2 text-[var(--color-muted-foreground)] transition-colors hover:bg-[var(--color-muted)] hover:text-[var(--color-foreground)]"
-              >
-                <Settings size={20} />
-              </button>
+                onClick={onSettingsClick}
+                className={iconBtnClass}
+              />
             )}
             {user && (
               <ProfilePopup
@@ -242,10 +306,11 @@ export const TopNavShell: React.FC<TopNavShellProps> = ({
                 userAvatar={user.avatar}
                 position="bottom-right"
                 trigger={
-                  <button
-                    type="button"
-                    className="flex h-8 w-8 items-center justify-center rounded-full transition-opacity hover:opacity-80"
+                  <Button
+                    variant="ghost"
+                    size="sm"
                     aria-label={user.name}
+                    className="h-8 w-8 rounded-full border-transparent p-0 hover:bg-transparent hover:opacity-80 hover:border-transparent"
                   >
                     {user.avatar ? (
                       <Avatar src={user.avatar} initials={userInitials} size="xs" />
@@ -254,7 +319,7 @@ export const TopNavShell: React.FC<TopNavShellProps> = ({
                         {userInitials}
                       </span>
                     )}
-                  </button>
+                  </Button>
                 }
               />
             )}
@@ -278,65 +343,60 @@ export const TopNavShell: React.FC<TopNavShellProps> = ({
       <Drawer
         isOpen={drawerOpen}
         onClose={() => setDrawerOpen(false)}
-        title={t('nav.menu')}
+        title={
+          logo ?? (
+            <span className="flex items-center gap-2">
+              <img
+                src={resolvedMode === 'dark' ? kflowLogoWhite : kflowLogo}
+                alt=""
+                className="h-6 w-6 flex-shrink-0"
+              />
+              <span>{brandName}</span>
+            </span>
+          )
+        }
         position={drawerPosition}
         width="sm"
         showCloseButton
       >
         <VStack gap="xs" className="py-2">
-          {navigationItems.map((item) => {
-            const Icon = item.icon;
-            return (
-              <button
-                key={item.id}
-                type="button"
-                onClick={() => handleItemClick(item)}
-                className={cn(
-                  'flex w-full items-center gap-3 rounded-md px-3 py-2.5 text-start transition-colors',
-                  item.active
-                    ? 'bg-[var(--color-primary-muted)] text-[var(--color-foreground)] font-medium'
-                    : 'text-[var(--color-muted-foreground)] hover:bg-[var(--color-muted)] hover:text-[var(--color-foreground)]',
-                )}
-              >
-                {Icon && <Icon size={18} className="flex-shrink-0" />}
-                <span className="flex-1 truncate">{item.label}</span>
-                {item.badge !== undefined && (
-                  <span className="rounded-full bg-[var(--color-primary)] px-2 py-0.5 text-xs font-bold text-[var(--color-primary-foreground)]">
-                    {item.badge}
-                  </span>
-                )}
-              </button>
-            );
-          })}
+          {navigationItems.map((item) => (
+            <Button
+              key={item.id}
+              variant="ghost"
+              size="sm"
+              icon={item.icon}
+              onClick={() => handleItemClick(item)}
+              className={cn(
+                rowBtnBase,
+                'py-2.5',
+                item.active
+                  ? 'bg-[var(--color-primary-muted)] font-medium text-[var(--color-foreground)]'
+                  : '',
+              )}
+            >
+              <span className="flex-1 truncate text-start">{item.label}</span>
+              {item.badge !== undefined && (
+                <span className="rounded-full bg-[var(--color-primary)] px-2 py-0.5 text-xs font-bold text-[var(--color-primary-foreground)]">
+                  {item.badge}
+                </span>
+              )}
+            </Button>
+          ))}
         </VStack>
         {pinnedItems.length > 0 && (
           <>
             <Box className="my-2 border-t border-[var(--color-border)]" />
-            {pinnedSectionLabel && (
-              <Typography variant="small" color="muted" weight="medium" className="px-3 pb-1">
-                {pinnedSectionLabel}
-              </Typography>
-            )}
             <VStack gap="xs">
-              {pinnedItems.map((item) => {
-                const Icon = item.icon;
-                return (
-                  <button
-                    key={item.id}
-                    type="button"
-                    onClick={() => handleItemClick(item)}
-                    className={cn(
-                      'flex w-full items-center gap-3 rounded-md px-3 py-2 text-start text-sm transition-colors',
-                      item.active
-                        ? 'bg-[var(--color-primary-muted)] text-[var(--color-foreground)] font-medium'
-                        : 'text-[var(--color-muted-foreground)] hover:bg-[var(--color-muted)] hover:text-[var(--color-foreground)]',
-                    )}
-                  >
-                    {Icon && <Icon size={16} className="flex-shrink-0" />}
-                    <span className="flex-1 truncate">{item.label}</span>
-                  </button>
-                );
-              })}
+              {pinnedItems.map((item) => (
+                <DrawerPathItem
+                  key={item.id}
+                  label={item.label}
+                  iconLabel={item.iconLabel}
+                  active={item.active}
+                  onClick={item.onClick}
+                />
+              ))}
             </VStack>
           </>
         )}

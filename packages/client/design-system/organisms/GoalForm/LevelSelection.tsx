@@ -10,6 +10,8 @@ import { Box, Stack, Typography, Button, useTranslate } from '@almadar/ui';
 interface LevelSelectionProps {
   onSelectLevel: (level: 'beginner' | 'intermediate' | 'advanced') => void;
   onSkip?: () => void;
+  /** True while the level-submit request is in flight (shows a loader, disables actions). */
+  isSubmitting?: boolean;
 }
 
 type LevelValue = 'beginner' | 'intermediate' | 'advanced';
@@ -17,6 +19,7 @@ type LevelValue = 'beginner' | 'intermediate' | 'advanced';
 export const LevelSelection: React.FC<LevelSelectionProps> = ({
   onSelectLevel,
   onSkip,
+  isSubmitting = false,
 }) => {
   const { t } = useTranslate();
   const [selectedLevel, setSelectedLevel] = useState<LevelValue | null>('beginner');
@@ -70,13 +73,14 @@ export const LevelSelection: React.FC<LevelSelectionProps> = ({
         {levels.map((level) => {
           const isSelected = selectedLevel === level.value;
           return (
-            <Box
+            <Button
               key={level.value}
-              as="button"
+              variant="ghost"
+              disabled={isSubmitting}
               onClick={() => setSelectedLevel(level.value)}
-              className={`w-full p-6 border-2 rounded-lg text-start transition-all ${isSelected ? level.selectedTint : `${level.tint} hover:border-opacity-60`}`}
+              className={`h-auto w-full justify-start p-6 border-2 rounded-lg text-start transition-all ${isSelected ? level.selectedTint : `${level.tint}`} ${isSubmitting ? 'opacity-50 pointer-events-none' : ''}`}}
             >
-              <Stack direction="horizontal" align="center" gap="md">
+              <Stack direction="horizontal" align="center" gap="md" className="w-full">
                 <Box className={`flex-shrink-0 w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all ${isSelected ? level.dot : 'border-border bg-transparent'}`}>
                   {isSelected && <Box className="w-3 h-3 rounded-full bg-primary-foreground" />}
                 </Box>
@@ -89,28 +93,29 @@ export const LevelSelection: React.FC<LevelSelectionProps> = ({
                   </Typography>
                 </Box>
               </Stack>
-            </Box>
+            </Button>
           );
         })}
       </Stack>
 
-      {/* Action Buttons - Fixed to bottom */}
-      <Box className="sticky bottom-0 start-0 end-0 bg-card border-t border-border py-4 -mx-6 px-6 -mb-6">
+      {/* Action Buttons */}
+      <Box className="mt-6 pt-4 border-t border-border">
         <Stack direction="horizontal" justify="end" gap="md">
           {onSkip && (
-            <Button variant="secondary" onClick={onSkip}>
+            <Button variant="secondary" onClick={onSkip} disabled={isSubmitting}>
               {t('activation.skipForNow')}
             </Button>
           )}
           <Button
             variant="primary"
             leftIcon={User}
+            isLoading={isSubmitting}
             onClick={() => {
               if (selectedLevel) {
                 onSelectLevel(selectedLevel);
               }
             }}
-            disabled={!selectedLevel}
+            disabled={!selectedLevel || isSubmitting}
           >
             {t('level.continueWith', { level: selectedLevel ?? t('level.level') })}
           </Button>

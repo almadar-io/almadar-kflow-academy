@@ -708,5 +708,6 @@
   "aria.switchToLight": "Switch to light mode",
   "aria.switchToDark": "Switch to dark mode",
   "nav.yourPaths": "Your paths",
-  "dashboard.untitledPath": "Untitled path"
+  "dashboard.untitledPath": "Untitled path",
+  "aria.changeTheme": "Change theme"
 }

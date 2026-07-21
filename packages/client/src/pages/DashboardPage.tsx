@@ -336,12 +336,6 @@ export const DashboardPage: React.FC = () => {
         href: item.href,
         active: item.active,
       })),
-      pinnedItems: pathSummaries.slice(0, 5).map(p => ({
-        id: p.id,
-        label: p.title || p.seedConcept?.name || t('dashboard.untitledPath'),
-        href: `/concepts/${p.id}`,
-        active: location.pathname === `/concepts/${p.id}`,
-      })),
       user: templateUser,
       logoSrc: kflowLogo,
       brandName: 'KFlow',
@@ -356,53 +350,42 @@ export const DashboardPage: React.FC = () => {
   return (
     <>
       <DashboardBoardTemplate entity={entity} isLoading={pathsLoading} />
-      <Modal isOpen={showGoalForm || isExpanding} onClose={closeGoalModal} showCloseButton={false} size="lg">
-        <Box className="relative">
-            <Box className="absolute top-3 end-3 z-10">
-              <Button
-                variant="ghost"
-                size="sm"
-                icon={X}
-                onClick={closeGoalModal}
-                aria-label={t('learning.close')}
-              />
-            </Box>
-            {isExpanding ? (
-              <VStack gap="md" align="center" className="py-8">
-                <Spinner size="lg" />
-                <Typography variant="h3">{t('learn.expanding.title')}</Typography>
-                <Typography variant="body" color="secondary" className="text-center max-w-md">
-                  {parsedConcepts.length > 0
-                    ? t('learn.expanding.progress', { count: String(parsedConcepts.length) })
-                    : t('learn.expanding.building')}
-                </Typography>
-                {(parsedLevelName || parsedConcepts.length > 0) && (
-                  <VStack gap="sm" className="w-full max-h-72 overflow-y-auto">
-                    {parsedLevelName && (
-                      <Card className="px-4 py-2 bg-[var(--color-primary-muted)]">
-                        <Typography variant="small" weight="semibold">
-                          {t('learn.expanding.layer', { name: parsedLevelName })}
-                        </Typography>
-                      </Card>
-                    )}
-                    {parsedConcepts.map((concept, i) => (
-                      <Card key={i} className="px-4 py-3">
-                        <Typography variant="small" weight="medium">{concept.name}</Typography>
-                        <Typography variant="caption" color="secondary" className="line-clamp-2">
-                          {concept.description}
-                        </Typography>
-                      </Card>
-                    ))}
-                  </VStack>
+      <Modal isOpen={showGoalForm || isExpanding} onClose={closeGoalModal} size="lg">
+        {isExpanding ? (
+          <VStack gap="md" align="center" className="py-8">
+            <Spinner size="lg" />
+            <Typography variant="h3">{t('learn.expanding.title')}</Typography>
+            <Typography variant="body" color="secondary" className="text-center max-w-md">
+              {parsedConcepts.length > 0
+                ? t('learn.expanding.progress', { count: String(parsedConcepts.length) })
+                : t('learn.expanding.building')}
+            </Typography>
+            {(parsedLevelName || parsedConcepts.length > 0) && (
+              <VStack gap="sm" className="w-full max-h-72 overflow-y-auto">
+                {parsedLevelName && (
+                  <Card className="px-4 py-2 bg-[var(--color-primary-muted)]">
+                    <Typography variant="small" weight="semibold">
+                      {t('learn.expanding.layer', { name: parsedLevelName })}
+                    </Typography>
+                  </Card>
                 )}
+                {parsedConcepts.map((concept, i) => (
+                  <Card key={i} className="px-4 py-3">
+                    <Typography variant="small" weight="medium">{concept.name}</Typography>
+                    <Typography variant="caption" color="secondary" className="line-clamp-2">
+                      {concept.description}
+                    </Typography>
+                  </Card>
+                ))}
               </VStack>
-            ) : (
-              <GoalForm
-                onComplete={handleGoalFormComplete}
-                onCancel={() => setShowGoalForm(false)}
-              />
             )}
-        </Box>
+          </VStack>
+        ) : (
+          <GoalForm
+            onComplete={handleGoalFormComplete}
+            onCancel={() => setShowGoalForm(false)}
+          />
+        )}
       </Modal>
     </>
   );

@@ -593,6 +593,11 @@ export const FocusModeTemplate: React.FC<FocusModeTemplateProps> = (props) => {
                         </div>
                       )}
                       <div className="flex flex-1 flex-wrap items-center justify-end gap-2 w-full">
+                        {/* TEMPORARILY HIDDEN: "View Level Summary" button — re-enable by
+                            removing the `false &&` guard below. Kept in source so the
+                            review-modal wiring (reviewLevelNumber / handleGenerateLayerPractice)
+                            stays intact for when it returns. */}
+                        {false && (
                         <Button
                           variant="ghost"
                           size="sm"
@@ -612,6 +617,7 @@ export const FocusModeTemplate: React.FC<FocusModeTemplateProps> = (props) => {
                         >
                           {isGeneratingLayerPractice ? t('learning.generatingSummary') : t('learning.viewLevelSummary')}
                         </Button>
+                        )}
                         {nextLevel ? (
                           <Button
                             variant="primary"
