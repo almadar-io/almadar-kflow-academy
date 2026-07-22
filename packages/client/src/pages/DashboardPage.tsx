@@ -420,6 +420,7 @@ export const DashboardPage: React.FC = () => {
       <CompanionMascot
         suggestion={companion.suggestion}
         loading={companion.loading}
+        progressLabel={companion.progressLabel}
         onAccept={companion.accept}
         onDismiss={companion.dismiss}
         onAskWhy={companion.askWhy}

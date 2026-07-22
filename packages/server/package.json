@@ -15,7 +15,7 @@
     "canonicalize:concepts": "tsx src/scripts/canonicalizeConcepts.ts"
   },
   "dependencies": {
-    "@almadar-io/knowledge": "^2.1.1",
+    "@almadar-io/knowledge": "^2.1.2",
     "@almadar-io/rabit": "^0.64.34",
     "@almadar/core": "^10.30.0",
     "@almadar/llm": "^2.34.0",

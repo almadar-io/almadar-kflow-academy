@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
-import { Button, Badge, Presence, useTranslate } from '@almadar/ui';
+import { Button, Badge, Presence, Typography, useTranslate } from '@almadar/ui';
 import { Icon as IconifyIcon } from '@iconify/react';
 import { SuggestionCard } from '../../molecules/SuggestionCard';
 import type { Suggestion } from '@kflow-academy/shared';
@@ -7,15 +7,15 @@ import type { Suggestion } from '@kflow-academy/shared';
 export interface CompanionMascotProps {
   suggestion: Suggestion | null;
   loading: boolean;
+  progressLabel: string | null;
   onAccept: (suggestion: Suggestion) => void;
   onDismiss: () => void;
   onAskWhy: () => void;
 }
 
-export function CompanionMascot({ suggestion, loading, onAccept, onDismiss, onAskWhy }: CompanionMascotProps) {
+export function CompanionMascot({ suggestion, loading, progressLabel, onAccept, onDismiss, onAskWhy }: CompanionMascotProps) {
   const { t } = useTranslate();
   const [showCard, setShowCard] = useState(false);
-  // Keep a render copy so SuggestionCard doesn't get null during Presence exit animation.
   const renderRef = useRef<Suggestion | null>(null);
 
   useEffect(() => {
@@ -44,13 +44,12 @@ export function CompanionMascot({ suggestion, loading, onAccept, onDismiss, onAs
   }, [onAskWhy]);
 
   const hasSuggestion = suggestion !== null;
+  const showProgress = loading && showCard && progressLabel !== null;
 
   return (
     <div className="fixed bottom-4 end-4 z-50 flex flex-col items-end gap-2">
-      <Presence
-        show={showCard && hasSuggestion}
-        animation="slide-up"
-      >
+      {/* Suggestion card */}
+      <Presence show={showCard && hasSuggestion} animation="slide-up">
         <div className="w-80 max-w-[calc(100vw-2rem)]">
           {renderRef.current && (
             <SuggestionCard
@@ -60,6 +59,14 @@ export function CompanionMascot({ suggestion, loading, onAccept, onDismiss, onAs
               onAskWhy={handleAskWhy}
             />
           )}
+        </div>
+      </Presence>
+
+      {/* Progress popover (shown while loading, before suggestion arrives) */}
+      <Presence show={showProgress} animation="slide-up">
+        <div className="w-80 max-w-[calc(100vw-2rem)] bg-surface border border-border rounded-lg shadow-lg p-4 flex items-center gap-3">
+          <IconifyIcon icon="ph:spinner-gap" width={20} height={20} className="animate-spin text-primary flex-shrink-0" />
+          <Typography variant="small" color="secondary">{progressLabel}</Typography>
         </div>
       </Presence>
 
