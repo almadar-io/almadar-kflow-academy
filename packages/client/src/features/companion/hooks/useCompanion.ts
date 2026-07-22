@@ -37,8 +37,13 @@ export function useCompanion(autoAnalyze: boolean = true) {
     replying: false,
   });
   const dismissed = useRef<Set<string>>(new Set());
+  const abortRef = useRef<AbortController | null>(null);
+  const mountedRef = useRef(false);
 
   const analyze = useCallback(async () => {
+    abortRef.current?.abort();
+    const controller = new AbortController();
+    abortRef.current = controller;
     setState(prev => ({ ...prev, loading: true, progressLabel: 'Starting analysis' }));
 
     try {
@@ -75,8 +80,9 @@ export function useCompanion(autoAnalyze: boolean = true) {
             break;
           }
         }
-      });
+      }, controller.signal);
     } catch (e) {
+      if (controller.signal.aborted) return;
       log.warn('Companion analysis failed', { error: e instanceof Error ? e.message : String(e) });
       setState(prev => ({ ...prev, loading: false, progressLabel: null }));
     }
@@ -130,9 +136,13 @@ export function useCompanion(autoAnalyze: boolean = true) {
   }, [locale]);
 
   useEffect(() => {
-    if (autoAnalyze) {
+    if (autoAnalyze && !mountedRef.current) {
+      mountedRef.current = true;
       void analyze();
     }
+    return () => {
+      abortRef.current?.abort();
+    };
   }, [autoAnalyze, analyze]);
 
   return {

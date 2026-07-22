@@ -1,4 +1,5 @@
 import { apiClient } from '../../../services/apiClient';
+import { auth } from '../../../config/firebase';
 import type { CompanionAnalyzeResponse, CompanionReplyResponse } from '@kflow-academy/shared';
 import type { Suggestion, TrajectorySummary } from '@kflow-academy/shared';
 
@@ -37,15 +38,24 @@ export async function replyToCompanion(message: string, locale?: string): Promis
 export async function streamCompanionAnalysis(
   locale: string | undefined,
   onEvent: (event: CompanionStreamEvent) => void,
+  signal?: AbortSignal,
 ): Promise<void> {
   const baseURL = apiClient.baseURL;
   const params = new URLSearchParams();
   if (locale) params.set('locale', locale);
   const url = `${baseURL}/api/companion/analyze-stream${params.size > 0 ? `?${params}` : ''}`;
 
+  const headers: Record<string, string> = { Accept: 'text/event-stream' };
+  const user = auth.currentUser;
+  if (user) {
+    const token = await user.getIdToken();
+    headers['Authorization'] = `Bearer ${token}`;
+  }
+
   const response = await fetch(url, {
     method: 'GET',
-    headers: { Accept: 'text/event-stream' },
+    headers,
+    signal,
   });
 
   if (!response.ok || !response.body) {
