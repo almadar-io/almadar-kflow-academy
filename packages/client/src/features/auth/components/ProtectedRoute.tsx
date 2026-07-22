@@ -17,7 +17,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
   }
 
   if (loading) {
-    return <Spinner className="min-h-screen bg-background" />;
+    return <Spinner className="min-h-screen bg-background flex items-center justify-center" />;
   }
 
   if (!user) {

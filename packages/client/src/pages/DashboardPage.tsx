@@ -10,7 +10,7 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { useLocation } from 'react-router';
-import { Box, Button, Card, Modal, Spinner, Typography, VStack, useEventBus, useTranslate } from '@almadar/ui';
+import { Box, Button, Card, Modal, Spinner, Stack, Typography, VStack, useEventBus, useTranslate } from '@almadar/ui';
 import { X } from 'lucide-react';
 import kflowLogo from '../assets/kflow-logo.svg';
 import { DashboardBoardTemplate } from '@design-system/templates/DashboardTemplate/DashboardBoardTemplate';
@@ -70,6 +70,17 @@ export const DashboardPage: React.FC = () => {
   const [parsedConcepts, setParsedConcepts] = useState<Array<{ name: string; description: string }>>([]);
   const [parsedLevelName, setParsedLevelName] = useState('');
   const contentAccRef = useRef('');
+  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
+  const [deletingPathId, setDeletingPathId] = useState<string | null>(null);
+
+  const handleConfirmDelete = useCallback(async () => {
+    const pathId = confirmDeleteId;
+    if (!pathId) return;
+    setConfirmDeleteId(null);
+    setDeletingPathId(pathId);
+    await handleDeletePath(pathId);
+    setDeletingPathId(null);
+  }, [confirmDeleteId, handleDeletePath]);
 
   const handleGoalFormComplete = useCallback(
     async (result: { goalId: string; graphId: string }) => {
@@ -184,7 +195,7 @@ export const DashboardPage: React.FC = () => {
     });
     const unsubDelete = on('UI:DELETE_LEARNING_PATH', (event) => {
       const pathId = event.payload?.pathId as string | undefined;
-      if (pathId) handleDeletePath(pathId);
+      if (pathId) setConfirmDeleteId(pathId);
     });
     // Node click only highlights + populates the in-board action bar (handled in DashboardBoard);
     // navigation now happens via the explicit OPEN/DRILL actions below.
@@ -339,6 +350,7 @@ export const DashboardPage: React.FC = () => {
       theme: 'light',
     },
     dashboard,
+    deletingPathId,
     mapLevel: level,
     mapLoading,
   };
@@ -382,6 +394,24 @@ export const DashboardPage: React.FC = () => {
             onCancel={() => setShowGoalForm(false)}
           />
         )}
+      </Modal>
+
+      {/* Delete confirmation */}
+      <Modal isOpen={confirmDeleteId !== null} onClose={() => setConfirmDeleteId(null)} size="sm">
+        <VStack gap="md">
+          <Typography variant="h3">{t('dashboard.deleteConfirmTitle')}</Typography>
+          <Typography variant="body" color="muted">
+            {t('dashboard.deleteConfirmMessage')}
+          </Typography>
+          <Stack direction="horizontal" justify="end" gap="md">
+            <Button variant="secondary" onClick={() => setConfirmDeleteId(null)}>
+              {t('common.cancel')}
+            </Button>
+            <Button variant="primary" onClick={handleConfirmDelete}>
+              {t('common.delete')}
+            </Button>
+          </Stack>
+        </VStack>
       </Modal>
     </>
   );

@@ -705,5 +705,9 @@
   "aria.switchToDark": "Switch to dark mode",
   "nav.yourPaths": "Your paths",
   "dashboard.untitledPath": "Untitled path",
-  "aria.changeTheme": "Change theme"
+  "aria.changeTheme": "Change theme",
+  "common.cancel": "Cancel",
+  "common.delete": "Delete",
+  "dashboard.deleteConfirmTitle": "Delete learning path?",
+  "dashboard.deleteConfirmMessage": "This will permanently delete the learning path and all its concepts. This cannot be undone."
 }

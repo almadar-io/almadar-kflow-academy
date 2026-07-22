@@ -29,7 +29,7 @@
   "dependencies": {
     "@almadar-io/knowledge": "^2.0.1",
     "@almadar/core": "10.30.0",
-    "@almadar/ui": "5.122.13",
+    "@almadar/ui": "5.122.14",
     "three": "^0.160.1"
   },
   "devDependencies": {

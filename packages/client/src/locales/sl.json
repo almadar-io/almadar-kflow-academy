@@ -705,5 +705,9 @@
   "aria.switchToDark": "Preklopi na temni način",
   "nav.yourPaths": "Tvoje poti",
   "dashboard.untitledPath": "Brezimna pot",
-  "aria.changeTheme": "Spremeni temo"
+  "aria.changeTheme": "Spremeni temo",
+  "common.cancel": "Prekliči",
+  "common.delete": "Izbriši",
+  "dashboard.deleteConfirmTitle": "Izbriši učno pot?",
+  "dashboard.deleteConfirmMessage": "To bo trajno izbrisalo učno pot in vse njene koncepte. Tega ni mogoče razveljaviti."
 }

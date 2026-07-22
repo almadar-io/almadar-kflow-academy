@@ -29,6 +29,8 @@ export interface DashboardBoardTemplateEntity {
   mapLevel?: DashboardMapLevel;
   /** True while the current map level's data is loading — shows a loader in the map area. */
   mapLoading?: boolean;
+  /** The path currently being deleted — shows a loading overlay on its card. */
+  deletingPathId?: string | null;
 }
 
 export interface DashboardBoardTemplateProps extends DisplayStateProps {
@@ -43,7 +45,7 @@ export function DashboardBoardTemplate({
 }: DashboardBoardTemplateProps): React.JSX.Element {
   return (
     <AppShellTemplate entity={entity.shell} className={className}>
-      <DashboardBoard entity={entity.dashboard} level={entity.mapLevel} mapLoading={entity.mapLoading} isLoading={isLoading} error={error} />
+      <DashboardBoard entity={entity.dashboard} level={entity.mapLevel} mapLoading={entity.mapLoading} deletingPathId={entity.deletingPathId} isLoading={isLoading} error={error} />
     </AppShellTemplate>
   );
 }

@@ -705,5 +705,9 @@
   "aria.switchToDark": "التبديل إلى الوضع الداكن",
   "nav.yourPaths": "مساراتك",
   "dashboard.untitledPath": "مسار بدون عنوان",
-  "aria.changeTheme": "تغيير السمة"
+  "aria.changeTheme": "تغيير السمة",
+  "common.cancel": "إلغاء",
+  "common.delete": "حذف",
+  "dashboard.deleteConfirmTitle": "حذف مسار التعلّم؟",
+  "dashboard.deleteConfirmMessage": "سيتم حذف مسار التعلّم وكل مفاهيمه نهائيًا. لا يمكن التراجع عن هذا."
 }

@@ -124,6 +124,8 @@ export interface DashboardBoardProps extends DisplayStateProps {
   level?: DashboardMapLevel;
   /** True while the current level's map data is loading — shows a loader in the map area. */
   mapLoading?: boolean;
+  /** The path currently being deleted — shows a loading overlay on its card. */
+  deletingPathId?: string | null;
 }
 
 export function DashboardBoard({
@@ -131,6 +133,7 @@ export function DashboardBoard({
   level = 'L1',
   mapLoading = false,
   isLoading = false,
+  deletingPathId,
   className = '',
 }: DashboardBoardProps): React.JSX.Element {
   const dash = (entity && typeof entity === 'object' && !Array.isArray(entity)) ? entity as DashboardEntity : undefined;
@@ -441,8 +444,9 @@ export function DashboardBoard({
                       ? path.description
                       : meta?.seedConcept ? `${t('dashboard.startsWith')}: ${meta.seedConcept}` : undefined;
                     return (
+                      <Box key={path.id} className="relative">
+                        {deletingPathId === path.id && <Spinner overlay size="md" />}
                       <LearningPathCard
-                        key={path.id}
                         id={path.id}
                         name={path.name}
                         imageKey={meta?.seedConcept}
@@ -467,6 +471,7 @@ export function DashboardBoard({
                         ]}
                         className="cursor-pointer"
                       />
+                      </Box>
                     );
                   })}
                 </VStack>
