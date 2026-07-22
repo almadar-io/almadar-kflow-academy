@@ -45,7 +45,7 @@ export const DashboardPage: React.FC = () => {
   const { on, emit } = useEventBus();
   const { t } = useTranslate();
   const dispatch = useAppDispatch();
-  const companion = useCompanion();
+  const companion = useCompanion(!!user);
 
   const handleDeletePath = useCallback(
     async (pathId: string) => {
