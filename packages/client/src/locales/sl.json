@@ -709,5 +709,10 @@
   "common.cancel": "Prekliči",
   "common.delete": "Izbriši",
   "dashboard.deleteConfirmTitle": "Izbriši učno pot?",
-  "dashboard.deleteConfirmMessage": "To bo trajno izbrisalo učno pot in vse njene koncepte. Tega ni mogoče razveljaviti."
+  "dashboard.deleteConfirmMessage": "To bo trajno izbrisalo učno pot in vse njene koncepte. Tega ni mogoče razveljaviti.",
+  "companion.title": "Učni spremljevalec",
+  "companion.accept": "Nadaljuj",
+  "companion.dismiss": "Ne zdaj",
+  "companion.askWhy": "Vprašaj zakaj",
+  "companion.replyTitle": "Spremljevalec"
 }

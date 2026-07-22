@@ -709,5 +709,10 @@
   "common.cancel": "Cancel",
   "common.delete": "Delete",
   "dashboard.deleteConfirmTitle": "Delete learning path?",
-  "dashboard.deleteConfirmMessage": "This will permanently delete the learning path and all its concepts. This cannot be undone."
+  "dashboard.deleteConfirmMessage": "This will permanently delete the learning path and all its concepts. This cannot be undone.",
+  "companion.title": "Learning Companion",
+  "companion.accept": "Continue",
+  "companion.dismiss": "Not now",
+  "companion.askWhy": "Ask why",
+  "companion.replyTitle": "Companion"
 }

@@ -709,5 +709,10 @@
   "common.cancel": "إلغاء",
   "common.delete": "حذف",
   "dashboard.deleteConfirmTitle": "حذف مسار التعلّم؟",
-  "dashboard.deleteConfirmMessage": "سيتم حذف مسار التعلّم وكل مفاهيمه نهائيًا. لا يمكن التراجع عن هذا."
+  "dashboard.deleteConfirmMessage": "سيتم حذف مسار التعلّم وكل مفاهيمه نهائيًا. لا يمكن التراجع عن هذا.",
+  "companion.title": "مرافق التعلم",
+  "companion.accept": "متابعة",
+  "companion.dismiss": "ليس الآن",
+  "companion.askWhy": "اسأل لماذا",
+  "companion.replyTitle": "المرافق"
 }

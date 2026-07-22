@@ -29,6 +29,7 @@ import graphOperationRoutes from './graphOperationRoutes';
 import peerRoutes from './peerRoutes';
 import conceptChatRoutes from './conceptChatRoutes';
 import conceptIconRoutes from './conceptIconRoutes';
+import companionRoutes from './companionRoutes';
 
 const router = Router();
 
@@ -54,6 +55,7 @@ router.use('/graph-operations', graphOperationRoutes);
 router.use(peerRoutes);
 router.use('/concept-chat', conceptChatRoutes);
 router.use('/concept-icon', conceptIconRoutes);
+router.use('/companion', companionRoutes);
 router.post('/explain-concept', authenticateFirebase, explainConcept);
 router.post('/custom-operation', authenticateFirebase, customOperationHandler);
 router.post('/generate-layer-practice', authenticateFirebase, generateLayerPracticeHandler);

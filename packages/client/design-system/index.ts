@@ -13,6 +13,8 @@ export { ConnectionThread } from "./organisms/ConnectionThread";
 export type { ConnectionThreadProps } from "./organisms/ConnectionThread";
 export { ConceptChatModal } from "./organisms/ConceptChatModal";
 export type { ConceptChatModalProps } from "./organisms/ConceptChatModal";
+export { CompanionMascot } from "./organisms/CompanionMascot";
+export type { CompanionMascotProps } from "./organisms/CompanionMascot";
 export { LearnBoard } from "./organisms/LearnBoard";
 export { QuizBlock } from "@almadar/ui";
 export { CodeBlock } from "@almadar/ui";

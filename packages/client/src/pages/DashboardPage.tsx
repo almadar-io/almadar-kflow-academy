@@ -31,6 +31,8 @@ import { useAppDispatch } from '../app/hooks';
 import { setCurrentGraphId } from '../features/knowledge-graph/knowledgeGraphSlice';
 import { graphOperationsStreamingApi } from '../features/knowledge-graph/api/streaming';
 import { GoalForm } from '@design-system/organisms/GoalForm';
+import { CompanionMascot } from '@design-system/organisms/CompanionMascot';
+import { useCompanion } from '../features/companion/hooks/useCompanion';
 import type { DashboardEntity, DashboardMapLevel, DashboardFilterLabels, DashboardSort, DashboardLearningPath } from '@design-system/organisms/DashboardBoard';
 
 const L2_CONCEPT_CAP = 60;
@@ -43,6 +45,7 @@ export const DashboardPage: React.FC = () => {
   const { on, emit } = useEventBus();
   const { t } = useTranslate();
   const dispatch = useAppDispatch();
+  const companion = useCompanion();
 
   const handleDeletePath = useCallback(
     async (pathId: string) => {
@@ -413,6 +416,14 @@ export const DashboardPage: React.FC = () => {
           </Stack>
         </VStack>
       </Modal>
+
+      <CompanionMascot
+        suggestion={companion.suggestion}
+        loading={companion.loading}
+        onAccept={companion.accept}
+        onDismiss={companion.dismiss}
+        onAskWhy={companion.askWhy}
+      />
     </>
   );
 };
