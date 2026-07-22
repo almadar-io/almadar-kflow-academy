@@ -32,6 +32,10 @@ router.get('/analyze-stream', async (req: Request, res: Response) => {
   const locale = typeof req.query.locale === 'string' ? req.query.locale : undefined;
   log.info('companion /analyze-stream', { uid, skillName, locale });
 
+  req.on('close', () => {
+    log.debug('companion /analyze-stream: client disconnected', { uid });
+  });
+
   await analyzeTrajectoryStream(res, uid, skillName, locale);
 });
 

@@ -4,6 +4,7 @@ import type { Suggestion } from '@kflow-academy/shared';
 import { streamCompanionAnalysis } from '../api/companionApi';
 import type { CompanionStreamEvent } from '../api/companionApi';
 import { createLogger } from '@almadar/logger';
+import { auth } from '../../../config/firebase';
 
 const log = createLogger('kflow:client:companion:useCompanion');
 
@@ -38,16 +39,19 @@ export function useCompanion(autoAnalyze: boolean = true) {
   });
   const dismissed = useRef<Set<string>>(new Set());
   const abortRef = useRef<AbortController | null>(null);
-  const mountedRef = useRef(false);
 
-  const analyze = useCallback(async () => {
-    abortRef.current?.abort();
-    const controller = new AbortController();
-    abortRef.current = controller;
+  const analyze = useCallback(async (controller?: AbortController) => {
+    const ctrl = controller ?? new AbortController();
+    if (!controller) abortRef.current = ctrl;
+    log.debug('analyze: called', { locale, uid: auth.currentUser?.uid ?? '(null)', signalAborted: ctrl.signal.aborted });
     setState(prev => ({ ...prev, loading: true, progressLabel: 'Starting analysis' }));
 
     try {
       await streamCompanionAnalysis(locale, (event: CompanionStreamEvent) => {
+        if (ctrl.signal.aborted) {
+          log.debug('analyze: stream aborted, ignoring event');
+          return;
+        }
         switch (event.type) {
           case 'tool_result': {
             const tool = event.data?.tool;
@@ -80,9 +84,12 @@ export function useCompanion(autoAnalyze: boolean = true) {
             break;
           }
         }
-      }, controller.signal);
+      }, ctrl.signal);
     } catch (e) {
-      if (controller.signal.aborted) return;
+      if (ctrl.signal.aborted) {
+        log.debug('analyze: aborted', { reason: 'AbortController aborted' });
+        return;
+      }
       log.warn('Companion analysis failed', { error: e instanceof Error ? e.message : String(e) });
       setState(prev => ({ ...prev, loading: false, progressLabel: null }));
     }
@@ -136,14 +143,16 @@ export function useCompanion(autoAnalyze: boolean = true) {
   }, [locale]);
 
   useEffect(() => {
-    if (autoAnalyze && !mountedRef.current) {
-      mountedRef.current = true;
-      void analyze();
-    }
+    if (!autoAnalyze) return;
+    const controller = new AbortController();
+    abortRef.current = controller;
+    log.debug('useEffect: firing analyze()', { autoAnalyze, locale });
+    void analyze(controller);
     return () => {
-      abortRef.current?.abort();
+      log.debug('useEffect: cleanup — aborting', {});
+      controller.abort();
     };
-  }, [autoAnalyze, analyze]);
+  }, [autoAnalyze, locale]); // analyze is stable per locale; not in deps to avoid re-fire
 
   return {
     suggestion: state.suggestion,

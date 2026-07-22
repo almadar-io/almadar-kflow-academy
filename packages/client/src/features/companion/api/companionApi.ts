@@ -1,5 +1,8 @@
 import { apiClient } from '../../../services/apiClient';
 import { auth } from '../../../config/firebase';
+import { createLogger } from '@almadar/logger';
+
+const log = createLogger('kflow:client:companion:api');
 import type { CompanionAnalyzeResponse, CompanionReplyResponse } from '@kflow-academy/shared';
 import type { Suggestion, TrajectorySummary } from '@kflow-academy/shared';
 
@@ -47,15 +50,27 @@ export async function streamCompanionAnalysis(
 
   const headers: Record<string, string> = { Accept: 'text/event-stream' };
   const user = auth.currentUser;
+  log.debug('streamCompanionAnalysis: start', { hasUser: !!user, uid: user?.uid ?? '(null)' });
   if (user) {
     const token = await user.getIdToken();
+    log.debug('streamCompanionAnalysis: got token', { tokenLen: token.length });
     headers['Authorization'] = `Bearer ${token}`;
+  } else {
+    log.warn('streamCompanionAnalysis: NO USER — auth.currentUser is null, server will dev-bypass');
   }
 
+  log.debug('streamCompanionAnalysis: fetching', { url });
+  const fetchStart = Date.now();
   const response = await fetch(url, {
     method: 'GET',
     headers,
     signal,
+  });
+  log.debug('streamCompanionAnalysis: response', {
+    status: response.status,
+    ok: response.ok,
+    hasBody: !!response.body,
+    elapsed: Date.now() - fetchStart,
   });
 
   if (!response.ok || !response.body) {
@@ -68,7 +83,10 @@ export async function streamCompanionAnalysis(
 
   for (;;) {
     const { done, value } = await reader.read();
-    if (done) break;
+    if (done) {
+      log.debug('streamCompanionAnalysis: stream done', { totalElapsed: Date.now() - fetchStart });
+      break;
+    }
     buffer += decoder.decode(value, { stream: true });
     const events = buffer.split('\n\n');
     buffer = events.pop() ?? '';

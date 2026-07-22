@@ -108,8 +108,10 @@ async function loadPathSummaries(uid: string): Promise<{ paths: PathSummary[]; c
 router.use(authenticateFirebase);
 
 router.get('/learning-paths', async (req, res, next) => {
+  const __t0 = Date.now();
   try {
     const uid = graphQueryDeps.getUid(req);
+    log.debug('[TIMING] /learning-paths request start', { uid, t: __t0 });
 
     const cacheKey = CACHE_KEYS.learningPaths(uid);
     const cached = await hybridCache.get<LearningPathsPayload>(cacheKey);
@@ -140,6 +142,7 @@ router.get('/learning-paths', async (req, res, next) => {
     if (paths.length > 0) {
       await hybridCache.set(cacheKey, payload, CACHE_TTL.LEARNING_PATHS);
     }
+    log.debug('[TIMING] /learning-paths response sent', { uid, elapsedMs: Date.now() - __t0 });
     res.json(payload);
   } catch (error) {
     next(error);
@@ -163,8 +166,10 @@ function matchesLevelFilter(levelCount: number, filter: LevelFilter): boolean {
  * Search/sort/filter/pagination applied server-side over the cached summaries.
  */
 router.get('/learning-paths/list', async (req, res, next) => {
+  const __t0 = Date.now();
   try {
     const uid = graphQueryDeps.getUid(req);
+    log.debug('[TIMING] /learning-paths/list request start', { uid, t: __t0 });
     const search = typeof req.query.search === 'string' ? req.query.search.trim() : '';
     const sort: SortOption = (['recent', 'oldest', 'az', 'za'].includes(req.query.sort as string) ? req.query.sort : 'recent') as SortOption;
     const levelFilter: LevelFilter = (['all', '1', '2-3', '4plus'].includes(req.query.levelFilter as string) ? req.query.levelFilter : 'all') as LevelFilter;
@@ -207,6 +212,7 @@ router.get('/learning-paths/list', async (req, res, next) => {
     const paged = items.slice(start, start + limit);
 
     res.json({ items: paged, total, page, limit, totalPages, clusters });
+    log.debug('[TIMING] /learning-paths/list response sent', { uid, elapsedMs: Date.now() - __t0 });
   } catch (error) {
     next(error);
   }
