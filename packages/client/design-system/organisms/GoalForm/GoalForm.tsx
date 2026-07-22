@@ -32,23 +32,16 @@ export const GoalForm: React.FC<GoalFormProps> = ({ onComplete, onCancel }) => {
   const [placementTestStarted, setPlacementTestStarted] = useState(false);
   const [isSubmittingLevel, setIsSubmittingLevel] = useState(false);
 
-  const { questions: questionsData, isLoading: isGeneratingQuestions, error: questionsError, generateQuestions } = useGoalQuestions();
+  const { questions: questionsData, error: questionsError } = useGoalQuestions();
   const { isLoading: isSubmitting, error: submitError, createWithGraph, partialGoal } = useCreateGoal();
 
   const questions = questionsData?.questions || [];
   const error = questionsError || submitError;
 
   // Handle anchor answer submission - go to choice step
-  const handleAnchorSubmit = () => {
-    if (!anchorAnswer.trim()) {
-      return;
-    }
-    setStep('choice');
-  };
-
-  // Handle manual goal submission
-  const handleManualGoalSubmit = async () => {
-    if (!anchorAnswer.trim()) {
+  // Anchor submit — go straight to goal creation (no intermediate choice step).
+  const handleAnchorSubmit = async () => {
+    if (!anchorAnswer.trim() || isSubmitting) {
       return;
     }
 
@@ -59,11 +52,7 @@ export const GoalForm: React.FC<GoalFormProps> = ({ onComplete, onCancel }) => {
         questionAnswers: [],
         seedConceptDescription: goalDescription.trim() || undefined,
         goalFocused: true,
-        stream: true, // Enable streaming
-        manualGoal: {
-          title: anchorAnswer.trim(),
-          description: goalDescription.trim() || anchorAnswer.trim(),
-        },
+        stream: true, // Enable streaming — the LLM derives the goal title from the anchor answer.
       }, (_chunk: string, partial: StreamPartial) => {
         // Update createdGoal with partial goal as it streams
         if (partial && partial.title) {
@@ -87,23 +76,6 @@ export const GoalForm: React.FC<GoalFormProps> = ({ onComplete, onCancel }) => {
         // Show goal review step first (same as form flow)
         setStep('review');
       }
-    } catch (err) {
-      // Error is handled by the hook
-    }
-  };
-
-  // Generate questions and start form flow
-  const handleStartForm = async () => {
-    if (!anchorAnswer.trim()) {
-      return;
-    }
-
-    try {
-      await generateQuestions({
-        anchorAnswer: anchorAnswer.trim(),
-      });
-      setStep('questions');
-      setCurrentQuestionIndex(0);
     } catch (err) {
       // Error is handled by the hook
     }
@@ -444,114 +416,6 @@ export const GoalForm: React.FC<GoalFormProps> = ({ onComplete, onCancel }) => {
     }
   }
 
-  // Show loader when generating questions
-  if (isGeneratingQuestions && step === 'choice') {
-    return (
-      <Box className="w-full">
-        <Stack direction="vertical" align="center" justify="center" gap="md" className="py-8 sm:py-12">
-          <Spinner size="md" />
-          <Typography variant="body" className="text-muted-foreground">{t('learning.generatingQuestions')}</Typography>
-        </Stack>
-      </Box>
-    );
-  }
-
-  // Choice step - after anchor question, show description and choice between manual entry or form
-  if (step === 'choice') {
-    return (
-      <Box className="w-full">
-        <Box className="text-center mb-6 sm:mb-8">
-          <Typography variant="h2" weight="bold" align="center" className="text-foreground mb-2">
-            {t('learning.tellUsMore')}
-          </Typography>
-          <Typography variant="body" align="center" className="text-muted-foreground">
-            {t('learning.youWantToLearn')}: <Typography as="span" weight="semibold" className="text-foreground">{anchorAnswer}</Typography>
-          </Typography>
-        </Box>
-
-        {/* Goal Description */}
-        <Box className="mb-8">
-          <Typography as="label" variant="small" weight="semibold" className="text-foreground mb-2 block">
-            {t('learning.goalDescriptionOptional')}
-          </Typography>
-          <Textarea
-            value={goalDescription}
-            onChange={(e) => setGoalDescription(e.target.value)}
-            placeholder={t('learning.goalDescriptionPlaceholder')}
-            rows={4}
-            className="resize-none"
-          />
-          <Typography variant="caption" className="text-muted-foreground mt-2 block">
-            {t('learning.enterDescriptionHint')}
-          </Typography>
-        </Box>
-
-        {/* Divider */}
-        <Box className="relative my-8">
-          <Box className="absolute inset-0 flex items-center">
-            <Box className="w-full border-t border-border" />
-          </Box>
-          <Box className="relative flex justify-center text-sm">
-            <Typography as="span" variant="small" className="px-4 bg-card text-muted-foreground">
-              {t('common.or')}
-            </Typography>
-          </Box>
-        </Box>
-
-        {/* Goal Form Option */}
-        <Box className="mb-8">
-          <Box
-            as="button"
-            onClick={handleStartForm}
-            className="w-full p-6 border-2 border-dashed border-border rounded-lg hover:border-accent hover:bg-accent/10 transition-all group disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            <Stack direction="horizontal" align="center" gap="md">
-              <Box className="flex-shrink-0 p-3 bg-accent/20 rounded-lg text-accent">
-                {isGeneratingQuestions ? (
-                  <Spinner size="sm" />
-                ) : (
-                  <ClipboardList size={24} />
-                )}
-              </Box>
-              <Box className="flex-1 text-start">
-                <Typography variant="h4" weight="semibold" className="text-foreground mb-1">
-                  {isGeneratingQuestions ? t('learning.generatingQuestionsShort') : t('learning.takeGoalForm')}
-                </Typography>
-                <Typography variant="small" className="text-muted-foreground">
-                  {isGeneratingQuestions
-                    ? t('learning.generatingQuestionsDesc')
-                    : t('learning.answerQuestionsDesc')}
-                </Typography>
-              </Box>
-            </Stack>
-          </Box>
-        </Box>
-
-        {/* Action Buttons */}
-        <Box className="mt-6 pt-4 -mx-6 -mb-6 px-6 pb-4 border-t border-border bg-surface">
-          <Stack direction="horizontal" justify="between" gap="md">
-            <Button
-              variant="secondary"
-              onClick={() => setStep('anchor')}
-              disabled={isSubmitting || isGeneratingQuestions}
-            >
-              {t('concept.back')}
-            </Button>
-            <Button
-              variant="primary"
-              leftIcon={Edit3}
-              isLoading={isSubmitting}
-              onClick={handleManualGoalSubmit}
-              disabled={isSubmitting}
-            >
-              {isSubmitting ? t('learning.creatingGoal') : t('learning.createGoal')}
-            </Button>
-          </Stack>
-        </Box>
-      </Box>
-    );
-  }
-
   return (
     <Box className="w-full">
       {/* Progress Bar */}
@@ -583,7 +447,7 @@ export const GoalForm: React.FC<GoalFormProps> = ({ onComplete, onCancel }) => {
               onChange={(e) => setAnchorAnswer(e.target.value)}
               placeholder={t('learning.typeAnswerHere')}
               rows={4}
-              disabled={isGeneratingQuestions}
+              disabled={isSubmitting}
               className="resize-none"
             />
           </Box>
@@ -594,9 +458,10 @@ export const GoalForm: React.FC<GoalFormProps> = ({ onComplete, onCancel }) => {
               <Button
                 variant="primary"
                 onClick={handleAnchorSubmit}
-                disabled={!anchorAnswer.trim() || isGeneratingQuestions}
+                isLoading={isSubmitting}
+                disabled={!anchorAnswer.trim() || isSubmitting}
               >
-                {t('episode.continue')}
+                {t('learning.createLearningGoal')}
               </Button>
             </Stack>
           </Box>

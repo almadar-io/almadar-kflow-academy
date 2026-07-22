@@ -482,21 +482,7 @@ export const FocusModeTemplate: React.FC<FocusModeTemplateProps> = (props) => {
             <Card className="w-full p-2 sm:p-4 md:p-6">
               <div className="flex items-start justify-between mb-6">
                 <div className="flex-1">
-                  <div className="flex items-center gap-2 mb-2">
-                    <Badge variant="primary">
-                      {t('learning.levelN', { number: String(selectedLevel.number) })}
-                    </Badge>
-                    {selectedLevel.completed && (
-                      <Badge variant="success" className="bg-green-500">
-                        {t('learning.complete')}
-                      </Badge>
-                    )}
-                    {selectedLevel.id === currentLevel?.id && !selectedLevel.completed && (
-                      <Badge variant="default" className="bg-surface text-primary border-primary">
-                        {t('learning.current')}
-                      </Badge>
-                    )}
-                  </div>
+
                   <Typography variant="h2" className="mb-1">
                     {selectedLevel.name}
                   </Typography>

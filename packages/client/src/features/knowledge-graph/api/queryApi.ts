@@ -65,6 +65,7 @@ export const graphQueryApi = {
     if (params.search) qs.set('search', params.search);
     if (params.sort) qs.set('sort', params.sort);
     if (params.levelFilter) qs.set('levelFilter', params.levelFilter);
+    if (params.cluster) qs.set('cluster', params.cluster);
     if (params.page) qs.set('page', String(params.page));
     if (params.limit) qs.set('limit', String(params.limit));
     const query = qs.toString();

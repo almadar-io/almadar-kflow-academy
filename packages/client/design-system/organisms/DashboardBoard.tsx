@@ -28,6 +28,7 @@ import {
   Badge,
   EmptyState,
   GraphCanvas,
+  Select,
   Skeleton,
   Spinner,
   useEventBus,
@@ -39,7 +40,7 @@ import {
 } from '@almadar/ui';
 import { ConnectButton } from '../molecules/ConnectButton';
 import { SearchInput } from '../molecules/SearchInput';
-import { FilterBar } from '../molecules/FilterBar';
+import { FilterBar, type ClusterOption } from '../molecules/FilterBar';
 import { StatBadge, StatBadgeSkeleton } from '../molecules/StatBadge';
 import { LearningPathCard } from './LearningPathCard';
 import { GraphHeroTemplate } from '../templates/GraphHeroTemplate/GraphHeroTemplate';
@@ -64,16 +65,11 @@ export interface DashboardPathList {
   hasMore?: boolean;
 }
 
-export type DashboardLevelFilter = 'all' | '1' | '2-3' | '4plus';
 export type DashboardSort = 'recent' | 'oldest' | 'az' | 'za';
 
 export interface DashboardFilterLabels {
   searchPlaceholder: string;
   all: string;
-  one: string;
-  twoThree: string;
-  fourPlus: string;
-  sortLabel: string;
   results: (count: number) => string;
   range: (start: number, end: number, total: number) => string;
   pageOf: (page: number, total: number) => string;
@@ -100,10 +96,10 @@ export interface DashboardEntity {
   /** Server-paginated, searchable, filterable learning-path list (Home card grid). */
   pathList?: DashboardPathList;
   /** Current filter state + change handlers (page owns the state). */
-  filter?: { search: string; sort: DashboardSort; levelFilter: DashboardLevelFilter };
+  filter?: { search: string; sort: DashboardSort; clusterFilter: string; clusters: ClusterOption[] };
   onSearchChange?: (value: string) => void;
   onSortChange?: (value: DashboardSort) => void;
-  onLevelFilterChange?: (value: DashboardLevelFilter) => void;
+  onClusterFilterChange?: (value: string) => void;
   onLoadMore?: () => void;
   filterLabels?: DashboardFilterLabels;
   sortOptions?: Array<{ value: string; label: string }>;
@@ -226,7 +222,7 @@ export function DashboardBoard({
   const hasMap = (dash?.knowledgeMap?.nodes?.length ?? 0) > 0;
   const pathList = dash?.pathList;
   const paths = pathList?.items ?? [];
-  const hasFilter = !!dash?.filter && (dash.filter.search.trim() !== '' || dash.filter.levelFilter !== 'all');
+  const hasFilter = !!dash?.filter && (dash.filter.search.trim() !== '' || dash.filter.clusterFilter !== '');
 
   // Infinite scroll: when the sentinel enters the viewport (with a 200px lead), load the next page.
   const sentinelRef = useRef<HTMLDivElement>(null);
@@ -375,27 +371,34 @@ export function DashboardBoard({
         ) : undefined}
         toolbarSlot={(hasMap || mapLoading) ? (
           <VStack gap="md">
-            <SearchInput
-              value={dash?.filter?.search ?? ''}
-              onChange={(v) => dash?.onSearchChange?.(v)}
-              placeholder={dash?.filterLabels?.searchPlaceholder ?? ''}
-            />
-            {dash?.filterLabels && dash.sortOptions && dash.filter && (
+            <Box className="flex items-center gap-2">
+              <Box className="flex-1 min-w-0">
+                <SearchInput
+                  value={dash?.filter?.search ?? ''}
+                  onChange={(v) => dash?.onSearchChange?.(v)}
+                  placeholder={dash?.filterLabels?.searchPlaceholder ?? ''}
+                />
+              </Box>
+              {dash?.sortOptions && dash.filter && (
+                <Box className="w-32 flex-shrink-0">
+                  <Select
+                    value={dash.filter.sort}
+                    options={dash.sortOptions}
+                    onValueChange={(v) => dash.onSortChange?.(v as DashboardSort)}
+                  />
+                </Box>
+              )}
+            </Box>
+            {dash?.filterLabels && dash.filter && (
               <FilterBar
-                levelFilter={dash.filter.levelFilter}
-                onLevelFilterChange={(v) => dash.onLevelFilterChange?.(v)}
-                sort={dash.filter.sort}
-                onSortChange={(v) => dash.onSortChange?.(v)}
+                clusters={dash.filter.clusters ?? []}
+                clusterFilter={dash.filter.clusterFilter}
+                onClusterFilterChange={(v) => dash.onClusterFilterChange?.(v)}
                 labels={{
                   all: dash.filterLabels.all,
-                  one: dash.filterLabels.one,
-                  twoThree: dash.filterLabels.twoThree,
-                  fourPlus: dash.filterLabels.fourPlus,
-                  sortLabel: dash.filterLabels.sortLabel,
                   results: dash.filterLabels.results,
                 }}
                 resultCount={pathList?.total ?? 0}
-                sortOptions={dash.sortOptions}
               />
             )}
           </VStack>

@@ -10,6 +10,8 @@ export interface ExpandableHeaderProps {
   description?: React.ReactNode;
   /** Optional badges/labels rendered next to the title. */
   badges?: React.ReactNode;
+  /** Optional actions rendered to the right of the title (after the chevron). */
+  actions?: React.ReactNode;
   /** Start expanded (default: true). */
   defaultOpen?: boolean;
   className?: string;
@@ -24,6 +26,7 @@ export const ExpandableHeader: React.FC<ExpandableHeaderProps> = ({
   title,
   description,
   badges,
+  actions,
   defaultOpen = true,
   className,
 }) => {
@@ -51,6 +54,7 @@ export const ExpandableHeader: React.FC<ExpandableHeaderProps> = ({
             />
           </button>
         )}
+        {actions && <div className="flex items-center">{actions}</div>}
       </div>
       {hasDetail && open && (
         <Typography

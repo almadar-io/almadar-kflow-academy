@@ -31,7 +31,7 @@ import { useAppDispatch } from '../app/hooks';
 import { setCurrentGraphId } from '../features/knowledge-graph/knowledgeGraphSlice';
 import { graphOperationsStreamingApi } from '../features/knowledge-graph/api/streaming';
 import { GoalForm } from '@design-system/organisms/GoalForm';
-import type { DashboardEntity, DashboardMapLevel, DashboardFilterLabels, DashboardSort, DashboardLevelFilter, DashboardLearningPath } from '@design-system/organisms/DashboardBoard';
+import type { DashboardEntity, DashboardMapLevel, DashboardFilterLabels, DashboardSort, DashboardLearningPath } from '@design-system/organisms/DashboardBoard';
 
 const L2_CONCEPT_CAP = 60;
 
@@ -123,14 +123,14 @@ export const DashboardPage: React.FC = () => {
   // Search debouncing lives in <SearchInput> so keystrokes never re-render the page.
   const [search, setSearch] = useState('');
   const [sort, setSort] = useState<DashboardSort>('recent');
-  const [levelFilter, setLevelFilter] = useState<DashboardLevelFilter>('all');
+  const [clusterFilter, setClusterFilter] = useState('');
   const PAGE_LIMIT = 9;
 
-  const list = useLearningPathsList({ search, sort, levelFilter, limit: PAGE_LIMIT });
+  const list = useLearningPathsList({ search, sort, cluster: clusterFilter, limit: PAGE_LIMIT });
   const { fetchNextPage } = list;
 
   const handleSortChange = useCallback((v: DashboardSort) => { setSort(v); }, []);
-  const handleLevelFilterChange = useCallback((v: DashboardLevelFilter) => { setLevelFilter(v); }, []);
+  const handleClusterFilterChange = useCallback((v: string) => { setClusterFilter(v); }, []);
   const handleLoadMore = useCallback(() => { fetchNextPage(); }, [fetchNextPage]);
 
   // Hero map level: L1 = graph-of-paths, L2 = concepts of the drilled path.
@@ -141,7 +141,7 @@ export const DashboardPage: React.FC = () => {
   // shares concepts with (overlap computed server-side). Colors = shared-concept
   // clusters; path↔path cosine similarity (server) drives the force layout.
   const pathMapInputs = useMemo(
-    () => pathSummaries.map(p => ({ graphId: p.id, name: p.title, conceptCount: p.conceptCount })),
+    () => pathSummaries.map(p => ({ graphId: p.id, name: p.title, conceptCount: p.conceptCount, cluster: p.cluster })),
     [pathSummaries]
   );
   const [expandedGroups, setExpandedGroups] = useState<Set<string>>(() => new Set());
@@ -255,10 +255,6 @@ export const DashboardPage: React.FC = () => {
   const filterLabels: DashboardFilterLabels = useMemo(() => ({
     searchPlaceholder: t('dashboard.searchPlaceholder'),
     all: t('dashboard.filterAll'),
-    one: t('dashboard.filterOne'),
-    twoThree: t('dashboard.filterTwoThree'),
-    fourPlus: t('dashboard.filterFourPlus'),
-    sortLabel: t('dashboard.sortLabel'),
     results: (count: number) => t('dashboard.resultsCount', { count: String(count) }),
     range: (s: number, e: number, total: number) => t('dashboard.paginationRange', { start: String(s), end: String(e), total: String(total) }),
     pageOf: (p: number, total: number) => t('dashboard.pageOf', { page: String(p), total: String(total) }),
@@ -307,10 +303,10 @@ export const DashboardPage: React.FC = () => {
       isLoadingMore: list.isFetchingNextPage,
       hasMore: list.hasNextPage,
     },
-    filter: { search, sort, levelFilter },
+    filter: { search, sort, clusterFilter, clusters: list.clusters ?? [] },
     onSearchChange: setSearch,
     onSortChange: handleSortChange,
-    onLevelFilterChange: handleLevelFilterChange,
+    onClusterFilterChange: handleClusterFilterChange,
     onLoadMore: handleLoadMore,
     filterLabels,
     sortOptions,

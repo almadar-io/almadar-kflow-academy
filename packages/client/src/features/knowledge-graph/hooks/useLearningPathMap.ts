@@ -28,6 +28,8 @@ export interface LearningPathInput {
   graphId: string;
   name: string;
   conceptCount: number;
+  /** Server-assigned topic cluster (max-coverage shared concept); absent for singletons. */
+  cluster?: { id: string; name: string };
 }
 
 export type LearningPathMapNode = GraphNode & {
@@ -43,8 +45,7 @@ export interface LearningPathMap {
   similarity: GraphSimilarity[];
 }
 
-/** Jaccard (shared-concept overlap) ≥ this unions two paths into one color cluster. */
-const CLUSTER_JACCARD = 0.05;
+/** Normalize a path title for duplicate detection (case/punctuation/spacing-insensitive). */
 /** Cosine ≥ this draws a link on the canvas (higher, so the map stays readable). */
 const DRAW_SIMILARITY = 0.55;
 /** Singletons (share no concepts) stay ungrouped for gravity, but render violet — not the
@@ -87,46 +88,27 @@ export function computeSemanticPathMap(
   const maxConcepts = Math.max(1, ...paths.map((p) => p.conceptCount));
   const indexOf = new Map(paths.map((p, i) => [p.graphId, i] as const));
 
-  // --- Cluster union-find → color groups ---------------------------------------------
-  // A color group = a connected component of the SHARED-CONCEPT graph: two paths are the
-  // same color when linked (transitively) by paths that teach overlapping concepts. The
-  // overlap must clear CLUSTER_JACCARD so a single incidental shared concept doesn't chain
-  // the whole map into one color. Cosine similarity is NOT used for grouping (see below).
-  const cluster = makeUnionFind(paths.length);
-
+  // --- Shared-concept edges (drawn links) + server clusters ------------------------
+  // Clusters are assigned SERVER-SIDE (max-coverage shared concept — see
+  // @almadar-io/knowledge assignClusters). Each path carries its cluster name; the
+  // GraphCanvas hashes the name into a stable color and shows it in the legend.
+  // Singletons (no cluster) stay ungrouped so unrelated paths don't get a false color.
   const sharedEdges: GraphEdge[] = [];
   for (const se of sharedConcepts) {
     const si = indexOf.get(se.source);
     const ti = indexOf.get(se.target);
     if (si === undefined || ti === undefined) continue;
-    // Drawn unweighted (weight defaults to 1 downstream): the original uniform look.
     sharedEdges.push({ source: se.source, target: se.target });
-    if (se.weight >= CLUSTER_JACCARD) cluster.union(si, ti);
   }
 
-  // Cosine similarity is NOT used for grouping: path embeddings form a continuum here
-  // (no natural gap to cut), so a cosine threshold chains everything into one color.
-  // Shared concepts are the interpretable grouping signal; cosine drives layout only.
-
-  // Stable cluster ids per path.
-  const clusterOf = new Map<number, string>();
-  let nextCluster = 0;
-  const pathCluster: string[] = paths.map((_, i) => {
-    const root = cluster.find(i);
-    let c = clusterOf.get(root);
-    if (c === undefined) {
-      c = `cluster-${nextCluster++}`;
-      clusterOf.set(root, c);
-    }
-    return c;
-  });
-
-  // Color groups: only clusters with ≥2 members get a distinct color + cluster gravity;
-  // singletons stay UNGROUPED (GraphCanvas renders them neutral with gentle global
-  // centering only) so genuinely-related clusters pop and the legend stays small.
-  const clusterSize = new Map<string, number>();
-  for (const c of pathCluster) clusterSize.set(c, (clusterSize.get(c) ?? 0) + 1);
-  const colorGroup: (string | undefined)[] = pathCluster.map((c) => (clusterSize.get(c)! >= 2 ? c : undefined));
+  // Only clusters with ≥2 rendered members get a color group (singletons stay neutral).
+  const clusterMemberCount = new Map<string, number>();
+  for (const p of paths) {
+    if (p.cluster) clusterMemberCount.set(p.cluster.name, (clusterMemberCount.get(p.cluster.name) ?? 0) + 1);
+  }
+  const colorGroup: (string | undefined)[] = paths.map((p) =>
+    p.cluster && (clusterMemberCount.get(p.cluster.name) ?? 0) >= 2 ? p.cluster.name : undefined,
+  );
 
   // --- Merge union-find: near-duplicate paths → collapse into one node --------------
   const merge = makeUnionFind(paths.length);

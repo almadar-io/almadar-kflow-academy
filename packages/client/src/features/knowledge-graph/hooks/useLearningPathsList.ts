@@ -10,14 +10,13 @@ import { graphQueryApi } from '../api/queryApi';
 import { knowledgeGraphKeys } from './queryKeys';
 import type {
   LearningPathSortOption,
-  LearningPathLevelFilter,
   LearningPathsListResponse,
 } from '../api/types';
 
 export interface UseLearningPathsListParams {
   search: string;
   sort: LearningPathSortOption;
-  levelFilter: LearningPathLevelFilter;
+  cluster: string;
   limit: number;
 }
 
@@ -26,7 +25,7 @@ export function useLearningPathsList(params: UseLearningPathsListParams) {
     queryKey: knowledgeGraphKeys.learningPathsList({
       search: params.search,
       sort: params.sort,
-      levelFilter: params.levelFilter,
+      cluster: params.cluster,
       page: 0, // page param is irrelevant for the key; params object identity is what matters
       limit: params.limit,
     }),
@@ -34,7 +33,7 @@ export function useLearningPathsList(params: UseLearningPathsListParams) {
       graphQueryApi.getLearningPathsList({
         search: params.search,
         sort: params.sort,
-        levelFilter: params.levelFilter,
+        cluster: params.cluster,
         page: pageParam,
         limit: params.limit,
       }),
@@ -52,6 +51,7 @@ export function useLearningPathsList(params: UseLearningPathsListParams) {
     items,
     total: last?.total ?? 0,
     totalPages: last?.totalPages ?? 1,
+    clusters: last?.clusters,
     // `isLoading` (RQ: isPending && isFetching) is true only on the first fetch with
     // no cached data — use it (not total) to gate the skeleton vs. empty state.
     isLoading: query.isLoading,

@@ -227,19 +227,10 @@ export const LearnConceptDetailTemplate: React.FC<AllProps> = (props) => {
                   {concept.isSeed && (
                     <Badge variant="primary">{t('concept.seedConcept')}</Badge>
                   )}
-                  {concept.layer !== undefined && (
-                    <Badge variant="default">
-                      {t('learning.levelN', { number: String(concept.layer) })}
-                    </Badge>
-                  )}
                 </>
               }
+              actions={onConnect ? <ConnectButton onClick={onConnect} /> : undefined}
             />
-            {onConnect && (
-              <div className="mt-6 flex justify-center">
-                <ConnectButton onClick={onConnect} />
-              </div>
-            )}
           </div>
         )}
 

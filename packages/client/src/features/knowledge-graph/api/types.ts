@@ -161,6 +161,8 @@ export interface LearningPathSummary {
     name: string;
     description: string;
   } | null;
+  /** The path's topic cluster (absent for singletons / unclustered paths). */
+  cluster?: PathCluster;
   updatedAt: number;
   createdAt: number;
 }
@@ -183,12 +185,24 @@ export interface SharedConceptEdge {
   shared: number;
 }
 
+/** A named topic cluster of learning paths (max-coverage shared concept). */
+export interface PathCluster {
+  /** Stable cluster id (shared by all members). */
+  id: string;
+  /** The concept present in the most member paths — the cluster's label. */
+  name: string;
+  /** Number of paths in this cluster. */
+  size: number;
+}
+
 export interface LearningPathsSummaryResponse {
   learningPaths: LearningPathSummary[];
   /** All-pairs path cosine similarity (0–1) for L1 map layout. */
   similarity?: PathSimilarityEdge[];
   /** All-pairs shared-concept overlap for L1 map clustering + edges. */
   sharedConcepts?: SharedConceptEdge[];
+  /** Distinct topic clusters (largest-first) for the map legend + filter pills. */
+  clusters?: PathCluster[];
 }
 
 export type LearningPathSortOption = 'recent' | 'oldest' | 'az' | 'za';
@@ -198,6 +212,8 @@ export interface LearningPathsListParams {
   search?: string;
   sort?: LearningPathSortOption;
   levelFilter?: LearningPathLevelFilter;
+  /** Cluster id to filter by (from the clusters payload). */
+  cluster?: string;
   page?: number;
   limit?: number;
 }
@@ -208,6 +224,8 @@ export interface LearningPathsListResponse {
   page: number;
   limit: number;
   totalPages: number;
+  /** Distinct topic clusters (largest-first) for the filter pills. */
+  clusters?: PathCluster[];
 }
 
 /**

@@ -266,34 +266,39 @@ describe('computeSemanticPathMap (for V2 viz)', () => {
     { graphId: 'g2', name: 'p2', conceptCount: 2 },
   ];
 
-  it('draws a shared-concept edge and clusters paths whose jaccard clears the threshold', () => {
+  it('draws a shared-concept edge (unweighted) and colors paths in the same server cluster', () => {
+    const paths = [
+      { graphId: 'g1', name: 'p1', conceptCount: 2, cluster: { id: 'c1', name: 'Algorithms' } },
+      { graphId: 'g2', name: 'p2', conceptCount: 2, cluster: { id: 'c1', name: 'Algorithms' } },
+    ];
     const shared = [{ source: 'g1', target: 'g2', weight: 0.2, shared: 1 }];
 
-    const result = computeSemanticPathMap(twoPaths, shared);
+    const result = computeSemanticPathMap(paths, shared);
 
     expect(result).toBeDefined();
     expect(result!.edges).toHaveLength(1);
     expect(result!.edges[0].weight).toBe(1); // shared-concept edges are drawn unweighted
+    expect(result!.nodes[0].group).toBe('Algorithms');
     expect(result!.nodes[0].group).toBe(result!.nodes[1].group);
-    expect(result!.nodes[0].group).not.toBeUndefined();
   });
 
-  it('draws but does not cluster a shared-concept edge below the cluster threshold', () => {
+  it('draws every shared-concept edge regardless of weight (threshold is server-side now)', () => {
     const paths = [
-      { graphId: 'g1', name: 'p1', conceptCount: 2 },
-      { graphId: 'g2', name: 'p2', conceptCount: 2 },
-      { graphId: 'g3', name: 'p3', conceptCount: 2 },
+      { graphId: 'g1', name: 'p1', conceptCount: 2, cluster: { id: 'c1', name: 'Algorithms' } },
+      { graphId: 'g2', name: 'p2', conceptCount: 2, cluster: { id: 'c1', name: 'Algorithms' } },
+      { graphId: 'g3', name: 'p3', conceptCount: 2 }, // unclustered singleton
     ];
     const shared = [
-      { source: 'g1', target: 'g2', weight: 0.2, shared: 2 }, // ≥ 0.05 → same color
-      { source: 'g1', target: 'g3', weight: 0.02, shared: 1 }, // < 0.05 → linked, not colored
+      { source: 'g1', target: 'g2', weight: 0.2, shared: 2 },
+      { source: 'g1', target: 'g3', weight: 0.02, shared: 1 }, // still drawn
     ];
 
     const res = computeSemanticPathMap(paths, shared);
 
     expect(res!.edges).toHaveLength(2);
-    expect(res!.nodes[0].group).toBe(res!.nodes[1].group);
-    expect(res!.nodes[2].group).not.toBe(res!.nodes[0].group);
+    expect(res!.nodes[0].group).toBe('Algorithms');
+    expect(res!.nodes[1].group).toBe('Algorithms');
+    expect(res!.nodes[2].group).toBeUndefined(); // no cluster field → ungrouped
   });
 
   it('draws a high-cosine edge but does not cluster on cosine alone', () => {
@@ -303,7 +308,7 @@ describe('computeSemanticPathMap (for V2 viz)', () => {
 
     expect(res!.edges).toHaveLength(1);
     expect(res!.edges[0].weight).toBe(0.9);
-    // Cosine is layout-only: with no shared concepts both stay ungrouped.
+    // Cosine is layout-only: with no server cluster both stay ungrouped.
     expect(res!.nodes[0].group).toBeUndefined();
     expect(res!.nodes[1].group).toBeUndefined();
   });

@@ -112,17 +112,31 @@ export const TopNavShell: React.FC<TopNavShellProps> = ({
 
   // Hide-on-scroll-down / reveal-on-scroll-up. Attached to the scrolling
   // content area (onScroll), not window — the content box owns the scroll.
+  // IMPORTANT: when the bar collapses (max-height transition), the scroll
+  // container's clientHeight grows; at the bottom the browser clamps scrollTop
+  // down, firing a scroll event with negative delta that would instantly
+  // re-reveal the bar → flicker loop. We detect reflow-induced events by a
+  // clientHeight change and ignore them (they're layout, not user intent).
+  const lastClientHeight = useRef(0);
   const handleScroll = useCallback((e: React.UIEvent<HTMLDivElement>) => {
-    const y = e.currentTarget.scrollTop;
+    const el = e.currentTarget;
+    const y = el.scrollTop;
     const delta = y - lastScrollTop.current;
-    if (y < SCROLL_THRESHOLD) {
-      setCollapsed(false);
-    } else if (delta > 0) {
-      setCollapsed(true);
-    } else if (delta < 0) {
-      setCollapsed(false);
+    // Ignore scroll events caused by the bar collapsing/expanding (reflow), not
+    // by the user actually scrolling — these drive the flicker feedback loop.
+    if (el.clientHeight !== lastClientHeight.current) {
+      lastScrollTop.current = y;
+      lastClientHeight.current = el.clientHeight;
+      return;
     }
     lastScrollTop.current = y;
+    if (y < SCROLL_THRESHOLD) {
+      setCollapsed(false);
+    } else if (delta > 2) {
+      setCollapsed(true);
+    } else if (delta < -2) {
+      setCollapsed(false);
+    }
   }, []);
 
   const handleItemClick = useCallback((item: TopNavItem) => {

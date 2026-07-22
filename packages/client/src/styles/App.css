@@ -179,6 +179,15 @@ body {
   height: 8px;
 }
 
+/* Hide the scrollbar on a horizontal pill scroller (keep it scrollable, just clean). */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
 ::-webkit-scrollbar-track {
   background: #f1f5f9;
   border-radius: 4px;
