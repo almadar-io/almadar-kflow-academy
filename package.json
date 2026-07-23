@@ -7,7 +7,7 @@
     "start": "node packages/server/dist/server.js",
     "dev:chroma": "docker ps --filter \"name=chroma-local\" --format '{{.Names}}' | grep -q chroma-local || docker run -d --rm -p 8000:8000 -v chroma-data:/chroma/chroma --name chroma-local chromadb/chroma",
     "dev": "pnpm run dev:chroma && concurrently -k -n server,client -c blue,green \"pnpm run dev:server\" \"pnpm run dev:client\"",
-    "dev:server": "pkill -f 'tsx watch src/server.ts' 2>/dev/null; fuser -k 3001/tcp 2>/dev/null; sleep 1; pnpm run dev:chroma && CHROMA_HOST=http://localhost:8000 pnpm --filter @kflow-academy/shared build && CHROMA_HOST=http://localhost:8000 pnpm --filter @kflow-academy/server dev",
+    "dev:server": "pkill -f 'tsx/dist/cli.mjs watch src/server.ts' 2>/dev/null; fuser -k 3001/tcp 2>/dev/null; sleep 1; pnpm run dev:chroma && CHROMA_HOST=http://localhost:8000 pnpm --filter @kflow-academy/shared build && CHROMA_HOST=http://localhost:8000 pnpm --filter @kflow-academy/server dev",
     "dev:client": "pnpm --filter @kflow-academy/client dev",
     "generate:taxonomy": "node scripts/generate-taxonomy.mjs",
     "backfill:chroma": "pnpm --filter @kflow-academy/server backfill:chroma",
