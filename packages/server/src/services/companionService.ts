@@ -24,7 +24,7 @@ export async function analyzeTrajectory(uid: string, skillName?: string, locale?
   log.info('analyzeTrajectory complete', {
     uid,
     suggestionType: result.suggestion.type,
-    suggestionTitle: result.suggestion.title,
+    suggestionAction: result.suggestion.action,
     totalPaths: result.trajectory.totalPaths,
   });
   return result;
