@@ -13,7 +13,7 @@ importers:
     dependencies:
       '@almadar-io/knowledge':
         specifier: ^2.0.1
-        version: 2.0.6(@almadar/core@10.30.0)(@almadar/llm@2.35.0(@almadar/core@10.30.0)(ws@8.21.0))(@almadar/server@2.26.0(@almadar-io/rabit@0.64.34(express@4.22.2)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(ws@8.21.0))(express@4.22.2))(express@4.22.2)
+        version: 2.0.6(@almadar/core@10.30.0)(@almadar/llm@2.35.0(@almadar/core@10.30.0)(ws@8.21.0))(@almadar/server@2.26.1(@almadar-io/rabit@0.64.34(express@4.22.2)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(ws@8.21.0))(express@4.22.2))(express@4.22.2)
       '@almadar/core':
         specifier: 10.30.0
         version: 10.30.0
@@ -53,7 +53,7 @@ importers:
     dependencies:
       '@almadar-io/knowledge':
         specifier: ^2.1.6
-        version: 2.1.6(@almadar-io/rabit@0.64.34(express@4.22.2)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(ws@8.21.0))(@almadar/core@10.30.0)(@almadar/llm@2.35.0(@almadar/core@10.30.0)(ws@8.21.0))(@almadar/server@2.26.0(@almadar-io/rabit@0.64.34(express@4.22.2)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(ws@8.21.0))(express@4.22.2))(express@4.22.2)
+        version: 2.1.6(@almadar-io/rabit@0.64.34(express@4.22.2)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(ws@8.21.0))(@almadar/core@10.30.0)(@almadar/llm@2.35.0(@almadar/core@10.30.0)(ws@8.21.0))(@almadar/server@2.26.1(@almadar-io/rabit@0.64.34(express@4.22.2)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(ws@8.21.0))(express@4.22.2))(express@4.22.2)
       '@almadar/core':
         specifier: ^10.30.0
         version: 10.30.0
@@ -219,7 +219,7 @@ importers:
     dependencies:
       '@almadar-io/knowledge':
         specifier: ^2.1.6
-        version: 2.1.6(@almadar-io/rabit@0.64.34(@opentelemetry/api@1.9.1)(express@4.22.2)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(ws@8.21.0))(@almadar/core@10.30.0)(@almadar/llm@2.34.0(@almadar/core@10.30.0)(@opentelemetry/api@1.9.1)(ws@8.21.0))(@almadar/server@2.26.0(@almadar-io/rabit@0.64.34(@opentelemetry/api@1.9.1)(express@4.22.2)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(ws@8.21.0))(express@4.22.2))(express@4.22.2)
+        version: 2.1.6(@almadar-io/rabit@0.64.34(@opentelemetry/api@1.9.1)(express@4.22.2)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(ws@8.21.0))(@almadar/core@10.30.0)(@almadar/llm@2.34.0(@almadar/core@10.30.0)(@opentelemetry/api@1.9.1)(ws@8.21.0))(@almadar/server@2.26.1(@almadar-io/rabit@0.64.34(@opentelemetry/api@1.9.1)(express@4.22.2)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(ws@8.21.0))(express@4.22.2))(express@4.22.2)
       '@almadar-io/rabit':
         specifier: ^0.64.34
         version: 0.64.34(@opentelemetry/api@1.9.1)(express@4.22.2)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(ws@8.21.0)
@@ -236,8 +236,8 @@ importers:
         specifier: ^0.2.4
         version: 0.2.4(@almadar-io/rabit@0.64.34(@opentelemetry/api@1.9.1)(express@4.22.2)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(ws@8.21.0))(@react-three/drei@10.7.7(@react-three/fiber@9.6.1(@types/react@19.2.17)(immer@11.1.11)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(three@0.160.1))(@types/react@19.2.17)(@types/three@0.185.1)(immer@11.1.11)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(three@0.160.1))(@react-three/fiber@9.6.1(@types/react@19.2.17)(immer@11.1.11)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(three@0.160.1))(@react-three/postprocessing@3.0.4(@react-three/fiber@9.6.1(@types/react@19.2.17)(immer@11.1.11)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(three@0.160.1))(@types/three@0.185.1)(react@19.2.7)(three@0.160.1))(@tanstack/react-query@5.101.2(react@19.2.7))(@types/react@19.2.17)(express@4.22.2)(immer@11.1.11)(react-dom@19.2.7(react@19.2.7))(react-router-dom@7.18.1(react-dom@19.2.7(react@19.2.7))(react@19.2.7))(react@19.2.7)(three@0.160.1)
       '@almadar/server':
-        specifier: ^2.26.0
-        version: 2.26.0(@almadar-io/rabit@0.64.34(@opentelemetry/api@1.9.1)(express@4.22.2)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(ws@8.21.0))(express@4.22.2)
+        specifier: ^2.26.1
+        version: 2.26.1(@almadar-io/rabit@0.64.34(@opentelemetry/api@1.9.1)(express@4.22.2)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(ws@8.21.0))(express@4.22.2)
       '@kflow-academy/shared':
         specifier: workspace:*
         version: link:../shared
@@ -334,7 +334,7 @@ importers:
     dependencies:
       '@almadar-io/knowledge':
         specifier: ^2.0.1
-        version: 2.0.6(@almadar/core@10.28.0)(@almadar/llm@2.35.0(@almadar/core@10.28.0)(ws@8.21.0))(@almadar/server@2.26.0(@almadar-io/rabit@0.64.34(express@4.22.2)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(ws@8.21.0))(express@4.22.2))(express@4.22.2)
+        version: 2.0.6(@almadar/core@10.28.0)(@almadar/llm@2.35.0(@almadar/core@10.28.0)(ws@8.21.0))(@almadar/server@2.26.1(@almadar-io/rabit@0.64.34(express@4.22.2)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(ws@8.21.0))(express@4.22.2))(express@4.22.2)
       '@almadar/core':
         specifier: ^10.28.0
         version: 10.28.0
@@ -488,8 +488,8 @@ packages:
       react: '>=18.0.0'
       react-dom: '>=18.0.0'
 
-  '@almadar/server@2.26.0':
-    resolution: {integrity: sha512-p/hPBGncat5QzC42oVswPRrXep6M0ZNSf9rJbKN2Ngzmuv5OGAnlzjEuJt4z5a6A5Mo1PAz9/6CfHi6VFLJ2lg==}
+  '@almadar/server@2.26.1':
+    resolution: {integrity: sha512-Z1+6HRfvbPN8YBkuvJXoFpIbokmDbNVQwEenGZtJEGrK2zB1BkYFmIxkRkUfAWEYYVzg114g/GjIU72bSnkR/g==}
     peerDependencies:
       '@almadar-io/rabit': ^0.64.30
       express: ^5.0.0
@@ -6204,12 +6204,12 @@ snapshots:
     dependencies:
       '@almadar/core': 10.31.0
 
-  '@almadar-io/knowledge@2.0.6(@almadar/core@10.28.0)(@almadar/llm@2.35.0(@almadar/core@10.28.0)(ws@8.21.0))(@almadar/server@2.26.0(@almadar-io/rabit@0.64.34(express@4.22.2)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(ws@8.21.0))(express@4.22.2))(express@4.22.2)':
+  '@almadar-io/knowledge@2.0.6(@almadar/core@10.28.0)(@almadar/llm@2.35.0(@almadar/core@10.28.0)(ws@8.21.0))(@almadar/server@2.26.1(@almadar-io/rabit@0.64.34(express@4.22.2)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(ws@8.21.0))(express@4.22.2))(express@4.22.2)':
     dependencies:
       '@almadar/core': 10.28.0
       '@almadar/llm': 2.35.0(@almadar/core@10.28.0)(ws@8.21.0)
       '@almadar/logger': 1.9.0
-      '@almadar/server': 2.26.0(@almadar-io/rabit@0.64.34(express@4.22.2)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(ws@8.21.0))(express@4.22.2)
+      '@almadar/server': 2.26.1(@almadar-io/rabit@0.64.34(express@4.22.2)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(ws@8.21.0))(express@4.22.2)
       graphology: 0.26.0(graphology-types@0.24.8)
       graphology-shortest-path: 2.1.0(graphology-types@0.24.8)
       graphology-types: 0.24.8
@@ -6217,12 +6217,12 @@ snapshots:
     optionalDependencies:
       express: 4.22.2
 
-  '@almadar-io/knowledge@2.0.6(@almadar/core@10.30.0)(@almadar/llm@2.35.0(@almadar/core@10.30.0)(ws@8.21.0))(@almadar/server@2.26.0(@almadar-io/rabit@0.64.34(express@4.22.2)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(ws@8.21.0))(express@4.22.2))(express@4.22.2)':
+  '@almadar-io/knowledge@2.0.6(@almadar/core@10.30.0)(@almadar/llm@2.35.0(@almadar/core@10.30.0)(ws@8.21.0))(@almadar/server@2.26.1(@almadar-io/rabit@0.64.34(express@4.22.2)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(ws@8.21.0))(express@4.22.2))(express@4.22.2)':
     dependencies:
       '@almadar/core': 10.30.0
       '@almadar/llm': 2.35.0(@almadar/core@10.30.0)(ws@8.21.0)
       '@almadar/logger': 1.9.0
-      '@almadar/server': 2.26.0(@almadar-io/rabit@0.64.34(express@4.22.2)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(ws@8.21.0))(express@4.22.2)
+      '@almadar/server': 2.26.1(@almadar-io/rabit@0.64.34(express@4.22.2)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(ws@8.21.0))(express@4.22.2)
       graphology: 0.26.0(graphology-types@0.24.8)
       graphology-shortest-path: 2.1.0(graphology-types@0.24.8)
       graphology-types: 0.24.8
@@ -6230,13 +6230,13 @@ snapshots:
     optionalDependencies:
       express: 4.22.2
 
-  '@almadar-io/knowledge@2.1.6(@almadar-io/rabit@0.64.34(@opentelemetry/api@1.9.1)(express@4.22.2)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(ws@8.21.0))(@almadar/core@10.30.0)(@almadar/llm@2.34.0(@almadar/core@10.30.0)(@opentelemetry/api@1.9.1)(ws@8.21.0))(@almadar/server@2.26.0(@almadar-io/rabit@0.64.34(@opentelemetry/api@1.9.1)(express@4.22.2)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(ws@8.21.0))(express@4.22.2))(express@4.22.2)':
+  '@almadar-io/knowledge@2.1.6(@almadar-io/rabit@0.64.34(@opentelemetry/api@1.9.1)(express@4.22.2)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(ws@8.21.0))(@almadar/core@10.30.0)(@almadar/llm@2.34.0(@almadar/core@10.30.0)(@opentelemetry/api@1.9.1)(ws@8.21.0))(@almadar/server@2.26.1(@almadar-io/rabit@0.64.34(@opentelemetry/api@1.9.1)(express@4.22.2)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(ws@8.21.0))(express@4.22.2))(express@4.22.2)':
     dependencies:
       '@almadar-io/rabit': 0.64.34(@opentelemetry/api@1.9.1)(express@4.22.2)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(ws@8.21.0)
       '@almadar/core': 10.30.0
       '@almadar/llm': 2.34.0(@almadar/core@10.30.0)(@opentelemetry/api@1.9.1)(ws@8.21.0)
       '@almadar/logger': 1.9.0
-      '@almadar/server': 2.26.0(@almadar-io/rabit@0.64.34(@opentelemetry/api@1.9.1)(express@4.22.2)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(ws@8.21.0))(express@4.22.2)
+      '@almadar/server': 2.26.1(@almadar-io/rabit@0.64.34(@opentelemetry/api@1.9.1)(express@4.22.2)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(ws@8.21.0))(express@4.22.2)
       graphology: 0.26.0(graphology-types@0.24.8)
       graphology-shortest-path: 2.1.0(graphology-types@0.24.8)
       graphology-types: 0.24.8
@@ -6244,13 +6244,13 @@ snapshots:
     optionalDependencies:
       express: 4.22.2
 
-  '@almadar-io/knowledge@2.1.6(@almadar-io/rabit@0.64.34(express@4.22.2)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(ws@8.21.0))(@almadar/core@10.30.0)(@almadar/llm@2.35.0(@almadar/core@10.30.0)(ws@8.21.0))(@almadar/server@2.26.0(@almadar-io/rabit@0.64.34(express@4.22.2)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(ws@8.21.0))(express@4.22.2))(express@4.22.2)':
+  '@almadar-io/knowledge@2.1.6(@almadar-io/rabit@0.64.34(express@4.22.2)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(ws@8.21.0))(@almadar/core@10.30.0)(@almadar/llm@2.35.0(@almadar/core@10.30.0)(ws@8.21.0))(@almadar/server@2.26.1(@almadar-io/rabit@0.64.34(express@4.22.2)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(ws@8.21.0))(express@4.22.2))(express@4.22.2)':
     dependencies:
       '@almadar-io/rabit': 0.64.34(express@4.22.2)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(ws@8.21.0)
       '@almadar/core': 10.30.0
       '@almadar/llm': 2.35.0(@almadar/core@10.30.0)(ws@8.21.0)
       '@almadar/logger': 1.9.0
-      '@almadar/server': 2.26.0(@almadar-io/rabit@0.64.34(express@4.22.2)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(ws@8.21.0))(express@4.22.2)
+      '@almadar/server': 2.26.1(@almadar-io/rabit@0.64.34(express@4.22.2)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(ws@8.21.0))(express@4.22.2)
       graphology: 0.26.0(graphology-types@0.24.8)
       graphology-shortest-path: 2.1.0(graphology-types@0.24.8)
       graphology-types: 0.24.8
@@ -6594,7 +6594,7 @@ snapshots:
       '@almadar/core': 10.30.0
       '@almadar/evaluator': 2.29.0
       '@almadar/logger': 1.9.0
-      '@almadar/server': 2.26.0(@almadar-io/rabit@0.64.34(@opentelemetry/api@1.9.1)(express@4.22.2)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(ws@8.21.0))(express@4.22.2)
+      '@almadar/server': 2.26.1(@almadar-io/rabit@0.64.34(@opentelemetry/api@1.9.1)(express@4.22.2)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(ws@8.21.0))(express@4.22.2)
       '@almadar/std': 16.138.0
       '@faker-js/faker': 9.9.0
     optionalDependencies:
@@ -6611,7 +6611,7 @@ snapshots:
       '@almadar/core': 10.30.0
       '@almadar/evaluator': 2.29.0
       '@almadar/logger': 1.9.0
-      '@almadar/server': 2.26.0(@almadar-io/rabit@0.64.34(express@4.22.2)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(ws@8.21.0))(express@4.22.2)
+      '@almadar/server': 2.26.1(@almadar-io/rabit@0.64.34(express@4.22.2)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(ws@8.21.0))(express@4.22.2)
       '@almadar/std': 16.138.0
       '@faker-js/faker': 9.9.0
     optionalDependencies:
@@ -6628,7 +6628,7 @@ snapshots:
       '@almadar/core': 10.30.0
       '@almadar/evaluator': 2.30.0
       '@almadar/logger': 1.9.0
-      '@almadar/server': 2.26.0(@almadar-io/rabit@0.64.34(@opentelemetry/api@1.9.1)(express@4.22.2)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(ws@8.21.0))(express@4.22.2)
+      '@almadar/server': 2.26.1(@almadar-io/rabit@0.64.34(@opentelemetry/api@1.9.1)(express@4.22.2)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(ws@8.21.0))(express@4.22.2)
       '@almadar/std': 16.140.0
     optionalDependencies:
       express: 4.22.2
@@ -6644,7 +6644,7 @@ snapshots:
       '@almadar/core': 10.30.0
       '@almadar/evaluator': 2.30.0
       '@almadar/logger': 1.9.0
-      '@almadar/server': 2.26.0(@almadar-io/rabit@0.64.34(express@4.22.2)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(ws@8.21.0))(express@4.22.2)
+      '@almadar/server': 2.26.1(@almadar-io/rabit@0.64.34(express@4.22.2)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(ws@8.21.0))(express@4.22.2)
       '@almadar/std': 16.140.0
     optionalDependencies:
       express: 4.22.2
@@ -6660,7 +6660,7 @@ snapshots:
       '@almadar/core': 10.31.0
       '@almadar/evaluator': 2.31.0
       '@almadar/logger': 1.9.0
-      '@almadar/server': 2.26.0(@almadar-io/rabit@0.64.34(@opentelemetry/api@1.9.1)(express@4.22.2)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(ws@8.21.0))(express@4.22.2)
+      '@almadar/server': 2.26.1(@almadar-io/rabit@0.64.34(@opentelemetry/api@1.9.1)(express@4.22.2)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(ws@8.21.0))(express@4.22.2)
       '@almadar/std': 16.141.0
     optionalDependencies:
       express: 4.22.2
@@ -6676,7 +6676,7 @@ snapshots:
       '@almadar/core': 10.31.0
       '@almadar/evaluator': 2.31.0
       '@almadar/logger': 1.9.0
-      '@almadar/server': 2.26.0(@almadar-io/rabit@0.64.34(express@4.22.2)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(ws@8.21.0))(express@4.22.2)
+      '@almadar/server': 2.26.1(@almadar-io/rabit@0.64.34(express@4.22.2)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(ws@8.21.0))(express@4.22.2)
       '@almadar/std': 16.141.0
     optionalDependencies:
       express: 4.22.2
@@ -6733,7 +6733,7 @@ snapshots:
       - three
       - utf-8-validate
 
-  '@almadar/server@2.26.0(@almadar-io/rabit@0.64.34(@opentelemetry/api@1.9.1)(express@4.22.2)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(ws@8.21.0))(express@4.22.2)':
+  '@almadar/server@2.26.1(@almadar-io/rabit@0.64.34(@opentelemetry/api@1.9.1)(express@4.22.2)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(ws@8.21.0))(express@4.22.2)':
     dependencies:
       '@almadar/core': 10.30.0
       '@almadar/logger': 1.9.0
@@ -6753,7 +6753,7 @@ snapshots:
       - supports-color
       - utf-8-validate
 
-  '@almadar/server@2.26.0(@almadar-io/rabit@0.64.34(express@4.22.2)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(ws@8.21.0))(express@4.22.2)':
+  '@almadar/server@2.26.1(@almadar-io/rabit@0.64.34(express@4.22.2)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(ws@8.21.0))(express@4.22.2)':
     dependencies:
       '@almadar/core': 10.30.0
       '@almadar/logger': 1.9.0
