@@ -7,6 +7,7 @@ import { DashboardPage } from '../pages/DashboardPage';
 import { OnboardingPage } from '../pages/OnboardingPage';
 import { SettingsPage } from '../pages/SettingsPage';
 import { ConnectionPage } from '../pages/ConnectionPage';
+import { CompanionPage } from '../pages/CompanionPage';
 import { Login, ProtectedRoute } from '../features/auth';
 import { useAuthContext } from '../features/auth/AuthContext';
 import { Spinner, PageTransition } from '@almadar/ui';
@@ -73,6 +74,9 @@ const AnimatedRoutes: React.FC = () => {
           } />
           <Route path="/settings" element={
             <ProtectedRoute><SettingsPage /></ProtectedRoute>
+          } />
+          <Route path="/companion" element={
+            <ProtectedRoute><CompanionPage /></ProtectedRoute>
           } />
           <Route path="/connection/:id" element={
             <ProtectedRoute><ConnectionPage /></ProtectedRoute>

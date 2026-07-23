@@ -42,6 +42,8 @@ export interface AppShellEntity {
   activeRoute: string;
   theme: "light" | "dark";
   sidebarCollapsed?: boolean;
+  /** Optional slot rendered in the top bar before the profile cluster. */
+  actionsSlot?: React.ReactNode;
 }
 
 export interface AppShellBoardProps extends DisplayStateProps {
@@ -107,6 +109,7 @@ export function AppShellBoard({
       user={app?.user}
       onLogoClick={handleLogoClick}
       onSettingsClick={handleSettingsClick}
+      actionsSlot={app?.actionsSlot}
       className={className}
     >
       {children}

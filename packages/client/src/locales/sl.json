@@ -718,6 +718,7 @@
   "companion.bell.aria": "Obvestila učnega spremljevalca",
   "companion.bell.empty": "Trenutno ni predlogov. Pogovarjaj se s svojim spremljevalcem kadar koli!",
   "companion.bell.chat": "Klepetaj z {name}",
+  "companion.chat.pageTitle": "Učni spremljevalec",
   "companion.chat.loading": "Priklic spremljevalca…",
   "companion.chat.aiLabel": "UI",
   "companion.chat.greeting": "Pozdravljen! Sem {name}, tvoj učni spremljevalec. Analiziral sem tvoje učne poti. Vprašaj me karkoli ali pa naj ti predlagam naslednji korak.",

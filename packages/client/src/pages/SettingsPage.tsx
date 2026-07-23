@@ -12,6 +12,7 @@ import {
 import { useTheme } from '@almadar/ui/context';
 import { useFont } from '../features/theme/FontContext';
 import { AppShellTemplate } from '@design-system/templates/AppShellTemplate';
+import { CompanionBell } from '@design-system/organisms/CompanionBell';
 import { getNavigationItems, getUserForTemplate, mainNavItems } from '../config/navigation';
 import { useAuthContext } from '../features/auth/AuthContext';
 import kflowLogo from '../assets/kflow-logo.svg';
@@ -89,6 +90,7 @@ export const SettingsPage: React.FC = () => {
     brandName: 'KFlow',
     activeRoute: location.pathname,
     theme: resolvedMode,
+    actionsSlot: <CompanionBell />,
   };
 
   return (

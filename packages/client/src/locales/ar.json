@@ -718,6 +718,7 @@
   "companion.bell.aria": "إشعارات مرافق التعلم",
   "companion.bell.empty": "لا توجد اقتراحات حاليًا. يمكنك الدردشة مع مرافقك في أي وقت!",
   "companion.bell.chat": "دردش مع {name}",
+  "companion.chat.pageTitle": "مرافق التعلم",
   "companion.chat.loading": "جارٍ استدعاء مرافقك…",
   "companion.chat.aiLabel": "ذكاء",
   "companion.chat.greeting": "مرحبًا! أنا {name}، مرافقك التعليمي. لقد كنت أحلل مسارات التعلم الخاصة بك. اسألني أي شيء، أو دعني أقترح خطوتك التالية.",

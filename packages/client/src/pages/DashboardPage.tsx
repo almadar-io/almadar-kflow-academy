@@ -31,6 +31,7 @@ import { useAppDispatch } from '../app/hooks';
 import { setCurrentGraphId } from '../features/knowledge-graph/knowledgeGraphSlice';
 import { graphOperationsStreamingApi } from '../features/knowledge-graph/api/streaming';
 import { GoalForm } from '@design-system/organisms/GoalForm';
+import { CompanionBell } from '@design-system/organisms/CompanionBell';
 import type { DashboardEntity, DashboardMapLevel, DashboardFilterLabels, DashboardSort, DashboardLearningPath } from '@design-system/organisms/DashboardBoard';
 
 const L2_CONCEPT_CAP = 60;
@@ -356,6 +357,7 @@ export const DashboardPage: React.FC = () => {
       brandName: 'KFlow',
       activeRoute: location.pathname,
       theme: 'light',
+      actionsSlot: <CompanionBell />,
     },
     dashboard,
     deletingPathId,

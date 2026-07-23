@@ -12,6 +12,7 @@
 
 import React, { useMemo, useState, useEffect, useRef, useCallback } from 'react';
 import { AppLayoutTemplate } from '../AppLayoutTemplate';
+import { CompanionBell } from '../../organisms/CompanionBell/CompanionBell';
 import { Badge, Box, Button, Card, GraphCanvas, Modal, Spinner, Typography, useEventBus, useTranslate } from '@almadar/ui';
 import type { DisplayStateProps } from '@almadar/ui';
 import { ConceptCard } from '../../organisms/ConceptCard';
@@ -320,6 +321,7 @@ export const FocusModeTemplate: React.FC<FocusModeTemplateProps> = (props) => {
         brandName={brandName}
         contentClassName="w-full"
         contentPadding={false}
+        actionsSlot={<CompanionBell />}
       >
         <GraphHeroTemplate
           className="py-2 sm:py-4 md:py-8 px-1 sm:px-2 md:px-4"

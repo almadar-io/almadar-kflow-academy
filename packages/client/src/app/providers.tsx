@@ -12,6 +12,9 @@ import { apolloClient } from '../features/knowledge-graph';
 import { AuthProvider } from '../features/auth';
 import { FontProvider } from '../features/theme/FontContext';
 import ErrorHandlerInitializer from './ErrorHandlerInitializer';
+import { CompanionProvider } from '../features/companion/CompanionContext';
+import { useLearningPaths } from '../features/knowledge-graph/hooks/useLearningPaths';
+import { useAuthContext } from '../features/auth/AuthContext';
 import type { JsonValue } from '@almadar-io/knowledge';
 import enMessagesRaw from '../locales/en.json';
 import arMessagesRaw from '../locales/ar.json';
@@ -57,6 +60,14 @@ function buildI18nValue(locale: SupportedLocale): I18nContextValue {
     direction: metaByLocale[locale].direction,
     t: createTranslate({ ...coreMessagesByLocale[locale], ...messagesByLocale[locale] }),
   };
+}
+
+/** Gates the companion behind auth + having at least one learning path. */
+function CompanionGate({ children }: { children: React.ReactNode }): React.JSX.Element {
+  const { user } = useAuthContext();
+  const { learningPaths } = useLearningPaths();
+  const enabled = !!user && learningPaths.length > 0;
+  return <CompanionProvider enabled={enabled}>{children}</CompanionProvider>;
 }
 
 function getInitialLocale(): SupportedLocale {
@@ -111,7 +122,9 @@ export const Providers: React.FC<ProvidersProps> = ({ children }) => {
                 <FontProvider>
                   <ErrorHandlerInitializer />
                   <AuthProvider>
-                    {children}
+                    <CompanionGate>
+                      {children}
+                    </CompanionGate>
                   </AuthProvider>
                 </FontProvider>
               </ThemeProvider>

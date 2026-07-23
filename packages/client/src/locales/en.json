@@ -718,6 +718,7 @@
   "companion.bell.aria": "Learning companion notifications",
   "companion.bell.empty": "No suggestions right now. Chat with your companion anytime!",
   "companion.bell.chat": "Chat with {name}",
+  "companion.chat.pageTitle": "Learning Companion",
   "companion.chat.loading": "Summoning your companion…",
   "companion.chat.aiLabel": "AI",
   "companion.chat.greeting": "Hello! I'm {name}, your learning companion. I've been analyzing your learning paths. Ask me anything, or let me suggest your next step.",
