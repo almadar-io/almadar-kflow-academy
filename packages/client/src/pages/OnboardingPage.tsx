@@ -12,6 +12,8 @@ import type { UiNotifyPayload } from '../app/uiEvents';
 import type { LearningGoal } from '../features/learning/goalApi';
 import kflowLogo from '../assets/kflow-logo.svg';
 
+export const ONBOARDING_SEEN_KEY = 'kflow:onboardingSeen';
+
 type StreamPartial = Partial<LearningGoal> & { id?: string };
 
 export const OnboardingPage: React.FC = () => {
@@ -28,6 +30,7 @@ export const OnboardingPage: React.FC = () => {
     async (anchorAnswer: string) => {
       setPartialTitle('');
       contentAccRef.current = '';
+      localStorage.setItem(ONBOARDING_SEEN_KEY, 'true');
       try {
         const result = await createWithGraph(
           {
@@ -58,32 +61,10 @@ export const OnboardingPage: React.FC = () => {
     [createWithGraph, navigate, queryClient, t, emit],
   );
 
-  const handleSkip = useCallback(async (anchorAnswer: string) => {
-    setPartialTitle('');
-    contentAccRef.current = '';
-    try {
-      const result = await createWithGraph(
-        {
-          anchorAnswer,
-          questionAnswers: [],
-          goalFocused: true,
-          stream: true,
-        },
-        (_chunk: string, partial: StreamPartial) => {
-          if (partial && partial.title) {
-            setPartialTitle(partial.title);
-          }
-        },
-      );
-      if (result) {
-        await queryClient.invalidateQueries({ queryKey: JUMP_BACK_IN_QUERY_KEY });
-        await queryClient.invalidateQueries({ queryKey: knowledgeGraphKeys.learningPaths() });
-        navigate(`/concepts/${result.graphId}`);
-      }
-    } catch {
-      navigate('/home');
-    }
-  }, [createWithGraph, navigate, queryClient]);
+  const handleSkip = useCallback(() => {
+    localStorage.setItem(ONBOARDING_SEEN_KEY, 'true');
+    navigate('/home');
+  }, [navigate]);
 
   const entity: OnboardingBoardEntity = {
     welcomeName: user?.displayName?.split(' ')[0] ?? t('nav.user'),

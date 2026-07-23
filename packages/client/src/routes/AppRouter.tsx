@@ -4,7 +4,7 @@ import LandingPage from '../pages/LandingPage';
 import { ConceptsPage } from '../pages/ConceptsPage';
 import { ConceptDetailPage } from '../pages/ConceptDetailPage';
 import { DashboardPage } from '../pages/DashboardPage';
-import { OnboardingPage } from '../pages/OnboardingPage';
+import { OnboardingPage, ONBOARDING_SEEN_KEY } from '../pages/OnboardingPage';
 import { SettingsPage } from '../pages/SettingsPage';
 import { ConnectionPage } from '../pages/ConnectionPage';
 import { CompanionPage } from '../pages/CompanionPage';
@@ -28,7 +28,10 @@ const HomeRoute: React.FC = () => {
   }
 
   if (user) {
-    // Redirect authenticated users to /home which uses DashboardTemplate
+    // First-time users land on onboarding; returning users go straight to /home.
+    if (!localStorage.getItem(ONBOARDING_SEEN_KEY)) {
+      return <Navigate to="/onboarding" replace />;
+    }
     return <Navigate to="/home" replace />;
   }
 

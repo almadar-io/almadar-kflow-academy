@@ -131,14 +131,6 @@ export const DashboardPage: React.FC = () => {
 
   const { learningPaths: pathSummaries, loading: pathsLoading, similarity = [], sharedConcepts = [] } = useLearningPaths();
 
-  // Onboarding gate: after paths have loaded, if the user has zero paths,
-  // redirect to /onboarding so they pick interests and create their first path.
-  useEffect(() => {
-    if (!pathsLoading && pathSummaries.length === 0) {
-      navigate('/onboarding');
-    }
-  }, [pathsLoading, pathSummaries.length, navigate]);
-
   // Home card grid: server-side search/sort/filter/pagination.
   // Search debouncing lives in <SearchInput> so keystrokes never re-render the page.
   const [search, setSearch] = useState('');
