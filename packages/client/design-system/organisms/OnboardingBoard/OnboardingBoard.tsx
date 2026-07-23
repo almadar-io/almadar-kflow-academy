@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { Box, Button, Stack, Typography, Spinner, useEventBus, useTranslate } from '@almadar/ui';
+import { Box, Button, Stack, Typography, Spinner, useTranslate } from '@almadar/ui';
 import { Icon as IconifyIcon } from '@iconify/react';
 import type { TaxonomyNode } from '../../../src/config/taxonomy';
 import { KNOWLEDGE_TAXONOMY } from '../../../src/config/taxonomy';
@@ -15,15 +15,9 @@ export interface OnboardingBoardProps {
   entity: OnboardingBoardEntity;
   onComplete: (anchorAnswer: string) => void;
   onSkip: () => void;
-  onNotify?: (severity: 'success' | 'error', message: string) => void;
 }
 
-interface SelectedTopic {
-  node: TaxonomyNode;
-  parentLabel: string;
-}
-
-export const OnboardingBoard: React.FC<OnboardingBoardProps> = ({ entity, onComplete, onSkip, onNotify }) => {
+export const OnboardingBoard: React.FC<OnboardingBoardProps> = ({ entity, onComplete, onSkip }) => {
   const { t } = useTranslate();
   const [selectedCategories, setSelectedCategories] = useState<Set<string>>(new Set());
   const [selectedDomains, setSelectedDomains] = useState<Set<string>>(new Set());
@@ -45,47 +39,45 @@ export const OnboardingBoard: React.FC<OnboardingBoardProps> = ({ entity, onComp
   );
 
   const availableSubjects = useMemo(() => {
-    const subjectMap = new Map<string, { subject: TaxonomyNode; domainLabel: string }>();
+    const subjects: TaxonomyNode[] = [];
     for (const cat of KNOWLEDGE_TAXONOMY) {
       if (!cat.children) continue;
       for (const domain of cat.children) {
         if (!selectedDomains.has(domain.id) || !domain.children) continue;
-        for (const subject of domain.children) {
-          subjectMap.set(subject.id, { subject, domainLabel: t(domain.labelKey) });
-        }
+        subjects.push(...domain.children);
       }
     }
-    return Array.from(subjectMap.values());
-  }, [selectedDomains, t]);
+    return subjects;
+  }, [selectedDomains]);
 
-  const selectedTopics: SelectedTopic[] = useMemo(() => {
-    const topics: SelectedTopic[] = [];
+  const selectedTopics: TaxonomyNode[] = useMemo(() => {
+    const topics: TaxonomyNode[] = [];
     for (const cat of KNOWLEDGE_TAXONOMY) {
       if (selectedCategories.has(cat.id) && cat.children) {
         for (const domain of cat.children) {
           if (selectedDomains.has(domain.id)) {
             if (!domain.children || domain.children.length === 0 || selectedSubjects.size === 0) {
-              topics.push({ node: domain, parentLabel: t(cat.labelKey) });
+              topics.push(domain);
             }
           }
         }
       }
     }
-    for (const { subject, domainLabel } of availableSubjects) {
+    for (const subject of availableSubjects) {
       if (selectedSubjects.has(subject.id)) {
-        topics.push({ node: subject, parentLabel: domainLabel });
+        topics.push(subject);
       }
     }
     return topics;
-  }, [selectedCategories, selectedDomains, selectedSubjects, availableSubjects, t]);
+  }, [selectedCategories, selectedDomains, selectedSubjects, availableSubjects]);
 
   const canProceed = selectedTopics.length > 0;
 
   const handleCreate = () => {
-    const topicNames = selectedTopics.map((tp) => tp.node.labelKey).map((key) => t(key));
-    const anchorAnswer = topicNames.length === 1
-      ? `I want to learn ${topicNames[0]}`
-      : `I want to learn ${topicNames.slice(0, -1).join(', ')} and ${topicNames[topicNames.length - 1]}`;
+    const names = selectedTopics.map((tp) => tp.label);
+    const anchorAnswer = names.length === 1
+      ? `I want to learn ${names[0]}`
+      : `I want to learn ${names.slice(0, -1).join(', ')} and ${names[names.length - 1]}`;
     onComplete(anchorAnswer);
   };
 
@@ -107,7 +99,6 @@ export const OnboardingBoard: React.FC<OnboardingBoardProps> = ({ entity, onComp
 
   return (
     <Box className="max-w-3xl mx-auto px-4 py-8 sm:py-12">
-      {/* Header */}
       <Stack direction="vertical" align="center" gap="sm" className="mb-8 sm:mb-10">
         <Typography variant="h1" weight="bold" align="center">
           {t('onboarding.welcome', { name: entity.welcomeName })}
@@ -145,7 +136,7 @@ export const OnboardingBoard: React.FC<OnboardingBoardProps> = ({ entity, onComp
             >
               <IconifyIcon icon={cat.icon} width={24} height={24} />
               <Typography variant="body" weight="semibold">
-                {t(cat.labelKey)}
+                {cat.label}
               </Typography>
             </Button>
           );
@@ -176,7 +167,7 @@ export const OnboardingBoard: React.FC<OnboardingBoardProps> = ({ entity, onComp
                   className="!h-auto py-2 px-3"
                 >
                   <IconifyIcon icon={domain.icon} width={16} height={16} className="inline-block me-1" />
-                  {t(domain.labelKey)}
+                  {domain.label}
                 </Button>
               );
             })}
@@ -196,7 +187,7 @@ export const OnboardingBoard: React.FC<OnboardingBoardProps> = ({ entity, onComp
             </Typography>
           </Stack>
           <Box className="flex flex-wrap gap-2 mb-8">
-            {availableSubjects.map(({ subject }) => {
+            {availableSubjects.map((subject) => {
               const isSelected = selectedSubjects.has(subject.id);
               return (
                 <Button
@@ -208,7 +199,7 @@ export const OnboardingBoard: React.FC<OnboardingBoardProps> = ({ entity, onComp
                   className="!h-auto py-2 px-3"
                 >
                   <IconifyIcon icon={subject.icon} width={16} height={16} className="inline-block me-1" />
-                  {t(subject.labelKey)}
+                  {subject.label}
                 </Button>
               );
             })}
@@ -225,11 +216,11 @@ export const OnboardingBoard: React.FC<OnboardingBoardProps> = ({ entity, onComp
           <Box className="flex flex-wrap gap-2">
             {selectedTopics.map((tp, i) => (
               <Box
-                key={`${tp.node.id}-${i}`}
+                key={`${tp.id}-${i}`}
                 className="inline-flex items-center gap-1 px-3 py-1 bg-primary/10 text-primary rounded-full text-sm font-medium"
               >
-                <IconifyIcon icon={tp.node.icon} width={14} height={14} />
-                {t(tp.node.labelKey)}
+                <IconifyIcon icon={tp.icon} width={14} height={14} />
+                {tp.label}
               </Box>
             ))}
           </Box>

@@ -1,0 +1,2102 @@
+[
+  {
+    "id": "humanities",
+    "label": "Humanities",
+    "icon": "ph:users-three",
+    "children": [
+      {
+        "id": "humanities-performing-arts",
+        "label": "Performing arts",
+        "icon": "ph:masks-theater",
+        "children": [
+          {
+            "id": "humanities-performing-arts-music",
+            "label": "Music",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "humanities-performing-arts-dance",
+            "label": "Dance",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "humanities-performing-arts-television",
+            "label": "Television",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "humanities-performing-arts-theatre",
+            "label": "Theatre",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "humanities-performing-arts-film",
+            "label": "Film",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "humanities-performing-arts-oral-literature",
+            "label": "Oral literature",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "humanities-performing-arts-electronic-game",
+            "label": "Electronic game",
+            "icon": "ph:circle-half"
+          }
+        ]
+      },
+      {
+        "id": "humanities-visual-arts",
+        "label": "Visual arts",
+        "icon": "ph:paint-brush",
+        "children": [
+          {
+            "id": "humanities-visual-arts-applied-arts",
+            "label": "Applied arts",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "humanities-visual-arts-art-director",
+            "label": "Art director",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "humanities-visual-arts-fine-arts",
+            "label": "Fine arts",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "humanities-visual-arts-digital-art",
+            "label": "Digital art",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "humanities-visual-arts-mixed-media",
+            "label": "Mixed media",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "humanities-visual-arts-studio-art",
+            "label": "Studio art",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "humanities-visual-arts-culinary-arts",
+            "label": "Culinary Arts",
+            "icon": "ph:circle-half"
+          }
+        ]
+      },
+      {
+        "id": "humanities-history",
+        "label": "History",
+        "icon": "ph:clock-countdown",
+        "children": [
+          {
+            "id": "humanities-history-prehistory",
+            "label": "Prehistory",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "humanities-history-ancient-history",
+            "label": "Ancient history",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "humanities-history-modern-history",
+            "label": "Modern history",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "humanities-history-asian-history",
+            "label": "Asian history",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "humanities-history-australian-history",
+            "label": "Australian history",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "humanities-history-european-history",
+            "label": "European history",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "humanities-history-african-history",
+            "label": "African history",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "humanities-history-pre-columbian-era",
+            "label": "Pre-Columbian era",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "humanities-history-pan-american-history",
+            "label": "Pan-American history",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "humanities-history-latin-american-history",
+            "label": "Latin American history",
+            "icon": "ph:circle-half"
+          }
+        ]
+      },
+      {
+        "id": "humanities-languages-and-literature",
+        "label": "Languages and literature",
+        "icon": "ph:books",
+        "children": [
+          {
+            "id": "humanities-languages-and-literature-comics-studies",
+            "label": "Comics studies",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "humanities-languages-and-literature-classics",
+            "label": "Classics",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "humanities-languages-and-literature-comparative-literature",
+            "label": "Comparative literature",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "humanities-languages-and-literature-creative-writing",
+            "label": "Creative writing",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "humanities-languages-and-literature-english-studies",
+            "label": "English studies",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "humanities-languages-and-literature-english-literature",
+            "label": "English literature",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "humanities-languages-and-literature-history-of-literature",
+            "label": "History of literature",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "humanities-languages-and-literature-literary-genre",
+            "label": "Literary genre",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "humanities-languages-and-literature-literary-theory",
+            "label": "Literary theory",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "humanities-languages-and-literature-language",
+            "label": "Language",
+            "icon": "ph:circle-half"
+          }
+        ]
+      },
+      {
+        "id": "humanities-law",
+        "label": "Law",
+        "icon": "ph:scales",
+        "children": [
+          {
+            "id": "humanities-law-legal-management",
+            "label": "Legal management",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "humanities-law-administrative-law",
+            "label": "Administrative law",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "humanities-law-canon-law",
+            "label": "Canon law",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "humanities-law-comparative-law",
+            "label": "Comparative law",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "humanities-law-constitutional-law",
+            "label": "Constitutional law",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "humanities-law-competition-law",
+            "label": "Competition law",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "humanities-law-criminal-law",
+            "label": "Criminal law",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "humanities-law-islamic-law",
+            "label": "Islamic law",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "humanities-law-jewish-law",
+            "label": "Jewish law",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "humanities-law-jurisprudence",
+            "label": "Jurisprudence",
+            "icon": "ph:circle-half"
+          }
+        ]
+      },
+      {
+        "id": "humanities-philosophy",
+        "label": "Philosophy",
+        "icon": "ph:lightbulb",
+        "children": [
+          {
+            "id": "humanities-philosophy-aesthetics",
+            "label": "Aesthetics",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "humanities-philosophy-applied-philosophy",
+            "label": "Applied philosophy",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "humanities-philosophy-epistemology",
+            "label": "Epistemology",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "humanities-philosophy-ethics",
+            "label": "Ethics",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "humanities-philosophy-logic",
+            "label": "Logic",
+            "icon": "ph:puzzle-piece"
+          },
+          {
+            "id": "humanities-philosophy-meta-philosophy",
+            "label": "Meta-philosophy",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "humanities-philosophy-metaphysics",
+            "label": "Metaphysics",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "humanities-philosophy-history-of-philosophy",
+            "label": "History of philosophy",
+            "icon": "ph:circle-half"
+          }
+        ]
+      },
+      {
+        "id": "humanities-religious-studies",
+        "label": "Religious studies",
+        "icon": "ph:book-open",
+        "children": [
+          {
+            "id": "humanities-religious-studies-history-of-religion",
+            "label": "History of Religion",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "humanities-religious-studies-anthropology-of-religion",
+            "label": "Anthropology of Religion",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "humanities-religious-studies-sociology-of-religion",
+            "label": "Sociology of Religion",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "humanities-religious-studies-psychology-of-religion",
+            "label": "Psychology of Religion",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "humanities-religious-studies-phenomenology-of-religion",
+            "label": "Phenomenology of Religion",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "humanities-religious-studies-philosophy-of-religion",
+            "label": "Philosophy of Religion",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "humanities-religious-studies-comparative-religion",
+            "label": "Comparative religion",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "humanities-religious-studies-mythology",
+            "label": "Mythology",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "humanities-religious-studies-theism",
+            "label": "Theism",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "humanities-religious-studies-irreligion",
+            "label": "Irreligion",
+            "icon": "ph:circle-half"
+          }
+        ]
+      },
+      {
+        "id": "humanities-divinity",
+        "label": "Divinity",
+        "icon": "ph:book-open",
+        "children": [
+          {
+            "id": "humanities-divinity-canon-law",
+            "label": "Canon law",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "humanities-divinity-church-history",
+            "label": "Church history",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "humanities-divinity-hermeneutics",
+            "label": "Hermeneutics",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "humanities-divinity-theology",
+            "label": "Theology",
+            "icon": "ph:book-open"
+          }
+        ]
+      },
+      {
+        "id": "humanities-theology",
+        "label": "Theology",
+        "icon": "ph:book-open",
+        "children": [
+          {
+            "id": "humanities-theology-biblical-studies",
+            "label": "Biblical studies",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "humanities-theology-buddhist-theology",
+            "label": "Buddhist theology",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "humanities-theology-christian-theology",
+            "label": "Christian theology",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "humanities-theology-hindu-theology",
+            "label": "Hindu theology",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "humanities-theology-jewish-theology",
+            "label": "Jewish theology",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "humanities-theology-muslim-theology",
+            "label": "Muslim theology",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "humanities-theology-buddhist-studies",
+            "label": "Buddhist studies",
+            "icon": "ph:circle-half"
+          }
+        ]
+      },
+      {
+        "id": "humanities-religion",
+        "label": "Religion",
+        "icon": "ph:book-open",
+        "children": [
+          {
+            "id": "humanities-religion-abrahamic-religions",
+            "label": "Abrahamic religions",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "humanities-religion-apologetics",
+            "label": "Apologetics",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "humanities-religion-indian-religions",
+            "label": "Indian religions",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "humanities-religion-east-asian-religions",
+            "label": "East Asian religions",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "humanities-religion-comparative-religion",
+            "label": "Comparative religion",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "humanities-religion-mythology",
+            "label": "Mythology",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "humanities-religion-theism",
+            "label": "Theism",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "humanities-religion-irreligion",
+            "label": "Irreligion",
+            "icon": "ph:circle-half"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "social-science",
+    "label": "Social science",
+    "icon": "ph:users",
+    "children": [
+      {
+        "id": "social-science-anthropology",
+        "label": "Anthropology",
+        "icon": "ph:users-four",
+        "children": [
+          {
+            "id": "social-science-anthropology-archaeology",
+            "label": "Archaeology",
+            "icon": "ph:hammer"
+          },
+          {
+            "id": "social-science-anthropology-anthropological-criminology",
+            "label": "Anthropological criminology",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "social-science-anthropology-anthropological-linguistics",
+            "label": "Anthropological linguistics",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "social-science-anthropology-anthrozoology",
+            "label": "Anthrozoology",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "social-science-anthropology-biological-anthropology",
+            "label": "Biological anthropology",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "social-science-anthropology-biocultural-anthropology",
+            "label": "Biocultural anthropology",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "social-science-anthropology-cultural-anthropology",
+            "label": "Cultural anthropology",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "social-science-anthropology-linguistic-anthropology",
+            "label": "Linguistic anthropology",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "social-science-anthropology-social-anthropology",
+            "label": "Social anthropology",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "social-science-anthropology-sociocultural-anthropology",
+            "label": "Sociocultural anthropology",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "social-science-anthropology-archaeology",
+            "label": "Archaeology",
+            "icon": "ph:hammer"
+          }
+        ]
+      },
+      {
+        "id": "social-science-business",
+        "label": "Business",
+        "icon": "ph:briefcase",
+        "children": [
+          {
+            "id": "social-science-business-accounting",
+            "label": "Accounting",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "social-science-business-business-administration",
+            "label": "Business administration",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "social-science-business-business-analysis",
+            "label": "Business analysis",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "social-science-business-business-ethics",
+            "label": "Business ethics",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "social-science-business-business-law",
+            "label": "Business law",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "social-science-business-corporate-governance",
+            "label": "Corporate governance",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "social-science-business-e-business",
+            "label": "E-Business",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "social-science-business-entrepreneurship",
+            "label": "Entrepreneurship",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "social-science-business-decision-science",
+            "label": "Decision science",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "social-science-business-finance",
+            "label": "Finance",
+            "icon": "ph:circle-half"
+          }
+        ]
+      },
+      {
+        "id": "social-science-economics",
+        "label": "Economics",
+        "icon": "ph:chart-line-up",
+        "children": [
+          {
+            "id": "social-science-economics-agricultural-economics",
+            "label": "Agricultural economics",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "social-science-economics-anarchist-economics",
+            "label": "Anarchist economics",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "social-science-economics-applied-economics",
+            "label": "Applied economics",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "social-science-economics-behavioural-economics",
+            "label": "Behavioural economics",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "social-science-economics-bioeconomics",
+            "label": "Bioeconomics",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "social-science-economics-business",
+            "label": "Business",
+            "icon": "ph:briefcase"
+          },
+          {
+            "id": "social-science-economics-complexity-economics",
+            "label": "Complexity economics",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "social-science-economics-computational-economics",
+            "label": "Computational economics",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "social-science-economics-consumer-economics",
+            "label": "Consumer economics",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "social-science-economics-development-economics",
+            "label": "Development economics",
+            "icon": "ph:circle-half"
+          }
+        ]
+      },
+      {
+        "id": "social-science-futurology",
+        "label": "Futurology",
+        "icon": "ph:circle-half",
+        "children": [
+          {
+            "id": "social-science-futurology-cashless-society",
+            "label": "Cashless society",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "social-science-futurology-climate",
+            "label": "Climate",
+            "icon": "ph:circle-half"
+          }
+        ]
+      },
+      {
+        "id": "social-science-geography",
+        "label": "Geography",
+        "icon": "ph:globe-hemisphere-west",
+        "children": [
+          {
+            "id": "social-science-geography-physical-geography",
+            "label": "Physical geography",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "social-science-geography-human-geography",
+            "label": "Human geography",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "social-science-geography-integrated-geography",
+            "label": "Integrated geography",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "social-science-geography-cartography",
+            "label": "Cartography",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "social-science-geography-navigation",
+            "label": "Navigation",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "social-science-geography-regional-geography",
+            "label": "Regional geography",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "social-science-geography-remote-sensing",
+            "label": "Remote sensing",
+            "icon": "ph:circle-half"
+          }
+        ]
+      },
+      {
+        "id": "social-science-linguistics",
+        "label": "Linguistics",
+        "icon": "ph:chat-text",
+        "children": [
+          {
+            "id": "social-science-linguistics-applied-linguistics",
+            "label": "Applied linguistics",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "social-science-linguistics-composition-studies",
+            "label": "Composition studies",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "social-science-linguistics-computational-linguistics",
+            "label": "Computational linguistics",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "social-science-linguistics-discourse-analysis",
+            "label": "Discourse analysis",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "social-science-linguistics-english-studies",
+            "label": "English studies",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "social-science-linguistics-etymology",
+            "label": "Etymology",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "social-science-linguistics-grammar",
+            "label": "Grammar",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "social-science-linguistics-grammatology",
+            "label": "Grammatology",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "social-science-linguistics-historical-linguistics",
+            "label": "Historical linguistics",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "social-science-linguistics-history-of-linguistics",
+            "label": "History of linguistics",
+            "icon": "ph:circle-half"
+          }
+        ]
+      },
+      {
+        "id": "social-science-political-science",
+        "label": "Political science",
+        "icon": "ph:building",
+        "children": [
+          {
+            "id": "social-science-political-science-american-politics",
+            "label": "American politics",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "social-science-political-science-canadian-politics",
+            "label": "Canadian politics",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "social-science-political-science-civics",
+            "label": "Civics",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "social-science-political-science-health-politics",
+            "label": "Health politics",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "social-science-political-science-biopolitics",
+            "label": "Biopolitics",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "social-science-political-science-comparative-politics",
+            "label": "Comparative politics",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "social-science-political-science-european-studies",
+            "label": "European studies",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "social-science-political-science-geopolitics",
+            "label": "Geopolitics",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "social-science-political-science-indian-politics",
+            "label": "Indian politics",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "social-science-political-science-international-relations",
+            "label": "International relations",
+            "icon": "ph:circle-half"
+          }
+        ]
+      },
+      {
+        "id": "social-science-psychology",
+        "label": "Psychology",
+        "icon": "ph:brain",
+        "children": [
+          {
+            "id": "social-science-psychology-abnormal-psychology",
+            "label": "Abnormal psychology",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "social-science-psychology-applied-psychology",
+            "label": "Applied psychology",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "social-science-psychology-biological-psychology",
+            "label": "Biological psychology",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "social-science-psychology-clinical-neuropsychology",
+            "label": "Clinical neuropsychology",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "social-science-psychology-clinical-psychology",
+            "label": "Clinical psychology",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "social-science-psychology-cognitive-psychology",
+            "label": "Cognitive psychology",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "social-science-psychology-community-psychology",
+            "label": "Community psychology",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "social-science-psychology-comparative-psychology",
+            "label": "Comparative psychology",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "social-science-psychology-conservation-psychology",
+            "label": "Conservation psychology",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "social-science-psychology-consumer-psychology",
+            "label": "Consumer psychology",
+            "icon": "ph:circle-half"
+          }
+        ]
+      },
+      {
+        "id": "social-science-sociology",
+        "label": "Sociology",
+        "icon": "ph:users-three",
+        "children": [
+          {
+            "id": "social-science-sociology-analytical-sociology",
+            "label": "Analytical sociology",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "social-science-sociology-applied-sociology",
+            "label": "Applied sociology",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "social-science-sociology-architectural-sociology",
+            "label": "Architectural sociology",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "social-science-sociology-area-studies",
+            "label": "Area studies",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "social-science-sociology-behavioral-sociology",
+            "label": "Behavioral sociology",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "social-science-sociology-chinese-sociology",
+            "label": "Chinese sociology",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "social-science-sociology-collective-behavior",
+            "label": "Collective behavior",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "social-science-sociology-social-phenomenon",
+            "label": "Social phenomenon",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "social-science-sociology-community-informatics",
+            "label": "Community informatics",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "social-science-sociology-comparative-sociology",
+            "label": "Comparative sociology",
+            "icon": "ph:circle-half"
+          }
+        ]
+      },
+      {
+        "id": "social-science-interdisciplinary-studies",
+        "label": "Interdisciplinary studies",
+        "icon": "ph:circle-half",
+        "children": [
+          {
+            "id": "social-science-interdisciplinary-studies-area-studies",
+            "label": "Area studies",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "social-science-interdisciplinary-studies-african-studies",
+            "label": "African studies",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "social-science-interdisciplinary-studies-american-studies",
+            "label": "American studies",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "social-science-interdisciplinary-studies-asian-studies",
+            "label": "Asian studies",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "social-science-interdisciplinary-studies-european-studies",
+            "label": "European studies",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "social-science-interdisciplinary-studies-australian-studies",
+            "label": "Australian studies",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "social-science-interdisciplinary-studies-pacific-studies",
+            "label": "Pacific studies",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "social-science-interdisciplinary-studies-middle-east-studies",
+            "label": "Middle East studies",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "social-science-interdisciplinary-studies-russian",
+            "label": "Russian",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "social-science-interdisciplinary-studies-ethnic-and-cultural-studies",
+            "label": "Ethnic and cultural studies",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "social-science-interdisciplinary-studies-organizational-studies",
+            "label": "Organizational studies",
+            "icon": "ph:circle-half"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "natural-science",
+    "label": "Natural science",
+    "icon": "ph:leaf",
+    "children": [
+      {
+        "id": "natural-science-physical-science",
+        "label": "Physical Science",
+        "icon": "ph:circle-half",
+        "children": [
+          {
+            "id": "natural-science-physical-science-space-sciences",
+            "label": "Space sciences",
+            "icon": "ph:planet"
+          },
+          {
+            "id": "natural-science-physical-science-aerospace-engineering",
+            "label": "Aerospace engineering",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "natural-science-physical-science-space-technology",
+            "label": "Space technology",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "natural-science-physical-science-asteroid-impact-avoidance",
+            "label": "Asteroid-impact avoidance",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "natural-science-physical-science-astrobiology",
+            "label": "Astrobiology",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "natural-science-physical-science-astrobotany",
+            "label": "Astrobotany",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "natural-science-physical-science-astrochemistry",
+            "label": "Astrochemistry",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "natural-science-physical-science-cosmochemistry",
+            "label": "Cosmochemistry",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "natural-science-physical-science-cosmology",
+            "label": "Cosmology",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "natural-science-physical-science-micro-g-environment-research",
+            "label": "Micro-g environment research",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "natural-science-physical-science-astronomy",
+            "label": "Astronomy",
+            "icon": "ph:telescope"
+          },
+          {
+            "id": "natural-science-physical-science-physics",
+            "label": "Physics",
+            "icon": "ph:atom"
+          },
+          {
+            "id": "natural-science-physical-science-chemistry",
+            "label": "Chemistry",
+            "icon": "ph:flask"
+          },
+          {
+            "id": "natural-science-physical-science-earth-science",
+            "label": "Earth science",
+            "icon": "ph:globe"
+          }
+        ]
+      },
+      {
+        "id": "natural-science-life-science",
+        "label": "Life science",
+        "icon": "ph:circle-half",
+        "children": [
+          {
+            "id": "natural-science-life-science-biology",
+            "label": "Biology",
+            "icon": "ph:dna"
+          },
+          {
+            "id": "natural-science-life-science-aerobiology",
+            "label": "Aerobiology",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "natural-science-life-science-anatomy",
+            "label": "Anatomy",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "natural-science-life-science-biochemistry",
+            "label": "Biochemistry",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "natural-science-life-science-bioinformatics",
+            "label": "Bioinformatics",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "natural-science-life-science-biophysics",
+            "label": "Biophysics",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "natural-science-life-science-biotechnology",
+            "label": "Biotechnology",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "natural-science-life-science-botany",
+            "label": "Botany",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "natural-science-life-science-cell-biology",
+            "label": "Cell biology",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "natural-science-life-science-chronobiology",
+            "label": "Chronobiology",
+            "icon": "ph:circle-half"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "formal-science",
+    "label": "Formal science",
+    "icon": "ph:math-operations",
+    "children": [
+      {
+        "id": "formal-science-computer-science",
+        "label": "Computer science",
+        "icon": "ph:computer-tower",
+        "children": [
+          {
+            "id": "formal-science-computer-science-logic-in-computer-science",
+            "label": "Logic in computer science",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "formal-science-computer-science-operating-systems",
+            "label": "Operating systems",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "formal-science-computer-science-algorithm",
+            "label": "Algorithm",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "formal-science-computer-science-artificial-intelligence",
+            "label": "Artificial intelligence",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "formal-science-computer-science-database",
+            "label": "Database",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "formal-science-computer-science-data-science",
+            "label": "Data science",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "formal-science-computer-science-data-structures",
+            "label": "Data structures",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "formal-science-computer-science-computer-architecture",
+            "label": "Computer architecture",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "formal-science-computer-science-computer-graphics",
+            "label": "Computer graphics",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "formal-science-computer-science-computer-communications",
+            "label": "Computer communications",
+            "icon": "ph:circle-half"
+          }
+        ]
+      },
+      {
+        "id": "formal-science-logic",
+        "label": "Logic",
+        "icon": "ph:puzzle-piece",
+        "children": [
+          {
+            "id": "formal-science-logic-mathematical-logic",
+            "label": "Mathematical logic",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "formal-science-logic-philosophical-logic",
+            "label": "Philosophical logic",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "formal-science-logic-logic-in-computer-science",
+            "label": "Logic in computer science",
+            "icon": "ph:circle-half"
+          }
+        ]
+      },
+      {
+        "id": "formal-science-mathematics",
+        "label": "Mathematics",
+        "icon": "ph:calculator",
+        "children": [
+          {
+            "id": "formal-science-mathematics-pure-mathematics",
+            "label": "Pure mathematics",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "formal-science-mathematics-mathematical-logic",
+            "label": "Mathematical logic",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "formal-science-mathematics-arithmetic",
+            "label": "Arithmetic",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "formal-science-mathematics-algebra",
+            "label": "Algebra",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "formal-science-mathematics-analysis",
+            "label": "Analysis",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "formal-science-mathematics-probability-theory",
+            "label": "Probability theory",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "formal-science-mathematics-geometry",
+            "label": "Geometry",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "formal-science-mathematics-number-theory",
+            "label": "Number theory",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "formal-science-mathematics-applied-mathematics",
+            "label": "Applied mathematics",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "formal-science-mathematics-approximation-theory",
+            "label": "Approximation theory",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "formal-science-mathematics-statistics",
+            "label": "Statistics",
+            "icon": "ph:chart-bar"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "applied-science",
+    "label": "Applied science",
+    "icon": "ph:wrench",
+    "children": [
+      {
+        "id": "applied-science-agriculture",
+        "label": "Agriculture",
+        "icon": "ph:plant",
+        "children": [
+          {
+            "id": "applied-science-agriculture-aeroponics",
+            "label": "Aeroponics",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "applied-science-agriculture-agroecology",
+            "label": "Agroecology",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "applied-science-agriculture-agrology",
+            "label": "Agrology",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "applied-science-agriculture-agronomy",
+            "label": "Agronomy",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "applied-science-agriculture-animal-husbandry",
+            "label": "Animal husbandry",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "applied-science-agriculture-anthroponics",
+            "label": "Anthroponics",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "applied-science-agriculture-agricultural-economics",
+            "label": "Agricultural economics",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "applied-science-agriculture-agricultural-engineering",
+            "label": "Agricultural engineering",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "applied-science-agriculture-aquaculture",
+            "label": "Aquaculture",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "applied-science-agriculture-aquaponics",
+            "label": "Aquaponics",
+            "icon": "ph:circle-half"
+          }
+        ]
+      },
+      {
+        "id": "applied-science-architecture-and-design",
+        "label": "Architecture and design",
+        "icon": "ph:ruler",
+        "children": [
+          {
+            "id": "applied-science-architecture-and-design-architecture",
+            "label": "Architecture",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "applied-science-architecture-and-design-architectural-analytics",
+            "label": "Architectural analytics",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "applied-science-architecture-and-design-historic-preservation",
+            "label": "Historic preservation",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "applied-science-architecture-and-design-interior-design",
+            "label": "Interior design",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "applied-science-architecture-and-design-landscape-architecture",
+            "label": "Landscape architecture",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "applied-science-architecture-and-design-landscape-design",
+            "label": "Landscape design",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "applied-science-architecture-and-design-urban-planning",
+            "label": "Urban planning",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "applied-science-architecture-and-design-visual-communication",
+            "label": "Visual communication",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "applied-science-architecture-and-design-industrial-design",
+            "label": "Industrial design",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "applied-science-architecture-and-design-user-experience-design",
+            "label": "User experience design",
+            "icon": "ph:circle-half"
+          }
+        ]
+      },
+      {
+        "id": "applied-science-education",
+        "label": "Education",
+        "icon": "ph:graduation-cap",
+        "children": [
+          {
+            "id": "applied-science-education-comparative-education",
+            "label": "Comparative education",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "applied-science-education-critical-pedagogy",
+            "label": "Critical pedagogy",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "applied-science-education-curriculum-and-instruction",
+            "label": "Curriculum and instruction",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "applied-science-education-educational-leadership",
+            "label": "Educational leadership",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "applied-science-education-educational-philosophy",
+            "label": "Educational philosophy",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "applied-science-education-educational-psychology",
+            "label": "Educational psychology",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "applied-science-education-educational-technology",
+            "label": "Educational technology",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "applied-science-education-distance-education",
+            "label": "Distance education",
+            "icon": "ph:circle-half"
+          }
+        ]
+      },
+      {
+        "id": "applied-science-engineering-and-technology",
+        "label": "Engineering and technology",
+        "icon": "ph:wrench",
+        "children": [
+          {
+            "id": "applied-science-engineering-and-technology-chemical-engineering",
+            "label": "Chemical engineering",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "applied-science-engineering-and-technology-biocatalysts",
+            "label": "Biocatalysts",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "applied-science-engineering-and-technology-bioengineering",
+            "label": "Bioengineering",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "applied-science-engineering-and-technology-catalysis",
+            "label": "Catalysis",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "applied-science-engineering-and-technology-materials-engineering",
+            "label": "Materials engineering",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "applied-science-engineering-and-technology-molecular-engineering",
+            "label": "Molecular engineering",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "applied-science-engineering-and-technology-nanotechnology",
+            "label": "Nanotechnology",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "applied-science-engineering-and-technology-polymer-engineering",
+            "label": "Polymer engineering",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "applied-science-engineering-and-technology-process-design",
+            "label": "Process design",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "applied-science-engineering-and-technology-process-engineering",
+            "label": "Process engineering",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "applied-science-engineering-and-technology-civil-engineering",
+            "label": "Civil engineering",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "applied-science-engineering-and-technology-educational-technology",
+            "label": "Educational technology",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "applied-science-engineering-and-technology-electrical-engineering",
+            "label": "Electrical engineering",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "applied-science-engineering-and-technology-materials-science",
+            "label": "Materials science",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "applied-science-engineering-and-technology-mechanical-engineering",
+            "label": "Mechanical engineering",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "applied-science-engineering-and-technology-systems-science",
+            "label": "Systems science",
+            "icon": "ph:circle-half"
+          }
+        ]
+      },
+      {
+        "id": "applied-science-environmental-studies-and-forestry",
+        "label": "Environmental studies and forestry",
+        "icon": "ph:circle-half",
+        "children": [
+          {
+            "id": "applied-science-environmental-studies-and-forestry-environmental-management",
+            "label": "Environmental management",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "applied-science-environmental-studies-and-forestry-environmental-policy",
+            "label": "Environmental policy",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "applied-science-environmental-studies-and-forestry-wildlife-observation",
+            "label": "Wildlife observation",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "applied-science-environmental-studies-and-forestry-recreation-ecology",
+            "label": "Recreation ecology",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "applied-science-environmental-studies-and-forestry-silviculture",
+            "label": "Silviculture",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "applied-science-environmental-studies-and-forestry-sustainability-studies",
+            "label": "Sustainability studies",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "applied-science-environmental-studies-and-forestry-toxicology",
+            "label": "Toxicology",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "applied-science-environmental-studies-and-forestry-ecology",
+            "label": "Ecology",
+            "icon": "ph:circle-half"
+          }
+        ]
+      },
+      {
+        "id": "applied-science-family-and-consumer-science",
+        "label": "Family and consumer science",
+        "icon": "ph:circle-half",
+        "children": [
+          {
+            "id": "applied-science-family-and-consumer-science-consumer-education",
+            "label": "Consumer education",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "applied-science-family-and-consumer-science-housing",
+            "label": "Housing",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "applied-science-family-and-consumer-science-interior-design",
+            "label": "Interior design",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "applied-science-family-and-consumer-science-nutrition",
+            "label": "Nutrition",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "applied-science-family-and-consumer-science-textile",
+            "label": "Textile",
+            "icon": "ph:circle-half"
+          }
+        ]
+      },
+      {
+        "id": "applied-science-human-physical-performance-and-recreation",
+        "label": "Human physical performance and recreation",
+        "icon": "ph:circle-half",
+        "children": [
+          {
+            "id": "applied-science-human-physical-performance-and-recreation-biomechanics",
+            "label": "Biomechanics",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "applied-science-human-physical-performance-and-recreation-sports-coaching",
+            "label": "Sports coaching",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "applied-science-human-physical-performance-and-recreation-escapology",
+            "label": "Escapology",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "applied-science-human-physical-performance-and-recreation-ergonomics",
+            "label": "Ergonomics",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "applied-science-human-physical-performance-and-recreation-physical-fitness",
+            "label": "Physical fitness",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "applied-science-human-physical-performance-and-recreation-game-design",
+            "label": "Game design",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "applied-science-human-physical-performance-and-recreation-exercise-physiology",
+            "label": "Exercise physiology",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "applied-science-human-physical-performance-and-recreation-kinesiology",
+            "label": "Kinesiology",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "applied-science-human-physical-performance-and-recreation-leisure-studies",
+            "label": "Leisure studies",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "applied-science-human-physical-performance-and-recreation-navigation",
+            "label": "Navigation",
+            "icon": "ph:circle-half"
+          }
+        ]
+      },
+      {
+        "id": "applied-science-journalism-media-studies-and-communication",
+        "label": "Journalism, media studies and communication",
+        "icon": "ph:circle-half",
+        "children": [
+          {
+            "id": "applied-science-journalism-media-studies-and-communication-journalism",
+            "label": "Journalism",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "applied-science-journalism-media-studies-and-communication-media-studies",
+            "label": "Media studies",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "applied-science-journalism-media-studies-and-communication-narratology",
+            "label": "Narratology",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "applied-science-journalism-media-studies-and-communication-communication-studies",
+            "label": "Communication studies",
+            "icon": "ph:circle-half"
+          }
+        ]
+      },
+      {
+        "id": "applied-science-library-and-museum-studies",
+        "label": "Library and museum studies",
+        "icon": "ph:circle-half",
+        "children": [
+          {
+            "id": "applied-science-library-and-museum-studies-archival-science",
+            "label": "Archival science",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "applied-science-library-and-museum-studies-archivist",
+            "label": "Archivist",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "applied-science-library-and-museum-studies-bibliographic-databases",
+            "label": "Bibliographic databases",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "applied-science-library-and-museum-studies-bibliometrics",
+            "label": "Bibliometrics",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "applied-science-library-and-museum-studies-bookmobile",
+            "label": "Bookmobile",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "applied-science-library-and-museum-studies-cataloging",
+            "label": "Cataloging",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "applied-science-library-and-museum-studies-categorization",
+            "label": "Categorization",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "applied-science-library-and-museum-studies-classification",
+            "label": "Classification",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "applied-science-library-and-museum-studies-collections-care",
+            "label": "Collections care",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "applied-science-library-and-museum-studies-collection-management",
+            "label": "Collection management",
+            "icon": "ph:circle-half"
+          }
+        ]
+      },
+      {
+        "id": "applied-science-medicine-and-health",
+        "label": "Medicine and health",
+        "icon": "ph:heartbeat",
+        "children": [
+          {
+            "id": "applied-science-medicine-and-health-alternative-medicine",
+            "label": "Alternative medicine",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "applied-science-medicine-and-health-audiology",
+            "label": "Audiology",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "applied-science-medicine-and-health-clinical-laboratory-sciences",
+            "label": "Clinical laboratory sciences",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "applied-science-medicine-and-health-clinical-physiology",
+            "label": "Clinical physiology",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "applied-science-medicine-and-health-deathcare",
+            "label": "Deathcare",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "applied-science-medicine-and-health-dentistry",
+            "label": "Dentistry",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "applied-science-medicine-and-health-dermatology",
+            "label": "Dermatology",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "applied-science-medicine-and-health-emergency-medicine",
+            "label": "Emergency medicine",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "applied-science-medicine-and-health-epidemiology",
+            "label": "Epidemiology",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "applied-science-medicine-and-health-geriatrics",
+            "label": "Geriatrics",
+            "icon": "ph:circle-half"
+          }
+        ]
+      },
+      {
+        "id": "applied-science-military-sciences",
+        "label": "Military sciences",
+        "icon": "ph:circle-half",
+        "children": [
+          {
+            "id": "applied-science-military-sciences-amphibious-warfare",
+            "label": "Amphibious warfare",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "applied-science-military-sciences-artillery",
+            "label": "Artillery",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "applied-science-military-sciences-battlespace",
+            "label": "Battlespace",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "applied-science-military-sciences-campaigning",
+            "label": "Campaigning",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "applied-science-military-sciences-military-engineering",
+            "label": "Military engineering",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "applied-science-military-sciences-doctrine",
+            "label": "Doctrine",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "applied-science-military-sciences-espionage",
+            "label": "Espionage",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "applied-science-military-sciences-game-theory",
+            "label": "Game theory",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "applied-science-military-sciences-grand-strategy",
+            "label": "Grand strategy",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "applied-science-military-sciences-leadership",
+            "label": "Leadership",
+            "icon": "ph:circle-half"
+          }
+        ]
+      },
+      {
+        "id": "applied-science-public-administration",
+        "label": "Public administration",
+        "icon": "ph:circle-half",
+        "children": [
+          {
+            "id": "applied-science-public-administration-civil-service",
+            "label": "Civil service",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "applied-science-public-administration-corrections",
+            "label": "Corrections",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "applied-science-public-administration-conservation-biology",
+            "label": "Conservation biology",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "applied-science-public-administration-criminal-justice",
+            "label": "Criminal justice",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "applied-science-public-administration-disaster-research",
+            "label": "Disaster research",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "applied-science-public-administration-disaster-response",
+            "label": "Disaster response",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "applied-science-public-administration-emergency-management",
+            "label": "Emergency management",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "applied-science-public-administration-emergency-services",
+            "label": "Emergency services",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "applied-science-public-administration-fire-safety",
+            "label": "Fire safety",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "applied-science-public-administration-fire-ecology",
+            "label": "Fire ecology",
+            "icon": "ph:circle-half"
+          }
+        ]
+      },
+      {
+        "id": "applied-science-public-policy",
+        "label": "Public policy",
+        "icon": "ph:circle-half",
+        "children": [
+          {
+            "id": "applied-science-public-policy-agricultural-policy",
+            "label": "Agricultural policy",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "applied-science-public-policy-commercial-policy",
+            "label": "Commercial policy",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "applied-science-public-policy-cultural-policy",
+            "label": "Cultural policy",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "applied-science-public-policy-domestic-policy",
+            "label": "Domestic policy",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "applied-science-public-policy-drug-policy",
+            "label": "Drug policy",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "applied-science-public-policy-economic-policy",
+            "label": "Economic policy",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "applied-science-public-policy-education-policy",
+            "label": "Education policy",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "applied-science-public-policy-energy-policy",
+            "label": "Energy policy",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "applied-science-public-policy-environmental-policy",
+            "label": "Environmental policy",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "applied-science-public-policy-food-policy",
+            "label": "Food policy",
+            "icon": "ph:circle-half"
+          }
+        ]
+      },
+      {
+        "id": "applied-science-social-work",
+        "label": "Social work",
+        "icon": "ph:circle-half",
+        "children": [
+          {
+            "id": "applied-science-social-work-child-welfare",
+            "label": "Child welfare",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "applied-science-social-work-community-practice",
+            "label": "Community practice",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "applied-science-social-work-human-services",
+            "label": "Human Services",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "applied-science-social-work-corrections",
+            "label": "Corrections",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "applied-science-social-work-gerontology",
+            "label": "Gerontology",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "applied-science-social-work-medical-social-work",
+            "label": "Medical social work",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "applied-science-social-work-mental-health",
+            "label": "Mental health",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "applied-science-social-work-school-social-work",
+            "label": "School social work",
+            "icon": "ph:circle-half"
+          }
+        ]
+      },
+      {
+        "id": "applied-science-transportation",
+        "label": "Transportation",
+        "icon": "ph:circle-half",
+        "children": [
+          {
+            "id": "applied-science-transportation-highway-safety",
+            "label": "Highway safety",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "applied-science-transportation-infographics",
+            "label": "Infographics",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "applied-science-transportation-logistics",
+            "label": "Logistics",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "applied-science-transportation-marine-transportation",
+            "label": "Marine transportation",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "applied-science-transportation-operations-research",
+            "label": "Operations research",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "applied-science-transportation-mass-transit",
+            "label": "Mass transit",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "applied-science-transportation-travel",
+            "label": "Travel",
+            "icon": "ph:circle-half"
+          },
+          {
+            "id": "applied-science-transportation-vehicles",
+            "label": "Vehicles",
+            "icon": "ph:circle-half"
+          }
+        ]
+      }
+    ]
+  }
+]
