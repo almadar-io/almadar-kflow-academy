@@ -14,7 +14,7 @@ export interface OnboardingBoardEntity {
 export interface OnboardingBoardProps {
   entity: OnboardingBoardEntity;
   onComplete: (anchorAnswer: string) => void;
-  onSkip: () => void;
+  onSkip: (anchorAnswer: string) => void;
 }
 
 export const OnboardingBoard: React.FC<OnboardingBoardProps> = ({ entity, onComplete, onSkip }) => {
@@ -229,7 +229,15 @@ export const OnboardingBoard: React.FC<OnboardingBoardProps> = ({ entity, onComp
 
       {/* Actions */}
       <Stack direction="horizontal" justify="between" className="pt-4 border-t border-border">
-        <Button type="button" variant="ghost" onClick={onSkip}>
+        <Button type="button" variant="ghost" onClick={() => {
+          const catLabels = KNOWLEDGE_TAXONOMY
+            .filter((c) => selectedCategories.has(c.id))
+            .map((c) => c.label);
+          const anchor = catLabels.length > 0
+            ? `I want to explore ${catLabels.join(', ')}`
+            : 'I want to explore general knowledge and discover new topics';
+          onSkip(anchor);
+        }}>
           {t('onboarding.skip')}
         </Button>
         <Button

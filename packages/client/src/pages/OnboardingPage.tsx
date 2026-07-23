@@ -58,9 +58,32 @@ export const OnboardingPage: React.FC = () => {
     [createWithGraph, navigate, queryClient, t, emit],
   );
 
-  const handleSkip = useCallback(() => {
-    navigate('/home');
-  }, [navigate]);
+  const handleSkip = useCallback(async (anchorAnswer: string) => {
+    setPartialTitle('');
+    contentAccRef.current = '';
+    try {
+      const result = await createWithGraph(
+        {
+          anchorAnswer,
+          questionAnswers: [],
+          goalFocused: true,
+          stream: true,
+        },
+        (_chunk: string, partial: StreamPartial) => {
+          if (partial && partial.title) {
+            setPartialTitle(partial.title);
+          }
+        },
+      );
+      if (result) {
+        await queryClient.invalidateQueries({ queryKey: JUMP_BACK_IN_QUERY_KEY });
+        await queryClient.invalidateQueries({ queryKey: knowledgeGraphKeys.learningPaths() });
+        navigate(`/concepts/${result.graphId}`);
+      }
+    } catch {
+      navigate('/home');
+    }
+  }, [createWithGraph, navigate, queryClient]);
 
   const entity: OnboardingBoardEntity = {
     welcomeName: user?.displayName?.split(' ')[0] ?? t('nav.user'),
