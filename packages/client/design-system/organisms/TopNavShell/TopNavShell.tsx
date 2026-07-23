@@ -7,19 +7,19 @@
  * it collapses via max-height so the content area reflows to fill the space.
  *
  * Composed entirely from @almadar/ui primitives (Button, Drawer, Avatar,
- * Popover, Box, Stack, Typography) + the kflow ProfilePopup. RTL-aware via
+ * Select, Box, Stack, Typography) + the kflow ProfilePopup. RTL-aware via
  * logical properties; all labels run through useTranslate.
  */
 
 import React, { useCallback, useRef, useState } from 'react';
-import { Menu, Settings, Languages, Palette, Sun, Moon, Check, type LucideIcon } from 'lucide-react';
+import { Menu, Settings, Languages, Palette, Sun, Moon, type LucideIcon } from 'lucide-react';
 import {
   Avatar,
   Box,
   Button,
   Drawer,
   HStack,
-  Popover,
+  Select,
   Typography,
   VStack,
   cn,
@@ -219,80 +219,30 @@ export const TopNavShell: React.FC<TopNavShellProps> = ({
           </HStack>
 
           <HStack className="items-center gap-1">
-            <Popover
-              trigger="hover"
-              position="bottom"
-              showArrow={false}
-              className="p-1"
-              content={
-                <VStack gap="none" className="min-w-[10rem]">
-                  {localeOptions.map((opt) => (
-                    <Button
-                      key={opt.code}
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => handleSelectLocale(opt.code)}
-                      className={cn(
-                        rowBtnBase,
-                        'justify-between',
-                        locale === opt.code
-                          ? 'bg-[var(--color-primary-muted)] font-medium text-[var(--color-foreground)]'
-                          : '',
-                      )}
-                    >
-                      <span>{opt.label}</span>
-                      {locale === opt.code && <Check size={14} className="text-[var(--color-primary)]" />}
-                    </Button>
-                  ))}
-                </VStack>
-              }
-            >
-              <Button
-                variant="ghost"
-                size="sm"
-                icon={Languages}
+            {/* Language — native <select> opens the OS dropdown on mobile */}
+            <div className="relative flex items-center">
+              <Languages size={16} className="absolute start-1 z-10 pointer-events-none text-[var(--color-muted-foreground)]" />
+              <Select
+                value={locale}
+                onValueChange={(v) => handleSelectLocale(v as 'en' | 'ar' | 'sl')}
+                options={localeOptions.map((opt) => ({ value: opt.code, label: opt.label }))}
                 aria-label={t('aria.changeLanguage')}
-                title={`${t('aria.changeLanguage')} (${locale.toUpperCase()})`}
-                className={iconBtnClass}
+                title={t('aria.changeLanguage')}
+                className="!w-auto !border-transparent !bg-transparent !ps-6 !pe-6 !py-1 text-xs font-medium text-[var(--color-muted-foreground)] cursor-pointer hover:text-[var(--color-foreground)] focus:ring-0"
               />
-            </Popover>
-            <Popover
-              trigger="hover"
-              position="bottom"
-              showArrow={false}
-              className="p-1"
-              content={
-                <VStack gap="none" className="min-w-[10rem]">
-                  {themeOptions.map((th) => (
-                    <Button
-                      key={th.name}
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => handleSelectTheme(th.name)}
-                      className={cn(
-                        rowBtnBase,
-                        'justify-between',
-                        theme === th.name
-                          ? 'bg-[var(--color-primary-muted)] font-medium text-[var(--color-foreground)]'
-                          : '',
-                      )}
-                    >
-                      <span>{th.displayName}</span>
-                      {theme === th.name && <Check size={14} className="text-[var(--color-primary)]" />}
-                    </Button>
-                  ))}
-                </VStack>
-              }
-            >
-              <Button
-                variant="ghost"
-                size="sm"
-                icon={Palette}
+            </div>
+            {/* Theme — native <select> opens the OS dropdown on mobile */}
+            <div className="relative flex items-center">
+              <Palette size={16} className="absolute start-1 z-10 pointer-events-none text-[var(--color-muted-foreground)]" />
+              <Select
+                value={theme}
+                onValueChange={(v) => handleSelectTheme(v as string)}
+                options={themeOptions.map((th) => ({ value: th.name, label: th.displayName ?? th.name }))}
                 aria-label={t('aria.changeTheme')}
                 title={t('aria.changeTheme')}
-                className={iconBtnClass}
+                className="!w-auto !border-transparent !bg-transparent !ps-6 !pe-6 !py-1 text-xs font-medium text-[var(--color-muted-foreground)] cursor-pointer hover:text-[var(--color-foreground)] focus:ring-0"
               />
-            </Popover>
+            </div>
             <Button
               variant="ghost"
               size="sm"
