@@ -124,7 +124,11 @@ async function convertUserGraphs(uid: string): Promise<ConversionStats> {
  */
 async function main() {
   // Load environment variables
-  dotenv.config({ path: path.join(__dirname, '..', '..', '.env') });
+  dotenv.config({ path: path.join(process.cwd(), '.env') });
+  dotenv.config({ path: path.join(process.cwd(), '.env.development') });
+
+  const { initializeFirebase } = await import('@almadar/server');
+  initializeFirebase();
 
   const userId = process.argv[2]; // Optional user ID argument
 

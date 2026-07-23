@@ -43,6 +43,11 @@
     "typescript": "^5.7.2",
     "vite": "^6.0.5"
   },
+  "pnpm": {
+    "overrides": {
+      "firebase-admin": "^14.2.0"
+    }
+  },
   "engines": {
     "node": "22"
   }
