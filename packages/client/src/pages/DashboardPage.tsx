@@ -45,7 +45,6 @@ export const DashboardPage: React.FC = () => {
   const { on, emit } = useEventBus();
   const { t } = useTranslate();
   const dispatch = useAppDispatch();
-  const companion = useCompanion(!!user);
 
   const handleDeletePath = useCallback(
     async (pathId: string) => {
@@ -132,6 +131,18 @@ export const DashboardPage: React.FC = () => {
   }, []);
 
   const { learningPaths: pathSummaries, loading: pathsLoading, similarity = [], sharedConcepts = [] } = useLearningPaths();
+
+  // Gate companion behind having at least one learning path — companion needs
+  // trajectory data to analyze, and a brand-new user should see onboarding instead.
+  const companion = useCompanion(!!user && pathSummaries.length > 0);
+
+  // Onboarding gate: after paths have loaded, if the user has zero paths,
+  // redirect to /onboarding so they pick interests and create their first path.
+  useEffect(() => {
+    if (!pathsLoading && pathSummaries.length === 0) {
+      navigate('/onboarding');
+    }
+  }, [pathsLoading, pathSummaries.length, navigate]);
 
   // Home card grid: server-side search/sort/filter/pagination.
   // Search debouncing lives in <SearchInput> so keystrokes never re-render the page.

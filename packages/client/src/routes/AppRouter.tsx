@@ -4,6 +4,7 @@ import LandingPage from '../pages/LandingPage';
 import { ConceptsPage } from '../pages/ConceptsPage';
 import { ConceptDetailPage } from '../pages/ConceptDetailPage';
 import { DashboardPage } from '../pages/DashboardPage';
+import { OnboardingPage } from '../pages/OnboardingPage';
 import { SettingsPage } from '../pages/SettingsPage';
 import { ConnectionPage } from '../pages/ConnectionPage';
 import { Login, ProtectedRoute } from '../features/auth';
@@ -54,6 +55,9 @@ const AnimatedRoutes: React.FC = () => {
           <Route path="/login" element={<Login />} />
 
           {/* Protected routes */}
+          <Route path="/onboarding" element={
+            <ProtectedRoute><OnboardingPage /></ProtectedRoute>
+          } />
           <Route path="/home" element={
             <ProtectedRoute><DashboardPage /></ProtectedRoute>
           } />
