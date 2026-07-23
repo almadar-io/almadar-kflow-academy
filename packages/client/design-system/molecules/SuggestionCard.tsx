@@ -2,6 +2,7 @@ import { useCallback } from 'react';
 import { Button, Card, useTranslate } from '@almadar/ui';
 import { Icon as IconifyIcon } from '@iconify/react';
 import type { Suggestion } from '@kflow-academy/shared';
+import { renderSuggestionTitle, renderSuggestionBody } from '@features/companion/renderSuggestion';
 
 export interface SuggestionCardProps {
   suggestion: Suggestion;
@@ -21,6 +22,8 @@ const suggestionIcons: Record<string, string> = {
 export function SuggestionCard({ suggestion, onAccept, onDismiss, onAskWhy }: SuggestionCardProps) {
   const { t } = useTranslate();
   const icon = suggestionIcons[suggestion.type] ?? suggestionIcons.discover;
+  const title = renderSuggestionTitle(suggestion, t);
+  const body = renderSuggestionBody(suggestion, t);
 
   const handleAccept = useCallback(() => onAccept(suggestion), [suggestion, onAccept]);
 
@@ -31,8 +34,8 @@ export function SuggestionCard({ suggestion, onAccept, onDismiss, onAskWhy }: Su
           <IconifyIcon icon={icon} width={24} height={24} />
         </div>
         <div className="flex-1 min-w-0">
-          <h3 className="font-semibold text-text text-sm">{suggestion.title}</h3>
-          <p className="text-sm text-text-muted mt-1">{suggestion.body}</p>
+          <h3 className="font-semibold text-text text-sm">{title}</h3>
+          <p className="text-sm text-text-muted mt-1">{body}</p>
         </div>
       </div>
       <div className="flex items-center gap-2 flex-wrap">

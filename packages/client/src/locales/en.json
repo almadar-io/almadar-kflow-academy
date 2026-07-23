@@ -714,5 +714,15 @@
   "companion.accept": "Continue",
   "companion.dismiss": "Not now",
   "companion.askWhy": "Ask why",
-  "companion.replyTitle": "Companion"
+  "companion.replyTitle": "Companion",
+  "companion.suggestion.study.title": "Study {conceptName}",
+  "companion.suggestion.study.body": "Prerequisite of {parentConcept} (path: {pathTitle}), not yet studied",
+  "companion.suggestion.review.title": "Review the {clusterName} cluster",
+  "companion.suggestion.review.body": "You have {clusterSize} learning paths sharing the concept \"{clusterName}\". Exploring the intersection could deepen your understanding.",
+  "companion.suggestion.connect.title": "Explore a convergence point",
+  "companion.suggestion.connect.body": "Two of your paths share concepts ({convergenceConcepts}). These intersection points are high-value review targets.",
+  "companion.suggestion.expand.title": "Expand {conceptName}",
+  "companion.suggestion.expand.body": "{conceptName} is your deepest explored concept. Going deeper here will unlock new territory.",
+  "companion.suggestion.discover.title": "Explore a new topic",
+  "companion.suggestion.discover.body": "You're well-rounded in your current paths. Consider starting a new learning journey."
 }

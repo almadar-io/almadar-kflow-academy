@@ -714,5 +714,15 @@
   "companion.accept": "متابعة",
   "companion.dismiss": "ليس الآن",
   "companion.askWhy": "اسأل لماذا",
-  "companion.replyTitle": "المرافق"
+  "companion.replyTitle": "المرافق",
+  "companion.suggestion.study.title": "ادرس {conceptName}",
+  "companion.suggestion.study.body": "متطلب سابق لـ {parentConcept} (المسار: {pathTitle})، لم تدرسه بعد",
+  "companion.suggestion.review.title": "راجع مجموعة {clusterName}",
+  "companion.suggestion.review.body": "لديك {clusterSize} مسارات تعلم تشترك في مفهوم \"{clusterName}\". استكشاف التقاطع قد يعمق فهمك.",
+  "companion.suggestion.connect.title": "استكشف نقطة تقارب",
+  "companion.suggestion.connect.body": "مساراك يشاركان مفاهيم ({convergenceConcepts}). نقاط التقاطع هذه أهداف مراجعة عالية القيمة.",
+  "companion.suggestion.expand.title": "وسّع {conceptName}",
+  "companion.suggestion.expand.body": "{conceptName} هو أعمق مفهوم استكشفته. التعمق هنا سيفتح أراضي جديدة.",
+  "companion.suggestion.discover.title": "استكشف موضوعًا جديدًا",
+  "companion.suggestion.discover.body": "أنت متوازن في مساراتك الحالية. فكر في بدء رحلة تعلم جديدة."
 }

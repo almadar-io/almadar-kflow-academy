@@ -106,27 +106,23 @@ export function useCompanion(autoAnalyze: boolean = true) {
   }, []);
 
   const accept = useCallback((suggestion: Suggestion) => {
-    log.info('Companion suggestion accepted', { type: suggestion.type, target: suggestion.target });
+    log.info('Companion suggestion accepted', { type: suggestion.type, action: suggestion.action, target: suggestion.target });
     setState(prev => ({ ...prev, suggestion: null }));
 
     switch (suggestion.action) {
-      case 'navigate':
-        if (suggestion.target) {
-          emit('UI:NAVIGATE', { url: suggestion.target });
-        }
-        break;
       case 'open-graph':
         if (suggestion.target) {
-          emit('UI:LEARNING_PATH_CLICK', { pathId: suggestion.target });
+          emit('UI:LEARNING_PATH_CLICK', { graphId: suggestion.target });
         }
         break;
       case 'open-concept':
         if (suggestion.target) {
-          emit('UI:KNOWLEDGE_NODE_OPEN', { conceptId: suggestion.target });
+          emit('UI:KNOWLEDGE_NODE_OPEN', { graphId: suggestion.target, nodeId: suggestion.nodeId });
         }
         break;
-      default:
-        log.info('No dispatchable action for suggestion', { action: suggestion.action });
+      case 'create-goal':
+        emit('UI:CREATE_LEARNING_PATH', {});
+        break;
     }
   }, [emit]);
 

@@ -1,11 +1,22 @@
 export type SuggestionType = 'expand' | 'study' | 'review' | 'connect' | 'discover';
 
+export type SuggestionAction = 'open-graph' | 'open-concept' | 'create-goal';
+
+export interface SuggestionParams {
+  conceptName?: string;
+  clusterName?: string;
+  clusterSize?: number;
+  convergenceConcepts?: string[];
+  parentConcept?: string;
+  pathTitle?: string;
+}
+
 export interface Suggestion {
   type: SuggestionType;
-  title: string;
-  body: string;
-  action: string;
+  action: SuggestionAction;
   target: string;
+  nodeId?: string;
+  params: SuggestionParams;
 }
 
 export interface TrajectorySummary {
@@ -15,7 +26,7 @@ export interface TrajectorySummary {
   frontierConcepts: string[];
   lastActiveGraph: string | null;
   topConvergences: Array<{ source: string; target: string; weight: number; sharedConcepts: string[] }>;
-  gaps: Array<{ conceptId: string; name: string; reason: string }>;
+  gaps: Array<{ conceptId: string; name: string; graphId: string; parentConcept: string; pathTitle: string }>;
 }
 
 export interface CompanionAnalyzeResponse {

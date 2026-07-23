@@ -714,5 +714,15 @@
   "companion.accept": "Nadaljuj",
   "companion.dismiss": "Ne zdaj",
   "companion.askWhy": "Vprašaj zakaj",
-  "companion.replyTitle": "Spremljevalec"
+  "companion.replyTitle": "Spremljevalec",
+  "companion.suggestion.study.title": "Študiraj {conceptName}",
+  "companion.suggestion.study.body": "Predpogoj za {parentConcept} (pot: {pathTitle}), še ni študiran",
+  "companion.suggestion.review.title": "Preglej grozd {clusterName}",
+  "companion.suggestion.review.body": "Imaš {clusterSize} učnih poti, ki si delijo koncept \"{clusterName}\". Raziskovanje preseka bi lahko poglobilo tvoje razumevanje.",
+  "companion.suggestion.connect.title": "Razišči točko konvergence",
+  "companion.suggestion.connect.body": "Tvoji poti si delita koncepte ({convergenceConcepts}). Te točke preseka so visokovredne cilje za pregled.",
+  "companion.suggestion.expand.title": "Razširi {conceptName}",
+  "companion.suggestion.expand.body": "{conceptName} je tvoj najgloblje raziskan koncept. Globlje raziskovanje bo odprlo nova območja.",
+  "companion.suggestion.discover.title": "Razišči novo temo",
+  "companion.suggestion.discover.body": "Si dobro zaokrožen v svojih trenutnih poteh. Razmisli o začetku nove učne poti."
 }
