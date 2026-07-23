@@ -193,3 +193,11 @@
 .concept-page-container--detail .concept-view-header--default {
   display: none !important;
 }
+
+/* Native <select> dropdown options — force app theme colors so they never
+   inherit a light text color against the OS default white background. */
+select option,
+select optgroup {
+  background-color: var(--color-card);
+  color: var(--color-foreground);
+}
