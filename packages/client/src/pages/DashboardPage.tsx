@@ -58,6 +58,7 @@ export const DashboardPage: React.FC = () => {
         emit('UI:NOTIFY', { severity: 'success', message: t('learn.deleteSuccess') } satisfies UiNotifyPayload);
         await queryClient.invalidateQueries({ queryKey: JUMP_BACK_IN_QUERY_KEY });
         await queryClient.invalidateQueries({ queryKey: knowledgeGraphKeys.learningPaths() });
+        await queryClient.invalidateQueries({ queryKey: ['knowledge-graph', 'learning-paths-list'] });
       } catch {
         emit('UI:NOTIFY', { severity: 'error', message: t('learn.deleteError') } satisfies UiNotifyPayload);
       }
