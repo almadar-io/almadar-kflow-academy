@@ -34,6 +34,12 @@ export interface CompanionAnalyzeResponse {
   trajectory: TrajectorySummary;
 }
 
+export interface CompanionPersonaDTO {
+  name: string;
+  description: string;
+  portraitUrl?: string;
+}
+
 export interface CompanionReplyResponse {
   reply: string;
 }

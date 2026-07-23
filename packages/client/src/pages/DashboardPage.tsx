@@ -31,8 +31,6 @@ import { useAppDispatch } from '../app/hooks';
 import { setCurrentGraphId } from '../features/knowledge-graph/knowledgeGraphSlice';
 import { graphOperationsStreamingApi } from '../features/knowledge-graph/api/streaming';
 import { GoalForm } from '@design-system/organisms/GoalForm';
-import { CompanionMascot } from '@design-system/organisms/CompanionMascot';
-import { useCompanion } from '../features/companion/hooks/useCompanion';
 import type { DashboardEntity, DashboardMapLevel, DashboardFilterLabels, DashboardSort, DashboardLearningPath } from '@design-system/organisms/DashboardBoard';
 
 const L2_CONCEPT_CAP = 60;
@@ -131,10 +129,6 @@ export const DashboardPage: React.FC = () => {
   }, []);
 
   const { learningPaths: pathSummaries, loading: pathsLoading, similarity = [], sharedConcepts = [] } = useLearningPaths();
-
-  // Gate companion behind having at least one learning path — companion needs
-  // trajectory data to analyze, and a brand-new user should see onboarding instead.
-  const companion = useCompanion(!!user && pathSummaries.length > 0);
 
   // Onboarding gate: after paths have loaded, if the user has zero paths,
   // redirect to /onboarding so they pick interests and create their first path.
@@ -427,15 +421,6 @@ export const DashboardPage: React.FC = () => {
           </Stack>
         </VStack>
       </Modal>
-
-      <CompanionMascot
-        suggestion={companion.suggestion}
-        loading={companion.loading}
-        progressLabel={companion.progressLabel}
-        onAccept={companion.accept}
-        onDismiss={companion.dismiss}
-        onAskWhy={companion.askWhy}
-      />
     </>
   );
 };

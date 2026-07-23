@@ -66,6 +66,8 @@ export interface TopNavShellProps {
   onSettingsClick?: () => void;
   /** Secondary “pinned” items rendered below a divider (recent learning paths). */
   pinnedItems?: TopNavPathItem[];
+  /** Optional slot rendered before the profile cluster (e.g. companion bell). */
+  actionsSlot?: React.ReactNode;
   /** Optional desktop page header rendered above the content slot. */
   pageHeader?: React.ReactNode;
   contentPadding?: boolean;
@@ -92,6 +94,7 @@ export const TopNavShell: React.FC<TopNavShellProps> = ({
   onLogoClick,
   onSettingsClick,
   pinnedItems = [],
+  actionsSlot,
   pageHeader,
   contentPadding = true,
   contentClassName,
@@ -219,6 +222,7 @@ export const TopNavShell: React.FC<TopNavShellProps> = ({
           </HStack>
 
           <HStack className="items-center gap-1">
+            {actionsSlot}
             {/* Language — native <select> opens the OS dropdown on mobile */}
             <div className="relative flex items-center">
               <Languages size={16} className="absolute start-1 z-10 pointer-events-none text-[var(--color-muted-foreground)]" />

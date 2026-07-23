@@ -3,7 +3,7 @@ import { auth } from '../../../config/firebase';
 import { createLogger } from '@almadar/logger';
 
 const log = createLogger('kflow:client:companion:api');
-import type { CompanionAnalyzeResponse, CompanionReplyResponse } from '@kflow-academy/shared';
+import type { CompanionAnalyzeResponse, CompanionReplyResponse, CompanionPersonaDTO } from '@kflow-academy/shared';
 import type { Suggestion, TrajectorySummary } from '@kflow-academy/shared';
 
 export interface CompanionStreamEvent {
@@ -20,6 +20,10 @@ export interface CompanionStreamEventData {
   trajectory?: TrajectorySummary;
   cost?: { promptTokens: number; completionTokens: number };
   error?: string;
+}
+
+export async function fetchCompanionPersona(): Promise<CompanionPersonaDTO> {
+  return apiClient.fetch('/api/companion/persona', { method: 'GET' });
 }
 
 export async function analyzeTrajectory(skill?: string, locale?: string): Promise<CompanionAnalyzeResponse> {

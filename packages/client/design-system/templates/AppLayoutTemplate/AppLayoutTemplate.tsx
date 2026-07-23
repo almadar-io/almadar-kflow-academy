@@ -71,6 +71,9 @@ export interface AppLayoutTemplateProps {
   /** Custom content wrapper className */
   contentClassName?: string;
 
+  /** Optional slot rendered in the top bar before the profile cluster */
+  actionsSlot?: React.ReactNode;
+
   /** Additional CSS classes */
   className?: string;
 
@@ -96,6 +99,7 @@ export const AppLayoutTemplate: React.FC<AppLayoutTemplateProps> = ({
   pageHeader,
   contentPadding = true,
   contentClassName,
+  actionsSlot,
   className,
 }) => {
   const { emit } = useEventBus();
@@ -144,6 +148,7 @@ export const AppLayoutTemplate: React.FC<AppLayoutTemplateProps> = ({
       onLogoClick={handleLogoClick}
       onSettingsClick={handleSettingsClick}
       pinnedItems={pinnedItems}
+      actionsSlot={actionsSlot}
       pageHeader={pageHeader}
       contentPadding={contentPadding}
       contentClassName={contentClassName}

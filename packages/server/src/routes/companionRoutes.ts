@@ -3,11 +3,22 @@ import type { Request, Response } from 'express';
 import { authenticateFirebase, asyncHandler } from '@almadar/server';
 import { createLogger } from '@almadar/logger';
 import { analyzeTrajectory, analyzeTrajectoryStream, replyToUser } from '../services/companionService';
+import { getCompanionPersona } from '../services/companionPersonaService';
 
 const log = createLogger('kflow:server:routes:companionRoutes');
 const router = Router();
 
 router.use(authenticateFirebase);
+
+router.get('/persona', asyncHandler(async (req: Request, res: Response) => {
+  const uid = req.firebaseUser?.uid;
+  if (!uid) {
+    res.status(401).json({ error: 'Authentication required' });
+    return;
+  }
+  const persona = await getCompanionPersona();
+  res.json(persona);
+}));
 
 router.post('/analyze', asyncHandler(async (req: Request, res: Response) => {
   const uid = req.firebaseUser?.uid;
