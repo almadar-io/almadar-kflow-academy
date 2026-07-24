@@ -43,11 +43,11 @@ export const ConnectButton: React.FC<ConnectButtonProps> = ({
     return (
       <Button
         type="button"
-        variant="primary"
+        variant="ghost"
         size={size}
         onClick={onClick}
         aria-label={text}
-        className={cn('!p-1.5', className)}
+        className={className}
         {...rest}
       >
         {logoEl}
