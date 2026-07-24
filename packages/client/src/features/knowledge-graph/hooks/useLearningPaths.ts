@@ -10,6 +10,7 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { graphQueryApi } from '../api/queryApi';
 import { knowledgeGraphKeys } from './queryKeys';
+import { auth } from '../../../config/firebase';
 import type { LearningPathSummary } from '../api/types';
 
 // Mirror the server-side hybridCache LEARNING_PATHS TTL (10 min) so the client
@@ -27,8 +28,9 @@ export interface UseLearningPathsOptions {
 export function useLearningPaths(options?: UseLearningPathsOptions) {
   const queryClient = useQueryClient();
 
+  const uid = auth.currentUser?.uid ?? 'anon';
   const query = useQuery({
-    queryKey: knowledgeGraphKeys.learningPaths(),
+    queryKey: [...knowledgeGraphKeys.learningPaths(), uid],
     queryFn: async () => {
       const response = await graphQueryApi.getLearningPaths();
       const sortedPaths = [...response.learningPaths].sort(
