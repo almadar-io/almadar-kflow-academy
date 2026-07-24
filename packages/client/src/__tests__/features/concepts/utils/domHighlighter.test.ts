@@ -80,7 +80,7 @@ describe('domHighlighter', () => {
       if (spans.length > 0) {
         expect(spans[0].getAttribute('data-has-note')).toBe('true');
         expect(spans[0].getAttribute('data-has-question')).toBe('false');
-        expect(spans[0].className).toContain('bg-green-200/20');
+        expect(spans[0].className).toContain('bg-surface-hover');
         expect(spans[0].textContent?.toLowerCase()).toContain('test');
       }
     });
@@ -138,7 +138,7 @@ The test lesson continues here with more information.
       if (spans.length > 0) {
         expect(spans[0].getAttribute('data-has-question')).toBe('true');
         expect(spans[0].getAttribute('data-has-note')).toBe('false');
-        expect(spans[0].className).toContain('bg-indigo-200/20');
+        expect(spans[0].className).toContain('bg-surface-hover');
       }
     });
 
@@ -160,7 +160,7 @@ The test lesson continues here with more information.
       if (spans.length > 0) {
         expect(spans[0].getAttribute('data-has-question')).toBe('true');
         expect(spans[0].getAttribute('data-has-note')).toBe('true');
-        expect(spans[0].className).toContain('bg-gradient-to-r');
+        expect(spans[0].className).toContain('bg-surface-hover');
       }
     });
 
@@ -523,7 +523,7 @@ More content here.
         expect(span.getAttribute('data-highlight')).toBe('true');
         expect(span.getAttribute('data-has-note')).toBe('true');
         expect(span.getAttribute('data-has-question')).toBe('false');
-        expect((span as HTMLElement).className).toContain('bg-green-200/20');
+        expect((span as HTMLElement).className).toContain('bg-surface-hover');
       });
     });
 
@@ -596,7 +596,7 @@ Cases: Nouns, pronouns, and adjectives change their endings (decline) based on t
         const firstSpan = spans[0] as HTMLElement;
         expect(firstSpan.getAttribute('data-has-question')).toBe('true');
         expect(firstSpan.getAttribute('data-has-note')).toBe('false');
-        expect(firstSpan.className).toContain('bg-indigo-200/20');
+        expect(firstSpan.className).toContain('bg-surface-hover');
         
         // Verify the highlighted text contains some key phrases from the selection
         const allHighlightedText = Array.from(spans)
@@ -662,12 +662,12 @@ Cases: Nouns, pronouns, and adjectives change their endings (decline) based on t
       
       // Verify question spans have correct class
       questionSpans.forEach((span) => {
-        expect((span as HTMLElement).className).toContain('bg-indigo-200/20');
+        expect((span as HTMLElement).className).toContain('bg-surface-hover');
       });
       
       // Verify note spans have correct class
       noteSpans.forEach((span) => {
-        expect((span as HTMLElement).className).toContain('bg-green-200/20');
+        expect((span as HTMLElement).className).toContain('bg-surface-hover');
       });
     });
   });

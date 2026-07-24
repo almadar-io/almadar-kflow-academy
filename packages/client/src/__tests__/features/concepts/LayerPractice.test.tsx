@@ -26,7 +26,22 @@ jest.mock('../../../features/concepts/hooks/useLayerPractice', () => ({
 // would lose that behavior (every other named import would be undefined).
 jest.mock('@almadar/ui', () => {
   const actual = jest.requireActual('@almadar/ui');
+  const translations: Record<string, string> = require('../../../locales/en.json');
   const overrides = {
+    useTranslate: () => ({
+      t: (key: string, params?: Record<string, string | number>) => {
+        let text = translations[key] ?? key;
+        if (params) {
+          for (const [name, value] of Object.entries(params)) {
+            text = text.replace(`{{${name}}}`, String(value));
+          }
+        }
+        return text;
+      },
+    }),
+    Button: ({ children, onClick }: any) => <button onClick={onClick}>{children}</button>,
+    LoadingState: ({ message }: any) => <div>{message}</div>,
+    EmptyState: ({ message }: any) => <div>{message}</div>,
     parseMarkdownWithCodeBlocks: (content: string) => {
       if (!content) return [];
       const segments: any[] = [];

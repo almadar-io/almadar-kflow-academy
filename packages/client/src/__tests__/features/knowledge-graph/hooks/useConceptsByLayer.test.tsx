@@ -3,6 +3,8 @@
  */
 
 import { renderHook, waitFor, act } from '@testing-library/react';
+import React from 'react';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useConceptsByLayer } from '../../../../features/knowledge-graph/hooks/useConceptsByLayer';
 import { graphQueryApi } from '../../../../features/knowledge-graph/api/queryApi';
 import type { ConceptDisplay } from '../../../../features/knowledge-graph/api/types';
@@ -14,6 +16,18 @@ jest.mock('../../../../features/knowledge-graph/api/queryApi', () => ({
     getConceptsByLayer: jest.fn(),
   },
 }));
+
+const createWrapper = () => {
+  const queryClient = new QueryClient({
+    defaultOptions: { queries: { retry: false } },
+  });
+  return ({ children }: { children: React.ReactNode }) => (
+    <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+  );
+};
+
+const renderWithClient = (callback: any, options?: any) =>
+  renderHook(callback, { wrapper: createWrapper(), ...options });
 
 const mockApi = graphQueryApi as jest.Mocked<typeof graphQueryApi>;
 
@@ -47,7 +61,7 @@ describe('useConceptsByLayer', () => {
 
     mockApi.getConceptsByLayer.mockResolvedValue(mockResponse);
 
-    const { result } = renderHook(() => useConceptsByLayer('graph-1'));
+    const { result } = renderWithClient(() => useConceptsByLayer('graph-1'));
 
     expect(result.current.loading).toBe(true);
     expect(result.current.concepts).toEqual([]);
@@ -59,11 +73,11 @@ describe('useConceptsByLayer', () => {
     expect(result.current.concepts).toEqual([mockConcept]);
     expect(result.current.layerInfo).toEqual(mockResponse.layerInfo);
     expect(result.current.error).toBeNull();
-    expect(mockApi.getConceptsByLayer).toHaveBeenCalledWith('graph-1', undefined);
+    expect(mockApi.getConceptsByLayer).toHaveBeenCalledWith('graph-1', {});
   });
 
   it('should not fetch when graphId is empty', async () => {
-    const { result } = renderHook(() => useConceptsByLayer(''));
+    const { result } = renderWithClient(() => useConceptsByLayer(''));
 
     await waitFor(() => {
       expect(result.current.loading).toBe(false);
@@ -84,7 +98,7 @@ describe('useConceptsByLayer', () => {
 
     mockApi.getConceptsByLayer.mockResolvedValue(mockResponse);
 
-    const { result } = renderHook(() =>
+    const { result } = renderWithClient(() =>
       useConceptsByLayer('graph-1', {
         includeRelationships: false,
         groupByLayer: true,
@@ -124,7 +138,7 @@ describe('useConceptsByLayer', () => {
 
     mockApi.getConceptsByLayer.mockResolvedValue(mockResponse);
 
-    const { result } = renderHook(() =>
+    const { result } = renderWithClient(() =>
       useConceptsByLayer('graph-1', { groupByLayer: true })
     );
 
@@ -139,7 +153,7 @@ describe('useConceptsByLayer', () => {
     const error = new Error('Failed to fetch concepts');
     mockApi.getConceptsByLayer.mockRejectedValue(error);
 
-    const { result } = renderHook(() => useConceptsByLayer('graph-1'));
+    const { result } = renderWithClient(() => useConceptsByLayer('graph-1'));
 
     await waitFor(() => {
       expect(result.current.loading).toBe(false);
@@ -157,7 +171,7 @@ describe('useConceptsByLayer', () => {
 
     mockApi.getConceptsByLayer.mockResolvedValue(mockResponse);
 
-    const { result, rerender } = renderHook(
+    const { result, rerender } = renderWithClient(
       ({ graphId, options }) => useConceptsByLayer(graphId, options),
       {
         initialProps: {
@@ -197,7 +211,7 @@ describe('useConceptsByLayer', () => {
 
     mockApi.getConceptsByLayer.mockResolvedValue(mockResponse);
 
-    const { result } = renderHook(() => useConceptsByLayer('graph-1'));
+    const { result } = renderWithClient(() => useConceptsByLayer('graph-1'));
 
     await waitFor(() => {
       expect(result.current.loading).toBe(false);
@@ -226,7 +240,7 @@ describe('useConceptsByLayer', () => {
 
     mockApi.getConceptsByLayer.mockImplementation(() => firstPromise);
 
-    const { result, rerender } = renderHook(
+    const { result, rerender } = renderWithClient(
       ({ graphId, options }) => useConceptsByLayer(graphId, options),
       {
         initialProps: {

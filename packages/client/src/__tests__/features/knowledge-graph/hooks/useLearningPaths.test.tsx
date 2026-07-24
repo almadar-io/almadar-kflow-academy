@@ -3,9 +3,18 @@
  */
 
 import { renderHook, waitFor, act } from '@testing-library/react';
+import React from 'react';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useLearningPaths } from '../../../../features/knowledge-graph/hooks/useLearningPaths';
 import { graphQueryApi } from '../../../../features/knowledge-graph/api/queryApi';
 import type { LearningPathSummary } from '../../../../features/knowledge-graph/api/types';
+
+// Mock firebase (the hook reads auth.currentUser for its query key)
+jest.mock('../../../../config/firebase', () => ({
+  auth: {
+    currentUser: null,
+  },
+}));
 
 // Mock the query API
 jest.mock('../../../../features/knowledge-graph/api/queryApi', () => ({
@@ -13,6 +22,18 @@ jest.mock('../../../../features/knowledge-graph/api/queryApi', () => ({
     getLearningPaths: jest.fn(),
   },
 }));
+
+const createWrapper = () => {
+  const queryClient = new QueryClient({
+    defaultOptions: { queries: { retry: false } },
+  });
+  return ({ children }: { children: React.ReactNode }) => (
+    <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+  );
+};
+
+const renderWithClient = (callback: any, options?: any) =>
+  renderHook(callback, { wrapper: createWrapper(), ...options });
 
 const mockApi = graphQueryApi as jest.Mocked<typeof graphQueryApi>;
 
@@ -43,7 +64,7 @@ describe('useLearningPaths', () => {
 
     mockApi.getLearningPaths.mockResolvedValue(mockResponse);
 
-    const { result } = renderHook(() => useLearningPaths());
+    const { result } = renderWithClient(() => useLearningPaths());
 
     expect(result.current.loading).toBe(true);
     expect(result.current.learningPaths).toEqual([]);
@@ -61,7 +82,7 @@ describe('useLearningPaths', () => {
     const error = new Error('Failed to fetch learning paths');
     mockApi.getLearningPaths.mockRejectedValue(error);
 
-    const { result } = renderHook(() => useLearningPaths());
+    const { result } = renderWithClient(() => useLearningPaths());
 
     await waitFor(() => {
       expect(result.current.loading).toBe(false);
@@ -89,7 +110,7 @@ describe('useLearningPaths', () => {
 
     mockApi.getLearningPaths.mockResolvedValue(mockResponse);
 
-    const { result } = renderHook(() => useLearningPaths());
+    const { result } = renderWithClient(() => useLearningPaths());
 
     await waitFor(() => {
       expect(result.current.loading).toBe(false);
@@ -112,7 +133,7 @@ describe('useLearningPaths', () => {
 
     mockApi.getLearningPaths.mockResolvedValue(mockResponse);
 
-    const { result } = renderHook(() => useLearningPaths());
+    const { result } = renderWithClient(() => useLearningPaths());
 
     await waitFor(() => {
       expect(result.current.loading).toBe(false);
@@ -145,7 +166,7 @@ describe('useLearningPaths', () => {
 
     mockApi.getLearningPaths.mockImplementation(() => firstPromise);
 
-    const { result } = renderHook(() => useLearningPaths());
+    const { result } = renderWithClient(() => useLearningPaths());
 
     expect(result.current.loading).toBe(true);
     expect(mockApi.getLearningPaths).toHaveBeenCalledTimes(1);

@@ -3,6 +3,8 @@
  */
 
 import { renderHook, waitFor, act } from '@testing-library/react';
+import React from 'react';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useGraphSummary } from '../../../../features/knowledge-graph/hooks/useGraphSummary';
 import { graphQueryApi } from '../../../../features/knowledge-graph/api/queryApi';
 import type { GraphSummary } from '../../../../features/knowledge-graph/api/types';
@@ -13,6 +15,18 @@ jest.mock('../../../../features/knowledge-graph/api/queryApi', () => ({
     getGraphSummary: jest.fn(),
   },
 }));
+
+const createWrapper = () => {
+  const queryClient = new QueryClient({
+    defaultOptions: { queries: { retry: false } },
+  });
+  return ({ children }: { children: React.ReactNode }) => (
+    <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+  );
+};
+
+const renderWithClient = (callback: any, options?: any) =>
+  renderHook(callback, { wrapper: createWrapper(), ...options });
 
 const mockApi = graphQueryApi as jest.Mocked<typeof graphQueryApi>;
 
@@ -50,7 +64,7 @@ describe('useGraphSummary', () => {
 
     mockApi.getGraphSummary.mockResolvedValue(mockSummary);
 
-    const { result } = renderHook(() => useGraphSummary('graph-1'));
+    const { result } = renderWithClient(() => useGraphSummary('graph-1'));
 
     expect(result.current.loading).toBe(true);
     expect(result.current.graphSummary).toBeNull();
@@ -65,7 +79,7 @@ describe('useGraphSummary', () => {
   });
 
   it('should not fetch when graphId is empty', async () => {
-    const { result } = renderHook(() => useGraphSummary(''));
+    const { result } = renderWithClient(() => useGraphSummary(''));
 
     await waitFor(() => {
       expect(result.current.loading).toBe(false);
@@ -79,7 +93,7 @@ describe('useGraphSummary', () => {
     const error = new Error('Failed to fetch graph summary');
     mockApi.getGraphSummary.mockRejectedValue(error);
 
-    const { result } = renderHook(() => useGraphSummary('graph-1'));
+    const { result } = renderWithClient(() => useGraphSummary('graph-1'));
 
     await waitFor(() => {
       expect(result.current.loading).toBe(false);
@@ -105,7 +119,7 @@ describe('useGraphSummary', () => {
 
     mockApi.getGraphSummary.mockResolvedValue(mockSummary);
 
-    const { result } = renderHook(() => useGraphSummary('graph-1'));
+    const { result } = renderWithClient(() => useGraphSummary('graph-1'));
 
     await waitFor(() => {
       expect(result.current.loading).toBe(false);
@@ -128,7 +142,7 @@ describe('useGraphSummary', () => {
 
     mockApi.getGraphSummary.mockResolvedValue(mockSummary);
 
-    const { result } = renderHook(() => useGraphSummary('graph-1'));
+    const { result } = renderWithClient(() => useGraphSummary('graph-1'));
 
     await waitFor(() => {
       expect(result.current.loading).toBe(false);
@@ -141,7 +155,9 @@ describe('useGraphSummary', () => {
       await result.current.refetch();
     });
 
-    expect(mockApi.getGraphSummary).toHaveBeenCalledTimes(2);
+    // The hook's refetch invalidates and then explicitly refetches, so the
+    // initial fetch plus the refetch produce 3 calls in total.
+    expect(mockApi.getGraphSummary).toHaveBeenCalledTimes(3);
   });
 
   it('should refetch when graphId changes', async () => {
@@ -169,7 +185,7 @@ describe('useGraphSummary', () => {
       .mockResolvedValueOnce(mockSummary1)
       .mockResolvedValueOnce(mockSummary2);
 
-    const { result, rerender } = renderHook(({ graphId }) => useGraphSummary(graphId), {
+    const { result, rerender } = renderWithClient(({ graphId }) => useGraphSummary(graphId), {
       initialProps: { graphId: 'graph-1' },
     });
 
@@ -207,7 +223,7 @@ describe('useGraphSummary', () => {
 
     mockApi.getGraphSummary.mockImplementation(() => firstPromise);
 
-    const { result } = renderHook(() => useGraphSummary('graph-1'));
+    const { result } = renderWithClient(() => useGraphSummary('graph-1'));
 
     expect(result.current.loading).toBe(true);
     expect(mockApi.getGraphSummary).toHaveBeenCalledTimes(1);

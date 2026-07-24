@@ -135,13 +135,19 @@ describe('knowledgeGraphRestApi', () => {
         writable: true,
         configurable: true,
       });
-      const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
 
+      // getAuthHeaders logs token errors via @almadar/logger (a no-op mock here)
+      // and proceeds without the Authorization header instead of throwing.
       await knowledgeGraphRestApi.getGraph('graph-1');
 
-      expect(consoleErrorSpy).toHaveBeenCalled();
-      expect(mockApiClient.fetch).toHaveBeenCalled();
-      consoleErrorSpy.mockRestore();
+      expect(mockApiClient.fetch).toHaveBeenCalledWith(
+        expect.any(String),
+        expect.objectContaining({
+          headers: expect.not.objectContaining({
+            Authorization: expect.anything(),
+          }),
+        })
+      );
     });
   });
 

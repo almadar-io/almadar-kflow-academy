@@ -3,6 +3,31 @@ import { screen, fireEvent, waitFor } from '@testing-library/react';
 import { renderWithProviders, resetAllMocks, mockAuthContextValue, mockAuthService, mockNavigate, localStorageMock } from '../../testUtils.helper';
 import Login from '../../../features/auth/components/Login';
 
+// Mock @almadar/ui: the shared mock fabricates non-callable component stubs for
+// every export, but Login calls useTranslate()/useEventBus() as hooks. Wrap the
+// module in a Proxy so component stubs keep working while hooks get real impls.
+jest.mock('@almadar/ui', () => {
+  const actual = jest.requireActual('@almadar/ui');
+  const translations: Record<string, string> = require('../../../locales/en.json');
+  const overrides = {
+    useTranslate: () => ({
+      t: (key: string, params?: Record<string, string | number>) => {
+        let text = translations[key] ?? key;
+        if (params) {
+          for (const [name, value] of Object.entries(params)) {
+            text = text.replace(`{{${name}}}`, String(value));
+          }
+        }
+        return text;
+      },
+    }),
+    useEventBus: () => ({ emit: jest.fn() }),
+  };
+  return new Proxy(actual, {
+    get: (t, k) => (k in overrides ? overrides[k as keyof typeof overrides] : t[k]),
+  });
+});
+
 describe('Authentication Flow - Frontend', () => {
   beforeEach(() => {
     resetAllMocks();
@@ -33,29 +58,29 @@ describe('Authentication Flow - Frontend', () => {
     it('should render login form with Google sign-in button', () => {
       renderWithProviders(<Login />);
       
-      expect(screen.getByText('Sign in to your account')).toBeInTheDocument();
-      expect(screen.getByText('Sign in with Google')).toBeInTheDocument();
+      expect(screen.getByText('Sign in to your account')).toBeTruthy();
+      expect(screen.getByText('Sign in with Google')).toBeTruthy();
     });
 
     it('should render email/password form', () => {
       renderWithProviders(<Login />);
       
-      expect(screen.getByPlaceholderText('Email address')).toBeInTheDocument();
-      expect(screen.getByPlaceholderText('Password')).toBeInTheDocument();
+      expect(screen.getByPlaceholderText('Email address')).toBeTruthy();
+      expect(screen.getByPlaceholderText('Password')).toBeTruthy();
       const signInButton = screen.getAllByRole('button').find(btn => btn.textContent === 'Sign In' && btn.type === 'submit');
-      expect(signInButton).toBeInTheDocument();
+      expect(signInButton).toBeTruthy();
     });
 
     it('should show divider with "Or sign in with email" text', () => {
       renderWithProviders(<Login />);
       
-      expect(screen.getByText('Or sign in with email')).toBeInTheDocument();
+      expect(screen.getByText('Or sign in with email')).toBeTruthy();
     });
 
     it('should show sign up toggle', () => {
       renderWithProviders(<Login />);
       
-      expect(screen.getByText("Don't have an account? Sign up")).toBeInTheDocument();
+      expect(screen.getByText("Don't have an account? Sign up")).toBeTruthy();
     });
   });
 
@@ -88,9 +113,9 @@ describe('Authentication Flow - Frontend', () => {
       const toggleButton = screen.getByText("Don't have an account? Sign up");
       fireEvent.click(toggleButton);
 
-      expect(screen.getByText('Create your account')).toBeInTheDocument();
-      expect(screen.getByPlaceholderText('Display Name')).toBeInTheDocument();
-      expect(screen.getByRole('button', { name: /Sign Up/i })).toBeInTheDocument();
+      expect(screen.getByText('Create your account')).toBeTruthy();
+      expect(screen.getByPlaceholderText('Display Name')).toBeTruthy();
+      expect(screen.getByRole('button', { name: /Sign Up/i })).toBeTruthy();
     });
 
     it('should sign up with email, password, and display name', async () => {
@@ -151,9 +176,9 @@ describe('Authentication Flow - Frontend', () => {
 
       renderWithProviders(<Login />);
 
-      expect(screen.getByRole('heading', { name: 'Complete sign-in' })).toBeInTheDocument();
-      expect(screen.getByPlaceholderText('Enter your email')).toBeInTheDocument();
-      expect(screen.getByRole('button', { name: /Complete sign-in/i })).toBeInTheDocument();
+      expect(screen.getByRole('heading', { name: 'Complete sign-in' })).toBeTruthy();
+      expect(screen.getByPlaceholderText('Enter your email')).toBeTruthy();
+      expect(screen.getByRole('button', { name: /Complete sign-in/i })).toBeTruthy();
     });
   });
 
@@ -200,7 +225,7 @@ describe('Authentication Flow - Frontend', () => {
       // This would be tested in AppRouter or ProtectedRoute component
       // For now, we verify the Login component renders correctly
       renderWithProviders(<Login />);
-      expect(screen.getByText('Sign in to your account')).toBeInTheDocument();
+      expect(screen.getByText('Sign in to your account')).toBeTruthy();
     });
   });
 });

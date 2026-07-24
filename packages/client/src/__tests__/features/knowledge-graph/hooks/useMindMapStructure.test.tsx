@@ -3,6 +3,8 @@
  */
 
 import { renderHook, waitFor, act } from '@testing-library/react';
+import React from 'react';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useMindMapStructure } from '../../../../features/knowledge-graph/hooks/useMindMapStructure';
 import { graphQueryApi } from '../../../../features/knowledge-graph/api/queryApi';
 import type { MindMapResponse, MindMapNode } from '../../../../features/knowledge-graph/api/types';
@@ -13,6 +15,18 @@ jest.mock('../../../../features/knowledge-graph/api/queryApi', () => ({
     getMindMapStructure: jest.fn(),
   },
 }));
+
+const createWrapper = () => {
+  const queryClient = new QueryClient({
+    defaultOptions: { queries: { retry: false } },
+  });
+  return ({ children }: { children: React.ReactNode }) => (
+    <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+  );
+};
+
+const renderWithClient = (callback: any, options?: any) =>
+  renderHook(callback, { wrapper: createWrapper(), ...options });
 
 const mockApi = graphQueryApi as jest.Mocked<typeof graphQueryApi>;
 
@@ -63,7 +77,7 @@ describe('useMindMapStructure', () => {
 
     mockApi.getMindMapStructure.mockResolvedValue(mockMindMap);
 
-    const { result } = renderHook(() => useMindMapStructure('graph-1'));
+    const { result } = renderWithClient(() => useMindMapStructure('graph-1'));
 
     expect(result.current.loading).toBe(true);
     expect(result.current.mindMapData).toBeNull();
@@ -79,11 +93,11 @@ describe('useMindMapStructure', () => {
     expect(result.current.layerCount).toBe(1);
     expect(result.current.conceptCount).toBe(1);
     expect(result.current.error).toBeNull();
-    expect(mockApi.getMindMapStructure).toHaveBeenCalledWith('graph-1', undefined);
+    expect(mockApi.getMindMapStructure).toHaveBeenCalledWith('graph-1', {});
   });
 
   it('should not fetch when graphId is empty', async () => {
-    const { result } = renderHook(() => useMindMapStructure(''));
+    const { result } = renderWithClient(() => useMindMapStructure(''));
 
     await waitFor(() => {
       expect(result.current.loading).toBe(false);
@@ -98,7 +112,7 @@ describe('useMindMapStructure', () => {
     const error = new Error('Failed to fetch mindmap structure');
     mockApi.getMindMapStructure.mockRejectedValue(error);
 
-    const { result } = renderHook(() => useMindMapStructure('graph-1'));
+    const { result } = renderWithClient(() => useMindMapStructure('graph-1'));
 
     await waitFor(() => {
       expect(result.current.loading).toBe(false);
@@ -120,7 +134,7 @@ describe('useMindMapStructure', () => {
 
     mockApi.getMindMapStructure.mockResolvedValue(mockMindMap);
 
-    const { result } = renderHook(() =>
+    const { result } = renderWithClient(() =>
       useMindMapStructure('graph-1', { expandAll: true })
     );
 
@@ -142,7 +156,7 @@ describe('useMindMapStructure', () => {
 
     mockApi.getMindMapStructure.mockResolvedValue(mockMindMap);
 
-    const { result } = renderHook(() => useMindMapStructure('graph-1'));
+    const { result } = renderWithClient(() => useMindMapStructure('graph-1'));
 
     await waitFor(() => {
       expect(result.current.loading).toBe(false);
@@ -181,7 +195,7 @@ describe('useMindMapStructure', () => {
       .mockResolvedValueOnce(mockMindMap1)
       .mockResolvedValueOnce(mockMindMap2);
 
-    const { result, rerender } = renderHook(
+    const { result, rerender } = renderWithClient(
       ({ graphId }) => useMindMapStructure(graphId),
       {
         initialProps: { graphId: 'graph-1' },
@@ -216,7 +230,7 @@ describe('useMindMapStructure', () => {
 
     mockApi.getMindMapStructure.mockResolvedValue(mockMindMap);
 
-    const { result, rerender } = renderHook(
+    const { result, rerender } = renderWithClient(
       ({ options }) => useMindMapStructure('graph-1', options),
       {
         initialProps: { options: { expandAll: false } },
@@ -259,7 +273,7 @@ describe('useMindMapStructure', () => {
 
     mockApi.getMindMapStructure.mockImplementation(() => firstPromise);
 
-    const { result } = renderHook(() => useMindMapStructure('graph-1'));
+    const { result } = renderWithClient(() => useMindMapStructure('graph-1'));
 
     expect(result.current.loading).toBe(true);
     expect(mockApi.getMindMapStructure).toHaveBeenCalledTimes(1);
@@ -280,7 +294,7 @@ describe('useMindMapStructure', () => {
   });
 
   it('should return default values when mindMapData is null', async () => {
-    const { result } = renderHook(() => useMindMapStructure(''));
+    const { result } = renderWithClient(() => useMindMapStructure(''));
 
     await waitFor(() => {
       expect(result.current.loading).toBe(false);

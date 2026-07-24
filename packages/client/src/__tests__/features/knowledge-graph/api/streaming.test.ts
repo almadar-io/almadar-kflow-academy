@@ -79,9 +79,9 @@ describe('handleStreamingRequest', () => {
   describe('streaming responses (SSE)', () => {
     it('should handle streaming chunks', async () => {
       const chunks = [
-        'data: {"content":"Hello","done":false}\n\n',
-        'data: {"content":" World","done":false}\n\n',
-        'data: {"content":"","done":true}\n\n',
+        'data: {"type":"message","data":{"content":"Hello"}}\n\n',
+        'data: {"type":"message","data":{"content":" World"}}\n\n',
+        'data: {"type":"complete","data":{}}\n\n',
       ];
 
       let chunkIndex = 0;
@@ -144,8 +144,8 @@ describe('handleStreamingRequest', () => {
       };
 
       const chunks = [
-        `data: {"mutations":${JSON.stringify(mutation)},"done":false}\n\n`,
-        'data: {"content":"","done":true}\n\n',
+        `data: {"type":"message","data":{"mutations":${JSON.stringify(mutation)}}}\n\n`,
+        'data: {"type":"complete","data":{}}\n\n',
       ];
 
       let chunkIndex = 0;
@@ -187,7 +187,7 @@ describe('handleStreamingRequest', () => {
     });
 
     it('should handle errors in stream', async () => {
-      const chunks = ['data: {"error":"Stream error","done":true}\n\n'];
+      const chunks = ['data: {"type":"error","data":{"error":"Stream error"}}\n\n'];
 
       mockRead.mockImplementation(() => {
         return Promise.resolve({
@@ -222,9 +222,9 @@ describe('handleStreamingRequest', () => {
     });
 
     it('should handle incomplete chunks across reads', async () => {
-      const chunk1 = 'data: {"content":"Hello';
-      const chunk2 = ' World","done":false}\n\n';
-      const chunk3 = 'data: {"content":"","done":true}\n\n';
+      const chunk1 = 'data: {"type":"message","data":{"content":"Hello';
+      const chunk2 = ' World"}}\n\n';
+      const chunk3 = 'data: {"type":"complete","data":{}}\n\n';
 
       let chunkIndex = 0;
       mockRead.mockImplementation(() => {
@@ -321,7 +321,7 @@ describe('handleStreamingRequest', () => {
     });
 
     it('should call progressiveExpand with streaming enabled', async () => {
-      const chunks = ['data: {"content":"","done":true}\n\n'];
+      const chunks = ['data: {"type":"complete","data":{}}\n\n'];
 
       let chunkIndex = 0;
       mockRead.mockImplementation(() => {
@@ -366,7 +366,7 @@ describe('handleStreamingRequest', () => {
     });
 
     it('should call explainConcept with streaming enabled', async () => {
-      const chunks = ['data: {"content":"","done":true}\n\n'];
+      const chunks = ['data: {"type":"complete","data":{}}\n\n'];
 
       let chunkIndex = 0;
       mockRead.mockImplementation(() => {

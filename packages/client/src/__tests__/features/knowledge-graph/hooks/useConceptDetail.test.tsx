@@ -3,6 +3,8 @@
  */
 
 import { renderHook, waitFor, act } from '@testing-library/react';
+import React from 'react';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useConceptDetail } from '../../../../features/knowledge-graph/hooks/useConceptDetail';
 import { graphQueryApi } from '../../../../features/knowledge-graph/api/queryApi';
 import type { ConceptDetail } from '../../../../features/knowledge-graph/api/types';
@@ -13,6 +15,18 @@ jest.mock('../../../../features/knowledge-graph/api/queryApi', () => ({
     getConceptDetail: jest.fn(),
   },
 }));
+
+const createWrapper = () => {
+  const queryClient = new QueryClient({
+    defaultOptions: { queries: { retry: false } },
+  });
+  return ({ children }: { children: React.ReactNode }) => (
+    <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+  );
+};
+
+const renderWithClient = (callback: any, options?: any) =>
+  renderHook(callback, { wrapper: createWrapper(), ...options });
 
 const mockApi = graphQueryApi as jest.Mocked<typeof graphQueryApi>;
 
@@ -68,7 +82,7 @@ describe('useConceptDetail', () => {
 
     mockApi.getConceptDetail.mockResolvedValue(mockDetail);
 
-    const { result } = renderHook(() => useConceptDetail('graph-1', 'concept-1'));
+    const { result } = renderWithClient(() => useConceptDetail('graph-1', 'concept-1'));
 
     expect(result.current.loading).toBe(true);
     expect(result.current.conceptDetail).toBeNull();
@@ -83,7 +97,7 @@ describe('useConceptDetail', () => {
   });
 
   it('should not fetch when graphId is empty', async () => {
-    const { result } = renderHook(() => useConceptDetail('', 'concept-1'));
+    const { result } = renderWithClient(() => useConceptDetail('', 'concept-1'));
 
     await waitFor(() => {
       expect(result.current.loading).toBe(false);
@@ -94,7 +108,7 @@ describe('useConceptDetail', () => {
   });
 
   it('should not fetch when conceptId is empty', async () => {
-    const { result } = renderHook(() => useConceptDetail('graph-1', ''));
+    const { result } = renderWithClient(() => useConceptDetail('graph-1', ''));
 
     await waitFor(() => {
       expect(result.current.loading).toBe(false);
@@ -129,7 +143,7 @@ describe('useConceptDetail', () => {
 
     mockApi.getConceptDetail.mockResolvedValue(mockDetail);
 
-    const { result } = renderHook(() => useConceptDetail('graph-1', 'concept-1'));
+    const { result } = renderWithClient(() => useConceptDetail('graph-1', 'concept-1'));
 
     await waitFor(() => {
       expect(result.current.loading).toBe(false);
@@ -144,7 +158,7 @@ describe('useConceptDetail', () => {
     const error = new Error('Failed to fetch concept detail');
     mockApi.getConceptDetail.mockRejectedValue(error);
 
-    const { result } = renderHook(() => useConceptDetail('graph-1', 'concept-1'));
+    const { result } = renderWithClient(() => useConceptDetail('graph-1', 'concept-1'));
 
     await waitFor(() => {
       expect(result.current.loading).toBe(false);
@@ -179,7 +193,7 @@ describe('useConceptDetail', () => {
 
     mockApi.getConceptDetail.mockResolvedValue(mockDetail);
 
-    const { result } = renderHook(() => useConceptDetail('graph-1', 'concept-1'));
+    const { result } = renderWithClient(() => useConceptDetail('graph-1', 'concept-1'));
 
     await waitFor(() => {
       expect(result.current.loading).toBe(false);
@@ -244,7 +258,7 @@ describe('useConceptDetail', () => {
       .mockResolvedValueOnce(mockDetail1)
       .mockResolvedValueOnce(mockDetail2);
 
-    const { result, rerender } = renderHook(
+    const { result, rerender } = renderWithClient(
       ({ graphId, conceptId }) => useConceptDetail(graphId, conceptId),
       {
         initialProps: { graphId: 'graph-1', conceptId: 'concept-1' },
@@ -297,7 +311,7 @@ describe('useConceptDetail', () => {
 
     mockApi.getConceptDetail.mockImplementation(() => firstPromise);
 
-    const { result } = renderHook(() => useConceptDetail('graph-1', 'concept-1'));
+    const { result } = renderWithClient(() => useConceptDetail('graph-1', 'concept-1'));
 
     expect(result.current.loading).toBe(true);
     expect(mockApi.getConceptDetail).toHaveBeenCalledTimes(1);
