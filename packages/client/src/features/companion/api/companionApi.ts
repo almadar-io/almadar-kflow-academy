@@ -26,6 +26,21 @@ export async function fetchCompanionPersona(): Promise<CompanionPersonaDTO> {
   return apiClient.fetch('/api/companion/persona', { method: 'GET' });
 }
 
+export async function fetchSuggestions(locale?: string): Promise<{ suggestions: Suggestion[]; fromCache: boolean }> {
+  const params = new URLSearchParams();
+  if (locale) params.set('locale', locale);
+  const query = params.size > 0 ? `?${params}` : '';
+  return apiClient.fetch(`/api/companion/suggestions${query}`, { method: 'GET' });
+}
+
+export async function resolveSuggestion(suggestion: Suggestion, status: 'accepted' | 'dismissed'): Promise<void> {
+  await apiClient.fetch('/api/companion/suggestions', {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ suggestion, status }),
+  });
+}
+
 export async function analyzeTrajectory(skill?: string, locale?: string): Promise<CompanionAnalyzeResponse> {
   return apiClient.fetch('/api/companion/analyze', {
     method: 'POST',

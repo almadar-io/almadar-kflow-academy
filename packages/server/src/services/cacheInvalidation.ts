@@ -1,4 +1,5 @@
 import { hybridCache } from "./cacheService";
+import { bumpGraphVersion } from "./graphVersionService";
 
 export const CACHE_KEYS = {
   jumpBackIn: (uid: string) => `jumpbackin:${uid}`,
@@ -38,4 +39,5 @@ export async function invalidateGraphCaches(uid: string, graphId: string): Promi
   await hybridCache.delete(CACHE_KEYS.learningPaths(uid));
   await hybridCache.delete(CACHE_KEYS.pathSummaries(uid));
   await invalidateJumpBackIn(uid);
+  await bumpGraphVersion(uid);
 }

@@ -1,26 +1,14 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useTranslate, useEventBus } from '@almadar/ui';
 import type { Suggestion } from '@kflow-academy/shared';
-import { streamCompanionAnalysis, replyToCompanion } from '../api/companionApi';
-import type { CompanionStreamEvent } from '../api/companionApi';
+import { fetchSuggestions, resolveSuggestion as resolveSuggestionApi, replyToCompanion } from '../api/companionApi';
 import { createLogger } from '@almadar/logger';
 import { auth } from '../../../config/firebase';
 
 const log = createLogger('kflow:client:companion:useCompanion');
 
-const TOOL_LABELS: Record<string, string> = {
-  summarize_trajectory: 'Analyzing your learning trajectory',
-  find_convergence: 'Looking for convergence points',
-  summarize_cluster: 'Identifying topic clusters',
-  find_gap: 'Finding knowledge gaps',
-  suggest_expansion: 'Finding expansion targets',
-  suggest_next_step: 'Choosing your next step',
-  draft_nudge: 'Drafting your suggestion',
-  ask_companion: 'Thinking',
-};
-
-export function toolLabel(tool: string): string {
-  return TOOL_LABELS[tool] ?? 'Working';
+export function toolLabel(_tool: string): string {
+  return '';
 }
 
 export interface CompanionEvent {
@@ -48,82 +36,41 @@ export function useCompanion(autoAnalyze: boolean = true) {
     reply: null,
     replying: false,
   });
-  const dismissed = useRef<Set<string>>(new Set());
   const abortRef = useRef<AbortController | null>(null);
-  const eventId = useRef(0);
 
-  const analyze = useCallback(async (controller?: AbortController) => {
-    const ctrl = controller ?? new AbortController();
-    if (!controller) abortRef.current = ctrl;
-    log.debug('analyze: called', { locale, uid: auth.currentUser?.uid ?? '(null)', signalAborted: ctrl.signal.aborted });
-    setState(prev => ({ ...prev, loading: true, events: [] }));
+  const analyze = useCallback(async () => {
+    if (!auth.currentUser) return;
+    setState(prev => ({ ...prev, loading: true }));
 
     try {
-      await streamCompanionAnalysis(locale, (event: CompanionStreamEvent) => {
-        if (ctrl.signal.aborted) return;
-        switch (event.type) {
-          case 'tool_result': {
-            const tool = event.data?.tool;
-            const label = tool ? toolLabel(tool) : 'Working';
-            setState(prev => ({
-              ...prev,
-              events: [...prev.events, { id: ++eventId.current, kind: 'tool', label, tool }],
-            }));
-            break;
-          }
-          case 'result': {
-            const suggestion = event.data?.suggestion;
-            if (suggestion) {
-              const sig = `${suggestion.type}:${suggestion.target}`;
-              if (dismissed.current.has(sig)) {
-                log.info('Companion suggestion already dismissed this session', { sig });
-                setState(prev => ({ ...prev, loading: false }));
-              } else {
-                setState(prev => ({
-                  ...prev,
-                  suggestions: [suggestion, ...prev.suggestions.filter(s => `${s.type}:${s.target}` !== sig)],
-                  loading: false,
-                }));
-              }
-              log.info('Companion analysis complete', { type: suggestion.type });
-            }
-            break;
-          }
-          case 'error': {
-            const error = event.data?.error;
-            log.warn('Companion stream error', { error });
-            setState(prev => ({
-              ...prev,
-              loading: false,
-              events: [...prev.events, { id: ++eventId.current, kind: 'error', label: error ?? 'Analysis failed' }],
-            }));
-            break;
-          }
-        }
-      }, ctrl.signal);
+      const result = await fetchSuggestions(locale);
+      setState(prev => ({ ...prev, suggestions: result.suggestions, loading: false }));
+      log.info('Companion suggestions fetched', { count: result.suggestions.length, fromCache: result.fromCache });
     } catch (e) {
-      if (ctrl.signal.aborted) return;
-      log.warn('Companion analysis failed', { error: e instanceof Error ? e.message : String(e) });
+      log.warn('Companion fetch failed', { error: e instanceof Error ? e.message : String(e) });
       setState(prev => ({ ...prev, loading: false }));
     }
   }, [locale]);
 
-  const dismiss = useCallback((suggestion: Suggestion) => {
-    const sig = `${suggestion.type}:${suggestion.target}`;
-    dismissed.current.add(sig);
-    setState(prev => ({ ...prev, suggestions: prev.suggestions.filter(s => `${s.type}:${s.target}` !== sig) }));
+  const dismiss = useCallback(async (suggestion: Suggestion) => {
+    setState(prev => ({ ...prev, suggestions: prev.suggestions.filter(s => s !== suggestion) }));
+    try {
+      await resolveSuggestionApi(suggestion, 'dismissed');
+      log.info('Suggestion dismissed', { type: suggestion.type, target: suggestion.target });
+    } catch (e) {
+      log.warn('Failed to persist dismissal', { error: e instanceof Error ? e.message : String(e) });
+    }
   }, []);
 
-  const dismissAll = useCallback(() => {
-    setState(prev => {
-      for (const s of prev.suggestions) dismissed.current.add(`${s.type}:${s.target}`);
-      return { ...prev, suggestions: [] };
-    });
-  }, []);
-
-  const accept = useCallback((suggestion: Suggestion) => {
+  const accept = useCallback(async (suggestion: Suggestion) => {
     log.info('Companion suggestion accepted', { type: suggestion.type, action: suggestion.action, target: suggestion.target });
     setState(prev => ({ ...prev, suggestions: prev.suggestions.filter(s => s !== suggestion) }));
+
+    try {
+      await resolveSuggestionApi(suggestion, 'accepted');
+    } catch (e) {
+      log.warn('Failed to persist acceptance', { error: e instanceof Error ? e.message : String(e) });
+    }
 
     switch (suggestion.action) {
       case 'open-graph':
@@ -159,15 +106,10 @@ export function useCompanion(autoAnalyze: boolean = true) {
     if (!autoAnalyze) return;
     const controller = new AbortController();
     abortRef.current = controller;
-    log.debug('useEffect: firing analyze()', { autoAnalyze, locale });
-    void analyze(controller);
-    return () => {
-      log.debug('useEffect: cleanup — aborting', {});
-      controller.abort();
-    };
-  }, [autoAnalyze, locale]);
+    void analyze();
+    return () => { controller.abort(); };
+  }, [autoAnalyze, locale, analyze]);
 
-  // Backward-compat: first suggestion
   const suggestion = state.suggestions[0] ?? null;
 
   return {
@@ -178,7 +120,6 @@ export function useCompanion(autoAnalyze: boolean = true) {
     replying: state.replying,
     analyze,
     dismiss,
-    dismissAll,
     accept,
     reply,
   };

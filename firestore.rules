@@ -45,6 +45,16 @@ service cloud.firestore {
         allow read: if isOwner(userId);
         allow write: if isOwner(userId);
       }
+      
+      // User's companion suggestions (server-only writes, client reads via REST API)
+      match /companionSuggestions/{suggestionId} {
+        allow read, write: if false; // server-only (Admin SDK)
+      }
+      
+      // User's companion state (graph version counter)
+      match /profile/{docId} {
+        allow read, write: if false; // server-only
+      }
     }
     
     // ==================== Knowledge Graphs ====================

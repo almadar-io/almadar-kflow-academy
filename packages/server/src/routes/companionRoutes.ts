@@ -3,12 +3,41 @@ import type { Request, Response } from 'express';
 import { authenticateFirebase, asyncHandler } from '@almadar/server';
 import { createLogger } from '@almadar/logger';
 import { analyzeTrajectory, analyzeTrajectoryStream, replyToUser } from '../services/companionService';
+import { ensureSuggestions, resolveSuggestion, suggestionSig } from '../services/companionSuggestionService';
 import { getCompanionPersona } from '../services/companionPersonaService';
 
 const log = createLogger('kflow:server:routes:companionRoutes');
 const router = Router();
 
 router.use(authenticateFirebase);
+
+router.get('/suggestions', asyncHandler(async (req: Request, res: Response) => {
+  const uid = req.firebaseUser?.uid;
+  if (!uid) {
+    res.status(401).json({ error: 'Authentication required' });
+    return;
+  }
+  const skillName = typeof req.query.skill === 'string' ? req.query.skill : undefined;
+  const locale = typeof req.query.locale === 'string' ? req.query.locale : undefined;
+  const result = await ensureSuggestions(uid, skillName, locale);
+  res.json(result);
+}));
+
+router.patch('/suggestions', asyncHandler(async (req: Request, res: Response) => {
+  const uid = req.firebaseUser?.uid;
+  if (!uid) {
+    res.status(401).json({ error: 'Authentication required' });
+    return;
+  }
+  const { suggestion, status } = req.body ?? {};
+  if (!suggestion || (status !== 'accepted' && status !== 'dismissed')) {
+    res.status(400).json({ error: 'suggestion and status (accepted|dismissed) are required' });
+    return;
+  }
+  const sig = suggestionSig(suggestion);
+  await resolveSuggestion(uid, sig, status);
+  res.json({ ok: true });
+}));
 
 router.get('/persona', asyncHandler(async (req: Request, res: Response) => {
   const uid = req.firebaseUser?.uid;
