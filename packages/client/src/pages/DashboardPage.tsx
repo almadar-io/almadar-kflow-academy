@@ -68,6 +68,7 @@ export const DashboardPage: React.FC = () => {
 
   // Goal/path creation flow (merged from /learn — UI:CREATE_LEARNING_PATH now opens here).
   const [showGoalForm, setShowGoalForm] = useState(false);
+  const [goalFormAnchor, setGoalFormAnchor] = useState<string | undefined>(undefined);
   const [searchParams, setSearchParams] = useSearchParams();
   const [isExpanding, setIsExpanding] = useState(false);
   const [parsedConcepts, setParsedConcepts] = useState<Array<{ name: string; description: string }>>([]);
@@ -128,6 +129,7 @@ export const DashboardPage: React.FC = () => {
 
   const closeGoalModal = useCallback(() => {
     setShowGoalForm(false);
+    setGoalFormAnchor(undefined);
     setIsExpanding(false);
   }, []);
 
@@ -191,6 +193,8 @@ export const DashboardPage: React.FC = () => {
   useEffect(() => {
     if (searchParams.get('create') === 'true') {
       setShowGoalForm(true);
+      const anchor = searchParams.get('anchor');
+      if (anchor) setGoalFormAnchor(anchor);
       setSearchParams({}, { replace: true });
     }
   }, [searchParams, setSearchParams]);
@@ -408,7 +412,8 @@ export const DashboardPage: React.FC = () => {
         ) : (
           <GoalForm
             onComplete={handleGoalFormComplete}
-            onCancel={() => setShowGoalForm(false)}
+            onCancel={closeGoalModal}
+            initialAnchor={goalFormAnchor}
           />
         )}
       </Modal>

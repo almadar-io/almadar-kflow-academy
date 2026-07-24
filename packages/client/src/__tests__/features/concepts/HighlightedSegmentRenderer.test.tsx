@@ -33,10 +33,13 @@ jest.mock('@almadar/ui', () => {
       </div>
     );
   });
-  return {
-    ...actual,
-    SegmentRenderer: MockSegmentRenderer,
-  };
+  // Wrap the module in a Proxy instead of spreading it: the resolved module is
+  // itself a Proxy that fabricates stub components for any key, and spreading
+  // would lose that behavior (every other named import would be undefined).
+  const overrides = { SegmentRenderer: MockSegmentRenderer };
+  return new Proxy(actual, {
+    get: (t, k) => (k in overrides ? overrides[k as keyof typeof overrides] : t[k]),
+  });
 });
 
 // Mock DOM highlighting utilities
@@ -89,7 +92,7 @@ describe('HighlightedSegmentRenderer', () => {
       const { container } = renderWithProviders(<HighlightedSegmentRenderer segments={segments} />);
 
       // Verify component renders without crashing
-      expect(container).toBeInTheDocument();
+      expect(container).toBeTruthy();
     });
 
     it('should render without concept', () => {
@@ -518,7 +521,7 @@ describe('HighlightedSegmentRenderer', () => {
       const { container } = renderWithProviders(<HighlightedSegmentRenderer segments={[]} />);
 
       // SegmentRenderer returns null for empty segments, so we just verify it doesn't crash
-      expect(container).toBeInTheDocument();
+      expect(container).toBeTruthy();
     });
 
     it('should handle concept with empty notes array', async () => {
@@ -629,7 +632,7 @@ describe('HighlightedSegmentRenderer', () => {
       );
 
       // Verify component renders without crashing with all props
-      expect(container).toBeInTheDocument();
+      expect(container).toBeTruthy();
     });
   });
 });

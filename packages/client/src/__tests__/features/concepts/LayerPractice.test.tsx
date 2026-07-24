@@ -20,43 +20,51 @@ jest.mock('../../../features/concepts/hooks/useLayerPractice', () => ({
   useLayerPractice: (options: any) => mockUseLayerPractice(options),
 }));
 
-// Mock lesson-rendering primitives (sourced from @almadar/ui), preserving the rest of the package
-jest.mock('@almadar/ui', () => ({
-  ...jest.requireActual('@almadar/ui'),
-  parseMarkdownWithCodeBlocks: (content: string) => {
-    if (!content) return [];
-    const segments: any[] = [];
-    if (content.includes('```')) {
-      const codeMatch = content.match(/```(\w+)?\n([\s\S]*?)```/);
-      if (codeMatch) {
-        segments.push({ type: 'code', language: codeMatch[1] || 'text', content: codeMatch[2] });
+// Mock lesson-rendering primitives (sourced from @almadar/ui), preserving the rest of the package.
+// Wrap the module in a Proxy instead of spreading it: the resolved module is
+// itself a Proxy that fabricates stub components for any key, and spreading
+// would lose that behavior (every other named import would be undefined).
+jest.mock('@almadar/ui', () => {
+  const actual = jest.requireActual('@almadar/ui');
+  const overrides = {
+    parseMarkdownWithCodeBlocks: (content: string) => {
+      if (!content) return [];
+      const segments: any[] = [];
+      if (content.includes('```')) {
+        const codeMatch = content.match(/```(\w+)?\n([\s\S]*?)```/);
+        if (codeMatch) {
+          segments.push({ type: 'code', language: codeMatch[1] || 'text', content: codeMatch[2] });
+        }
       }
-    }
-    const markdownContent = content.replace(/```[\s\S]*?```/g, '');
-    if (markdownContent.trim()) {
-      segments.push({ type: 'markdown', content: markdownContent });
-    }
-    return segments.length > 0 ? segments : [{ type: 'markdown', content }];
-  },
-  SegmentRenderer: ({ segments = [] }: any) => {
-    if (!segments || segments.length === 0) {
-      return <div data-testid="practice-content-empty">No content</div>;
-    }
-    return (
-      <div data-testid="practice-content">
-        {segments.map((segment: any, idx: number) => {
-          if (segment.type === 'markdown') {
-            return <div key={idx} data-testid="markdown-segment">{segment.content}</div>;
-          }
-          if (segment.type === 'code') {
-            return <div key={idx} data-testid="code-block" data-language={segment.language}>{segment.content}</div>;
-          }
-          return null;
-        })}
-      </div>
-    );
-  },
-}));
+      const markdownContent = content.replace(/```[\s\S]*?```/g, '');
+      if (markdownContent.trim()) {
+        segments.push({ type: 'markdown', content: markdownContent });
+      }
+      return segments.length > 0 ? segments : [{ type: 'markdown', content }];
+    },
+    SegmentRenderer: ({ segments = [] }: any) => {
+      if (!segments || segments.length === 0) {
+        return <div data-testid="practice-content-empty">No content</div>;
+      }
+      return (
+        <div data-testid="practice-content">
+          {segments.map((segment: any, idx: number) => {
+            if (segment.type === 'markdown') {
+              return <div key={idx} data-testid="markdown-segment">{segment.content}</div>;
+            }
+            if (segment.type === 'code') {
+              return <div key={idx} data-testid="code-block" data-language={segment.language}>{segment.content}</div>;
+            }
+            return null;
+          })}
+        </div>
+      );
+    },
+  };
+  return new Proxy(actual, {
+    get: (t, k) => (k in overrides ? overrides[k as keyof typeof overrides] : t[k]),
+  });
+});
 
 // Helper to create a mock concept
 const createMockConcept = (name: string, layer: number = 1): Concept => ({
@@ -106,8 +114,8 @@ describe('Layer Practice / Final Review Generation - Frontend', () => {
         />
       );
 
-      expect(screen.getByText(`Level ${mockLayerNumber} Final Review`)).toBeInTheDocument();
-      expect(screen.getByText(mockLayerGoal)).toBeInTheDocument();
+      expect(screen.getByText(`Level ${mockLayerNumber} Final Review`)).toBeTruthy();
+      expect(screen.getByText(mockLayerGoal)).toBeTruthy();
     });
 
     it('should not render when isOpen is false', () => {
@@ -121,7 +129,7 @@ describe('Layer Practice / Final Review Generation - Frontend', () => {
         />
       );
 
-      expect(screen.queryByText(`Level ${mockLayerNumber} Final Review`)).not.toBeInTheDocument();
+      expect(screen.queryByText(`Level ${mockLayerNumber} Final Review`)).toBeNull();
     });
 
     it('should display learning goal in modal', () => {
@@ -135,8 +143,8 @@ describe('Layer Practice / Final Review Generation - Frontend', () => {
         />
       );
 
-      expect(screen.getByText('Learning Goal')).toBeInTheDocument();
-      expect(screen.getByText(mockLayerGoal)).toBeInTheDocument();
+      expect(screen.getByText('Learning Goal')).toBeTruthy();
+      expect(screen.getByText(mockLayerGoal)).toBeTruthy();
     });
 
     it('should close modal when close button is clicked', () => {
@@ -237,8 +245,8 @@ describe('Layer Practice / Final Review Generation - Frontend', () => {
       );
 
       // Check for content in the rendered segments
-      expect(screen.getByTestId('practice-content')).toBeInTheDocument();
-      expect(screen.getByTestId('markdown-segment')).toHaveTextContent('Review Content');
+      expect(screen.getByTestId('practice-content')).toBeTruthy();
+      expect(screen.getByTestId('markdown-segment').textContent).toContain('Review Content');
     });
   });
 
@@ -266,9 +274,9 @@ describe('Layer Practice / Final Review Generation - Frontend', () => {
       );
 
       // Check for content in the rendered segments
-      expect(screen.getByTestId('practice-content')).toBeInTheDocument();
-      expect(screen.getByTestId('markdown-segment')).toHaveTextContent('Review');
-      expect(screen.getByTestId('markdown-segment')).toHaveTextContent('This is streaming content.');
+      expect(screen.getByTestId('practice-content')).toBeTruthy();
+      expect(screen.getByTestId('markdown-segment').textContent).toContain('Review');
+      expect(screen.getByTestId('markdown-segment').textContent).toContain('This is streaming content.');
     });
 
     it('should update practice content incrementally during streaming', async () => {
@@ -306,7 +314,7 @@ describe('Layer Practice / Final Review Generation - Frontend', () => {
           layerNumber={mockLayerNumber}
         />
       );
-      expect(screen.getByTestId('markdown-segment')).toHaveTextContent('Review');
+      expect(screen.getByTestId('markdown-segment').textContent).toContain('Review');
       // First paragraph should not be present yet
       const markdownSegments = screen.queryAllByTestId('markdown-segment');
       const hasFirstParagraph = markdownSegments.some(segment => 
@@ -340,7 +348,7 @@ describe('Layer Practice / Final Review Generation - Frontend', () => {
       );
       expect(hasFirstParagraphNow).toBe(true);
       // Code block should not be present yet
-      expect(screen.queryByTestId('code-block')).not.toBeInTheDocument();
+      expect(screen.queryByTestId('code-block')).toBeNull();
 
       // Final chunk
       currentContent += finalChunk;
@@ -362,7 +370,7 @@ describe('Layer Practice / Final Review Generation - Frontend', () => {
         />
       );
       // Code block should now be present
-      expect(screen.getByTestId('code-block')).toHaveTextContent('console.log("Hello");');
+      expect(screen.getByTestId('code-block').textContent).toContain('console.log("Hello");');
     });
   });
 
@@ -389,8 +397,8 @@ describe('Layer Practice / Final Review Generation - Frontend', () => {
         />
       );
 
-      expect(screen.getByTestId('markdown-segment')).toHaveTextContent('Review Title');
-      expect(screen.getByTestId('markdown-segment')).toHaveTextContent('List item 1');
+      expect(screen.getByTestId('markdown-segment').textContent).toContain('Review Title');
+      expect(screen.getByTestId('markdown-segment').textContent).toContain('List item 1');
     });
 
     it('should render code blocks correctly', () => {
@@ -415,8 +423,8 @@ describe('Layer Practice / Final Review Generation - Frontend', () => {
         />
       );
 
-      expect(screen.getByTestId('code-block')).toHaveTextContent('const x = 10;');
-      expect(screen.getByTestId('code-block')).toHaveAttribute('data-language', 'javascript');
+      expect(screen.getByTestId('code-block').textContent).toContain('const x = 10;');
+      expect(screen.getByTestId('code-block').getAttribute('data-language')).toBe('javascript');
     });
 
     it('should render multiple content types together', () => {
@@ -447,8 +455,8 @@ describe('Layer Practice / Final Review Generation - Frontend', () => {
         />
       );
 
-      expect(screen.getByTestId('markdown-segment')).toHaveTextContent('Intro');
-      expect(screen.getByTestId('code-block')).toHaveTextContent('print("Hello")');
+      expect(screen.getByTestId('markdown-segment').textContent).toContain('Intro');
+      expect(screen.getByTestId('code-block').textContent).toContain('print("Hello")');
     });
   });
 
@@ -464,8 +472,8 @@ describe('Layer Practice / Final Review Generation - Frontend', () => {
         />
       );
 
-      expect(screen.getByText('Learning Goal')).toBeInTheDocument();
-      expect(screen.getByText(mockLayerGoal)).toBeInTheDocument();
+      expect(screen.getByText('Learning Goal')).toBeTruthy();
+      expect(screen.getByText(mockLayerGoal)).toBeTruthy();
     });
 
     it('should not display goal section when layerGoal is empty', () => {
@@ -489,7 +497,7 @@ describe('Layer Practice / Final Review Generation - Frontend', () => {
       );
 
       // Goal section should not be displayed when layerGoal is empty
-      expect(screen.queryByText('Learning Goal')).not.toBeInTheDocument();
+      expect(screen.queryByText('Learning Goal')).toBeNull();
     });
   });
 
@@ -515,7 +523,7 @@ describe('Layer Practice / Final Review Generation - Frontend', () => {
       );
 
       // Loading indicator should be shown (text "Generating review...")
-      expect(screen.getByText('Generating review...')).toBeInTheDocument();
+      expect(screen.getByText('Generating review...')).toBeTruthy();
     });
 
     it('should hide loading indicator when not generating', () => {
@@ -539,7 +547,7 @@ describe('Layer Practice / Final Review Generation - Frontend', () => {
       );
 
       // Content should be displayed, not loading indicator
-      expect(screen.getByText('Review content')).toBeInTheDocument();
+      expect(screen.getByText('Review content')).toBeTruthy();
     });
   });
 
@@ -567,7 +575,7 @@ describe('Layer Practice / Final Review Generation - Frontend', () => {
       );
 
       // Error should be displayed (implementation may vary)
-      expect(screen.getByText(errorMessage)).toBeInTheDocument();
+      expect(screen.getByText(errorMessage)).toBeTruthy();
     });
 
     it('should allow retry after error', () => {

@@ -1,5 +1,6 @@
 // @ts-nocheck
 import { jest } from '@jest/globals';
+import type { NextFunction, Request, Response } from 'express';
 
 /**
  * Global Jest setup for the Kflow server package.
@@ -51,7 +52,8 @@ jest.mock('@almadar/server', () => ({
       },
     },
   })),
-  authenticateFirebase: jest.fn((_req: unknown, _res: unknown, next: () => void) => next()),
+  authenticateFirebase: jest.fn((_req: Request, _res: Response, next: NextFunction) => next()),
+  asyncHandler: jest.fn(<T,>(fn: T): T => fn),
   setupSSE: jest.fn(),
   sendSSEEvent: jest.fn(),
   sendSSEDone: jest.fn(),

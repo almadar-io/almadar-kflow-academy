@@ -27,6 +27,7 @@ jest.unstable_mockModule('@almadar/server', () => ({
   getFirebaseAuth: jest.fn(),
   getFirebaseAdmin: jest.fn(),
   authenticateFirebase: jest.fn((_req: unknown, _res: unknown, next: () => void) => next()),
+  asyncHandler: jest.fn((fn: unknown) => fn),
   setupSSE: jest.fn(),
   sendSSEEvent: jest.fn(),
   sendSSEDone: jest.fn(),

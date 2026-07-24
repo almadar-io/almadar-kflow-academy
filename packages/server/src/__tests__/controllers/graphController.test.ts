@@ -41,6 +41,11 @@ jest.mock('../../services/userService', () => ({
   upsertUser: jest.fn(),
 }));
 
+// Mock cacheInvalidation
+jest.mock('../../services/cacheInvalidation', () => ({
+  invalidateGraphCaches: jest.fn().mockResolvedValue(undefined),
+}));
+
 describe('Graph Controller - Backend', () => {
   let mockRequest: Partial<Request>;
   let mockResponse: Partial<Response>;

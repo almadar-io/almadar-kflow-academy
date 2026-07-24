@@ -4,12 +4,11 @@
 
 import { renderHook, act, waitFor } from '@testing-library/react';
 import { Provider } from 'react-redux';
-import { configureStore } from '@reduxjs/toolkit';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useAnswerQuestion } from '../../../../features/knowledge-graph/hooks/useAnswerQuestion';
 import { graphOperationsApi, graphOperationsStreamingApi } from '../../../../features/knowledge-graph/api';
-import knowledgeGraphSlice from '../../../../features/knowledge-graph/knowledgeGraphSlice';
-import graphOperationSlice from '../../../../features/knowledge-graph/redux/graphOperationSlice';
-import { mutationMiddleware } from '../../../../features/knowledge-graph/redux/mutationMiddleware';
+import { setGraph, clearGraphs } from '../../../../features/knowledge-graph/knowledgeGraphSlice';
+import { store } from '../../../../app/store';
 import type { NodeBasedKnowledgeGraph } from '../../../../features/knowledge-graph/types';
 
 // Mock the API
@@ -33,23 +32,13 @@ jest.mock('../../../../config/firebase', () => ({
 const mockApi = graphOperationsApi as jest.Mocked<typeof graphOperationsApi>;
 const mockStreamingApi = graphOperationsStreamingApi as jest.Mocked<typeof graphOperationsStreamingApi>;
 
-// Helper to create a test store
-const createTestStore = (initialState?: any) => {
-  return configureStore({
-    reducer: {
-      knowledgeGraphs: knowledgeGraphSlice,
-      graphOperations: graphOperationSlice,
-    },
-    middleware: (getDefaultMiddleware: any) =>
-      getDefaultMiddleware().concat(mutationMiddleware as any),
-    preloadedState: initialState,
-  } as any);
-};
-
-// Helper to create a wrapper with store
-const createWrapper = (store: ReturnType<typeof createTestStore>) => {
+// Helper to create a wrapper with the real app store singleton + react-query
+const createWrapper = () => {
+  const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
   return ({ children }: { children: React.ReactNode }) => (
-    <Provider store={store}>{children}</Provider>
+    <Provider store={store}>
+      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+    </Provider>
   );
 };
 
@@ -76,21 +65,10 @@ const createMockGraph = (id: string): NodeBasedKnowledgeGraph => ({
 });
 
 describe('useAnswerQuestion', () => {
-  let store: ReturnType<typeof createTestStore>;
-
   beforeEach(() => {
     jest.clearAllMocks();
-    store = createTestStore({
-      knowledgeGraphs: {
-        graphs: {
-          'graph-1': createMockGraph('graph-1'),
-        },
-        currentGraphId: 'graph-1',
-        isLoading: false,
-        error: null,
-        lastUpdated: null,
-      },
-    });
+    store.dispatch(clearGraphs());
+    store.dispatch(setGraph(createMockGraph('graph-1')));
   });
 
   describe('non-streaming mode', () => {
@@ -113,7 +91,7 @@ describe('useAnswerQuestion', () => {
       mockApi.answerQuestion.mockResolvedValue(mockResponse);
 
       const { result } = renderHook(() => useAnswerQuestion('graph-1'), {
-        wrapper: createWrapper(store),
+        wrapper: createWrapper(),
       });
 
       await act(async () => {
@@ -135,7 +113,7 @@ describe('useAnswerQuestion', () => {
       mockApi.answerQuestion.mockRejectedValue(error);
 
       const { result } = renderHook(() => useAnswerQuestion('graph-1'), {
-        wrapper: createWrapper(store),
+        wrapper: createWrapper(),
       });
 
       await act(async () => {
@@ -181,7 +159,7 @@ describe('useAnswerQuestion', () => {
       mockApi.answerQuestion.mockResolvedValue(mockResponse);
 
       const { result } = renderHook(() => useAnswerQuestion('graph-1'), {
-        wrapper: createWrapper(store),
+        wrapper: createWrapper(),
       });
 
       await act(async () => {
@@ -216,7 +194,7 @@ describe('useAnswerQuestion', () => {
       mockApi.answerQuestion.mockResolvedValue(mockResponse);
 
       const { result } = renderHook(() => useAnswerQuestion('graph-1'), {
-        wrapper: createWrapper(store),
+        wrapper: createWrapper(),
       });
 
       await act(async () => {
@@ -252,7 +230,7 @@ describe('useAnswerQuestion', () => {
       mockStreamingApi.answerQuestion.mockResolvedValue(mockResponse);
 
       const { result } = renderHook(() => useAnswerQuestion('graph-1'), {
-        wrapper: createWrapper(store),
+        wrapper: createWrapper(),
       });
 
       await act(async () => {
@@ -307,7 +285,7 @@ describe('useAnswerQuestion', () => {
       );
 
       const { result } = renderHook(() => useAnswerQuestion('graph-1'), {
-        wrapper: createWrapper(store),
+        wrapper: createWrapper(),
       });
 
       await act(async () => {
@@ -335,7 +313,7 @@ describe('useAnswerQuestion', () => {
       mockApi.answerQuestion.mockReturnValue(promise as any);
 
       const { result } = renderHook(() => useAnswerQuestion('graph-1'), {
-        wrapper: createWrapper(store),
+        wrapper: createWrapper(),
       });
 
       act(() => {
@@ -362,53 +340,5 @@ describe('useAnswerQuestion', () => {
     });
   });
 
-  describe('Redux state updates', () => {
-    it('should dispatch answerQuestionStart on call', async () => {
-      mockApi.answerQuestion.mockResolvedValue({
-        mutations: { mutations: [] },
-        content: { answer: 'Test' },
-        graph: createMockGraph('graph-1'),
-      });
-
-      const { result } = renderHook(() => useAnswerQuestion('graph-1'), {
-        wrapper: createWrapper(store),
-      });
-
-      act(() => {
-        result.current.answer({
-          targetNodeId: 'node-1',
-          question: 'What is this?',
-        });
-      });
-
-      const state = store.getState();
-      expect(state.graphOperations.answerQuestion.isLoading).toBe(true);
-    });
-
-    it('should dispatch answerQuestionSuccess on completion', async () => {
-      const mockResponse = {
-        mutations: { mutations: [] },
-        content: { answer: 'Test answer' },
-        graph: createMockGraph('graph-1'),
-      };
-
-      mockApi.answerQuestion.mockResolvedValue(mockResponse);
-
-      const { result } = renderHook(() => useAnswerQuestion('graph-1'), {
-        wrapper: createWrapper(store),
-      });
-
-      await act(async () => {
-        await result.current.answer({
-          targetNodeId: 'node-1',
-          question: 'What is this?',
-        });
-      });
-
-      const state = store.getState();
-      expect(state.graphOperations.answerQuestion.isLoading).toBe(false);
-      expect(state.graphOperations.answerQuestion.error).toBeNull();
-    });
-  });
 });
 

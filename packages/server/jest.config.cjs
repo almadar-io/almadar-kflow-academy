@@ -11,6 +11,8 @@ module.exports = {
     '^@almadar-io/knowledge/server$': '<rootDir>/node_modules/@almadar-io/knowledge/dist/server.js',
     '^@kflow-academy/shared$': '<rootDir>/node_modules/@kflow-academy/shared/dist/index.js',
     '^@almadar/llm$': '<rootDir>/node_modules/@almadar/llm/dist/index.js',
+    '^@almadar/llm/vector$': '<rootDir>/node_modules/@almadar/llm/dist/vector/index.js',
+    '^@almadar-io/rabit$': '<rootDir>/src/__tests__/__mocks__/almadarRabit.js',
   },
   transform: {
     '^.+\\.tsx?$': ['ts-jest', { useESM: true }],
@@ -19,10 +21,13 @@ module.exports = {
     '^.+\\.js$': ['ts-jest', { useESM: false, tsconfig: { allowJs: true, isolatedModules: true } }],
   },
   transformIgnorePatterns: [
-    '/node_modules/(?!(@almadar|@almadar-io|@kflow-academy)[\\/])',
+    // Allow @almadar*/@kflow-academy ESM dists to be transformed both via the
+    // node_modules symlink path and via the realpathed .pnpm store path.
+    'node_modules/(?!(\\.pnpm[\\/]@(almadar|kflow-academy)|@(almadar|almadar-io|kflow-academy)[\\/]))',
   ],
   testPathIgnorePatterns: [
     '/node_modules/',
+    '/__mocks__/',
     '\\.helper\\.ts$',
     '<rootDir>/src/__tests__/setup\\.ts$',
   ],

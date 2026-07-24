@@ -750,5 +750,7 @@
   "onboarding.creating": "Creating your learning path...",
   "onboarding.error": "Something went wrong. Please try again.",
   "nav.create": "Create",
-  "nav.searchPlaceholder": "Search paths…"
+  "nav.searchPlaceholder": "Search paths…",
+  "nav.createLabel": "Create \"{{query}}\"",
+  "nav.createSubtitle": "Start a new learning path"
 }

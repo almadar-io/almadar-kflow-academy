@@ -8,7 +8,7 @@
  */
 
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { Search, BookOpen } from 'lucide-react';
+import { Search, BookOpen, Plus } from 'lucide-react';
 import { Icon as IconifyIcon } from '@iconify/react';
 import { Box, Input, Typography, cn, useEventBus, useTranslate } from '@almadar/ui';
 import { useLearningPaths } from '@features/knowledge-graph/hooks/useLearningPaths';
@@ -79,7 +79,14 @@ export const NavSearchBar: React.FC<NavSearchBarProps> = ({
       .slice(0, 8);
   }, [inputValue, learningPaths]);
 
-  const showDropdown = focused && inputValue.trim().length > 0 && results.length > 0;
+  const showDropdown = focused && inputValue.trim().length > 0;
+
+  const handleCreate = () => {
+    emit('UI:NAVIGATE', { url: `/home?create=true&anchor=${encodeURIComponent(inputValue.trim())}` });
+    setInputValue('');
+    onChange('');
+    setFocused(false);
+  };
 
   const handleChange = (next: string) => {
     setInputValue(next);
@@ -114,6 +121,22 @@ export const NavSearchBar: React.FC<NavSearchBarProps> = ({
           {results.map((p) => (
             <SearchResult key={p.id} path={p} onSelect={handleSelect} />
           ))}
+          <Box
+            className="flex cursor-pointer items-center gap-2.5 border-t border-[var(--color-border)] px-3 py-2 transition-colors hover:bg-[var(--color-muted)]"
+            onClick={handleCreate}
+          >
+            <Box className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-md bg-[var(--color-primary)]/10">
+              <Plus size={16} className="text-[var(--color-primary)]" />
+            </Box>
+            <Box className="flex min-w-0 flex-1 flex-col gap-0.5">
+              <Typography variant="small" className="truncate leading-tight">
+                {t('nav.createLabel', { query: inputValue.trim() })}
+              </Typography>
+              <Typography variant="small" color="muted" className="truncate text-xs leading-tight">
+                {t('nav.createSubtitle')}
+              </Typography>
+            </Box>
+          </Box>
         </Box>
       )}
     </Box>

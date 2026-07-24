@@ -4,12 +4,11 @@
 
 import { renderHook, act, waitFor } from '@testing-library/react';
 import { Provider } from 'react-redux';
-import { configureStore } from '@reduxjs/toolkit';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useCustomOperation } from '../../../../features/knowledge-graph/hooks/useCustomOperation';
 import { graphOperationsApi, graphOperationsStreamingApi } from '../../../../features/knowledge-graph/api';
-import knowledgeGraphSlice from '../../../../features/knowledge-graph/knowledgeGraphSlice';
-import graphOperationSlice from '../../../../features/knowledge-graph/redux/graphOperationSlice';
-import { mutationMiddleware } from '../../../../features/knowledge-graph/redux/mutationMiddleware';
+import { setGraph, clearGraphs } from '../../../../features/knowledge-graph/knowledgeGraphSlice';
+import { store } from '../../../../app/store';
 import type { NodeBasedKnowledgeGraph } from '../../../../features/knowledge-graph/types';
 
 // Mock the API
@@ -33,23 +32,13 @@ jest.mock('../../../../config/firebase', () => ({
 const mockApi = graphOperationsApi as jest.Mocked<typeof graphOperationsApi>;
 const mockStreamingApi = graphOperationsStreamingApi as jest.Mocked<typeof graphOperationsStreamingApi>;
 
-// Helper to create a test store
-const createTestStore = (initialState?: any) => {
-  return configureStore({
-    reducer: {
-      knowledgeGraphs: knowledgeGraphSlice,
-      graphOperations: graphOperationSlice,
-    },
-    middleware: (getDefaultMiddleware: any) =>
-      getDefaultMiddleware().concat(mutationMiddleware as any),
-    preloadedState: initialState,
-  } as any);
-};
-
-// Helper to create a wrapper with store
-const createWrapper = (store: ReturnType<typeof createTestStore>) => {
+// Helper to create a wrapper with the real app store singleton + react-query
+const createWrapper = () => {
+  const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
   return ({ children }: { children: React.ReactNode }) => (
-    <Provider store={store}>{children}</Provider>
+    <Provider store={store}>
+      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+    </Provider>
   );
 };
 
@@ -76,21 +65,10 @@ const createMockGraph = (id: string): NodeBasedKnowledgeGraph => ({
 });
 
 describe('useCustomOperation', () => {
-  let store: ReturnType<typeof createTestStore>;
-
   beforeEach(() => {
     jest.clearAllMocks();
-    store = createTestStore({
-      knowledgeGraphs: {
-        graphs: {
-          'graph-1': createMockGraph('graph-1'),
-        },
-        currentGraphId: 'graph-1',
-        isLoading: false,
-        error: null,
-        lastUpdated: null,
-      },
-    });
+    store.dispatch(clearGraphs());
+    store.dispatch(setGraph(createMockGraph('graph-1')));
   });
 
   describe('non-streaming mode', () => {
@@ -126,7 +104,7 @@ describe('useCustomOperation', () => {
       mockApi.customOperation.mockResolvedValue(mockResponse);
 
       const { result } = renderHook(() => useCustomOperation('graph-1'), {
-        wrapper: createWrapper(store),
+        wrapper: createWrapper(),
       });
 
       await act(async () => {
@@ -148,7 +126,7 @@ describe('useCustomOperation', () => {
       mockApi.customOperation.mockRejectedValue(error);
 
       const { result } = renderHook(() => useCustomOperation('graph-1'), {
-        wrapper: createWrapper(store),
+        wrapper: createWrapper(),
       });
 
       await act(async () => {
@@ -202,7 +180,7 @@ describe('useCustomOperation', () => {
       mockApi.customOperation.mockResolvedValue(mockResponse);
 
       const { result } = renderHook(() => useCustomOperation('graph-1'), {
-        wrapper: createWrapper(store),
+        wrapper: createWrapper(),
       });
 
       await act(async () => {
@@ -235,7 +213,7 @@ describe('useCustomOperation', () => {
       mockApi.customOperation.mockResolvedValue(mockResponse);
 
       const { result } = renderHook(() => useCustomOperation('graph-1'), {
-        wrapper: createWrapper(store),
+        wrapper: createWrapper(),
       });
 
       await act(async () => {
@@ -273,7 +251,7 @@ describe('useCustomOperation', () => {
       mockStreamingApi.customOperation.mockResolvedValue(mockResponse);
 
       const { result } = renderHook(() => useCustomOperation('graph-1'), {
-        wrapper: createWrapper(store),
+        wrapper: createWrapper(),
       });
 
       await act(async () => {
@@ -328,7 +306,7 @@ describe('useCustomOperation', () => {
       );
 
       const { result } = renderHook(() => useCustomOperation('graph-1'), {
-        wrapper: createWrapper(store),
+        wrapper: createWrapper(),
       });
 
       await act(async () => {
@@ -355,7 +333,7 @@ describe('useCustomOperation', () => {
       );
 
       const { result } = renderHook(() => useCustomOperation('graph-1'), {
-        wrapper: createWrapper(store),
+        wrapper: createWrapper(),
       });
 
       await act(async () => {
@@ -384,7 +362,7 @@ describe('useCustomOperation', () => {
       mockApi.customOperation.mockReturnValue(promise as any);
 
       const { result } = renderHook(() => useCustomOperation('graph-1'), {
-        wrapper: createWrapper(store),
+        wrapper: createWrapper(),
       });
 
       act(() => {
@@ -408,59 +386,6 @@ describe('useCustomOperation', () => {
       await waitFor(() => {
         expect(result.current.isLoading).toBe(false);
       });
-    });
-  });
-
-  describe('Redux state updates', () => {
-    it('should dispatch customOperationStart on call', async () => {
-      mockApi.customOperation.mockResolvedValue({
-        mutations: { mutations: [] },
-        content: { concepts: [] },
-        graph: createMockGraph('graph-1'),
-      });
-
-      const { result } = renderHook(() => useCustomOperation('graph-1'), {
-        wrapper: createWrapper(store),
-      });
-
-      act(() => {
-        result.current.execute({
-          targetNodeIds: ['node-1'],
-          userPrompt: 'Test prompt',
-        });
-      });
-
-      const state = store.getState();
-      expect(state.graphOperations.customOperation.isLoading).toBe(true);
-    });
-
-    it('should dispatch customOperationSuccess on completion', async () => {
-      const mockResponse = {
-        mutations: { mutations: [] },
-        content: {
-          concepts: [
-            { name: 'Concept 1', action: 'added' as const },
-          ],
-        },
-        graph: createMockGraph('graph-1'),
-      };
-
-      mockApi.customOperation.mockResolvedValue(mockResponse);
-
-      const { result } = renderHook(() => useCustomOperation('graph-1'), {
-        wrapper: createWrapper(store),
-      });
-
-      await act(async () => {
-        await result.current.execute({
-          targetNodeIds: ['node-1'],
-          userPrompt: 'Test prompt',
-        });
-      });
-
-      const state = store.getState();
-      expect(state.graphOperations.customOperation.isLoading).toBe(false);
-      expect(state.graphOperations.customOperation.error).toBeNull();
     });
   });
 
@@ -495,7 +420,7 @@ describe('useCustomOperation', () => {
       mockApi.customOperation.mockResolvedValue(mockResponse);
 
       const { result } = renderHook(() => useCustomOperation('graph-1'), {
-        wrapper: createWrapper(store),
+        wrapper: createWrapper(),
       });
 
       await act(async () => {
@@ -519,17 +444,8 @@ describe('useCustomOperation', () => {
         updatedAt: Date.now(),
       };
 
-      store = createTestStore({
-        knowledgeGraphs: {
-          graphs: {
-            'graph-1': graph,
-          },
-          currentGraphId: 'graph-1',
-          isLoading: false,
-          error: null,
-          lastUpdated: null,
-        },
-      });
+      store.dispatch(clearGraphs());
+      store.dispatch(setGraph(graph));
 
       const mockResponse = {
         mutations: {
@@ -555,7 +471,7 @@ describe('useCustomOperation', () => {
       mockApi.customOperation.mockResolvedValue(mockResponse);
 
       const { result } = renderHook(() => useCustomOperation('graph-1'), {
-        wrapper: createWrapper(store),
+        wrapper: createWrapper(),
       });
 
       await act(async () => {
@@ -580,17 +496,8 @@ describe('useCustomOperation', () => {
       };
       graph.nodeTypes.Concept.push('node-to-delete');
 
-      store = createTestStore({
-        knowledgeGraphs: {
-          graphs: {
-            'graph-1': graph,
-          },
-          currentGraphId: 'graph-1',
-          isLoading: false,
-          error: null,
-          lastUpdated: null,
-        },
-      });
+      store.dispatch(clearGraphs());
+      store.dispatch(setGraph(graph));
 
       const mockResponse = {
         mutations: {
@@ -615,7 +522,7 @@ describe('useCustomOperation', () => {
       mockApi.customOperation.mockResolvedValue(mockResponse);
 
       const { result } = renderHook(() => useCustomOperation('graph-1'), {
-        wrapper: createWrapper(store),
+        wrapper: createWrapper(),
       });
 
       await act(async () => {

@@ -750,5 +750,7 @@
   "onboarding.creating": "Ustvarjanje tvoje učne poti...",
   "onboarding.error": "Nekaj je šlo narobe. Poskusi znova.",
   "nav.create": "Ustvari",
-  "nav.searchPlaceholder": "Iskanje poti…"
+  "nav.searchPlaceholder": "Iskanje poti…",
+  "nav.createLabel": "Ustvari \"{{query}}\"",
+  "nav.createSubtitle": "Začni novo učno pot"
 }

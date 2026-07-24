@@ -5,6 +5,9 @@ module.exports = {
   transform: {
     '^.+\\.jsx?$': ['ts-jest', {
       diagnostics: false,
+      astTransformers: {
+        before: ['<rootDir>/src/__tests__/importMetaEnvTransformer.cjs'],
+      },
       tsconfig: {
         allowJs: true,
         module: 'commonjs',
@@ -15,6 +18,9 @@ module.exports = {
       },
     }],
     '^.+\\.(ts|tsx)$': ['ts-jest', {
+      astTransformers: {
+        before: ['<rootDir>/src/__tests__/importMetaEnvTransformer.cjs'],
+      },
       tsconfig: {
         jsx: 'react-jsx',
         module: 'commonjs',
@@ -44,6 +50,7 @@ module.exports = {
   moduleNameMapper: {
     '^@design-system/(.*)$': '<rootDir>/design-system/$1',
     '^@features/(.*)$': '<rootDir>/src/features/$1',
+    '^@almadar/logger$': '<rootDir>/src/__tests__/__mocks__/almadarLoggerMock.js',
     '^react$': '<rootDir>/node_modules/react/index.js',
     '^react-dom$': '<rootDir>/node_modules/react-dom/index.js',
     '^react-dom/(.*)$': '<rootDir>/node_modules/react-dom/$1',
@@ -64,5 +71,10 @@ module.exports = {
   transformIgnorePatterns: [
     '/node_modules/(?!(@almadar|@reduxjs)/)',
   ],
-  testPathIgnorePatterns: ['/node_modules/'],
+  testPathIgnorePatterns: [
+    '/node_modules/',
+    '/__mocks__/',
+    'setupGlobals\\.ts$',
+    '\\.helper\\.tsx?$',
+  ],
 };

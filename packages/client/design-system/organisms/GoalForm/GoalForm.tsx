@@ -16,14 +16,15 @@ const ANCHOR_QUESTION_KEY = 'learning.anchorQuestion';
 interface GoalFormProps {
   onComplete?: (result: { goalId: string; graphId: string }) => void;
   onCancel?: () => void;
+  initialAnchor?: string;
 }
 
 type StreamPartial = Partial<LearningGoal> & { id?: string };
 
-export const GoalForm: React.FC<GoalFormProps> = ({ onComplete, onCancel }) => {
+export const GoalForm: React.FC<GoalFormProps> = ({ onComplete, onCancel, initialAnchor }) => {
   const { t } = useTranslate();
   const [step, setStep] = useState<'anchor' | 'choice' | 'questions' | 'loading' | 'review' | 'level-selection' | 'placement'>('anchor');
-  const [anchorAnswer, setAnchorAnswer] = useState('');
+  const [anchorAnswer, setAnchorAnswer] = useState(initialAnchor ?? '');
   const [goalDescription, setGoalDescription] = useState('');
   const [answers, setAnswers] = useState<Map<string, GoalQuestionAnswer>>(new Map());
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
