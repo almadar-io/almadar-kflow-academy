@@ -43,14 +43,11 @@ export const ConnectButton: React.FC<ConnectButtonProps> = ({
     return (
       <Button
         type="button"
-        variant="ghost"
+        variant="primary"
         size={size}
         onClick={onClick}
         aria-label={text}
-        className={cn(
-          className,
-          'hover:!bg-primary hover:!border-primary hover:!text-primary-foreground',
-        )}
+        className={cn('!p-1.5', className)}
         {...rest}
       >
         {logoEl}
