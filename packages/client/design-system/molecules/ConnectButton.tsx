@@ -36,7 +36,7 @@ export const ConnectButton: React.FC<ConnectButtonProps> = ({
   const logo = resolvedMode === 'dark' ? kflowLogoWhite : kflowLogo;
 
   const logoEl = (
-    <img src={logo} alt="" className="h-4 w-4 flex-shrink-0" />
+    <img src={logo} alt="" className="h-5 w-5 flex-shrink-0" />
   );
 
   if (iconOnly) {
