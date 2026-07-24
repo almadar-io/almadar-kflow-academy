@@ -169,7 +169,7 @@ export const TopNavShell: React.FC<TopNavShellProps> = ({
       {/* Top bar — in-flow, collapses on scroll-down via max-height (reflows content). */}
       <header
         className={cn(
-          'flex-shrink-0 overflow-hidden border-b border-[var(--color-border)] bg-[var(--color-surface)]',
+          'flex-shrink-0 border-b border-[var(--color-border)] bg-[var(--color-surface)]',
           'transition-all duration-normal ease-standard',
           collapsed ? 'max-h-0 opacity-0' : 'max-h-16 opacity-100',
         )}
