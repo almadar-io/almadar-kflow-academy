@@ -44,9 +44,9 @@ const SearchResult: React.FC<{
           <BookOpen size={14} className="text-[var(--color-muted-foreground)]" />
         )}
       </Box>
-      <Box className="min-w-0 flex-1">
-        <Typography variant="small" className="truncate">{path.title}</Typography>
-        <Typography variant="small" color="muted" className="truncate text-xs">
+      <Box className="min-w-0 flex-1 flex flex-col gap-0.5">
+        <Typography variant="small" className="truncate leading-tight">{path.title}</Typography>
+        <Typography variant="small" color="muted" className="truncate text-xs leading-tight">
           {path.conceptCount} {t('dashboard.statConcepts').toLowerCase()} · {dateLabel}
         </Typography>
       </Box>
