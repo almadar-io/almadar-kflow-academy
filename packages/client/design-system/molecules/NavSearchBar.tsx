@@ -64,6 +64,7 @@ export const NavSearchBar: React.FC<NavSearchBarProps> = ({
           onChange={onChange}
           placeholder={placeholder ?? t('nav.searchPlaceholder')}
           debounceMs={300}
+          className="!h-9 !rounded-lg !bg-[var(--color-muted)] !border-transparent hover:!bg-[var(--color-muted)] focus:!bg-[var(--color-card)] focus:!border-[var(--color-border)] !text-sm"
         />
       </div>
       {showDropdown && (
