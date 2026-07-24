@@ -1,15 +1,15 @@
 /**
  * NavSearchBar molecule — top-nav search with autocomplete.
  *
- * Wraps the existing SearchInput (debounced onChange for server-side card-list
- * filtering) and adds an immediate client-side autocomplete dropdown of matching
- * learning paths. Selecting a result emits UI:LEARNING_PATH_CLICK.
+ * Uses Input directly (not SearchInput) so the autocomplete dropdown filters
+ * on every keystroke, not after a debounce. The debounced onChange still
+ * drives server-side card-list filtering; the immediate inputValue drives
+ * the dropdown.
  */
 
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Search } from 'lucide-react';
-import { Box, Typography, cn, useEventBus, useTranslate } from '@almadar/ui';
-import { SearchInput } from './SearchInput';
+import { Box, Input, Typography, cn, useEventBus, useTranslate } from '@almadar/ui';
 import { useLearningPaths } from '@features/knowledge-graph/hooks/useLearningPaths';
 
 export interface NavSearchBarProps {
@@ -30,65 +30,64 @@ export const NavSearchBar: React.FC<NavSearchBarProps> = ({
   const { learningPaths } = useLearningPaths();
   const [focused, setFocused] = useState(false);
   const [inputValue, setInputValue] = useState(value);
-  const blurTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const blurRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => { setInputValue(value); }, [value]);
+  useEffect(() => () => { if (debounceRef.current) clearTimeout(debounceRef.current); }, []);
 
   const results = useMemo(() => {
     const q = inputValue.trim().toLowerCase();
     if (!q) return [];
     return learningPaths
       .filter((p) => p.title.toLowerCase().includes(q))
-      .slice(0, 6);
+      .slice(0, 8);
   }, [inputValue, learningPaths]);
 
   const showDropdown = focused && inputValue.trim().length > 0 && results.length > 0;
 
-  const handleSelect = (graphId: string, pathId: string) => {
-    emit('UI:LEARNING_PATH_CLICK', { graphId, pathId });
+  const handleChange = (next: string) => {
+    setInputValue(next);
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => onChange(next), 300);
+  };
+
+  const handleSelect = (graphId: string) => {
+    emit('UI:LEARNING_PATH_CLICK', { graphId, pathId: graphId });
     setInputValue('');
     onChange('');
     setFocused(false);
   };
 
-  const handleFocus = () => {
-    if (blurTimer.current) clearTimeout(blurTimer.current);
-    setFocused(true);
-  };
-
-  const handleBlur = () => {
-    blurTimer.current = setTimeout(() => setFocused(false), 150);
-  };
-
   return (
     <Box className={cn('relative flex-1 max-w-lg', className)}>
-      <div onFocus={handleFocus} onBlur={handleBlur}>
-        <SearchInput
-          value={inputValue}
-          onChange={(v) => { setInputValue(v); onChange(v); }}
-          placeholder={placeholder ?? t('nav.searchPlaceholder')}
-          debounceMs={300}
-          className="!h-9 !rounded-lg !bg-[var(--color-muted)] !border-transparent hover:!bg-[var(--color-muted)] focus:!bg-[var(--color-card)] focus:!border-[var(--color-border)] !text-sm"
-        />
-      </div>
+      <Input
+        type="search"
+        value={inputValue}
+        onChange={(e) => handleChange(e.target.value)}
+        onFocus={() => setFocused(true)}
+        onBlur={() => { blurRef.current = setTimeout(() => setFocused(false), 150); }}
+        placeholder={placeholder ?? t('nav.searchPlaceholder')}
+        leftIcon={Search}
+        className="!h-9 !rounded-lg !bg-[var(--color-muted)] !border-transparent focus:!bg-[var(--color-card)] focus:!border-[var(--color-border)] !text-sm"
+      />
       {showDropdown && (
-        <Box className="absolute top-full inset-inline-0 z-50 mt-1 rounded-lg border border-[var(--color-border)] bg-[var(--color-card)] shadow-lg">
+        <Box
+          className="absolute top-full inset-inline-0 z-50 mt-1 overflow-hidden rounded-lg border border-[var(--color-border)] bg-[var(--color-card)] shadow-lg"
+          onMouseDown={(e) => e.preventDefault()}
+        >
           {results.map((p) => (
-            <button
+            <Box
               key={p.id}
-              type="button"
-              onMouseDown={(e) => {
-                e.preventDefault();
-                handleSelect(p.id, p.id);
-              }}
-              className="flex w-full items-center gap-2 px-3 py-2 text-start hover:bg-[var(--color-muted)] transition-colors"
+              className="flex cursor-pointer items-center gap-2 px-3 py-2 hover:bg-[var(--color-muted)] transition-colors"
+              onClick={() => handleSelect(p.id)}
             >
               <Search size={14} className="flex-shrink-0 text-[var(--color-muted-foreground)]" />
-              <Typography variant="small" className="truncate">{p.title}</Typography>
+              <Typography variant="small" className="truncate flex-1">{p.title}</Typography>
               <Typography variant="small" color="muted" className="flex-shrink-0">
                 {p.conceptCount} {t('dashboard.statConcepts').toLowerCase()}
               </Typography>
-            </button>
+            </Box>
           ))}
         </Box>
       )}
