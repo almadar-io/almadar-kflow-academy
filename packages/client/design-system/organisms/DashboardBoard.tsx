@@ -39,7 +39,6 @@ import {
   type GraphSimilarity,
 } from '@almadar/ui';
 import { ConnectButton } from '../molecules/ConnectButton';
-import { SearchInput } from '../molecules/SearchInput';
 import { FilterBar, type ClusterOption } from '../molecules/FilterBar';
 import { StatBadge, StatBadgeSkeleton } from '../molecules/StatBadge';
 import { LearningPathCard } from './LearningPathCard';
@@ -375,13 +374,6 @@ export function DashboardBoard({
         toolbarSlot={(hasMap || mapLoading) ? (
           <VStack gap="md">
             <Box className="flex items-center gap-2">
-              <Box className="flex-1 min-w-0">
-                <SearchInput
-                  value={dash?.filter?.search ?? ''}
-                  onChange={(v) => dash?.onSearchChange?.(v)}
-                  placeholder={dash?.filterLabels?.searchPlaceholder ?? ''}
-                />
-              </Box>
               {dash?.sortOptions && dash.filter && (
                 <Box className="w-32 flex-shrink-0">
                   <Select

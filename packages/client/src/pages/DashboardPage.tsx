@@ -351,6 +351,12 @@ export const DashboardPage: React.FC = () => {
       activeRoute: location.pathname,
       theme: 'light',
       actionsSlot: <CompanionBell />,
+      search: {
+        value: search,
+        onChange: setSearch,
+        placeholder: t('dashboard.searchPlaceholder'),
+      },
+      onCreateClick: () => setShowGoalForm(true),
     },
     dashboard,
     deletingPathId,

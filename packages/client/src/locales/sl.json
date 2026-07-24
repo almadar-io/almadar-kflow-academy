@@ -748,5 +748,7 @@
   "onboarding.skip": "Preskoči za zdaj",
   "onboarding.createPath": "Ustvari mojo učno pot",
   "onboarding.creating": "Ustvarjanje tvoje učne poti...",
-  "onboarding.error": "Nekaj je šlo narobe. Poskusi znova."
+  "onboarding.error": "Nekaj je šlo narobe. Poskusi znova.",
+  "nav.create": "Ustvari",
+  "nav.searchPlaceholder": "Iskanje poti…"
 }

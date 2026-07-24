@@ -12,23 +12,23 @@
  */
 
 import React, { useCallback, useRef, useState } from 'react';
-import { Menu, Settings, Languages, Palette, Sun, Moon, type LucideIcon } from 'lucide-react';
+import { Menu, Settings, Sun, Moon, Plus, type LucideIcon } from 'lucide-react';
 import {
   Avatar,
   Box,
   Button,
   Drawer,
   HStack,
-  Select,
   Typography,
   VStack,
   cn,
-  useEventBus,
+
   useTranslate,
 } from '@almadar/ui';
 import { useTheme } from '@almadar/ui/context';
 import { ProfilePopup } from '../ProfilePopup/ProfilePopup';
 import { DrawerPathItem } from './DrawerPathItem';
+import { NavSearchBar } from '../../molecules/NavSearchBar';
 import kflowLogo from '../../../src/assets/kflow-logo.svg';
 import kflowLogoWhite from '../../../src/assets/kflow-logo-white.svg';
 
@@ -66,8 +66,16 @@ export interface TopNavShellProps {
   onSettingsClick?: () => void;
   /** Secondary “pinned” items rendered below a divider (recent learning paths). */
   pinnedItems?: TopNavPathItem[];
-  /** Optional slot rendered before the profile cluster (e.g. companion bell). */
+  /** Optional slot rendered after the Create button (e.g. companion bell). */
   actionsSlot?: React.ReactNode;
+  /** Search bar state (owned by the page, rendered in the top bar). */
+  search?: {
+    value: string;
+    onChange: (value: string) => void;
+    placeholder?: string;
+  };
+  /** Click handler for the Create (+) button. */
+  onCreateClick?: () => void;
   /** Optional desktop page header rendered above the content slot. */
   pageHeader?: React.ReactNode;
   contentPadding?: boolean;
@@ -95,15 +103,16 @@ export const TopNavShell: React.FC<TopNavShellProps> = ({
   onSettingsClick,
   pinnedItems = [],
   actionsSlot,
+  search,
+  onCreateClick,
   pageHeader,
   contentPadding = true,
   contentClassName,
   className,
   children,
 }) => {
-  const { t, locale, direction } = useTranslate();
-  const { emit } = useEventBus();
-  const { theme, setTheme, availableThemes, resolvedMode, toggleMode } = useTheme();
+  const { t, direction } = useTranslate();
+  const { resolvedMode, toggleMode } = useTheme();
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
   const lastScrollTop = useRef(0);
@@ -146,32 +155,6 @@ export const TopNavShell: React.FC<TopNavShellProps> = ({
     item.onClick();
     setDrawerOpen(false);
   }, []);
-
-  // Locale options for the hover-reveal language menu (native names — conventional for language pickers).
-  const localeOptions: Array<{ code: 'en' | 'ar' | 'sl'; label: string }> = [
-    { code: 'en', label: 'English' },
-    { code: 'ar', label: 'العربية' },
-    { code: 'sl', label: 'Slovenščina' },
-  ];
-
-  const handleSelectLocale = useCallback(
-    (code: 'en' | 'ar' | 'sl') => {
-      emit('UI:SET_LOCALE', { locale: code });
-    },
-    [emit],
-  );
-
-  // Theme presets (wireframe, minimalist, kflow, …) for the hover-reveal menu.
-  // Pruned: game themes + trait-wars aren't relevant here.
-  const themeOptions = availableThemes.filter(
-    (th) => !th.name.startsWith('game-') && th.name !== 'trait-wars',
-  );
-  const handleSelectTheme = useCallback(
-    (name: string) => {
-      setTheme(name);
-    },
-    [setTheme],
-  );
 
   const userInitials =
     user?.name
@@ -221,32 +204,30 @@ export const TopNavShell: React.FC<TopNavShellProps> = ({
             </Button>
           </HStack>
 
+          {/* Center: search with autocomplete */}
+          {search && (
+            <NavSearchBar
+              value={search.value}
+              onChange={search.onChange}
+              placeholder={search.placeholder}
+              className="hidden md:flex"
+            />
+          )}
+
           <HStack className="items-center gap-1">
+            {/* Create (+) button */}
+            {onCreateClick && (
+              <Button
+                variant="primary"
+                size="sm"
+                icon={Plus}
+                aria-label={t('nav.create')}
+                title={t('nav.create')}
+                onClick={onCreateClick}
+                className="h-8 w-8 rounded-md p-0 flex-shrink-0"
+              />
+            )}
             {actionsSlot}
-            {/* Language — native <select> opens the OS dropdown on mobile */}
-            <div className="relative flex items-center">
-              <Languages size={16} className="absolute start-1 z-10 pointer-events-none text-[var(--color-muted-foreground)]" />
-              <Select
-                value={locale}
-                onValueChange={(v) => handleSelectLocale(v as 'en' | 'ar' | 'sl')}
-                options={localeOptions.map((opt) => ({ value: opt.code, label: opt.label }))}
-                aria-label={t('aria.changeLanguage')}
-                title={t('aria.changeLanguage')}
-                className="!w-auto !border-transparent !bg-transparent !ps-6 !pe-6 !py-1 text-xs font-medium text-[var(--color-muted-foreground)] cursor-pointer hover:text-[var(--color-foreground)] focus:ring-0"
-              />
-            </div>
-            {/* Theme — native <select> opens the OS dropdown on mobile */}
-            <div className="relative flex items-center">
-              <Palette size={16} className="absolute start-1 z-10 pointer-events-none text-[var(--color-muted-foreground)]" />
-              <Select
-                value={theme}
-                onValueChange={(v) => handleSelectTheme(v as string)}
-                options={themeOptions.map((th) => ({ value: th.name, label: th.displayName ?? th.name }))}
-                aria-label={t('aria.changeTheme')}
-                title={t('aria.changeTheme')}
-                className="!w-auto !border-transparent !bg-transparent !ps-6 !pe-6 !py-1 text-xs font-medium text-[var(--color-muted-foreground)] cursor-pointer hover:text-[var(--color-foreground)] focus:ring-0"
-              />
-            </div>
             <Button
               variant="ghost"
               size="sm"

@@ -748,5 +748,7 @@
   "onboarding.skip": "تخطى الآن",
   "onboarding.createPath": "أنشئ مسار تعلمي",
   "onboarding.creating": "جارٍ إنشاء مسار التعلم...",
-  "onboarding.error": "حدث خطأ ما. حاول مرة أخرى."
+  "onboarding.error": "حدث خطأ ما. حاول مرة أخرى.",
+  "nav.create": "إنشاء",
+  "nav.searchPlaceholder": "ابحث عن مسارات…"
 }

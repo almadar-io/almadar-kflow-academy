@@ -42,8 +42,16 @@ export interface AppShellEntity {
   activeRoute: string;
   theme: "light" | "dark";
   sidebarCollapsed?: boolean;
-  /** Optional slot rendered in the top bar before the profile cluster. */
+  /** Optional slot rendered after the Create button (e.g. companion bell). */
   actionsSlot?: React.ReactNode;
+  /** Search bar state (owned by the page, rendered in the top bar). */
+  search?: {
+    value: string;
+    onChange: (value: string) => void;
+    placeholder?: string;
+  };
+  /** Click handler for the Create (+) button. */
+  onCreateClick?: () => void;
 }
 
 export interface AppShellBoardProps extends DisplayStateProps {
@@ -110,6 +118,8 @@ export function AppShellBoard({
       onLogoClick={handleLogoClick}
       onSettingsClick={handleSettingsClick}
       actionsSlot={app?.actionsSlot}
+      search={app?.search}
+      onCreateClick={app?.onCreateClick}
       className={className}
     >
       {children}

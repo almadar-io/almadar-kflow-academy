@@ -748,5 +748,7 @@
   "onboarding.skip": "Skip for now",
   "onboarding.createPath": "Create my learning path",
   "onboarding.creating": "Creating your learning path...",
-  "onboarding.error": "Something went wrong. Please try again."
+  "onboarding.error": "Something went wrong. Please try again.",
+  "nav.create": "Create",
+  "nav.searchPlaceholder": "Search paths…"
 }
