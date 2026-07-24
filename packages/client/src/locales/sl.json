@@ -363,7 +363,7 @@
   "dashboard.recentActivity": "Nedavna dejavnost",
   "dashboard.stat.concepts": "Obvladani pojmi",
   "dashboard.stat.streak": "Niz učenja",
-  "dashboard.welcome": "Dobrodošli nazaj, {{{name}}}",
+  "dashboard.welcome": "Dobrodošli nazaj, {{name}}",
   "dashboard.searchPlaceholder": "Isči učne poti…",
   "dashboard.filterAll": "Vse",
   "dashboard.sortRecent": "Najnovejše",

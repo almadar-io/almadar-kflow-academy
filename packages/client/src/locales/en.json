@@ -363,7 +363,7 @@
   "dashboard.recentActivity": "Recent Activity",
   "dashboard.stat.concepts": "Concepts Mastered",
   "dashboard.stat.streak": "Learning Streak",
-  "dashboard.welcome": "Welcome back, {{{name}}}",
+  "dashboard.welcome": "Welcome back, {{name}}",
   "dashboard.searchPlaceholder": "Search learning paths…",
   "dashboard.filterAll": "All",
   "dashboard.sortRecent": "Recent",

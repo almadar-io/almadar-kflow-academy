@@ -363,7 +363,7 @@
   "dashboard.recentActivity": "النشاط الأخير",
   "dashboard.stat.concepts": "المفاهيم المتقنة",
   "dashboard.stat.streak": "سلسلة التعلم",
-  "dashboard.welcome": "مرحباً بعودتك، {{{name}}}",
+  "dashboard.welcome": "مرحباً بعودتك، {{name}}",
   "dashboard.searchPlaceholder": "ابحث في مسارات التعلّم…",
   "dashboard.filterAll": "الكل",
   "dashboard.sortRecent": "الأحدث",
