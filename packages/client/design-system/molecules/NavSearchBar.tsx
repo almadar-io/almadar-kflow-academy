@@ -8,9 +8,12 @@
  */
 
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { Search } from 'lucide-react';
+import { Search, BookOpen } from 'lucide-react';
+import { Icon as IconifyIcon } from '@iconify/react';
 import { Box, Input, Typography, cn, useEventBus, useTranslate } from '@almadar/ui';
 import { useLearningPaths } from '@features/knowledge-graph/hooks/useLearningPaths';
+import { useConceptIcon } from '@features/knowledge-graph/hooks/useConceptIcon';
+import type { LearningPathSummary } from '@features/knowledge-graph/api/types';
 
 export interface NavSearchBarProps {
   value: string;
@@ -18,6 +21,38 @@ export interface NavSearchBarProps {
   placeholder?: string;
   className?: string;
 }
+
+/** Single result row — needs its own component to call useConceptIcon (hook). */
+const SearchResult: React.FC<{
+  path: LearningPathSummary;
+  onSelect: (graphId: string) => void;
+}> = ({ path, onSelect }) => {
+  const { t } = useTranslate();
+  const iconId = useConceptIcon(path.seedConcept?.name ?? path.title);
+  const date = new Date(path.updatedAt);
+  const dateLabel = date.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+
+  return (
+    <Box
+      className="flex cursor-pointer items-center gap-2.5 px-3 py-2 hover:bg-[var(--color-muted)] transition-colors"
+      onClick={() => onSelect(path.id)}
+    >
+      <Box className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-md bg-[var(--color-muted)]">
+        {iconId ? (
+          <IconifyIcon icon={iconId.icon} width={16} height={16} />
+        ) : (
+          <BookOpen size={14} className="text-[var(--color-muted-foreground)]" />
+        )}
+      </Box>
+      <Box className="min-w-0 flex-1">
+        <Typography variant="small" className="truncate">{path.title}</Typography>
+        <Typography variant="small" color="muted" className="truncate text-xs">
+          {path.conceptCount} {t('dashboard.statConcepts').toLowerCase()} · {dateLabel}
+        </Typography>
+      </Box>
+    </Box>
+  );
+};
 
 export const NavSearchBar: React.FC<NavSearchBarProps> = ({
   value,
@@ -77,17 +112,7 @@ export const NavSearchBar: React.FC<NavSearchBarProps> = ({
           onMouseDown={(e) => e.preventDefault()}
         >
           {results.map((p) => (
-            <Box
-              key={p.id}
-              className="flex cursor-pointer items-center gap-2 px-3 py-2 hover:bg-[var(--color-muted)] transition-colors"
-              onClick={() => handleSelect(p.id)}
-            >
-              <Search size={14} className="flex-shrink-0 text-[var(--color-muted-foreground)]" />
-              <Typography variant="small" className="truncate flex-1">{p.title}</Typography>
-              <Typography variant="small" color="muted" className="flex-shrink-0">
-                {p.conceptCount} {t('dashboard.statConcepts').toLowerCase()}
-              </Typography>
-            </Box>
+            <SearchResult key={p.id} path={p} onSelect={handleSelect} />
           ))}
         </Box>
       )}
