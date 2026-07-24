@@ -1,8 +1,10 @@
 import React from 'react';
 import { Button } from '@almadar/ui';
 import { useTranslate } from '@almadar/ui';
-import { MessageCircle, type LucideIcon } from 'lucide-react';
+import { useTheme } from '@almadar/ui/context';
 import { cn } from '@utils/theme';
+import kflowLogo from '../../src/assets/kflow-logo.svg';
+import kflowLogoWhite from '../../src/assets/kflow-logo-white.svg';
 
 export interface ConnectButtonProps extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, 'onClick'> {
   /** Click handler — call sites emit UI:PEER_CONNECT_OPEN here. */
@@ -11,57 +13,60 @@ export interface ConnectButtonProps extends Omit<React.ButtonHTMLAttributes<HTML
   size?: 'sm' | 'md' | 'lg';
   /** Override the default label (rare). */
   label?: string;
-  /** Override the default icon (rare). */
-  icon?: LucideIcon;
   /** Icon-only affordance (top-right of a card). No label. */
   iconOnly?: boolean;
   className?: string;
 }
 
 /**
- * The single canonical Connect affordance (G8): same icon + variant everywhere.
- * `iconOnly` renders a compact ghost icon button (card top-right); otherwise a
- * primary button with the label (headers, action bars). Size adapts to context.
+ * The single canonical Connect affordance (G8): kflow logo icon everywhere,
+ * switching between light/dark variants via resolvedMode (same logic as TopNavShell).
  */
 export const ConnectButton: React.FC<ConnectButtonProps> = ({
   onClick,
   size = 'md',
   label,
-  icon: Icon = MessageCircle,
   iconOnly = false,
   className,
   ...rest
 }) => {
   const { t } = useTranslate();
+  const { resolvedMode } = useTheme();
   const text = label ?? t('connections.connect');
+  const logo = resolvedMode === 'dark' ? kflowLogoWhite : kflowLogo;
+
+  const logoEl = (
+    <img src={logo} alt="" className="h-4 w-4 flex-shrink-0" />
+  );
+
   if (iconOnly) {
     return (
       <Button
+        type="button"
         variant="ghost"
         size={size}
-        icon={Icon}
         onClick={onClick}
         aria-label={text}
         className={cn(
           className,
-          // Own the hover treatment so the icon stays visible: the ghost variant
-          // fills the button with primary on hover, so the icon must flip to
-          // primary-foreground (not primary, which would vanish on primary bg).
           'hover:!bg-primary hover:!border-primary hover:!text-primary-foreground',
         )}
         {...rest}
-      />
+      >
+        {logoEl}
+      </Button>
     );
   }
   return (
     <Button
+      type="button"
       variant="primary"
       size={size}
-      icon={Icon}
       onClick={onClick}
-      className={className}
+      className={cn('gap-1.5', className)}
       {...rest}
     >
+      {logoEl}
       {text}
     </Button>
   );
