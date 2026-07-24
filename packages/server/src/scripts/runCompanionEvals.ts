@@ -43,16 +43,11 @@ const agentConfig: KflowAgentConfig = {
 
 const MODEL_LADDER: Array<{ provider: string; model: string; label: string }> = [
   { provider: 'openrouter', model: 'amazon/nova-micro-v1', label: 'Amazon Nova Micro ($0.04/M)' },
-  { provider: 'openrouter', model: 'openai/gpt-oss-20b', label: 'GPT-OSS 20B ($0.03/M)' },
-  { provider: 'openrouter', model: 'qwen/qwen-2.5-7b-instruct', label: 'Qwen 2.5 7B ($0.04/M)' },
-  { provider: 'openrouter', model: 'meta-llama/llama-3.1-8b-instruct', label: 'Llama 3.1 8B ($0.05/M)' },
-  { provider: 'openrouter', model: 'ibm-granite/granite-4.1-8b', label: 'Granite 4.1 8B ($0.05/M)' },
+  { provider: 'openrouter', model: 'amazon/nova-lite', label: 'Amazon Nova Lite ($0.06/M)' },
   { provider: 'openrouter', model: 'google/gemma-3-12b-it', label: 'Gemma 3 12B ($0.05/M)' },
-  { provider: 'openrouter', model: 'z-ai/glm-4.7-flash', label: 'GLM 4.7 Flash ($0.06/M)' },
-  { provider: 'openrouter', model: 'google/gemma-4-26b-a4b-it', label: 'Gemma 4 26B ($0.12/M)' },
-  { provider: 'openrouter', model: 'qwen/qwen3.5-9b', label: 'Qwen 3.5 9B ($0.10/M)' },
-  { provider: 'openrouter', model: 'mistralai/mistral-small-2603', label: 'Mistral Small 3 ($0.15/M)' },
-  { provider: 'deepseek', model: 'deepseek-chat', label: 'DeepSeek Chat (production, $0.10/M)' },
+  { provider: 'openrouter', model: 'google/gemma-3-27b-it', label: 'Gemma 3 27B ($0.10/M)' },
+  { provider: 'openrouter', model: 'meta-llama/llama-3.3-70b-instruct', label: 'Llama 3.3 70B ($0.12/M)' },
+  { provider: 'deepseek', model: 'deepseek-chat', label: 'DeepSeek Chat (production, $0.14/M)' },
 ];
 
 function formatTable(results: CompanionEvalResult[]): string {
