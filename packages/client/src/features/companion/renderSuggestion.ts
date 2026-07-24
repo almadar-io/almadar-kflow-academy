@@ -6,6 +6,9 @@ export function renderSuggestionTitle(suggestion: Suggestion, t: TranslateFuncti
 }
 
 export function renderSuggestionBody(suggestion: Suggestion, t: TranslateFunction): string {
+  if (suggestion.reasoning && suggestion.reasoning.trim().length > 0) {
+    return suggestion.reasoning;
+  }
   return t(`companion.suggestion.${suggestion.type}.body`, buildInterpolationParams(suggestion));
 }
 

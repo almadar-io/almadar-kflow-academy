@@ -22,6 +22,7 @@ export interface Suggestion {
   target: string;
   nodeId?: string;
   params: SuggestionParams;
+  reasoning: string;
 }
 
 export interface PathTrajectoryDTO {

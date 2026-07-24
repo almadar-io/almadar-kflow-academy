@@ -19,6 +19,7 @@ interface StoredSuggestion {
   target: string;
   nodeId: string | null;
   params: SuggestionParams;
+  reasoning: string;
   status: SuggestionStatus;
   graphVersion: number;
   createdAt: number;
@@ -48,6 +49,7 @@ export async function getActiveSuggestions(uid: string): Promise<Suggestion[]> {
       target: data.target,
       nodeId: data.nodeId ?? undefined,
       params: data.params,
+      reasoning: data.reasoning ?? '',
     } satisfies Suggestion;
   });
 }
@@ -93,6 +95,7 @@ async function storeSuggestion(uid: string, suggestion: Suggestion, graphVersion
     target: suggestion.target,
     nodeId: suggestion.nodeId ?? null,
     params: suggestion.params,
+    reasoning: suggestion.reasoning,
     status: 'active',
     graphVersion,
     createdAt: Date.now(),
