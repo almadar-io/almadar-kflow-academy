@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button } from '@almadar/ui';
+import { Badge, Button } from '@almadar/ui';
 import { useTranslate } from '@almadar/ui';
 import { useTheme } from '@almadar/ui/context';
 import { cn } from '@utils/theme';
@@ -15,18 +15,22 @@ export interface ConnectButtonProps extends Omit<React.ButtonHTMLAttributes<HTML
   label?: string;
   /** Icon-only affordance (top-right of a card). No label. */
   iconOnly?: boolean;
+  /** Peer count for the badge (includes AI, minimum 1). */
+  count?: number;
   className?: string;
 }
 
 /**
  * The single canonical Connect affordance (G8): kflow logo icon everywhere,
- * switching between light/dark variants via resolvedMode (same logic as TopNavShell).
+ * switching between light/dark variants via resolvedMode. Optional badge shows
+ * peer count (always ≥1 for the AI peer).
  */
 export const ConnectButton: React.FC<ConnectButtonProps> = ({
   onClick,
   size = 'md',
   label,
   iconOnly = false,
+  count,
   className,
   ...rest
 }) => {
@@ -34,9 +38,12 @@ export const ConnectButton: React.FC<ConnectButtonProps> = ({
   const { resolvedMode } = useTheme();
   const text = label ?? t('connections.connect');
   const logo = resolvedMode === 'dark' ? kflowLogoWhite : kflowLogo;
+  const displayCount = count ?? 1;
 
-  const logoEl = (
-    <img src={logo} alt="" className="h-5 w-5 flex-shrink-0" />
+  const badge = (
+    <span className="absolute -top-1 -end-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-[var(--color-primary)] px-1 text-[0.625rem] font-bold text-[var(--color-primary-foreground)]">
+      {displayCount}
+    </span>
   );
 
   if (iconOnly) {
@@ -47,10 +54,13 @@ export const ConnectButton: React.FC<ConnectButtonProps> = ({
         size={size}
         onClick={onClick}
         aria-label={text}
-        className={className}
+        className={cn('relative', className)}
         {...rest}
       >
-        {logoEl}
+        <span className="relative inline-flex">
+          <img src={logo} alt="" className="h-5 w-5 flex-shrink-0" />
+          {badge}
+        </span>
       </Button>
     );
   }
@@ -60,10 +70,13 @@ export const ConnectButton: React.FC<ConnectButtonProps> = ({
       variant="primary"
       size={size}
       onClick={onClick}
-      className={cn('gap-1.5', className)}
+      className={cn('relative gap-1.5', className)}
       {...rest}
     >
-      {logoEl}
+      <span className="relative inline-flex">
+        <img src={logo} alt="" className="h-5 w-5 flex-shrink-0" />
+        {badge}
+      </span>
       {text}
     </Button>
   );
