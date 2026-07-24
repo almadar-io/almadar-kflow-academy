@@ -229,7 +229,7 @@ export const LearnConceptDetailTemplate: React.FC<AllProps> = (props) => {
                   )}
                 </>
               }
-              actions={onConnect ? <ConnectButton onClick={onConnect} /> : undefined}
+              actions={onConnect ? <ConnectButton iconOnly onClick={onConnect} /> : undefined}
             />
           </div>
         )}
