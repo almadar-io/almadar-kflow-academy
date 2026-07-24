@@ -127,13 +127,17 @@ export function useCompanion(autoAnalyze: boolean = true) {
 
     switch (suggestion.action) {
       case 'open-graph':
-        if (suggestion.target) emit('UI:LEARNING_PATH_CLICK', { graphId: suggestion.target });
+        if (suggestion.target) emit('UI:NAVIGATE', { url: `/concepts/${suggestion.target}` });
         break;
       case 'open-concept':
-        if (suggestion.target) emit('UI:KNOWLEDGE_NODE_OPEN', { graphId: suggestion.target, nodeId: suggestion.nodeId });
+        if (suggestion.target && suggestion.nodeId) {
+          emit('UI:NAVIGATE', { url: `/concepts/${suggestion.target}/concept/${encodeURIComponent(suggestion.nodeId)}` });
+        } else if (suggestion.target) {
+          emit('UI:NAVIGATE', { url: `/concepts/${suggestion.target}` });
+        }
         break;
       case 'create-goal':
-        emit('UI:CREATE_LEARNING_PATH', {});
+        emit('UI:NAVIGATE', { url: '/home?create=true' });
         break;
     }
   }, [emit]);

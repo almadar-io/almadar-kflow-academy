@@ -9,7 +9,7 @@
 
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
-import { useLocation } from 'react-router';
+import { useLocation, useSearchParams } from 'react-router';
 import { Box, Button, Card, Modal, Spinner, Stack, Typography, VStack, useEventBus, useTranslate } from '@almadar/ui';
 import { X } from 'lucide-react';
 import kflowLogo from '../assets/kflow-logo.svg';
@@ -68,6 +68,7 @@ export const DashboardPage: React.FC = () => {
 
   // Goal/path creation flow (merged from /learn — UI:CREATE_LEARNING_PATH now opens here).
   const [showGoalForm, setShowGoalForm] = useState(false);
+  const [searchParams, setSearchParams] = useSearchParams();
   const [isExpanding, setIsExpanding] = useState(false);
   const [parsedConcepts, setParsedConcepts] = useState<Array<{ name: string; description: string }>>([]);
   const [parsedLevelName, setParsedLevelName] = useState('');
@@ -186,6 +187,13 @@ export const DashboardPage: React.FC = () => {
   }, [level, selectedGraphId, l2Concepts]);
 
   const templateUser = getUserForTemplate(user);
+
+  useEffect(() => {
+    if (searchParams.get('create') === 'true') {
+      setShowGoalForm(true);
+      setSearchParams({}, { replace: true });
+    }
+  }, [searchParams, setSearchParams]);
 
   useEffect(() => {
     const unsubPath = on('UI:LEARNING_PATH_CLICK', (event) => {
