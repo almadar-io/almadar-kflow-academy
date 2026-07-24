@@ -73,7 +73,7 @@ export const NavSearchBar: React.FC<NavSearchBarProps> = ({
       />
       {showDropdown && (
         <Box
-          className="absolute top-full inset-inline-0 z-50 mt-1 overflow-hidden rounded-lg border border-[var(--color-border)] bg-[var(--color-card)] shadow-lg"
+          className="absolute top-full start-0 z-50 mt-1 w-full overflow-hidden rounded-lg border border-[var(--color-border)] bg-[var(--color-card)] shadow-lg"
           onMouseDown={(e) => e.preventDefault()}
         >
           {results.map((p) => (
