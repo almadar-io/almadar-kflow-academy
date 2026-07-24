@@ -57,7 +57,7 @@ export const NavSearchBar: React.FC<NavSearchBarProps> = ({
   };
 
   return (
-    <Box className={cn('relative flex-1 max-w-md', className)}>
+    <Box className={cn('relative flex-1 max-w-lg', className)}>
       <div onFocus={handleFocus} onBlur={handleBlur}>
         <SearchInput
           value={value}
