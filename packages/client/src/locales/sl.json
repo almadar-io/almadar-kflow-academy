@@ -556,7 +556,7 @@
   "learning.lessonsCount": "{{generated}}/{{total}} lekcij",
   "learning.percentComplete": "{{percent}}% dokončano",
   "learning.exploreConcept": "Raziščite pojem",
-  "learning.conceptCount": "{{{count}}} pojmov",
+  "learning.conceptCount": "{{count}} pojmov",
   "learning.levelN": "Raven {{number}}",
   "learning.complete": "Dokončano",
   "learning.current": "Trenutno",

@@ -556,7 +556,7 @@
   "learning.lessonsCount": "{{generated}}/{{total}} دروس",
   "learning.percentComplete": "{{percent}}% مكتمل",
   "learning.exploreConcept": "استكشف المفهوم",
-  "learning.conceptCount": "{{{count}}} مفهوم(مفاهيم)",
+  "learning.conceptCount": "{{count}} مفهوم(مفاهيم)",
   "learning.levelN": "المستوى {{number}}",
   "learning.complete": "مكتمل",
   "learning.current": "الحالي",

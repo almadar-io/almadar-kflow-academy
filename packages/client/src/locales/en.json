@@ -556,7 +556,7 @@
   "learning.lessonsCount": "{{generated}}/{{total}} lessons",
   "learning.percentComplete": "{{percent}}% Complete",
   "learning.exploreConcept": "Explore Concept",
-  "learning.conceptCount": "{{{count}}} concept(s)",
+  "learning.conceptCount": "{{count}} concept(s)",
   "learning.levelN": "Level {{number}}",
   "learning.complete": "Complete",
   "learning.current": "Current",

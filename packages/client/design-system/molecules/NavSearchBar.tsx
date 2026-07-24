@@ -6,7 +6,7 @@
  * learning paths. Selecting a result emits UI:LEARNING_PATH_CLICK.
  */
 
-import React, { useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Search } from 'lucide-react';
 import { Box, Typography, cn, useEventBus, useTranslate } from '@almadar/ui';
 import { SearchInput } from './SearchInput';
@@ -29,20 +29,24 @@ export const NavSearchBar: React.FC<NavSearchBarProps> = ({
   const { emit } = useEventBus();
   const { learningPaths } = useLearningPaths();
   const [focused, setFocused] = useState(false);
+  const [inputValue, setInputValue] = useState(value);
   const blurTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  useEffect(() => { setInputValue(value); }, [value]);
+
   const results = useMemo(() => {
-    const q = value.trim().toLowerCase();
+    const q = inputValue.trim().toLowerCase();
     if (!q) return [];
     return learningPaths
       .filter((p) => p.title.toLowerCase().includes(q))
       .slice(0, 6);
-  }, [value, learningPaths]);
+  }, [inputValue, learningPaths]);
 
-  const showDropdown = focused && value.trim().length > 0 && results.length > 0;
+  const showDropdown = focused && inputValue.trim().length > 0 && results.length > 0;
 
   const handleSelect = (graphId: string, pathId: string) => {
     emit('UI:LEARNING_PATH_CLICK', { graphId, pathId });
+    setInputValue('');
     onChange('');
     setFocused(false);
   };
@@ -60,8 +64,8 @@ export const NavSearchBar: React.FC<NavSearchBarProps> = ({
     <Box className={cn('relative flex-1 max-w-lg', className)}>
       <div onFocus={handleFocus} onBlur={handleBlur}>
         <SearchInput
-          value={value}
-          onChange={onChange}
+          value={inputValue}
+          onChange={(v) => { setInputValue(v); onChange(v); }}
           placeholder={placeholder ?? t('nav.searchPlaceholder')}
           debounceMs={300}
           className="!h-9 !rounded-lg !bg-[var(--color-muted)] !border-transparent hover:!bg-[var(--color-muted)] focus:!bg-[var(--color-card)] focus:!border-[var(--color-border)] !text-sm"
