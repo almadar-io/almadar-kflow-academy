@@ -10,7 +10,7 @@
     "outDir": "./dist",
     "rootDir": "./src",
     "isolatedModules": true,
-    "baseUrl": "./src",
+    "types": ["node", "jest"],
     "paths": {
       "@/*": ["./*"]
     }
