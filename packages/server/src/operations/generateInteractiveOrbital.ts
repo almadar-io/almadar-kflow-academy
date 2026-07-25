@@ -94,7 +94,7 @@ export async function generateInteractiveOrbital(
     prompt: buildPrompt(options),
     endUserId: concept.id,
     provider: 'deepseek',
-    model: 'deepseek-chat',
+    model: 'deepseek-v4-flash',
     catalogMode,
     stdAllowList,
   });

@@ -111,7 +111,7 @@ Generate 11-17 questions total (3-5 beginner, 5-7 intermediate, 3-5 advanced).`;
     systemPrompt,
     userPrompt,
     provider: 'deepseek',
-    model: 'deepseek-chat',
+    model: 'deepseek-v4-flash',
     uid,
   });
 

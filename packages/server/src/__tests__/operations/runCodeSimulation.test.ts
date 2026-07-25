@@ -28,7 +28,7 @@ describe('runCodeSimulation', () => {
         exitCode: 0,
         testResults: [],
       }),
-      model: 'deepseek-chat',
+      model: 'deepseek-v4-flash',
     });
 
     const result = await runCodeSimulation({
@@ -50,7 +50,7 @@ describe('runCodeSimulation', () => {
         exitCode: 0,
         testResults: [],
       }) + '\n```',
-      model: 'deepseek-chat',
+      model: 'deepseek-v4-flash',
     });
 
     const result = await runCodeSimulation({
@@ -77,7 +77,7 @@ describe('runCodeSimulation', () => {
           },
         ],
       }),
-      model: 'deepseek-chat',
+      model: 'deepseek-v4-flash',
     });
 
     const result = await runCodeSimulation({
@@ -94,7 +94,7 @@ describe('runCodeSimulation', () => {
   it('should throw on malformed JSON response', async () => {
     (callLLM as jest.Mock).mockResolvedValue({
       content: 'not valid json',
-      model: 'deepseek-chat',
+      model: 'deepseek-v4-flash',
     });
 
     await expect(

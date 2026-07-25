@@ -138,7 +138,7 @@ Return only the Markdown text, no additional formatting or JSON.`;
     systemPrompt,
     userPrompt,
     provider: 'deepseek',
-    model: 'deepseek-chat',
+    model: 'deepseek-v4-flash',
     uid,
     stream: stream,
   });

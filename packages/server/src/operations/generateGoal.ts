@@ -106,7 +106,7 @@ Return the JSON object with the goal structure.`;
     systemPrompt,
     userPrompt,
     provider: 'deepseek',
-    model: 'deepseek-chat',
+    model: 'deepseek-v4-flash',
     uid,
     stream,
   });
@@ -115,7 +115,7 @@ Return the JSON object with the goal structure.`;
   if (stream && response.stream && response.raw) {
     return {
       stream: response.raw,
-      model: response.model || 'deepseek-chat',
+      model: response.model || 'deepseek-v4-flash',
     };
   }
 

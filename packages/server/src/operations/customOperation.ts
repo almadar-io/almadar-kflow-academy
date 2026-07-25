@@ -202,7 +202,7 @@ Return JSON array only, no text, no extra fields.`;
     systemPrompt: customOperationSystemPrompt,
     userPrompt: userPrompt,
     provider: 'deepseek',
-    model: 'deepseek-chat',
+    model: 'deepseek-v4-flash',
     stream: stream,
     uid: uid,
   });

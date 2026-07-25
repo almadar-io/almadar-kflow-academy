@@ -550,7 +550,7 @@ export async function generateLayerPracticeHandler(
     if (result && typeof result === 'object' && 'stream' in result && result.stream) {
       const streamResult = result as GenerateLayerPracticeStreamResult;
       const stream = streamResult.stream as AsyncIterable<StreamChunk>;
-      const model = streamResult.model || 'deepseek-chat';
+      const model = streamResult.model || 'deepseek-v4-flash';
       
       // Use reusable stream handler with onComplete to save the review
       await streamToSSE(stream, req, res, {
@@ -780,7 +780,7 @@ export async function customOperationHandler(
     // Check if result is a stream
     if (result && typeof result === 'object' && 'stream' in result && result.stream) {
       const stream = result.stream as AsyncIterable<StreamChunk>;
-      const model = (result as { model?: string }).model || 'deepseek-chat';
+      const model = (result as { model?: string }).model || 'deepseek-v4-flash';
       
       await streamToSSE(stream, req, res, {
         onComplete: (fullContent: string) => {

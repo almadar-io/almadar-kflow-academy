@@ -113,7 +113,7 @@ async function fetchWikiPersona(name: string): Promise<{ description?: string; p
 
 /**
  * On-the-fly AI persona for a concept: the historically credited originator/pioneer, named by
- * deepseek-chat (v4-flash) then enriched + fact-checked via Wikipedia (real portrait + verified
+ * deepseek-v4-flash then enriched + fact-checked via Wikipedia (real portrait + verified
  * bio + full lead-section biography). Cached per concept so identity is stable and the external
  * calls happen at most once per concept. The client receives the light persona; the full bio
  * stays server-side and grounds every reply.
@@ -210,7 +210,7 @@ export async function loadFullPersona(conceptLabel: string): Promise<FullPersona
 
 /**
  * Reply in the persona's voice, grounded in the concept + the full Wikipedia biography + recent
- * transcript. deepseek-chat (v4-flash) is reliable on persona *when grounded* by the bio — which
+ * transcript. deepseek-v4-flash is reliable on persona *when grounded* by the bio — which
  * is why the biography is injected here rather than trusted to the model's parametric memory.
  */
 export async function replyAsPersona(

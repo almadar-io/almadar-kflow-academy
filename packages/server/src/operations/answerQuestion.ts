@@ -73,7 +73,7 @@ Please provide a clear, helpful answer to this question, tailored for a ${diffic
     systemPrompt,
     userPrompt,
     provider: 'deepseek',
-    model: 'deepseek-chat',
+    model: 'deepseek-v4-flash',
     uid,
     stream: options.stream,
   });

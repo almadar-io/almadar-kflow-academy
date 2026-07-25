@@ -81,7 +81,7 @@ export async function runCodeSimulation(
     systemPrompt,
     userPrompt,
     provider: 'deepseek',
-    model: 'deepseek-chat',
+    model: 'deepseek-v4-flash',
     uid: options.uid,
   });
 

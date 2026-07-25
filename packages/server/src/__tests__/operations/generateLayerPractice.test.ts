@@ -57,7 +57,7 @@ describe('Generate Layer Practice - Backend', () => {
       const mockReview = '# Review\n\n## Solution\nComplete solution here.\n\n## Concepts\nHow each concept applies.';
       const mockResponse = {
         content: mockReview,
-        model: 'deepseek-chat',
+        model: 'deepseek-v4-flash',
       };
 
       (callLLM as jest.Mock).mockResolvedValue(mockResponse);
@@ -78,7 +78,7 @@ describe('Generate Layer Practice - Backend', () => {
     it('should include concepts in prompt', async () => {
       const mockResponse = {
         content: '# Review',
-        model: 'deepseek-chat',
+        model: 'deepseek-v4-flash',
       };
 
       (callLLM as jest.Mock).mockResolvedValue(mockResponse);
@@ -98,7 +98,7 @@ describe('Generate Layer Practice - Backend', () => {
     it('should include layer number in prompt', async () => {
       const mockResponse = {
         content: '# Review',
-        model: 'deepseek-chat',
+        model: 'deepseek-v4-flash',
       };
 
       (callLLM as jest.Mock).mockResolvedValue(mockResponse);
@@ -133,7 +133,7 @@ describe('Generate Layer Practice - Backend', () => {
     it('should throw error when LLM returns empty content', async () => {
       (callLLM as jest.Mock).mockResolvedValue({
         content: '',
-        model: 'deepseek-chat',
+        model: 'deepseek-v4-flash',
       });
 
       await expect(
@@ -146,7 +146,7 @@ describe('Generate Layer Practice - Backend', () => {
     it('should anchor practice to layer goal', async () => {
       const mockResponse = {
         content: '# Review',
-        model: 'deepseek-chat',
+        model: 'deepseek-v4-flash',
       };
 
       (callLLM as jest.Mock).mockResolvedValue(mockResponse);
@@ -165,7 +165,7 @@ describe('Generate Layer Practice - Backend', () => {
     it('should include goal in solution-focused structure', async () => {
       const mockResponse = {
         content: '# Review',
-        model: 'deepseek-chat',
+        model: 'deepseek-v4-flash',
       };
 
       (callLLM as jest.Mock).mockResolvedValue(mockResponse);
@@ -188,7 +188,7 @@ describe('Generate Layer Practice - Backend', () => {
     it('should include seed concept in context when provided', async () => {
       const mockResponse = {
         content: '# Review',
-        model: 'deepseek-chat',
+        model: 'deepseek-v4-flash',
       };
 
       (callLLM as jest.Mock).mockResolvedValue(mockResponse);
@@ -209,7 +209,7 @@ describe('Generate Layer Practice - Backend', () => {
     it('should not include seed concept context when not provided', async () => {
       const mockResponse = {
         content: '# Review',
-        model: 'deepseek-chat',
+        model: 'deepseek-v4-flash',
       };
 
       (callLLM as jest.Mock).mockResolvedValue(mockResponse);
@@ -240,7 +240,7 @@ describe('Generate Layer Practice - Backend', () => {
     it('should connect review back to seed concept', async () => {
       const mockResponse = {
         content: '# Review',
-        model: 'deepseek-chat',
+        model: 'deepseek-v4-flash',
       };
 
       (callLLM as jest.Mock).mockResolvedValue(mockResponse);
@@ -261,7 +261,7 @@ describe('Generate Layer Practice - Backend', () => {
     it('should include beginner difficulty in prompt', async () => {
       const mockResponse = {
         content: '# Review',
-        model: 'deepseek-chat',
+        model: 'deepseek-v4-flash',
       };
 
       (callLLM as jest.Mock).mockResolvedValue(mockResponse);
@@ -280,7 +280,7 @@ describe('Generate Layer Practice - Backend', () => {
     it('should include intermediate difficulty in prompt', async () => {
       const mockResponse = {
         content: '# Review',
-        model: 'deepseek-chat',
+        model: 'deepseek-v4-flash',
       };
 
       (callLLM as jest.Mock).mockResolvedValue(mockResponse);
@@ -299,7 +299,7 @@ describe('Generate Layer Practice - Backend', () => {
     it('should include advanced difficulty in prompt', async () => {
       const mockResponse = {
         content: '# Review',
-        model: 'deepseek-chat',
+        model: 'deepseek-v4-flash',
       };
 
       (callLLM as jest.Mock).mockResolvedValue(mockResponse);
@@ -318,7 +318,7 @@ describe('Generate Layer Practice - Backend', () => {
     it('should match practice difficulty to graph difficulty level', async () => {
       const mockResponse = {
         content: '# Review',
-        model: 'deepseek-chat',
+        model: 'deepseek-v4-flash',
       };
 
       (callLLM as jest.Mock).mockResolvedValue(mockResponse);
@@ -349,7 +349,7 @@ describe('Generate Layer Practice - Backend', () => {
       (callLLM as jest.Mock).mockResolvedValue({
         stream: true,
         raw: mockStream,
-        model: 'deepseek-chat',
+        model: 'deepseek-v4-flash',
       });
 
       const result = await generateLayerPractice(
@@ -367,7 +367,7 @@ describe('Generate Layer Practice - Backend', () => {
     it('should not return stream when stream=false', async () => {
       const mockResponse = {
         content: '# Review',
-        model: 'deepseek-chat',
+        model: 'deepseek-v4-flash',
       };
 
       (callLLM as jest.Mock).mockResolvedValue(mockResponse);
@@ -393,7 +393,7 @@ describe('Generate Layer Practice - Backend', () => {
       (callLLM as jest.Mock).mockResolvedValue({
         stream: true,
         raw: mockStream,
-        model: 'deepseek-chat',
+        model: 'deepseek-v4-flash',
       });
 
       const result = await generateLayerPractice(
@@ -416,7 +416,7 @@ describe('Generate Layer Practice - Backend', () => {
     it('should pass uid to callLLM for cost tracking', async () => {
       const mockResponse = {
         content: '# Review',
-        model: 'deepseek-chat',
+        model: 'deepseek-v4-flash',
       };
 
       (callLLM as jest.Mock).mockResolvedValue(mockResponse);
@@ -435,7 +435,7 @@ describe('Generate Layer Practice - Backend', () => {
     it('should track costs even when uid is not provided', async () => {
       const mockResponse = {
         content: '# Review',
-        model: 'deepseek-chat',
+        model: 'deepseek-v4-flash',
       };
 
       (callLLM as jest.Mock).mockResolvedValue(mockResponse);
@@ -457,7 +457,7 @@ describe('Generate Layer Practice - Backend', () => {
       const focus = 'Learn React hooks';
       const mockResponse = {
         content: '# Review',
-        model: 'deepseek-chat',
+        model: 'deepseek-v4-flash',
       };
 
       (callLLM as jest.Mock).mockResolvedValue(mockResponse);
@@ -477,7 +477,7 @@ describe('Generate Layer Practice - Backend', () => {
       const focus = 'Building web applications';
       const mockResponse = {
         content: '# Review',
-        model: 'deepseek-chat',
+        model: 'deepseek-v4-flash',
       };
 
       (callLLM as jest.Mock).mockResolvedValue(mockResponse);
@@ -519,7 +519,7 @@ describe('Generate Layer Practice - Backend', () => {
     it('should generate solution-focused review structure', async () => {
       const mockResponse = {
         content: '# Solution\n\nComplete solution.\n\n## Concept 1\nHow it applies.',
-        model: 'deepseek-chat',
+        model: 'deepseek-v4-flash',
       };
 
       (callLLM as jest.Mock).mockResolvedValue(mockResponse);
@@ -537,7 +537,7 @@ describe('Generate Layer Practice - Backend', () => {
     it('should use markdown format for review', async () => {
       const mockResponse = {
         content: '# Review\n\n**Bold** and *italic* text.',
-        model: 'deepseek-chat',
+        model: 'deepseek-v4-flash',
       };
 
       (callLLM as jest.Mock).mockResolvedValue(mockResponse);
@@ -555,7 +555,7 @@ describe('Generate Layer Practice - Backend', () => {
     it('should include system prompt for solution-focused structure', async () => {
       const mockResponse = {
         content: '# Review',
-        model: 'deepseek-chat',
+        model: 'deepseek-v4-flash',
       };
 
       (callLLM as jest.Mock).mockResolvedValue(mockResponse);

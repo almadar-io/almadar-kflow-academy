@@ -306,7 +306,7 @@ Again, return ONLY the Markdown lesson text.`;
     systemPrompt: explainSystemPrompt,
     userPrompt,
     provider: 'deepseek',
-    model: 'deepseek-chat',
+    model: 'deepseek-v4-flash',
     uid: options.uid,
     stream: stream
   });

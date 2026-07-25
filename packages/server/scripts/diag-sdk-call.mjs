@@ -77,7 +77,7 @@ try {
     prompt,
     endUserId: concept.id,
     provider: 'deepseek',
-    model: 'deepseek-chat',
+    model: process.env.DIAG_MODEL || 'deepseek-v4-flash',
     catalogMode: 'subset',
     stdAllowList,
     onEvent: (event) => {

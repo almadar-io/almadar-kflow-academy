@@ -8,7 +8,7 @@
  *
  * The model ladder: starts at the given model (or cheapest OpenRouter model),
  * and if any eval fails due to tool-calling errors, escalates to the next
- * model in the ladder until reaching deepseek-chat (the current production model).
+ * model in the ladder until reaching deepseek-v4-flash (the current production model).
  */
 
 import { KnowledgeGraphAccessLayer, runCompanionAnalysis } from '@almadar-io/knowledge/server';
@@ -47,7 +47,7 @@ const MODEL_LADDER: Array<{ provider: string; model: string; label: string }> = 
   { provider: 'openrouter', model: 'google/gemma-3-12b-it', label: 'Gemma 3 12B ($0.05/M)' },
   { provider: 'openrouter', model: 'google/gemma-3-27b-it', label: 'Gemma 3 27B ($0.10/M)' },
   { provider: 'openrouter', model: 'meta-llama/llama-3.3-70b-instruct', label: 'Llama 3.3 70B ($0.12/M)' },
-  { provider: 'deepseek', model: 'deepseek-chat', label: 'DeepSeek Chat (production, $0.14/M)' },
+  { provider: 'deepseek', model: 'deepseek-v4-flash', label: 'DeepSeek Chat (production, $0.14/M)' },
 ];
 
 function formatTable(results: CompanionEvalResult[]): string {
@@ -168,7 +168,7 @@ async function runModelLadder() {
       continue;
     }
 
-    console.log(`\n❌ All models in the ladder failed. The production model (deepseek-chat) is required.\n`);
+    console.log(`\n❌ All models in the ladder failed. The production model (deepseek-v4-flash) is required.\n`);
     process.exit(1);
   }
 }

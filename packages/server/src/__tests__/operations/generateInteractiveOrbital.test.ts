@@ -59,7 +59,7 @@ describe('generateInteractiveOrbital', () => {
     expect(request.prompt).toContain('@config.mode');
     expect(request.endUserId).toBe(concept.id);
     expect(request.provider).toBe('deepseek');
-    expect(request.model).toBe('deepseek-chat');
+    expect(request.model).toBe('deepseek-v4-flash');
     expect(request.stdAllowList).toEqual(['learning-math-lab']);
     expect(request.catalogMode).toBe('subset');
   });

@@ -80,7 +80,7 @@ function Button() {
 
       const mockResponse = {
         content: mockLesson,
-        model: 'deepseek-chat',
+        model: 'deepseek-v4-flash',
       };
 
       (callLLM as jest.Mock).mockResolvedValue(mockResponse);
@@ -100,7 +100,7 @@ function Button() {
       const mockLesson = '<prq>JavaScript, HTML</prq>\n\n# Lesson Title\n\nContent.';
       const mockResponse = {
         content: mockLesson,
-        model: 'deepseek-chat',
+        model: 'deepseek-v4-flash',
       };
 
       (callLLM as jest.Mock).mockResolvedValue(mockResponse);
@@ -148,7 +148,7 @@ function Welcome(props) {
 
       const mockResponse = {
         content: mockLesson,
-        model: 'deepseek-chat',
+        model: 'deepseek-v4-flash',
       };
 
       (callLLM as jest.Mock).mockResolvedValue(mockResponse);
@@ -178,7 +178,7 @@ Content 3
 
       const mockResponse = {
         content: mockLesson,
-        model: 'deepseek-chat',
+        model: 'deepseek-v4-flash',
       };
 
       (callLLM as jest.Mock).mockResolvedValue(mockResponse);
@@ -195,7 +195,7 @@ Content 3
     it('should include concept context in prompt', async () => {
       const mockResponse = {
         content: '# Lesson',
-        model: 'deepseek-chat',
+        model: 'deepseek-v4-flash',
       };
 
       (callLLM as jest.Mock).mockResolvedValue(mockResponse);
@@ -213,7 +213,7 @@ Content 3
     it('should include seed concept context when provided', async () => {
       const mockResponse = {
         content: '# Lesson',
-        model: 'deepseek-chat',
+        model: 'deepseek-v4-flash',
       };
 
       (callLLM as jest.Mock).mockResolvedValue(mockResponse);
@@ -228,7 +228,7 @@ Content 3
     it('should include difficulty level in context when provided via learningGoal', async () => {
       const mockResponse = {
         content: '# Lesson',
-        model: 'deepseek-chat',
+        model: 'deepseek-v4-flash',
       };
 
       (callLLM as jest.Mock).mockResolvedValue(mockResponse);
@@ -255,7 +255,7 @@ Content 3
     it('should include focus in context when provided via learningGoal', async () => {
       const mockResponse = {
         content: '# Lesson',
-        model: 'deepseek-chat',
+        model: 'deepseek-v4-flash',
       };
 
       (callLLM as jest.Mock).mockResolvedValue(mockResponse);
@@ -285,7 +285,7 @@ Content 3
       const mockLesson = '# Title\n\nBrief introduction paragraph.';
       const mockResponse = {
         content: mockLesson,
-        model: 'deepseek-chat',
+        model: 'deepseek-v4-flash',
       };
 
       (callLLM as jest.Mock).mockResolvedValue(mockResponse);
@@ -300,7 +300,7 @@ Content 3
       const mockLesson = '# Title\n\n## Example\n\n```javascript\ncode\n```';
       const mockResponse = {
         content: mockLesson,
-        model: 'deepseek-chat',
+        model: 'deepseek-v4-flash',
       };
 
       (callLLM as jest.Mock).mockResolvedValue(mockResponse);
@@ -315,7 +315,7 @@ Content 3
       const mockLesson = '# Title\n\n## Practice\n\n<question>Q?</question>\n<answer>A.</answer>';
       const mockResponse = {
         content: mockLesson,
-        model: 'deepseek-chat',
+        model: 'deepseek-v4-flash',
       };
 
       (callLLM as jest.Mock).mockResolvedValue(mockResponse);
@@ -333,7 +333,7 @@ Content 3
       const mockLesson = '<question>What is React?</question>\n<answer>React is a JavaScript library.</answer>';
       const mockResponse = {
         content: mockLesson,
-        model: 'deepseek-chat',
+        model: 'deepseek-v4-flash',
       };
 
       (callLLM as jest.Mock).mockResolvedValue(mockResponse);
@@ -355,7 +355,7 @@ Content 3
 
       const mockResponse = {
         content: mockLesson,
-        model: 'deepseek-chat',
+        model: 'deepseek-v4-flash',
       };
 
       (callLLM as jest.Mock).mockResolvedValue(mockResponse);
@@ -374,7 +374,7 @@ Content 3
       const mockLesson = '```javascript\nconst x = 1;\n```';
       const mockResponse = {
         content: mockLesson,
-        model: 'deepseek-chat',
+        model: 'deepseek-v4-flash',
       };
 
       (callLLM as jest.Mock).mockResolvedValue(mockResponse);
@@ -398,7 +398,7 @@ x = 1
 
       const mockResponse = {
         content: mockLesson,
-        model: 'deepseek-chat',
+        model: 'deepseek-v4-flash',
       };
 
       (callLLM as jest.Mock).mockResolvedValue(mockResponse);
@@ -413,7 +413,7 @@ x = 1
       const mockLesson = '```\ncode without language\n```';
       const mockResponse = {
         content: mockLesson,
-        model: 'deepseek-chat',
+        model: 'deepseek-v4-flash',
       };
 
       (callLLM as jest.Mock).mockResolvedValue(mockResponse);
@@ -435,7 +435,7 @@ x = 1
       (callLLM as jest.Mock).mockResolvedValue({
         stream: true,
         raw: mockStream,
-        model: 'deepseek-chat',
+        model: 'deepseek-v4-flash',
       });
 
       const result = await explain(mockConcept, mockSeedConcept, { stream: true });
@@ -452,7 +452,7 @@ x = 1
     it('should not return stream when stream=false', async () => {
       const mockResponse = {
         content: '# Lesson',
-        model: 'deepseek-chat',
+        model: 'deepseek-v4-flash',
       };
 
       (callLLM as jest.Mock).mockResolvedValue(mockResponse);
@@ -469,7 +469,7 @@ x = 1
     it('should pass uid to callLLM for cost tracking', async () => {
       const mockResponse = {
         content: '# Lesson',
-        model: 'deepseek-chat',
+        model: 'deepseek-v4-flash',
       };
 
       (callLLM as jest.Mock).mockResolvedValue(mockResponse);
@@ -483,7 +483,7 @@ x = 1
     it('should track costs even when uid is not provided', async () => {
       const mockResponse = {
         content: '# Lesson',
-        model: 'deepseek-chat',
+        model: 'deepseek-v4-flash',
       };
 
       (callLLM as jest.Mock).mockResolvedValue(mockResponse);
@@ -505,7 +505,7 @@ x = 1
     it('should throw error when LLM returns empty content', async () => {
       (callLLM as jest.Mock).mockResolvedValue({
         content: '',
-        model: 'deepseek-chat',
+        model: 'deepseek-v4-flash',
       });
 
       await expect(explain(mockConcept, mockSeedConcept, {})).rejects.toThrow('Explain operation returned empty content');
@@ -524,7 +524,7 @@ x = 1
       const mockLesson = '# Lesson';
       const mockResponse = {
         content: mockLesson,
-        model: 'deepseek-chat',
+        model: 'deepseek-v4-flash',
       };
 
       (callLLM as jest.Mock).mockResolvedValue(mockResponse);
@@ -542,7 +542,7 @@ x = 1
       const mockLesson = '<prq>JavaScript, HTML</prq>\n\n# Lesson';
       const mockResponse = {
         content: mockLesson,
-        model: 'deepseek-chat',
+        model: 'deepseek-v4-flash',
       };
 
       (callLLM as jest.Mock).mockResolvedValue(mockResponse);

@@ -100,7 +100,7 @@ export function extractJSONObject(response: string): Record<string, JsonValue> {
 // gemini fall back to deepseek (the KFlow default). openrouter remains for the
 // bge embedding client only (OPEN_ROUTER_API_KEY); all peer-connection text LLM
 // (concept-chat personas/replies, badge sub-topics, relevance moderation) uses
-// the deepseek default (deepseek-chat = v4-flash).
+// the deepseek default (deepseek-v4-flash).
 function toAlmadarProvider(provider: LLMProvider): AlmadarLLMProvider {
   if (provider === 'openai') return 'openai';
   if (provider === 'openrouter') return 'openrouter';
@@ -110,7 +110,7 @@ function toAlmadarProvider(provider: LLMProvider): AlmadarLLMProvider {
 function defaultModelFor(provider: LLMProvider): string {
   if (provider === 'openai') return 'gpt-5-nano';
   if (provider === 'openrouter') return 'qwen/qwen-2.5-7b-instruct';
-  return 'deepseek-chat';
+  return 'deepseek-v4-flash';
 }
 
 export async function callLLM(request: LLMRequest): Promise<LLMResponse> {
