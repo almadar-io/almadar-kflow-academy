@@ -11,7 +11,8 @@
 
 import * as dotenv from 'dotenv';
 import * as path from 'path';
-import admin from 'firebase-admin';
+import { initializeApp, getApp, cert, type App } from 'firebase-admin/app';
+import { getFirestore, type Firestore } from 'firebase-admin/firestore';
 import { createLogger } from '@almadar/logger';
 
 const log = createLogger('kflow:server:scripts:copyGraphsToDev');
@@ -27,7 +28,7 @@ const USER_ID = 'zo0dtBneKjbpy9Xg9u4DkAxs1PT2';
  * Get Firestore instance for a specific database
  * Uses separate app instances for each database to allow accessing multiple databases
  */
-function getFirestoreForDatabase(databaseId: string): admin.firestore.Firestore {
+function getFirestoreForDatabase(databaseId: string): Firestore {
   const projectId = process.env.FB_PROJECT_ID;
   const clientEmail = process.env.FB_CLIENT_EMAIL;
   const privateKey = process.env.FB_PRIVATE_KEY?.replace(/\\n/g, '\n');
@@ -40,13 +41,13 @@ function getFirestoreForDatabase(databaseId: string): admin.firestore.Firestore 
 
   // Initialize app with a unique name for each database to allow multiple instances
   const appName = `app-${databaseId}`;
-  let app: admin.app.App;
+  let app: App;
   try {
-    app = admin.app(appName);
+    app = getApp(appName);
   } catch (error) {
-    app = admin.initializeApp(
+    app = initializeApp(
       {
-        credential: admin.credential.cert({
+        credential: cert({
           projectId,
           clientEmail,
           privateKey,
@@ -56,7 +57,7 @@ function getFirestoreForDatabase(databaseId: string): admin.firestore.Firestore 
     );
   }
 
-  const firestore = admin.firestore(app);
+  const firestore = getFirestore(app);
   firestore.settings({
     ignoreUndefinedProperties: true,
     databaseId,

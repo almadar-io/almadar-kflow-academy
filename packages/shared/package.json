@@ -18,8 +18,8 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
-    "@almadar-io/knowledge": "^2.0.1",
-    "@almadar/core": "^10.28.0"
+    "@almadar-io/knowledge": "^2.4.0",
+    "@almadar/core": "^10.34.0"
   },
   "devDependencies": {
     "tsup": "^8.3.5",
