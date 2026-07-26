@@ -10,8 +10,7 @@
     "preview": "vite preview",
     "clean": "rm -rf dist",
     "lint": "eslint src/",
-    "test": "jest --config jest.config.cjs",
-    "verify:themes": "node node_modules/@almadar/ui/scripts/theme-contrast-audit.mjs --dir design-system/themes"
+    "test": "jest --config jest.config.cjs"
   },
   "dependencies": {
     "@almadar-io/knowledge": "^2.4.0",
