@@ -66,6 +66,7 @@ const AnimatedRoutes: React.FC = () => {
             <ProtectedRoute><DashboardPage /></ProtectedRoute>
           } />
           <Route path="/learn" element={<Navigate to="/home" replace />} />
+          <Route path="/import" element={<Navigate to="/home?import=true" replace />} />
           <Route path="/concepts/:graphId" element={
             <ProtectedRoute><ConceptsPage /></ProtectedRoute>
           } />

@@ -32,6 +32,7 @@ import { setCurrentGraphId } from '../features/knowledge-graph/knowledgeGraphSli
 import { graphOperationsStreamingApi } from '../features/knowledge-graph/api/streaming';
 import { GoalForm } from '@design-system/organisms/GoalForm';
 import { CompanionBell } from '@design-system/organisms/CompanionBell';
+import { ImportModal } from '../features/import/components/ImportModal';
 import type { DashboardEntity, DashboardMapLevel, DashboardFilterLabels, DashboardSort, DashboardLearningPath } from '@design-system/organisms/DashboardBoard';
 
 const L2_CONCEPT_CAP = 60;
@@ -68,6 +69,7 @@ export const DashboardPage: React.FC = () => {
 
   // Goal/path creation flow (merged from /learn — UI:CREATE_LEARNING_PATH now opens here).
   const [showGoalForm, setShowGoalForm] = useState(false);
+  const [showImport, setShowImport] = useState(false);
   const [goalFormAnchor, setGoalFormAnchor] = useState<string | undefined>(undefined);
   const [searchParams, setSearchParams] = useSearchParams();
   const [isExpanding, setIsExpanding] = useState(false);
@@ -133,6 +135,16 @@ export const DashboardPage: React.FC = () => {
     setIsExpanding(false);
   }, []);
 
+  const handleImportComplete = useCallback(
+    async (graphId: string) => {
+      setShowImport(false);
+      navigate(`/concepts/${graphId}`);
+      await queryClient.invalidateQueries({ queryKey: JUMP_BACK_IN_QUERY_KEY });
+      await queryClient.invalidateQueries({ queryKey: knowledgeGraphKeys.learningPaths() });
+    },
+    [navigate, queryClient]
+  );
+
   const { learningPaths: pathSummaries, loading: pathsLoading, similarity = [], sharedConcepts = [] } = useLearningPaths();
 
   // Home card grid: server-side search/sort/filter/pagination.
@@ -195,6 +207,10 @@ export const DashboardPage: React.FC = () => {
       setShowGoalForm(true);
       const anchor = searchParams.get('anchor');
       if (anchor) setGoalFormAnchor(anchor);
+      setSearchParams({}, { replace: true });
+    }
+    if (searchParams.get('import') === 'true') {
+      setShowImport(true);
       setSearchParams({}, { replace: true });
     }
   }, [searchParams, setSearchParams]);
@@ -362,7 +378,14 @@ export const DashboardPage: React.FC = () => {
       brandName: 'KFlow',
       activeRoute: location.pathname,
       theme: 'light',
-      actionsSlot: <CompanionBell />,
+      actionsSlot: (
+        <>
+          <CompanionBell />
+          <Button variant="ghost" size="sm" onClick={() => setShowImport(true)}>
+            {t('import.action')}
+          </Button>
+        </>
+      ),
       search: {
         value: search,
         onChange: setSearch,
@@ -416,6 +439,11 @@ export const DashboardPage: React.FC = () => {
             initialAnchor={goalFormAnchor}
           />
         )}
+      </Modal>
+
+      {/* Import flow (paste / markdown files → concepts, goals, flashcards) */}
+      <Modal isOpen={showImport} onClose={() => setShowImport(false)} size="lg">
+        <ImportModal onComplete={handleImportComplete} onCancel={() => setShowImport(false)} />
       </Modal>
 
       {/* Delete confirmation */}

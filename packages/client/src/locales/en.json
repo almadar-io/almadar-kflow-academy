@@ -752,5 +752,22 @@
   "nav.create": "Create",
   "nav.searchPlaceholder": "Search paths…",
   "nav.createLabel": "Create \"{{query}}\"",
-  "nav.createSubtitle": "Start a new learning path"
+  "nav.createSubtitle": "Start a new learning path",
+  "import.action": "Import",
+  "import.title": "Import your notes",
+  "import.paste": "Paste text",
+  "import.pasteDescription": "Paste notes, docs, or any text",
+  "import.markdownFiles": "Markdown files",
+  "import.markdownDescription": "Obsidian, Notion, or Google Docs exports (.md)",
+  "import.pastePlaceholder": "Paste your notes here…",
+  "import.preview": "Preview import",
+  "import.confirm": "Confirm import",
+  "import.assisted": "Assisted import (AI)",
+  "import.approvalTitle": "Review what will be imported",
+  "import.approve": "Approve import",
+  "import.reject": "Reject",
+  "import.done": "Import complete",
+  "import.viewGraph": "Open graph",
+  "import.failed": "Import failed",
+  "import.tryAgain": "Try again"
 }

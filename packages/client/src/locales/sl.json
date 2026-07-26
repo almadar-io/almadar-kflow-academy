@@ -752,5 +752,22 @@
   "nav.create": "Ustvari",
   "nav.searchPlaceholder": "Iskanje poti…",
   "nav.createLabel": "Ustvari \"{{query}}\"",
-  "nav.createSubtitle": "Začni novo učno pot"
+  "nav.createSubtitle": "Začni novo učno pot",
+  "import.action": "Uvozi",
+  "import.title": "Uvozi svoje zapiske",
+  "import.paste": "Prilepi besedilo",
+  "import.pasteDescription": "Prilepi zapiske, dokumente ali poljubno besedilo",
+  "import.markdownFiles": "Datoteke Markdown",
+  "import.markdownDescription": "Izvozi iz Obsidian, Notion ali Google Docs (.md)",
+  "import.pastePlaceholder": "Tukaj prilepi svoje zapiske…",
+  "import.preview": "Predogled uvoza",
+  "import.confirm": "Potrdi uvoz",
+  "import.assisted": "Uvoz s pomočjo UI",
+  "import.approvalTitle": "Preveri, kaj bo uvoženo",
+  "import.approve": "Odobri uvoz",
+  "import.reject": "Zavrni",
+  "import.done": "Uvoz končan",
+  "import.viewGraph": "Odpri graf",
+  "import.failed": "Uvoz ni uspel",
+  "import.tryAgain": "Poskusi znova"
 }

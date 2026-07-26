@@ -46,7 +46,9 @@
   },
   "pnpm": {
     "overrides": {
-      "firebase-admin": "^14.2.0"
+      "firebase-admin": "^14.2.0",
+      "@almadar-io/migration": "link:/home/osamah/kflow.ai.builder/packages/almadar-migration",
+      "@almadar/ui": "link:/home/osamah/kflow.ai.builder/packages/almadar-ui"
     }
   },
   "engines": {

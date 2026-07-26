@@ -16,6 +16,7 @@
   },
   "dependencies": {
     "@almadar-io/knowledge": "^2.4.0",
+    "@almadar-io/migration": "^0.1.0",
     "@almadar-io/rabit": "^0.64.36",
     "@almadar/core": "^10.34.0",
     "@almadar/llm": "^2.36.0",

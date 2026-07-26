@@ -7,3 +7,4 @@ export * from './nodeBasedKnowledgeGraph.js';
 export * from './connections.js';
 export * from './concept-chat.js';
 export * from './companion.js';
+export * from './migration.js';

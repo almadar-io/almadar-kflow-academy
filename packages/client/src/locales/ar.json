@@ -752,5 +752,22 @@
   "nav.create": "إنشاء",
   "nav.searchPlaceholder": "ابحث عن مسارات…",
   "nav.createLabel": "أنشئ \"{{query}}\"",
-  "nav.createSubtitle": "ابدأ مسار تعلم جديد"
+  "nav.createSubtitle": "ابدأ مسار تعلم جديد",
+  "import.action": "استيراد",
+  "import.title": "استيراد ملاحظاتك",
+  "import.paste": "لصق نص",
+  "import.pasteDescription": "الصق الملاحظات أو المستندات أو أي نص",
+  "import.markdownFiles": "ملفات ماركداون",
+  "import.markdownDescription": "تصديرات Obsidian أو Notion أو Google Docs ‏(.md)",
+  "import.pastePlaceholder": "الصق ملاحظاتك هنا…",
+  "import.preview": "معاينة الاستيراد",
+  "import.confirm": "تأكيد الاستيراد",
+  "import.assisted": "استيراد بمساعدة الذكاء الاصطناعي",
+  "import.approvalTitle": "راجع ما سيتم استيراده",
+  "import.approve": "الموافقة على الاستيراد",
+  "import.reject": "رفض",
+  "import.done": "اكتمل الاستيراد",
+  "import.viewGraph": "فتح الرسم البياني",
+  "import.failed": "فشل الاستيراد",
+  "import.tryAgain": "حاول مرة أخرى"
 }
