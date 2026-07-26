@@ -10,11 +10,12 @@
  */
 import '../config/env.js';
 import { createLogger } from '@almadar/logger';
+import type { JsonValue } from '@almadar/core';
 const almadarServer = await import('@almadar/server');
 almadarServer.initializeFirebase();
 almadarServer.getFirestore();
 const { KnowledgeGraphAccessLayer } = await import('@almadar-io/knowledge/server');
-const { callLLM, extractJSONArray } = await import('../services/llm.js');
+const { callLLMJson } = await import('../services/llm.js');
 
 const log = createLogger('kflow:server:scripts:backfillGoalKeywords');
 const access = new KnowledgeGraphAccessLayer();
@@ -47,13 +48,11 @@ for (const graphId of graphIds) {
     const title = props.name ?? goalId;
     const description = props.description ?? '';
     try {
-      const res = await callLLM({
+      const arr = (await callLLMJson<JsonValue[]>({
         systemPrompt: 'You tag learning paths with search keywords. Return ONLY a JSON array of 3-8 short lowercase strings — domain terms, acronyms, aliases, and the broader field a learner would type to find this path. Terms need NOT appear in the title or concepts.',
         userPrompt: `Title: ${title}\nDescription: ${description}\nConcepts: ${conceptNames.join(', ')}\n\nReturn the JSON array only.`,
         maxTokens: 200,
-      });
-      const text = 'content' in res ? res.content : '';
-      const arr = extractJSONArray(text).filter((v): v is string => typeof v === 'string' && v.trim().length > 0).map((v) => v.trim().toLowerCase()).slice(0, 8);
+      })).filter((v): v is string => typeof v === 'string' && v.trim().length > 0).map((v) => v.trim().toLowerCase()).slice(0, 8);
       if (arr.length === 0) { failed++; console.log(`  ✗ no keywords parsed: ${title}`); continue; }
 
       await access.updateNode(uid, graphId, goalId, { properties: { keywords: arr } as never });

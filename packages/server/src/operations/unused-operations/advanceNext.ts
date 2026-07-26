@@ -1,6 +1,7 @@
 import { Concept, OperationResult, ConceptGraph } from '../../types/concept';
 import { advanceNextSystemPrompt } from '../../prompts';
-import { callLLM, extractJSONArray } from '../../services/llm';
+import { callLLMJson } from '../../services/llm';
+import type { JsonValue } from '@almadar/core';
 import { validateConcept, normalizeConcept } from '../../utils/validation';
 import { traceAncestorsToRoot, findRootConcept } from '../../utils/traceAncestors';
 
@@ -94,16 +95,13 @@ Analyze the learning context above and determine what the learner should learn *
 
 Return **only** the JSON array with ONE concept representing the next learning step.`;
 
-  // Call LLM
-  const response = await callLLM({
-    systemPrompt: advanceNextSystemPrompt,
-    userPrompt: userPrompt,
-  });
-
-  // Extract and parse JSON array
-  let results: any[];
+  // Call LLM and parse JSON array
+  let results: Array<Record<string, JsonValue>>;
   try {
-    results = extractJSONArray(response.content);
+    results = await callLLMJson<Array<Record<string, JsonValue>>>({
+      systemPrompt: advanceNextSystemPrompt,
+      userPrompt: userPrompt,
+    });
   } catch (error) {
     throw new Error(`Failed to parse LLM response: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }

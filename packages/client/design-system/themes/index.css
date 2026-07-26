@@ -1,10 +1,11 @@
 /**
  * Theme index - exports all theme CSS files
  *
- * Loads Almadar UI built-in themes first, then app-specific overrides.
+ * Loads Almadar UI built-in themes first (includes trait-wars), then
+ * app-specific themes. Local themes are gated by `pnpm verify:themes`
+ * (same WCAG AA 4.5:1 audit as @almadar/ui).
  */
 
 @import "@almadar/ui/themes/index.css";
 @import "./kflow.css";
 @import "./kflow-playful.css";
-@import "./trait-wars.css";

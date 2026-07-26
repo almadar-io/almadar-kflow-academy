@@ -1,6 +1,7 @@
 import { Concept, OperationResult } from '../types/concept';
 import { deriveSummarySystemPrompt } from '../prompts';
-import { callLLM, extractJSONArray } from '../services/llm';
+import { callLLMJson } from '../services/llm';
+import type { JsonValue } from '@almadar/core';
 import { validateConcept, normalizeConcept, validateConceptArray } from '../utils/validation';
 
 /**
@@ -23,16 +24,13 @@ export async function deriveSummary(concepts: Concept[], seedConcept?: Concept):
   // Use template strings directly
   const userPrompt = `${seedInfo}Given these layer concepts: ${layerConcepts}, generate 1–2 summary nodes. Include only: "name", "description", "parents" (array of representative concepts from the layer), "children" (empty array []). Return JSON array only. Merge with existing summary nodes if name matches.`;
 
-  // Call LLM
-  const response = await callLLM({
-    systemPrompt: deriveSummarySystemPrompt,
-    userPrompt: userPrompt,
-  });
-
-  // Extract and parse JSON array
-  let results: any[];
+  // Call LLM and parse JSON array
+  let results: Array<Record<string, JsonValue>>;
   try {
-    results = extractJSONArray(response.content);
+    results = await callLLMJson<Array<Record<string, JsonValue>>>({
+      systemPrompt: deriveSummarySystemPrompt,
+      userPrompt: userPrompt,
+    });
   } catch (error) {
     throw new Error(`Failed to parse LLM response: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
@@ -50,7 +48,7 @@ export async function deriveSummary(concepts: Concept[], seedConcept?: Concept):
   const layerNumber = concepts.find(c => c.layer !== undefined)?.layer;
 
   // Normalize and validate results
-  const normalizedResults: Concept[] = limitedResults.map((item: any) => {
+  const normalizedResults: Concept[] = limitedResults.map((item) => {
     const normalized = normalizeConcept(item);
     // Ensure summary concepts have representative layer concepts as parents
     // If LLM didn't specify parents, use all layer concepts

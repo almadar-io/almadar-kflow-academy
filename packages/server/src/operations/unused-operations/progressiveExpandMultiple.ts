@@ -1,6 +1,7 @@
 import { Concept, OperationResult } from '../../types/concept';
 import { progressiveExpandMultipleSystemPrompt } from '../../prompts';
-import { callLLM, extractJSONArray } from '../../services/llm';
+import { callLLMJson } from '../../services/llm';
+import type { JsonValue } from '@almadar/core';
 import { validateConcept, normalizeConcept, validateConceptArray } from '../../utils/validation';
 
 /**
@@ -93,19 +94,15 @@ ${numLayers > 4 ? `- Layer ${startLayer + 4}: Fifth layer (parents come from Lay
 
 Return **only** the JSON array with all concepts from all layers, each with the correct layer number.`;
 
-  // Call LLM
-  const response = await callLLM({
-    systemPrompt: progressiveExpandMultipleSystemPrompt,
-    userPrompt: userPrompt,
-  });
-
-  const modelUsed = response.model; // Capture the model that was used
-
-
-  // Extract and parse JSON array
-  let results: any[];
+  // Call LLM and parse JSON array
+  const modelUsed = 'deepseek-v4-flash';
+  let results: Array<Record<string, JsonValue>>;
   try {
-    results = extractJSONArray(response.content);
+    results = await callLLMJson<Array<Record<string, JsonValue>>>({
+      systemPrompt: progressiveExpandMultipleSystemPrompt,
+      userPrompt: userPrompt,
+      model: modelUsed,
+    });
   } catch (error) {
     throw new Error(`Failed to parse LLM response: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }

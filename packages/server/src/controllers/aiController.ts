@@ -1,6 +1,9 @@
 import { Request, Response } from 'express';
 import { createLogger } from '@almadar/logger';
-import { extractJSONArray } from '../services/llm';
+import { parseJsonResponse } from '@almadar/llm';
+
+/** Raw LLM concept payload — a Concept plus the delete marker the model emits. */
+type StreamedConceptItem = Concept & { delete?: boolean };
 
 const log = createLogger('kflow:server:controllers:aiController');
 import {
@@ -786,11 +789,11 @@ export async function customOperationHandler(
         onComplete: (fullContent: string) => {
           try {
             // Parse the JSON array from the streamed content
-            const results = extractJSONArray(fullContent);
+            const results = parseJsonResponse<StreamedConceptItem[]>(fullContent);
             
             // Separate deletions from additions/updates
-            const additionsAndUpdates = results.filter((c: any) => !c.delete);
-            const deletions = results.filter((c: any) => c.delete === true).map((c: any) => {
+            const additionsAndUpdates = results.filter((c) => !c.delete);
+            const deletions = results.filter((c) => c.delete === true).map((c) => {
               const { delete: _, ...concept } = c;
               return concept;
             });
@@ -812,11 +815,11 @@ export async function customOperationHandler(
     }
 
     // Non-streaming response
-    const results = result as Concept[];
+    const results = result as StreamedConceptItem[];
     
     // Separate deletions from additions/updates
-    const additionsAndUpdates = results.filter((c: any) => !c.delete);
-    const deletions = results.filter((c: any) => c.delete === true).map((c: any) => {
+    const additionsAndUpdates = results.filter((c) => !c.delete);
+    const deletions = results.filter((c) => c.delete === true).map((c) => {
       const { delete: _, ...concept } = c;
       return concept;
     });

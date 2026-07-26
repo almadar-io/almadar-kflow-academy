@@ -1,6 +1,7 @@
 import { Concept, OperationResult } from '../types/concept';
 import { synthesizeSystemPrompt } from '../prompts';
-import { callLLM, extractJSONArray } from '../services/llm';
+import { callLLMJson } from '../services/llm';
+import type { JsonValue } from '@almadar/core';
 import { validateConcept, normalizeConcept, validateConceptArray } from '../utils/validation';
 
 /**
@@ -24,22 +25,19 @@ export async function synthesize(parents: Concept[], seedConcept?: Concept): Pro
   // Use template strings directly
   const userPrompt = `${seedInfo}Generate hybrid concepts combining these parents: ${parentsString}. For each concept, include only: "name", "description", "parents" (array containing all input parent names), "children" (empty array []). Return as a JSON array only. Merge parents if concept already exists.`;
 
-  // Call LLM
-  const response = await callLLM({
-    systemPrompt: synthesizeSystemPrompt,
-    userPrompt: userPrompt,
-  });
-
-  // Extract and parse JSON array
-  let results: any[];
+  // Call LLM and parse JSON array
+  let results: Array<Record<string, JsonValue>>;
   try {
-    results = extractJSONArray(response.content);
+    results = await callLLMJson<Array<Record<string, JsonValue>>>({
+      systemPrompt: synthesizeSystemPrompt,
+      userPrompt: userPrompt,
+    });
   } catch (error) {
     throw new Error(`Failed to parse LLM response: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 
   // Normalize and validate results
-  const normalizedResults: Concept[] = results.map((item: any) => {
+  const normalizedResults: Concept[] = results.map((item) => {
     const normalized = normalizeConcept(item);
     // Ignore LLM's parent suggestions - use ONLY the input parents
     normalized.parents = [...parentNames];

@@ -1,6 +1,7 @@
 import { Concept, OperationResult } from '../../types/concept';
 import { progressiveExpandSystemPrompt } from '../../prompts';
-import { callLLM, extractJSONArray } from '../../services/llm';
+import { callLLMJson } from '../../services/llm';
+import type { JsonValue } from '@almadar/core';
 import { validateConcept, normalizeConcept, validateConceptArray } from '../../utils/validation';
 
 /**
@@ -84,16 +85,13 @@ the next layer might include:
 
 Return **only** the JSON array for the next layer.`;
 
-  // Call LLM
-  const response = await callLLM({
-    systemPrompt: progressiveExpandSystemPrompt,
-    userPrompt: userPrompt,
-  });
-
-  // Extract and parse JSON array
-  let results: any[];
+  // Call LLM and parse JSON array
+  let results: Array<Record<string, JsonValue>>;
   try {
-    results = extractJSONArray(response.content);
+    results = await callLLMJson<Array<Record<string, JsonValue>>>({
+      systemPrompt: progressiveExpandSystemPrompt,
+      userPrompt: userPrompt,
+    });
   } catch (error) {
     throw new Error(`Failed to parse LLM response: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
@@ -102,7 +100,7 @@ Return **only** the JSON array for the next layer.`;
   const previousLayerNames = mainLayerConcepts.map(c => c.name);
 
   // Normalize and validate results
-  const normalizedResults: Concept[] = results.map((item: any) => {
+  const normalizedResults: Concept[] = results.map((item) => {
     const normalized = normalizeConcept(item);
     
     // Validate that each concept has at least one parent from previous layer (if previous layer exists)

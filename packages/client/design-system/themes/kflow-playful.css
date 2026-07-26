@@ -35,20 +35,22 @@
     --border-width-thin: 1px;
     --border-width-thick: 3px;
 
-    /* Colors - Duo green primary, warm supporting palette */
+    /* Colors - Duo green primary, warm supporting palette.
+       Foregrounds on bright fills are dark (WCAG AA), matching this
+       theme's own dark-mode convention. */
     --color-primary: #58cc02;
     --color-primary-hover: #46a302;
-    --color-primary-foreground: #ffffff;
+    --color-primary-foreground: #131f00;
 
     --color-secondary: #fff0db;
     --color-secondary-hover: #ffe4bf;
     --color-secondary-foreground: #8b5e00;
 
     --color-accent: #ce82ff;
-    --color-accent-foreground: #ffffff;
+    --color-accent-foreground: #1a0a2e;
 
     --color-muted: #f3f4f6;
-    --color-muted-foreground: #6b7280;
+    --color-muted-foreground: #5b6472;
 
     --color-background: #ffffff;
     --color-foreground: #1f2937;
@@ -61,13 +63,13 @@
 
     /* Semantic colors - Bright and unmistakable */
     --color-error: #ff4b4b;
-    --color-error-foreground: #ffffff;
+    --color-error-foreground: #1f0000;
     --color-success: #58cc02;
-    --color-success-foreground: #ffffff;
+    --color-success-foreground: #131f00;
     --color-warning: #ffc800;
     --color-warning-foreground: #1f2937;
     --color-info: #1cb0f6;
-    --color-info-foreground: #ffffff;
+    --color-info-foreground: #001f33;
 
     /* Typography - Rounded, friendly */
     --font-family:
@@ -136,7 +138,7 @@
     /* Colors - Bright green on rich charcoal, not pure black */
     --color-primary: #58cc02;
     --color-primary-hover: #6ee718;
-    --color-primary-foreground: #ffffff;
+    --color-primary-foreground: #131f00;
 
     --color-secondary: #2b2438;
     --color-secondary-hover: #382e48;

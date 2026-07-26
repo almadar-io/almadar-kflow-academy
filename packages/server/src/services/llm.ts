@@ -1,8 +1,8 @@
-import type { JsonValue } from '@almadar/core';
 import {
   LLMClient,
   type LLMProvider as AlmadarLLMProvider,
   type LLMStreamChunk,
+  type LLMCallOptions,
 } from '@almadar/llm';
 
 export type LLMProvider = 'openai' | 'gemini' | 'deepseek' | 'openrouter';
@@ -35,64 +35,41 @@ export interface LLMResponseStream extends LLMResponseBase {
 
 export type LLMResponse = LLMResponseText | LLMResponseStream;
 
-export function extractJSONArray(response: string): JsonValue[] {
-  const jsonBlockMatch = response.match(/```(?:json)?\s*(\[[\s\S]*?\])\s*```/);
-  if (jsonBlockMatch) {
-    try {
-      return JSON.parse(jsonBlockMatch[1]) as JsonValue[];
-    } catch {
-      // fall through
-    }
-  }
-
-  const arrayMatch = response.match(/(\[[\s\S]*\])/);
-  if (arrayMatch) {
-    try {
-      return JSON.parse(arrayMatch[1]) as JsonValue[];
-    } catch {
-      // fall through
-    }
-  }
-
-  try {
-    const parsed = JSON.parse(response) as JsonValue;
-    if (Array.isArray(parsed)) return parsed;
-  } catch {
-    // fall through
-  }
-
-  const objectMatches = response.match(/\{[^{}]*\}/g);
-  if (objectMatches && objectMatches.length > 0) {
-    try {
-      return objectMatches.map(match => JSON.parse(match) as JsonValue);
-    } catch {
-      // fall through
-    }
-  }
-
-  throw new Error('Could not extract JSON array from LLM response');
+export interface LLMJsonRequest<T> extends LLMRequest {
+  /** Zod schema — when present, wrong-shaped (valid-JSON) replies also retry. */
+  schema?: LLMCallOptions<T>['schema'];
+  maxRetries?: number;
 }
 
-export function extractJSONObject(response: string): Record<string, JsonValue> {
-  const jsonBlockMatch = response.match(/```(?:json)?\s*(\{[\s\S]*?\})\s*```/);
-  if (jsonBlockMatch) {
-    try {
-      return JSON.parse(jsonBlockMatch[1]) as Record<string, JsonValue>;
-    } catch {
-      // fall through
-    }
+/**
+ * JSON-producing LLM call via the upstream @almadar/llm path: shared
+ * json-parser (fence stripping, common-issue repair, optional schema
+ * validation) plus up to maxRetries (default 2) retries with the
+ * parse/validation error fed back as context. Do NOT reintroduce local
+ * regex extractors at call sites — this is the one JSON path.
+ */
+export async function callLLMJson<T>(request: LLMJsonRequest<T>): Promise<T> {
+  const kflowProvider = request.provider ?? 'deepseek';
+  const client = new LLMClient({
+    provider: toAlmadarProvider(kflowProvider),
+    model: request.model ?? defaultModelFor(kflowProvider),
+    temperature: request.temperature,
+    streaming: false,
+  });
+  try {
+    return await client.call<T>({
+      systemPrompt: request.systemPrompt,
+      userPrompt: request.userPrompt,
+      schema: request.schema,
+      maxRetries: request.maxRetries,
+      maxTokens: request.maxTokens,
+      temperature: request.temperature,
+      skipSchemaValidation: !request.schema,
+    });
+  } catch (error) {
+    const msg = error instanceof Error ? error.message : 'Unknown error';
+    throw new Error(`LLM API call failed: ${msg}`);
   }
-
-  const objectMatch = response.match(/(\{[\s\S]*\})/);
-  if (objectMatch) {
-    try {
-      return JSON.parse(objectMatch[1]) as Record<string, JsonValue>;
-    } catch {
-      // fall through
-    }
-  }
-
-  throw new Error('Could not extract JSON object from LLM response');
 }
 
 

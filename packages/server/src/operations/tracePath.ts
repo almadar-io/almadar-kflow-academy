@@ -1,6 +1,7 @@
 import { Concept, OperationResult } from '../types/concept';
 import { tracePathSystemPrompt } from '../prompts';
-import { callLLM, extractJSONArray } from '../services/llm';
+import { callLLMJson } from '../services/llm';
+import type { JsonValue } from '@almadar/core';
 import { validateConcept, normalizeConcept } from '../utils/validation';
 
 /**
@@ -25,22 +26,19 @@ export async function tracePath(start: Concept, end: Concept, seedConcept?: Conc
   // Use template strings directly
   const userPrompt = `${seedInfo}Generate an ordered learning path from "${start.name}" to "${end.name}". Include only: "name" for each concept in the path. Include "description", "parents", and "children" as empty/appropriate arrays. Return JSON array only. Keep nodes in path order.`;
 
-  // Call LLM
-  const response = await callLLM({
-    systemPrompt: tracePathSystemPrompt,
-    userPrompt: userPrompt,
-  });
-
-  // Extract and parse JSON array
-  let results: any[];
+  // Call LLM and parse JSON array
+  let results: Array<Record<string, JsonValue>>;
   try {
-    results = extractJSONArray(response.content);
+    results = await callLLMJson<Array<Record<string, JsonValue>>>({
+      systemPrompt: tracePathSystemPrompt,
+      userPrompt: userPrompt,
+    });
   } catch (error) {
     throw new Error(`Failed to parse LLM response: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 
   // Normalize results first (without referencing normalizedResults in the map)
-  const normalizedResults: Concept[] = results.map((item: any) => normalizeConcept(item));
+  const normalizedResults: Concept[] = results.map((item) => normalizeConcept(item));
 
   // Now establish sequential relationships in a second pass
   for (let i = 0; i < normalizedResults.length; i++) {

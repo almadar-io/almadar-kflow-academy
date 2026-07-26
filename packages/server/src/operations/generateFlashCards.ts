@@ -1,5 +1,5 @@
-import { Concept, OperationResult } from '../types/concept';
-import { callLLM, extractJSONArray } from '../services/llm';
+import { Concept, OperationResult, FlashCard } from '../types/concept';
+import { callLLMJson } from '../services/llm';
 import { validateConcept } from '../utils/validation';
 
 /**
@@ -46,24 +46,22 @@ Create flash cards that:
 
 Return a JSON array of flash cards with "front" and "back" fields.`;
 
-  const response = await callLLM({
-    systemPrompt,
-    userPrompt,
-    provider: 'gemini',
-    model: 'gemini-2.5-flash',
-  });
-
   // Extract and parse JSON array
-  let flashCards: any[];
+  let flashCards: Array<Partial<FlashCard> | null>;
   try {
-    flashCards = extractJSONArray(response.content);
+    flashCards = await callLLMJson<Array<Partial<FlashCard> | null>>({
+      systemPrompt,
+      userPrompt,
+      provider: 'gemini',
+      model: 'gemini-2.5-flash',
+    });
   } catch (error) {
     throw new Error(`Failed to parse LLM response: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 
   // Validate flash cards structure
   const validatedFlashCards = flashCards
-    .filter(card => card && typeof card.front === 'string' && typeof card.back === 'string')
+    .filter((card): card is FlashCard => !!card && typeof card.front === 'string' && typeof card.back === 'string')
     .map(card => ({
       front: card.front.trim(),
       back: card.back.trim(),

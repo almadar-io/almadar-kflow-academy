@@ -1,6 +1,7 @@
 import { Concept, OperationResult } from '../types/concept';
 import { progressiveExploreSystemPrompt } from '../prompts';
-import { callLLM, extractJSONArray } from '../services/llm';
+import { callLLMJson } from '../services/llm';
+import type { JsonValue } from '@almadar/core';
 import { validateConcept, normalizeConcept, validateConceptArray } from '../utils/validation';
 
 /**
@@ -129,16 +130,13 @@ Generate **5-10 additional related concepts** that belong to the SAME layer (Lay
 
 Return **only** the JSON array with new concepts for Layer ${targetLayer}.`;
 
-  // Call LLM
-  const response = await callLLM({
-    systemPrompt: progressiveExploreSystemPrompt,
-    userPrompt: userPrompt,
-  });
-
-  // Extract and parse JSON array
-  let results: any[];
+  // Call LLM and parse JSON array
+  let results: Array<Record<string, JsonValue>>;
   try {
-    results = extractJSONArray(response.content);
+    results = await callLLMJson<Array<Record<string, JsonValue>>>({
+      systemPrompt: progressiveExploreSystemPrompt,
+      userPrompt: userPrompt,
+    });
   } catch (error) {
     throw new Error(`Failed to parse LLM response: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }

@@ -26,10 +26,6 @@ jest.mock('@almadar-io/knowledge/server', () => ({
   })),
 }));
 
-jest.mock('../../../services/llm', () => ({
-  extractJSONArray: jest.fn(() => []),
-}));
-
 describe('graphOperationParsers', () => {
   it('exports expected parser functions', () => {
     expect(typeof parseProgressiveExpandContent).toBe('function');

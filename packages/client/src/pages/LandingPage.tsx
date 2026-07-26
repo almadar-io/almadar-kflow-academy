@@ -2,7 +2,7 @@ import React from 'react';
 import { useNavigateEvent } from '../hooks/useNavigateEvent';
 import { useTranslate } from '@almadar/ui';
 import { BookOpen, Target, Zap, Layers, Brain, ArrowRight, Code, Globe, GraduationCap } from 'lucide-react';
-import logoWhite from '../assets/kflow-logo-white.svg';
+import kflowLogo from '../assets/kflow-logo.svg';
 
 import screenshot1 from '../assets/demo/1-create-learning-path.png';
 import screenshot2 from '../assets/demo/2-generating-concepts.png';
@@ -57,18 +57,18 @@ const LandingPage: React.FC = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-background to-purple-50">
+    <div className="min-h-screen bg-gradient-to-br from-surface via-background to-surface">
       {/* Header */}
       <header className="border-b border-border bg-card backdrop-blur-sm sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <img src={logoWhite} alt="KFlow logo" className="h-8 w-auto brightness-0 invert" />
+              <img src={kflowLogo} alt="KFlow logo" className="h-8 w-auto" />
               <h1 className="text-2xl font-bold text-foreground">KFlow</h1>
             </div>
             <button
               onClick={() => navigate('/login')}
-              className="px-6 py-2 bg-primary text-primary-foreground rounded-lg font-medium hover:bg-primary transition-all duration-fast shadow-sm hover:shadow-md"
+              className="px-6 py-2 bg-primary text-primary-foreground rounded-lg font-medium hover:bg-primary-hover transition-all duration-fast shadow-sm hover:shadow-md"
             >
               {t('landing.getStarted')}
             </button>
@@ -82,7 +82,7 @@ const LandingPage: React.FC = () => {
           <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-foreground mb-6 leading-tight">
             {t('landing.hero.headline')}
             <br />
-            <span className="bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
               {t('landing.hero.subheadline')}
             </span>
           </h1>
@@ -92,7 +92,7 @@ const LandingPage: React.FC = () => {
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
             <button
               onClick={() => navigate('/login')}
-              className="group px-8 py-4 bg-primary text-primary-foreground rounded-lg font-semibold text-lg hover:bg-primary transition-all duration-fast shadow-lg hover:shadow-xl flex items-center gap-2"
+              className="group px-8 py-4 bg-primary text-primary-foreground rounded-lg font-semibold text-lg hover:bg-primary-hover transition-all duration-fast shadow-lg hover:shadow-xl flex items-center gap-2"
             >
               {t('landing.hero.cta')}
               <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
@@ -244,7 +244,7 @@ const LandingPage: React.FC = () => {
             { step: '4', title: t('landing.step.practice.title'), description: t('landing.step.practice.desc') },
           ].map((item, index) => (
             <div key={index} className="text-center">
-              <div className="w-16 h-16 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-full flex items-center justify-center text-white text-2xl font-bold mx-auto mb-4 shadow-lg">
+              <div className="w-16 h-16 bg-gradient-to-br from-primary to-primary-hover rounded-full flex items-center justify-center text-primary-foreground text-2xl font-bold mx-auto mb-4 shadow-lg">
                 {item.step}
               </div>
               <h3 className="text-xl font-semibold text-foreground mb-2">
@@ -283,11 +283,11 @@ const LandingPage: React.FC = () => {
 
       {/* CTA Section */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-        <div className="bg-gradient-to-br from-indigo-600 to-purple-600 rounded-3xl p-12 md:p-16 text-center text-white shadow-2xl">
+        <div className="bg-gradient-to-br from-primary to-primary-hover rounded-3xl p-12 md:p-16 text-center text-primary-foreground shadow-2xl">
           <h2 className="text-4xl md:text-5xl font-bold mb-4">
             {t('landing.cta.title')}
           </h2>
-          <p className="text-xl md:text-2xl mb-8 text-indigo-100">
+          <p className="text-xl md:text-2xl mb-8 text-primary-foreground">
             {t('landing.cta.description')}
           </p>
           <button
@@ -305,12 +305,12 @@ const LandingPage: React.FC = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col md:flex-row justify-between items-center">
             <div className="flex items-center gap-3 mb-4 md:mb-0">
-              <img src={logoWhite} alt="KFlow logo" className="h-6 w-auto brightness-0 invert" />
+              <img src={kflowLogo} alt="KFlow logo" className="h-6 w-auto" />
               <span className="text-muted-foreground">{t('landing.footer.copyright')}</span>
             </div>
             <button
               onClick={() => navigate('/login')}
-              className="text-primary hover:text-primary font-medium transition-colors"
+              className="text-primary hover:text-primary-hover font-medium transition-colors"
             >
               {t('nav.signIn')}
             </button>

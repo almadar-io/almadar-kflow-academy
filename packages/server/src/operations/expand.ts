@@ -1,6 +1,7 @@
 import { Concept, OperationResult, ConceptGraph } from '../types/concept';
 import { expandSystemPrompt } from '../prompts';
-import { callLLM, extractJSONArray } from '../services/llm';
+import { callLLMJson } from '../services/llm';
+import type { JsonValue } from '@almadar/core';
 import { validateConcept, normalizeConcept } from '../utils/validation';
 import { traceAncestorsToRoot, findRootConcept } from '../utils/traceAncestors';
 
@@ -51,22 +52,19 @@ export async function expand(concept: Concept, graph?: ConceptGraph): Promise<Op
   // Use template strings directly with full context
   const userPrompt = `Generate 3–7 foundational NEW sub-concepts of "${concept.name}" (Description: ${concept.description}). ${seedInfo}${parentChainInfo}${parentsInfo}${childrenInfo}For each NEW sub-concept, include only these exact fields: "name" (concept name), "description" (short explanation), "parents" (array containing "${concept.name}"), "children" (empty array []). Do NOT generate concepts that already exist in the children list. Return JSON array only, no text, no extra fields.`;
 
-  // Call LLM
-  const response = await callLLM({
-    systemPrompt: expandSystemPrompt,
-    userPrompt: userPrompt,
-  });
-
-  // Extract and parse JSON array
-  let results: any[];
+  // Call LLM and parse JSON array
+  let results: Array<Record<string, JsonValue>>;
   try {
-    results = extractJSONArray(response.content);
+    results = await callLLMJson<Array<Record<string, JsonValue>>>({
+      systemPrompt: expandSystemPrompt,
+      userPrompt: userPrompt,
+    });
   } catch (error) {
     throw new Error(`Failed to parse LLM response: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 
   // Normalize and validate results
-  const normalizedResults: Concept[] = results.map((item: any) => {
+  const normalizedResults: Concept[] = results.map((item) => {
     const normalized = normalizeConcept(item);
     // Ensure parent relationship is established
     if (!normalized.parents.includes(concept.name)) {

@@ -39,7 +39,7 @@
     --color-accent: #18181b;
     --color-accent-foreground: #fafafa;
     --color-muted: #f4f4f5;
-    --color-muted-foreground: #71717a;
+    --color-muted-foreground: #52525b;
     --color-background: #ffffff;
     --color-foreground: #18181b;
     --color-card: #ffffff;
@@ -51,7 +51,7 @@
 
     --color-error: #dc2626;
     --color-error-foreground: #ffffff;
-    --color-success: #16a34a;
+    --color-success: #15803d;
     --color-success-foreground: #ffffff;
     --color-warning: #ca8a04;
     --color-warning-foreground: #000000;

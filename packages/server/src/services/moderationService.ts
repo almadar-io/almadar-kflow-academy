@@ -1,5 +1,5 @@
 import { createLogger } from '@almadar/logger';
-import { callLLM, extractJSONArray } from './llm';
+import { callLLMJson } from './llm';
 import type { JsonValue } from '@almadar/core';
 import type { MessageModeration } from '@kflow-academy/shared';
 
@@ -18,7 +18,7 @@ export async function scoreRelevance(
 ): Promise<MessageModeration> {
   if (!activeBadgeLabel) return { score: 1, flagged: false };
   try {
-    const resp = await callLLM({
+    const obj = await callLLMJson<{ score?: JsonValue; reason?: JsonValue }>({
       temperature: 0,
       maxTokens: 80,
       systemPrompt:
@@ -27,8 +27,6 @@ export async function scoreRelevance(
         'Greeting/social-only/off-topic/spam ⇒ low score.',
       userPrompt: `Topic: ${activeBadgeLabel}\nMessage: ${content}`,
     });
-    const arr = extractJSONArray(`[${resp.content.match(/\{[\s\S]*\}/)?.[0] ?? '{}'}]`);
-    const obj = (arr[0] ?? {}) as { score?: JsonValue; reason?: JsonValue };
     const score = typeof obj.score === 'number' ? Math.max(0, Math.min(1, obj.score)) : 1;
     const reason = typeof obj.reason === 'string' ? obj.reason : undefined;
     return { score, flagged: score < FLAG_THRESHOLD, reason };

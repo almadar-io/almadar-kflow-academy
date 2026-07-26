@@ -1,6 +1,7 @@
 import { Concept, OperationResult } from '../types/concept';
 import { exploreSystemPrompt } from '../prompts';
-import { callLLM, extractJSONArray } from '../services/llm';
+import { callLLMJson } from '../services/llm';
+import type { JsonValue } from '@almadar/core';
 import { validateConcept, normalizeConcept } from '../utils/validation';
 
 /**
@@ -25,23 +26,20 @@ export async function explore(
   // Use template strings directly with diversity hint
   const userPrompt = `${seedInfo}Generate 5–10 concepts related to "${concept.name}", including diverse ideas. Focus on ${diversity} diversity: include varied and creative related concepts. Include only: "name", "description". "parents" and "children" should be empty arrays []. Return JSON array only. Merge related if concept already exists.`;
 
-  // Call LLM
-  const response = await callLLM({
-    systemPrompt: exploreSystemPrompt,
-    userPrompt: userPrompt,
-    temperature: diversity === 'high' ? 0.8 : diversity === 'medium' ? 0.7 : 0.6, // Higher temp for more diversity
-  });
-
-  // Extract and parse JSON array
-  let results: any[];
+  // Call LLM and parse JSON array
+  let results: Array<Record<string, JsonValue>>;
   try {
-    results = extractJSONArray(response.content);
+    results = await callLLMJson<Array<Record<string, JsonValue>>>({
+      systemPrompt: exploreSystemPrompt,
+      userPrompt: userPrompt,
+      temperature: diversity === 'high' ? 0.8 : diversity === 'medium' ? 0.7 : 0.6, // Higher temp for more diversity
+    });
   } catch (error) {
     throw new Error(`Failed to parse LLM response: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 
   // Normalize and validate results
-  const normalizedResults: Concept[] = results.map((item: any) => {
+  const normalizedResults: Concept[] = results.map((item) => {
     const normalized = normalizeConcept(item);
     // For explore, set parents to the same as the explored concept (making them siblings)
     // If the explored concept has parents, siblings share the same parents

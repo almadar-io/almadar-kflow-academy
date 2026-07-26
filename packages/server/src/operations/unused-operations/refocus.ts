@@ -1,6 +1,7 @@
 import { Concept, ExtendedConcept } from '../../types/concept';
 import { refocusSystemPrompt } from '../../prompts';
-import { callLLM, extractJSONArray } from '../../services/llm';
+import { callLLMJson } from '../../services/llm';
+import type { JsonValue } from '@almadar/core';
 import { validateExtendedConcept, normalizeConcept, validateConceptArray } from '../../utils/validation';
 
 /**
@@ -32,16 +33,13 @@ export async function refocus(
   // Use template strings directly
   const userPrompt = `${seedInfo}Given concepts: ${conceptList} and goal: "${goal.trim()}", update attention. Include only: "name", "attention_score" (number 0-1), "importance" ("low", "medium", or "high"), "description" (preserve existing), "parents" (preserve existing), "children" (preserve existing). Return JSON array only. Merge with existing nodes in your system.`;
 
-  // Call LLM
-  const response = await callLLM({
-    systemPrompt: refocusSystemPrompt,
-    userPrompt: userPrompt,
-  });
-
-  // Extract and parse JSON array
-  let results: any[];
+  // Call LLM and parse JSON array
+  let results: Array<Record<string, JsonValue>>;
   try {
-    results = extractJSONArray(response.content);
+    results = await callLLMJson<Array<Record<string, JsonValue>>>({
+      systemPrompt: refocusSystemPrompt,
+      userPrompt: userPrompt,
+    });
   } catch (error) {
     throw new Error(`Failed to parse LLM response: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
@@ -51,28 +49,31 @@ export async function refocus(
   concepts.forEach(c => conceptMap.set(c.name, c));
 
   // Normalize and merge results with existing concepts
-  const normalizedResults: ExtendedConcept[] = results.map((item: any) => {
-    const existing = conceptMap.get(item.name);
+  const normalizedResults: ExtendedConcept[] = results.map((item) => {
+    const existing = typeof item.name === 'string' ? conceptMap.get(item.name) : undefined;
     const baseConcept = existing || normalizeConcept(item);
 
     const extended: ExtendedConcept = {
       ...baseConcept,
-      attention_score: typeof item.attention_score === 'number' 
-        ? Math.max(0, Math.min(1, item.attention_score)) 
+      attention_score: typeof item.attention_score === 'number'
+        ? Math.max(0, Math.min(1, item.attention_score))
         : undefined,
       validation_score: typeof item.validation_score === 'number'
         ? Math.max(0, Math.min(1, item.validation_score))
         : undefined,
-      importance: ['low', 'medium', 'high'].includes(item.importance) 
+      importance: typeof item.importance === 'string' && ['low', 'medium', 'high'].includes(item.importance)
         ? item.importance as 'low' | 'medium' | 'high'
         : undefined,
     };
 
     // Preserve existing fields if not provided in response
     if (existing) {
-      extended.description = item.description || existing.description;
-      extended.parents = item.parents || existing.parents;
-      extended.children = item.children || existing.children;
+      const description = typeof item.description === 'string' ? item.description : undefined;
+      const parents = Array.isArray(item.parents) ? item.parents.filter((p): p is string => typeof p === 'string') : undefined;
+      const children = Array.isArray(item.children) ? item.children.filter((c): c is string => typeof c === 'string') : undefined;
+      extended.description = description || existing.description;
+      extended.parents = parents || existing.parents;
+      extended.children = children || existing.children;
     }
 
     return extended;

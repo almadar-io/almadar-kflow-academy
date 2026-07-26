@@ -43,11 +43,11 @@
     --color-secondary-hover: #dbeafe;
     --color-secondary-foreground: #1e3a5f;
 
-    --color-accent: #06b6d4;
+    --color-accent: #0e7490;
     --color-accent-foreground: #ffffff;
 
     --color-muted: #f0f4f8;
-    --color-muted-foreground: #64748b;
+    --color-muted-foreground: #475569;
 
     --color-background: #f8fafc;
     --color-foreground: #0f172a;
@@ -69,11 +69,11 @@
     /* Semantic colors */
     --color-error: #dc2626;
     --color-error-foreground: #ffffff;
-    --color-success: #16a34a;
+    --color-success: #15803d;
     --color-success-foreground: #ffffff;
     --color-warning: #ca8a04;
     --color-warning-foreground: #000000;
-    --color-info: #0ea5e9;
+    --color-info: #0369a1;
     --color-info-foreground: #ffffff;
 
     /* Typography - Clean reading font */
@@ -153,7 +153,7 @@
     /* Colors - Blue/Cyan on deep navy */
     --color-primary: #3b82f6;
     --color-primary-hover: #60a5fa;
-    --color-primary-foreground: #ffffff;
+    --color-primary-foreground: #0b1120;
 
     --color-secondary: #172033;
     --color-secondary-hover: #1e3050;

@@ -54,6 +54,9 @@ jobs:
           NODE_ENV: development
           GITHUB_TOKEN: ${{ secrets.GH_PACKAGES_TOKEN }}
 
+      - name: Verify theme contrast (WCAG AA)
+        run: pnpm run verify:themes
+
       - name: Build Client
         run: pnpm run build:client
         env:

@@ -1,6 +1,7 @@
 import { getFirestore } from '@almadar/server';
 import { createLogger } from '@almadar/logger';
-import { callLLM, extractJSONObject } from './llm';
+import { z } from 'zod';
+import { callLLM, callLLMJson } from './llm';
 import type { ConceptPersonaDTO } from '@kflow-academy/shared';
 
 const log = createLogger('kflow:server:conceptPersonaService');
@@ -59,6 +60,12 @@ const PERSONA_SYSTEM_PROMPT =
   'object, place, or product. If the concept is an invention, name its inventor/creator. If no single ' +
   'person is credited, name the most iconic human contributor or the field\'s founder. ' +
   'Never invent a fictional person.';
+
+const personaSchema = z.object({
+  name: z.string(),
+  description: z.string(),
+  greeting: z.string(),
+});
 
 /** The model echoed the concept word back as the persona name (e.g. "Pony" → name "Pony"). */
 export function isDegenerate(name: string, conceptLabel: string): boolean {
@@ -130,13 +137,13 @@ export async function generatePersona(conceptLabel: string, context?: string): P
     return { persona: c.persona, greeting: c.greeting };
   }
 
-  let resp = await callLLM({
+  let obj = await callLLMJson({
     temperature: 0.3,
     maxTokens: 240,
     systemPrompt: PERSONA_SYSTEM_PROMPT,
     userPrompt: buildUserPrompt(conceptLabel, context),
+    schema: personaSchema,
   });
-  let obj = extractJSONObject(resp.content);
   let name = typeof obj.name === 'string' && obj.name.trim() ? obj.name.trim() : '';
   let llmDescription =
     typeof obj.description === 'string' && obj.description.trim()
@@ -154,13 +161,13 @@ export async function generatePersona(conceptLabel: string, context?: string): P
   let degenerate = retried;
   if (retried) {
     log.warn('generatePersona degenerate name — retrying', { conceptLabel, name });
-    resp = await callLLM({
+    obj = await callLLMJson({
       temperature: 0.2,
       maxTokens: 240,
       systemPrompt: PERSONA_SYSTEM_PROMPT,
       userPrompt: buildUserPrompt(conceptLabel, context, name || conceptLabel),
+      schema: personaSchema,
     });
-    obj = extractJSONObject(resp.content);
     name = typeof obj.name === 'string' && obj.name.trim() ? obj.name.trim() : '';
     llmDescription =
       typeof obj.description === 'string' && obj.description.trim()

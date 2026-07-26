@@ -1,6 +1,7 @@
 import { Concept, OperationResult, ConceptGraph } from '../types/concept';
 import { advanceNextMultipleSystemPrompt } from '../prompts';
-import { callLLM, extractJSONArray } from '../services/llm';
+import { callLLMJson } from '../services/llm';
+import type { JsonValue } from '@almadar/core';
 import { validateConcept, normalizeConcept } from '../utils/validation';
 import { traceAncestorsToRoot, findRootConcept } from '../utils/traceAncestors';
 
@@ -121,16 +122,13 @@ ${numSteps > 4 ? `5. Fifth step: builds on the fourth step` : ''}
 
 Return **only** the JSON array with ${numSteps} concepts in sequential order.`;
 
-  // Call LLM
-  const response = await callLLM({
-    systemPrompt: advanceNextMultipleSystemPrompt,
-    userPrompt: userPrompt,
-  });
-
-  // Extract and parse JSON array
-  let results: any[];
+  // Call LLM and parse JSON array
+  let results: Array<Record<string, JsonValue>>;
   try {
-    results = extractJSONArray(response.content);
+    results = await callLLMJson<Array<Record<string, JsonValue>>>({
+      systemPrompt: advanceNextMultipleSystemPrompt,
+      userPrompt: userPrompt,
+    });
   } catch (error) {
     throw new Error(`Failed to parse LLM response: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }

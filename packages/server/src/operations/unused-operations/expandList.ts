@@ -1,6 +1,7 @@
 import { Concept, OperationResult } from '../../types/concept';
 import { expandListSystemPrompt } from '../../prompts';
-import { callLLM, extractJSONArray } from '../../services/llm';
+import { callLLMJson } from '../../services/llm';
+import type { JsonValue } from '@almadar/core';
 import { validateConcept, normalizeConcept, validateConceptArray } from '../../utils/validation';
 
 /**
@@ -24,22 +25,19 @@ export async function expandList(parents: Concept[], seedConcept?: Concept): Pro
   // Use template strings directly
   const userPrompt = `${seedInfo}Generate new concepts based on the following parent list: ${parentList}. For each concept, include only these exact fields: "name", "description", "parents" (array with one or more parent names from the parent list), "children" (empty array []). Return JSON array only, no extra fields or prose.`;
 
-  // Call LLM
-  const response = await callLLM({
-    systemPrompt: expandListSystemPrompt,
-    userPrompt: userPrompt,
-  });
-
-  // Extract and parse JSON array
-  let results: any[];
+  // Call LLM and parse JSON array
+  let results: Array<Record<string, JsonValue>>;
   try {
-    results = extractJSONArray(response.content);
+    results = await callLLMJson<Array<Record<string, JsonValue>>>({
+      systemPrompt: expandListSystemPrompt,
+      userPrompt: userPrompt,
+    });
   } catch (error) {
     throw new Error(`Failed to parse LLM response: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 
   // Normalize and validate results
-  const normalizedResults: Concept[] = results.map((item: any) => {
+  const normalizedResults: Concept[] = results.map((item) => {
     const normalized = normalizeConcept(item);
     // Ensure at least one parent from input list is present
     const hasValidParent = normalized.parents.some(p => parentNames.includes(p));

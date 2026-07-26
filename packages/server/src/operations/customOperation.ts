@@ -1,6 +1,6 @@
 import { Concept, OperationResult, ConceptGraph } from '../types/concept';
 import { customOperationSystemPrompt } from '../prompts';
-import { callLLM, extractJSONArray } from '../services/llm';
+import { callLLM, callLLMJson } from '../services/llm';
 import { validateConcept, normalizeConcept, validateConceptArray } from '../utils/validation';
 import type { LLMStreamChunk } from '@almadar/llm';
 
@@ -198,31 +198,39 @@ Return JSON array only, no text, no extra fields.`;
 
   // Call LLM
   const { stream = false, uid } = options;
-  const response = await callLLM({
-    systemPrompt: customOperationSystemPrompt,
-    userPrompt: userPrompt,
-    provider: 'deepseek',
-    model: 'deepseek-v4-flash',
-    stream: stream,
-    uid: uid,
-  });
 
   // Build full prompt (system + user) for return
   const fullPrompt = `${customOperationSystemPrompt}\n\n${userPrompt}`;
 
   // If streaming, return the stream with prompt
-  if (stream && response.stream && response.raw) {
-    return {
-      stream: response.raw,
-      model: response.model,
-      prompt: fullPrompt,
-    };
+  if (stream) {
+    const response = await callLLM({
+      systemPrompt: customOperationSystemPrompt,
+      userPrompt: userPrompt,
+      provider: 'deepseek',
+      model: 'deepseek-v4-flash',
+      stream: true,
+      uid: uid,
+    });
+    if (response.stream && response.raw) {
+      return {
+        stream: response.raw,
+        model: response.model,
+        prompt: fullPrompt,
+      };
+    }
   }
 
-  // Extract and parse JSON array
+  // Call LLM and parse JSON array
   let results: LLMConceptItem[];
   try {
-    results = extractJSONArray(response.content) as LLMConceptItem[];
+    results = await callLLMJson<LLMConceptItem[]>({
+      systemPrompt: customOperationSystemPrompt,
+      userPrompt: userPrompt,
+      provider: 'deepseek',
+      model: 'deepseek-v4-flash',
+      uid: uid,
+    });
   } catch (error) {
     throw new Error(`Failed to parse LLM response: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }

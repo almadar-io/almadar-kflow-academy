@@ -1,7 +1,8 @@
 import { getFirestore } from '@almadar/server';
 import { NotFoundError, ForbiddenError } from '@almadar/server';
 import { createLogger } from '@almadar/logger';
-import { callLLM, extractJSONArray } from './llm';
+import { callLLMJson } from './llm';
+import type { JsonValue } from '@almadar/core';
 import { resolvePeerToken } from './peerTokenService';
 import { anonymousHandleFor } from '../utils/anonymousHandle';
 import { graphAccessDeps } from '../utils/graphHandlerDeps';
@@ -59,7 +60,7 @@ function vector() {
 // sub-topics for both connection kinds. Friction-ranked path badges are a fast-follow.
 async function generateBadges(canonicalId: string, kind: NodeKind): Promise<StoredBadge[]> {
   try {
-    const resp = await callLLM({
+    const arr = await callLLMJson<JsonValue[]>({
       temperature: 0.4,
       maxTokens: 200,
       systemPrompt:
@@ -68,7 +69,6 @@ async function generateBadges(canonicalId: string, kind: NodeKind): Promise<Stor
         'discuss for the given topic. No prose, no numbering.',
       userPrompt: `Topic (${kind}): ${canonicalId}`,
     });
-    const arr = extractJSONArray(resp.content);
     const labels = arr.filter((x): x is string => typeof x === 'string').slice(0, 5);
     if (labels.length === 0) throw new Error('no labels');
     return labels.map((label, i) => ({ id: `b${i}`, label, kind: 'subtopic', active: i === 0 }));

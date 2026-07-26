@@ -6,11 +6,12 @@
  */
 
 import type { GraphNode, NodeBasedKnowledgeGraph } from '../types/nodeBasedKnowledgeGraph';
+import type { Concept } from '../types/concept';
 import { str, num } from '@almadar-io/knowledge';
 import { generateNodeId, generateRelationshipId } from '../types/nodeBasedKnowledgeGraph';
 import type { GraphMutation, MutationBatch, MutationContext } from '../types/mutations';
 import type { LearningGoal, Milestone } from '../types/goal';
-import { extractJSONArray } from '../services/llm';
+import { parseJsonResponse } from '@almadar/llm';
 import { buildExpansionMutations } from '@almadar-io/knowledge/server';
 import { processPrerequisitesFromLesson } from './prerequisites';
 
@@ -209,13 +210,9 @@ export async function parseGenerateGoalsContent(
   seedConceptId?: string;
 }> {
   // Parse JSON response from streamed content
-  let goalData: any;
+  let goalData: RawLLMGoal;
   try {
-    const jsonMatch = content.match(/\{[\s\S]*\}/);
-    if (!jsonMatch) {
-      throw new Error('No JSON found in response');
-    }
-    goalData = JSON.parse(jsonMatch[0]);
+    goalData = parseJsonResponse<RawLLMGoal>(content);
   } catch (error) {
     throw new Error(`Failed to parse goal JSON: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
@@ -397,7 +394,7 @@ export async function parseGenerateGoalsContent(
     description: goalDescription,
     type: goalType,
     target: goalTarget,
-    estimatedTime: goalEstimatedTime,
+    estimatedTime: goalEstimatedTime ?? undefined,
     milestones,
     customMetadata: goalData.customMetadata,
     assessedLevel: goalData.assessedLevel,
@@ -556,6 +553,28 @@ function determineLayerForNewConceptInParser(
   return allLayers[allLayers.length - 1];
 }
 
+/** Raw LLM concept payload — a Concept-shaped JSON object plus the delete marker the model emits. */
+type RawLLMConcept = Partial<Concept> & { delete?: boolean };
+
+/** Raw LLM goal payload — name/title both accepted for backward compatibility. */
+type RawLLMGoal = {
+  name?: string;
+  title?: string;
+  description?: string;
+  type?: string;
+  target?: string;
+  estimatedTime?: number | null;
+  milestones?: Array<{
+    name?: string;
+    title?: string;
+    description?: string;
+    targetDate?: number;
+    completed?: boolean;
+  }>;
+  customMetadata?: Record<string, string | number | boolean | null>;
+  assessedLevel?: 'beginner' | 'intermediate' | 'advanced';
+};
+
 /**
  * Parse custom operation content and generate mutations
  */
@@ -574,9 +593,9 @@ export async function parseCustomOperationContent(
   };
 }> {
   // Extract and parse JSON array from streamed content
-  let results: any[];
+  let results: RawLLMConcept[];
   try {
-    results = extractJSONArray(content);
+    results = parseJsonResponse<RawLLMConcept[]>(content);
   } catch (error) {
     throw new Error(`Failed to parse LLM response: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
@@ -586,8 +605,8 @@ export async function parseCustomOperationContent(
   const conceptActions: Array<{ name: string; action: 'added' | 'updated' | 'deleted' }> = [];
 
   // Process results - separate deletions from additions/updates
-  const deletions: any[] = [];
-  const additionsAndUpdates: any[] = [];
+  const deletions: RawLLMConcept[] = [];
+  const additionsAndUpdates: RawLLMConcept[] = [];
 
   for (const item of results) {
     if (item.delete === true) {
@@ -642,8 +661,8 @@ export async function parseCustomOperationContent(
       conceptActions.push({ name: conceptName, action: 'updated' });
     } else {
       // Determine which layer this new concept should belong to
-      const parentNames = Array.isArray(item.parents) ? item.parents.filter((p: any) => typeof p === 'string') : [];
-      const childrenNames = Array.isArray(item.children) ? item.children.filter((c: any) => typeof c === 'string') : [];
+      const parentNames = Array.isArray(item.parents) ? item.parents.filter((p) => typeof p === 'string') : [];
+      const childrenNames = Array.isArray(item.children) ? item.children.filter((c) => typeof c === 'string') : [];
       const targetLayer = determineLayerForNewConceptInParser(graph, parentNames, childrenNames, targetNodes);
       
       // Create new concept with layer info in properties
