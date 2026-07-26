@@ -8,7 +8,7 @@
 import React, { useState } from 'react';
 import type { LucideIcon } from 'lucide-react';
 import { ChevronDown, ChevronRight, Edit, Trash2, Plus, BookOpen, Check, Circle, MoreVertical } from 'lucide-react';
-import { Alert, Avatar, Badge, Button, ButtonGroup, Card, Icon, Menu, ProgressBar, Typography, useTranslate } from '@almadar/ui';
+import { Alert, Avatar, Badge, Button, ButtonGroup, Card, HStack, Icon, Menu, ProgressBar, Typography, VStack, useTranslate } from '@almadar/ui';
 import { Icon as IconifyIcon } from '@iconify/react';
 import type { ConceptIcon } from '@features/knowledge-graph/hooks/useConceptIcon';
 import type { MenuItem } from '@almadar/ui';
@@ -185,6 +185,11 @@ export const ConceptCard: React.FC<ConceptCardProps> = ({
     }
   };
 
+  // Reserve end-space on the title row so long names never slide under the
+  // absolutely-positioned connect/kebab cluster (~40px per button).
+  const actionCount = (onConnect ? 1 : 0) + (operations && operations.length > 0 ? 1 : 0);
+  const titleReserve = actionCount >= 2 ? 'pe-20' : actionCount === 1 ? 'pe-10' : undefined;
+
   return (
     <Card
       variant="elevated"
@@ -203,7 +208,7 @@ export const ConceptCard: React.FC<ConceptCardProps> = ({
       onClick={onClick}
     >
       {(onConnect || (operations && operations.length > 0)) && (
-        <div className="absolute top-2 end-2 z-10 flex items-center gap-1" onClick={(e) => e.stopPropagation()}>
+        <HStack gap="xs" align="center" className="absolute top-2 end-2 z-10" onClick={(e) => e.stopPropagation()}>
           {onConnect && (
             <ConnectButton
               iconOnly
@@ -235,13 +240,13 @@ export const ConceptCard: React.FC<ConceptCardProps> = ({
               position="bottom-right"
             />
           )}
-        </div>
+        </HStack>
       )}
-      <div className="flex flex-col gap-3 h-full">
+      <VStack gap="none" className="gap-3 h-full">
         {/* Header */}
-        <div className="flex flex-col gap-2">
+        <VStack gap="sm">
           {/* Title row: leading visual + name, vertically centered on one line */}
-          <div className="flex items-center gap-3">
+          <HStack gap="none" align="center" className={cn('gap-3', titleReserve)}>
             {hasChildren && (
               <button
                 type="button"
@@ -301,7 +306,7 @@ export const ConceptCard: React.FC<ConceptCardProps> = ({
               </div>
             )}
 
-            <div className="flex-1 min-w-0 flex items-center gap-2 flex-wrap">
+            <HStack gap="sm" align="center" wrap className="flex-1 min-w-0">
               <Typography variant="h6">
                 {name}
               </Typography>
@@ -315,12 +320,12 @@ export const ConceptCard: React.FC<ConceptCardProps> = ({
                   {t('concept.noLesson')}
                 </Badge>
               )}
-            </div>
-          </div>
+            </HStack>
+          </HStack>
 
           {/* Description + relationships — below the title */}
           {(description || (prerequisites && prerequisites.length > 0) || (parents && parents.length > 0)) && (
-            <div className="min-w-0 flex flex-col gap-1.5">
+            <VStack gap="none" className="min-w-0 gap-1.5">
               {description && (
                 <Typography variant="small" color="secondary">
                   {description}
@@ -328,7 +333,7 @@ export const ConceptCard: React.FC<ConceptCardProps> = ({
               )}
               {/* Prerequisites displayed under description - more prominent */}
               {prerequisites && prerequisites.length > 0 && (
-                <div className="flex flex-wrap items-center gap-2">
+                <HStack gap="sm" align="center" wrap>
                   <Typography variant="small" weight="semibold" className="text-xs text-primary">
                     {t('concept.prerequisites')}
                   </Typography>
@@ -337,11 +342,11 @@ export const ConceptCard: React.FC<ConceptCardProps> = ({
                       {prereq}
                     </Badge>
                   ))}
-                </div>
+                </HStack>
               )}
               {/* Parents displayed under description - less prominent */}
               {parents && parents.length > 0 && (
-                <div className="flex flex-wrap items-center gap-2">
+                <HStack gap="sm" align="center" wrap>
                   <Typography variant="small" color="muted" className="text-xs">
                     {t('concept.parents')}
                   </Typography>
@@ -350,11 +355,11 @@ export const ConceptCard: React.FC<ConceptCardProps> = ({
                       {parent}
                     </Badge>
                   ))}
-                </div>
+                </HStack>
               )}
-            </div>
+            </VStack>
           )}
-        </div>
+        </VStack>
 
         {/* Progress Bar */}
         {progress !== undefined && (
@@ -367,18 +372,18 @@ export const ConceptCard: React.FC<ConceptCardProps> = ({
 
         {/* Metadata badges (e.g. levels/concepts on learning-path cards) — bottom-right */}
         {metaBadges && metaBadges.length > 0 && (
-          <div className="flex flex-wrap justify-end items-center gap-2 mt-auto pt-1">
+          <HStack gap="sm" align="center" justify="end" wrap className="mt-auto pt-1">
             {metaBadges.map((mb, i) => (
               <Badge key={i} variant={mb.variant ?? 'default'} size="sm" className="text-xs">
                 {mb.label}
               </Badge>
             ))}
-          </div>
+          </HStack>
         )}
 
         {/* Children */}
         {hasChildren && expanded && Array.isArray(childConcepts) && (
-          <div className="ps-6 border-s-2 border-border space-y-2 mt-3">
+          <VStack gap="sm" className="ps-6 border-s-2 border-border mt-3">
             {childConcepts
               .filter((child): child is ConceptCardProps => 
                 child != null && 
@@ -405,9 +410,9 @@ export const ConceptCard: React.FC<ConceptCardProps> = ({
                   className="mb-2"
                 />
               ))}
-          </div>
+          </VStack>
         )}
-      </div>
+      </VStack>
     </Card>
   );
 };

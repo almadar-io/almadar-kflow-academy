@@ -11,7 +11,7 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useQueryClient } from '@tanstack/react-query';
 import { useLocation, useSearchParams } from 'react-router';
 import { Box, Button, Card, Modal, Spinner, Stack, Typography, VStack, useEventBus, useTranslate } from '@almadar/ui';
-import { X } from 'lucide-react';
+import { X, Upload } from 'lucide-react';
 import kflowLogo from '../assets/kflow-logo.svg';
 import { DashboardBoardTemplate } from '@design-system/templates/DashboardTemplate/DashboardBoardTemplate';
 import type { DashboardBoardTemplateEntity } from '@design-system/templates/DashboardTemplate/DashboardBoardTemplate';
@@ -381,8 +381,15 @@ export const DashboardPage: React.FC = () => {
       actionsSlot: (
         <>
           <CompanionBell />
-          <Button variant="ghost" size="sm" onClick={() => setShowImport(true)}>
-            {t('import.action')}
+          <Button
+            variant="ghost"
+            size="sm"
+            icon={Upload}
+            aria-label={t('import.action')}
+            title={t('import.action')}
+            onClick={() => setShowImport(true)}
+          >
+            <span className="hidden sm:inline">{t('import.action')}</span>
           </Button>
         </>
       ),

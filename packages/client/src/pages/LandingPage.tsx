@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigateEvent } from '../hooks/useNavigateEvent';
-import { useTranslate } from '@almadar/ui';
+import { useTranslate, Grid } from '@almadar/ui';
 import { BookOpen, Target, Zap, Layers, Brain, ArrowRight, Code, Globe, GraduationCap } from 'lucide-react';
 import kflowLogo from '../assets/kflow-logo.svg';
 
@@ -79,7 +79,7 @@ const LandingPage: React.FC = () => {
       {/* Hero Section */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 lg:py-32">
         <div className="text-center">
-          <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-foreground mb-6 leading-tight">
+          <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-foreground mb-6 leading-tight">
             {t('landing.hero.headline')}
             <br />
             <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
@@ -120,7 +120,7 @@ const LandingPage: React.FC = () => {
             {t('landing.screenshots.subtitle')}
           </p>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
+        <Grid cols={{ base: 1, md: 2 }} gap="xl" className="mb-12">
           <div className="bg-card rounded-xl border border-border p-4 shadow-lg hover:shadow-xl transition-shadow">
             <img 
               src={screenshot1} 
@@ -161,8 +161,8 @@ const LandingPage: React.FC = () => {
               {t('landing.screenshot.lessons')}
             </p>
           </div>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        </Grid>
+        <Grid cols={{ base: 1, md: 3 }} gap="xl">
           <div className="bg-card rounded-xl border border-border p-4 shadow-lg hover:shadow-xl transition-shadow">
             <img 
               src={screenshot6} 
@@ -193,7 +193,7 @@ const LandingPage: React.FC = () => {
               {t('landing.screenshot.navigate')}
             </p>
           </div>
-        </div>
+        </Grid>
       </section>
 
       {/* Features Section */}
@@ -206,7 +206,7 @@ const LandingPage: React.FC = () => {
             {t('landing.features.subtitle')}
           </p>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <Grid cols={{ base: 1, md: 2, lg: 3 }} gap="xl">
           {features.map((feature, index) => (
             <div
               key={index}
@@ -223,7 +223,7 @@ const LandingPage: React.FC = () => {
               </p>
             </div>
           ))}
-        </div>
+        </Grid>
       </section>
 
       {/* How It Works Section */}
@@ -236,7 +236,7 @@ const LandingPage: React.FC = () => {
             {t('landing.howItWorks.subtitle')}
           </p>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <Grid cols={{ base: 1, md: 2, lg: 4 }} gap="xl">
           {[
             { step: '1', title: t('landing.step.enterTopic.title'), description: t('landing.step.enterTopic.desc') },
             { step: '2', title: t('landing.step.aiPath.title'), description: t('landing.step.aiPath.desc') },
@@ -255,7 +255,7 @@ const LandingPage: React.FC = () => {
               </p>
             </div>
           ))}
-        </div>
+        </Grid>
       </section>
 
       {/* Use Cases Section */}
@@ -265,25 +265,25 @@ const LandingPage: React.FC = () => {
             {t('landing.useCases.title')}
           </h2>
         </div>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+        <Grid cols={{ base: 1, sm: 2, lg: 4 }} gap="lg">
           {useCases.map((useCase, index) => (
             <div
               key={index}
-              className="flex flex-col items-center p-6 bg-card rounded-xl border border-border hover:border-primary transition-all duration-fast"
+              className="flex flex-col items-center p-4 sm:p-6 bg-card rounded-xl border border-border hover:border-primary transition-all duration-fast"
             >
-              <useCase.icon className="w-10 h-10 text-primary mb-3" />
+              <useCase.icon className="w-8 h-8 sm:w-10 sm:h-10 text-primary mb-3" />
               <p className="text-foreground font-medium text-center">
                 {useCase.text}
               </p>
             </div>
           ))}
-        </div>
+        </Grid>
       </section>
 
 
       {/* CTA Section */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-        <div className="bg-gradient-to-br from-primary to-primary-hover rounded-3xl p-12 md:p-16 text-center text-primary-foreground shadow-2xl">
+        <div className="bg-gradient-to-br from-primary to-primary-hover rounded-3xl p-6 sm:p-12 md:p-16 text-center text-primary-foreground shadow-2xl">
           <h2 className="text-4xl md:text-5xl font-bold mb-4">
             {t('landing.cta.title')}
           </h2>

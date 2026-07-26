@@ -215,7 +215,8 @@ export const TopNavShell: React.FC<TopNavShellProps> = ({
           )}
 
           <HStack className="items-center gap-1">
-            {/* Create (+) button */}
+            {/* Create (+) button — hidden on phones, where pages provide their own
+                create affordance (e.g. the dashboard FAB) and the bar would overflow */}
             {onCreateClick && (
               <Button
                 variant="primary"
@@ -224,7 +225,7 @@ export const TopNavShell: React.FC<TopNavShellProps> = ({
                 aria-label={t('nav.create')}
                 title={t('nav.create')}
                 onClick={onCreateClick}
-                className="h-8 w-8 rounded-md p-0 flex-shrink-0"
+                className="hidden sm:flex h-8 w-8 rounded-md p-0 flex-shrink-0"
               />
             )}
             {actionsSlot}

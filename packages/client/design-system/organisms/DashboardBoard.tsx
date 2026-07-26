@@ -147,6 +147,17 @@ export function DashboardBoard({
   // other level doesn't linger after drilling in or going back.
   useEffect(() => { setSelectedNode(null); }, [level]);
 
+  // Canvas height follows the viewport: 420px on tablet/desktop, shorter on phones
+  // where 420px would be taller than the canvas is wide.
+  const [canvasHeight, setCanvasHeight] = useState(420);
+  useEffect(() => {
+    const mq = window.matchMedia('(min-width: 768px)');
+    const apply = () => setCanvasHeight(mq.matches ? 420 : 300);
+    apply();
+    mq.addEventListener('change', apply);
+    return () => mq.removeEventListener('change', apply);
+  }, []);
+
   useEffect(() => {
     if (!selectedNode) {
       setPopoverVisible(false);
@@ -345,9 +356,9 @@ export function DashboardBoard({
           </VStack>
         }
         canvasSlot={(hasMap || mapLoading) ? (
-          <Card className="relative overflow-hidden border border-[var(--color-border)]">
+          <Box className="relative w-full">
             {mapLoading || !hasMap ? (
-              <Box className="flex items-center justify-center" style={{ height: 420 }}>
+              <Box className="flex items-center justify-center" style={{ height: canvasHeight }}>
                 <Spinner size="lg" />
               </Box>
             ) : (
@@ -355,7 +366,7 @@ export function DashboardBoard({
                 nodes={dash!.knowledgeMap!.nodes}
                 edges={dash!.knowledgeMap!.edges}
                 similarity={dash!.knowledgeMap!.similarity}
-                height={420}
+                height={canvasHeight}
                 showLabels
                 interactive
                 draggable
@@ -369,7 +380,7 @@ export function DashboardBoard({
                 className="w-full"
               />
             )}
-          </Card>
+          </Box>
         ) : undefined}
         toolbarSlot={(hasMap || mapLoading) ? (
           <VStack gap="md">
@@ -399,7 +410,7 @@ export function DashboardBoard({
           </VStack>
         ) : undefined}
         listSlot={(hasMap || mapLoading || !!pathList) ? (
-          <Card className="p-2 sm:p-4 md:p-6">
+          <Box className="w-full">
             {pathList?.isLoading && paths.length === 0 ? (
               <VStack gap="md">
                 {Array.from({ length: 5 }).map((_, i) => (
@@ -476,7 +487,7 @@ export function DashboardBoard({
                 )}
               </>
             )}
-          </Card>
+          </Box>
         ) : undefined}
       />
     </Container>

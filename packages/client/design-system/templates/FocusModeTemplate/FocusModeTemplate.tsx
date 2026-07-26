@@ -166,6 +166,16 @@ export const FocusModeTemplate: React.FC<FocusModeTemplateProps> = (props) => {
   // Refs for concept cards to enable scroll-to functionality
   const conceptRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
 
+  // Canvas height follows the viewport: 340px on tablet/desktop, shorter on phones.
+  const [canvasHeight, setCanvasHeight] = useState(340);
+  useEffect(() => {
+    const mq = window.matchMedia('(min-width: 768px)');
+    const apply = () => setCanvasHeight(mq.matches ? 340 : 260);
+    apply();
+    mq.addEventListener('change', apply);
+    return () => mq.removeEventListener('change', apply);
+  }, []);
+
   // Find selected level (the one being displayed)
   const selectedLevel = useMemo(() => {
     return levels.find(l => l.id === selectedLevelId) || levels[0] || null;
@@ -369,10 +379,7 @@ export const FocusModeTemplate: React.FC<FocusModeTemplateProps> = (props) => {
           ) : undefined}
 
           canvasSlot={(graphNodes.length > 0 || seedConcept) ? (
-            <Card className={cn(
-              'relative w-full overflow-hidden animate-slide-up',
-              seedConcept?.hasLesson ? 'border-s-4 border-s-success bg-surface' : 'border border-border bg-surface',
-            )}>
+            <div className="relative w-full animate-slide-up">
             {seedConcept && (
               <Box className="flex items-center gap-2 px-4 pt-4">
                 <Typography variant="h2" className="flex-1 truncate cursor-pointer" >
@@ -402,7 +409,7 @@ export const FocusModeTemplate: React.FC<FocusModeTemplateProps> = (props) => {
                   nodes={graphNodes}
                   edges={graphEdges}
                   similarity={NO_SIMILARITY}
-                  height={340}
+                  height={canvasHeight}
                   showLabels
                   interactive
                   draggable
@@ -415,7 +422,7 @@ export const FocusModeTemplate: React.FC<FocusModeTemplateProps> = (props) => {
                 />
               </Box>
             )}
-          </Card>
+          </div>
           ) : undefined}
 
           toolbarSlot={levels.length > 1 ? (
@@ -481,7 +488,7 @@ export const FocusModeTemplate: React.FC<FocusModeTemplateProps> = (props) => {
           ) : undefined}
 
           listSlot={selectedLevel ? (
-            <Card className="w-full p-2 sm:p-4 md:p-6">
+            <div className="w-full">
               <div className="flex items-start justify-between mb-6">
                 <div className="flex-1">
 
@@ -638,7 +645,7 @@ export const FocusModeTemplate: React.FC<FocusModeTemplateProps> = (props) => {
                     </Card>
                   )}
                 </div>
-            </Card>
+            </div>
           ) : undefined}
         />
       </AppLayoutTemplate>

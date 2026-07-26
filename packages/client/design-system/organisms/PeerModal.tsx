@@ -60,15 +60,15 @@ export const PeerModal: React.FC<PeerModalProps> = ({ nodeKey, onClose, onConnec
   return (
     <Modal isOpen={open} onClose={requestClose} onExited={onClose} showCloseButton={false} size="lg">
       <Box className="relative">
-        <Box className="absolute top-3 end-3 z-10">
+        <Box className="absolute top-3 left-3 z-10">
           <Button variant="ghost" size="sm" icon={X} onClick={requestClose} aria-label={t('learning.close')} />
         </Box>
         <VStack gap="md">
-          <HStack gap="sm" align="center">
+          <HStack gap="sm" align="center" className="pl-10">
             <Users size={20} className="text-[var(--color-primary)]" />
             <Typography variant="h3">{t('connections.title')}</Typography>
           </HStack>
-          <Typography variant="small" color="secondary" className="truncate">
+          <Typography variant="small" color="secondary" className="truncate pl-10">
             {origin.canonicalId}
           </Typography>
 
