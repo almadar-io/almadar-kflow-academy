@@ -30,7 +30,7 @@
   "dependencies": {
     "@almadar-io/knowledge": "^2.4.0",
     "@almadar/core": "10.34.0",
-    "@almadar/ui": "5.125.0",
+    "@almadar/ui": "^5.131.0",
     "three": "^0.160.1"
   },
   "devDependencies": {
@@ -46,9 +46,7 @@
   },
   "pnpm": {
     "overrides": {
-      "firebase-admin": "^14.2.0",
-      "@almadar-io/migration": "link:/home/osamah/kflow.ai.builder/packages/almadar-migration",
-      "@almadar/ui": "link:/home/osamah/kflow.ai.builder/packages/almadar-ui"
+      "firebase-admin": "^14.2.0"
     }
   },
   "engines": {
