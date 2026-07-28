@@ -25,6 +25,8 @@ import { apiClient } from '../services/apiClient';
 import type { UiNotifyPayload } from '../app/uiEvents';
 import { useLearningPathMap } from '../features/knowledge-graph/hooks/useLearningPathMap';
 import { useConceptsByLayer } from '../features/knowledge-graph/hooks/useConceptsByLayer';
+import { useCompanionContext } from '../features/companion/CompanionContext';
+import { suggestionSignature } from '@kflow-academy/shared';
 import { getNavigationItems, getUserForTemplate, mainNavItems } from '../config/navigation';
 import { useNavigateEvent } from '../hooks/useNavigateEvent';
 import { useAppDispatch } from '../app/hooks';
@@ -181,6 +183,27 @@ export const DashboardPage: React.FC = () => {
     enabled: level === 'L2' && !!selectedGraphId,
   });
 
+  // Companion overlay: L2 concept suggestions (study/expand) carry a nodeId — mark
+  // those concept nodes so the canvas shows what the companion recommends.
+  // L1 suggestions (review/connect/discover) are path-level and surface via the bell.
+  const { suggestions } = useCompanionContext();
+  const suggestedSigByNodeId = useMemo(() => {
+    const m = new Map<string, string>();
+    for (const s of suggestions) {
+      if (s.nodeId) m.set(s.nodeId, suggestionSignature(s));
+    }
+    return m;
+  }, [suggestions]);
+  // L1 path-level suggestions (review/connect) carry the path graphId in `target`
+  // (discover has no path). Mark those path nodes on the mind-map.
+  const suggestedSigByGraphId = useMemo(() => {
+    const m = new Map<string, string>();
+    for (const s of suggestions) {
+      if (!s.nodeId && s.target) m.set(s.target, suggestionSignature(s));
+    }
+    return m;
+  }, [suggestions]);
+
   const conceptMap = useMemo((): DashboardEntity['knowledgeMap'] => {
     if (level !== 'L2' || !selectedGraphId || l2Concepts.length === 0) return undefined;
     const capped = l2Concepts.slice(0, L2_CONCEPT_CAP);
@@ -191,6 +214,7 @@ export const DashboardPage: React.FC = () => {
       group: String(c.layer),
       graphId: selectedGraphId,
       size: 8,
+      ...(suggestedSigByNodeId.has(c.id) ? { mark: { kind: 'suggested' as const, suggestionId: suggestedSigByNodeId.get(c.id)! } } : {}),
     }));
     const edges = capped.flatMap(c =>
       c.children
@@ -198,7 +222,7 @@ export const DashboardPage: React.FC = () => {
         .map(childId => ({ source: c.id, target: childId }))
     );
     return { nodes, edges, graphId: selectedGraphId };
-  }, [level, selectedGraphId, l2Concepts]);
+  }, [level, selectedGraphId, l2Concepts, suggestedSigByNodeId]);
 
   const templateUser = getUserForTemplate(user);
 
@@ -310,8 +334,13 @@ export const DashboardPage: React.FC = () => {
 
   const l1KnowledgeMap = useMemo((): DashboardEntity['knowledgeMap'] => {
     if (!pathMap || pathMap.nodes.length === 0) return undefined;
-    return { nodes: pathMap.nodes, edges: pathMap.edges, similarity: pathMap.similarity, graphId: pathSummaries[0]?.id ?? '' };
-  }, [pathMap, pathSummaries]);
+    const nodes = suggestedSigByGraphId.size > 0
+      ? pathMap.nodes.map(n => suggestedSigByGraphId.has(n.id)
+        ? { ...n, mark: { kind: 'suggested' as const, suggestionId: suggestedSigByGraphId.get(n.id)! } }
+        : n)
+      : pathMap.nodes;
+    return { nodes, edges: pathMap.edges, similarity: pathMap.similarity, graphId: pathSummaries[0]?.id ?? '' };
+  }, [pathMap, pathSummaries, suggestedSigByGraphId]);
 
   // No cross-level fallback: L2 shows ONLY the drilled path's concepts (a loader covers the gap).
   const knowledgeMap = level === 'L2' ? conceptMap : l1KnowledgeMap;

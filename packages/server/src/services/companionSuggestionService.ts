@@ -1,5 +1,6 @@
 import { getFirestore } from '@almadar/server';
 import { createLogger } from '@almadar/logger';
+import { suggestionSignature } from '@almadar-io/knowledge/server';
 import type { Suggestion, SuggestionType, SuggestionAction, SuggestionParams } from '@kflow-academy/shared';
 import { analyzeTrajectory } from './companionService';
 import { getGraphVersion } from './graphVersionService';
@@ -27,7 +28,7 @@ interface StoredSuggestion {
 }
 
 export function suggestionSig(s: Pick<Suggestion, 'type' | 'action' | 'target' | 'nodeId'>): string {
-  return `${s.type}:${s.action}:${s.target}:${s.nodeId ?? ''}`;
+  return suggestionSignature(s);
 }
 
 function collection(uid: string) {
@@ -68,6 +69,11 @@ async function getDismissedSigs(uid: string): Promise<Set<string>> {
   const snapshot = await collection(uid)
     .where('status', '==', 'dismissed')
     .get();
+  return new Set(snapshot.docs.map(doc => (doc.data() as StoredSuggestion).sig));
+}
+
+async function getShownSigs(uid: string): Promise<Set<string>> {
+  const snapshot = await collection(uid).get();
   return new Set(snapshot.docs.map(doc => (doc.data() as StoredSuggestion).sig));
 }
 
@@ -139,13 +145,14 @@ export async function ensureSuggestions(
   }
 
   log.info('ensureSuggestions: running fresh analysis', { uid, skillName, locale });
-  const result = await analyzeTrajectory(uid, skillName, locale);
+  const shown = await getShownSigs(uid);
+  const result = await analyzeTrajectory(uid, skillName, locale, [...shown]);
   const dismissed = await getDismissedSigs(uid);
 
   const candidates = result.suggestions.filter(s => !dismissed.has(suggestionSig(s)));
 
   if (candidates.length === 0) {
-    log.info('ensureSuggestions: all suggestions previously dismissed, skipping', { uid, totalEmitted: result.suggestions.length });
+    log.info('ensureSuggestions: all suggestions previously dismissed or deduped, skipping', { uid, totalEmitted: result.suggestions.length, shown: shown.size });
     return { suggestions: [], fromCache: false };
   }
 

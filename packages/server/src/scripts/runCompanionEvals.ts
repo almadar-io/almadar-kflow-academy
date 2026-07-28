@@ -140,7 +140,7 @@ async function runModelLadder() {
           completionTokens: 0,
           costFormatted: '',
           toolCalls: [],
-          suggestion: null,
+          suggestions: [],
           trajectory: null,
           reply: null,
           error: e instanceof Error ? e.message : String(e),

@@ -72,3 +72,5 @@ export interface CompanionPersonaDTO {
 export interface CompanionReplyResponse {
   reply: string;
 }
+
+export { suggestionSignature } from '@almadar-io/knowledge';

@@ -28,26 +28,25 @@
     "firebase:use": "firebase use kflow-b3a39"
   },
   "dependencies": {
-    "@almadar-io/knowledge": "^2.4.0",
+    "@almadar-io/knowledge": "^2.8.2",
     "@almadar/core": "10.34.0",
     "@almadar/ui": "^5.131.0",
     "three": "^0.160.1"
   },
   "devDependencies": {
     "@types/node": "^22.10.1",
+    "@typescript/native": "npm:typescript@^7.0.2",
     "concurrently": "^9.1.0",
     "esbuild": "^0.27.2",
     "playwright": "^1.61.0",
     "prettier": "^3.4.2",
     "turbo": "^2.8.17",
-    "vite": "^6.0.5",
-    "@typescript/native": "npm:typescript@^7.0.2",
-    "typescript": "npm:@typescript/typescript6@^6.0.2"
+    "typescript": "npm:@typescript/typescript6@^6.0.2",
+    "vite": "^6.0.5"
   },
   "pnpm": {
     "overrides": {
-      "firebase-admin": "^14.2.0",
-      "@almadar-io/knowledge": "link:../../packages/almadar-knowledge"
+      "firebase-admin": "^14.2.0"
     }
   },
   "engines": {

@@ -17,10 +17,10 @@ export function buildAgentConfig(uid: string): KflowAgentConfig {
   };
 }
 
-export async function analyzeTrajectory(uid: string, skillName?: string, locale?: string) {
-  log.info('analyzeTrajectory', { uid, skillName, locale });
+export async function analyzeTrajectory(uid: string, skillName?: string, locale?: string, excludeSigs?: string[]) {
+  log.info('analyzeTrajectory', { uid, skillName, locale, excludeSigs: excludeSigs?.length ?? 0 });
   const config = buildAgentConfig(uid);
-  const result = await runCompanionAnalysis({ config, skillName, locale });
+  const result = await runCompanionAnalysis({ config, skillName, locale, ...(excludeSigs ? { excludeSigs } : {}) });
   log.info('analyzeTrajectory complete', {
     uid,
     suggestionsCount: result.suggestions.length,
