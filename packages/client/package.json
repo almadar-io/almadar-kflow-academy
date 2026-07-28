@@ -14,7 +14,7 @@
   },
   "dependencies": {
     "@almadar-io/knowledge": "^2.8.2",
-    "@almadar/core": "^10.34.0",
+    "@almadar/core": "^10.41.0",
     "@almadar/logger": "^1.10.0",
     "@almadar/sdk": "^0.2.5",
     "@almadar/syntax": "^1.12.0",
