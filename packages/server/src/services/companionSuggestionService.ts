@@ -142,15 +142,16 @@ export async function ensureSuggestions(
   const result = await analyzeTrajectory(uid, skillName, locale);
   const dismissed = await getDismissedSigs(uid);
 
-  const candidate = result.suggestion;
-  const sig = suggestionSig(candidate);
+  const candidates = result.suggestions.filter(s => !dismissed.has(suggestionSig(s)));
 
-  if (dismissed.has(sig)) {
-    log.info('ensureSuggestions: top suggestion was previously dismissed, skipping', { uid, sig });
+  if (candidates.length === 0) {
+    log.info('ensureSuggestions: all suggestions previously dismissed, skipping', { uid, totalEmitted: result.suggestions.length });
     return { suggestions: [], fromCache: false };
   }
 
-  await storeSuggestion(uid, candidate, currentVersion);
+  for (const candidate of candidates) {
+    await storeSuggestion(uid, candidate, currentVersion);
+  }
 
-  return { suggestions: [candidate], fromCache: false };
+  return { suggestions: candidates, fromCache: false };
 }

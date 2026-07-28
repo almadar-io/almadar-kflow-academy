@@ -59,7 +59,7 @@ export interface TrajectorySummary {
 }
 
 export interface CompanionAnalyzeResponse {
-  suggestion: Suggestion;
+  suggestions: Suggestion[];
   trajectory: TrajectorySummary;
 }
 

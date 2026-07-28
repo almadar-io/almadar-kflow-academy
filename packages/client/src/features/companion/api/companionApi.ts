@@ -16,7 +16,7 @@ export interface CompanionStreamEventData {
   iteration?: number;
   tool?: string;
   hasError?: boolean;
-  suggestion?: Suggestion;
+  suggestions?: Suggestion[];
   trajectory?: TrajectorySummary;
   cost?: { promptTokens: number; completionTokens: number };
   error?: string;

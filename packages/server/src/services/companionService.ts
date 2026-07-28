@@ -23,8 +23,7 @@ export async function analyzeTrajectory(uid: string, skillName?: string, locale?
   const result = await runCompanionAnalysis({ config, skillName, locale });
   log.info('analyzeTrajectory complete', {
     uid,
-    suggestionType: result.suggestion.type,
-    suggestionAction: result.suggestion.action,
+    suggestionsCount: result.suggestions.length,
     totalPaths: result.trajectory.totalPaths,
   });
   return result;
@@ -63,14 +62,14 @@ export function analyzeTrajectoryStream(
     .then((result) => {
       log.info('analyzeTrajectoryStream complete', {
         uid,
-        suggestionType: result.suggestion.type,
+        suggestionsCount: result.suggestions.length,
         promptTokens: totalPromptTokens,
         completionTokens: totalCompletionTokens,
       });
       sendSSEEvent(res, {
         type: 'result',
         data: {
-          suggestion: result.suggestion,
+          suggestions: result.suggestions,
           trajectory: result.trajectory,
           cost: { promptTokens: totalPromptTokens, completionTokens: totalCompletionTokens },
         },

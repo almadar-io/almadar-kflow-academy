@@ -46,7 +46,8 @@
   },
   "pnpm": {
     "overrides": {
-      "firebase-admin": "^14.2.0"
+      "firebase-admin": "^14.2.0",
+      "@almadar-io/knowledge": "link:../../packages/almadar-knowledge"
     }
   },
   "engines": {
