@@ -10,6 +10,8 @@ import {
   notFoundHandler,
   observabilityRouter,
 } from '@almadar/server';
+import { timingMiddleware } from '@almadar/logger/timing';
+import { config } from './config/env';
 import routes from './routes';
 import { createApolloServer, applyGraphQLMiddleware } from './graphql/server';
 
@@ -39,6 +41,14 @@ app.use(cors({
 }));
 
 app.use(express.json({ limit: '1mb' }));
+
+// Request-scoped phase timing — wraps each request in an AsyncLocalStorage timing
+// store and emits a `Server-Timing` header. Downstream code uses `profile()` from
+// `@almadar/logger/timing` to record per-phase durations into both this header
+// and structured log lines. DEV-only: zero overhead in production.
+if (config.isDevelopment) {
+  app.use(timingMiddleware);
+}
 
 export async function initApp(): Promise<void> {
   initializeFirebase();

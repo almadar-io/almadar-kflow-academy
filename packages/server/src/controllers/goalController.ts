@@ -2,6 +2,9 @@ import { Request, Response } from 'express';
 import { createLogger } from '@almadar/logger';
 import { singleParam, singleQueryParam } from '../utils/httpParams';
 import { generateGoalQuestions } from '../operations/generateGoalQuestions';
+import { profile } from '@almadar/logger/timing';
+
+const perfLog = createLogger('kflow:server:goalController:profile');
 
 const log = createLogger('kflow:server:controllers:goalController');
 import { generateGoal as generateGoalOperation } from '../operations/generateGoal';
@@ -166,14 +169,14 @@ export async function createGraphWithGoalHandler(
     }));
 
     // Step 1: Generate the learning goal (call operation directly)
-    const goalResult = await generateGoalOperation({
+    const goalResult = await profile(perfLog, 'create-goal:llm-generate', () => generateGoalOperation({
       anchorAnswer: anchorAnswer.trim(),
       questionAnswers: validAnswers,
       userId: uid,
       uid,
       stream,
       manualGoal, // Pass manual goal if provided
-    });
+    }), { uid, stream });
 
     // Handle streaming response
     if (stream && typeof goalResult === 'object' && goalResult !== null && 'stream' in goalResult && goalResult.stream) {
@@ -393,7 +396,7 @@ export async function createGraphWithGoalHandler(
         createRelationship(graphId, seedConceptId, 'hasSeedConcept', 'forward'),
       ],
     };
-    await knowledgeGraphAccess.saveGraph(uid, nodeBasedGraph);
+    await profile(perfLog, 'create-goal:save-graph', () => knowledgeGraphAccess.saveGraph(uid, nodeBasedGraph), { uid, graphId });
     await invalidateLearningPaths(uid);
     await invalidateJumpBackIn(uid);
 
@@ -402,7 +405,7 @@ export async function createGraphWithGoalHandler(
       ...normalResult.goal,
       graphId,
     };
-    const savedGoal = await saveGoal(uid, goalWithGraphId);
+    const savedGoal = await profile(perfLog, 'create-goal:save-goal', () => saveGoal(uid, goalWithGraphId), { uid, graphId });
 
     res.json({
       goal: savedGoal,

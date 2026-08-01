@@ -14,12 +14,16 @@ import type { LearningGoal } from '../../../features/learning/goalApi';
  */
 export interface ProgressiveExpandRequest {
   numConcepts?: number; // Optional, defaults to 5. Everything else inferred.
+  provider?: string;
+  model?: string;
 }
 
 export interface ExplainConceptRequest {
   targetNodeId: string; // Only required input. Everything else inferred.
   simple?: boolean; // If true, generates a simple lesson without learning science tags
   minimal?: boolean; // If true, generates minimal content without learning science tags or practice questions
+  provider?: string;
+  model?: string;
 }
 
 export interface AnswerQuestionRequest {

@@ -19,6 +19,7 @@
     "test": "pnpm -r --if-present test",
     "test:e2e": "node e2e/flows.mjs",
     "test:e2e:sdk-lesson": "node e2e/sdk-lesson.mjs",
+    "test:e2e:profiling": "node e2e/profiling.mjs",
     "lint": "pnpm -r --if-present lint",
     "clean": "pnpm -r --if-present clean && rm -rf node_modules",
     "deploy:prod": "pnpm run build:client && firebase deploy --only hosting:prod",
@@ -28,7 +29,7 @@
     "firebase:use": "firebase use kflow-b3a39"
   },
   "dependencies": {
-    "@almadar-io/knowledge": "^2.8.2",
+    "@almadar-io/knowledge": "^2.11.1",
     "@almadar/core": "^10.41.0",
     "@almadar/ui": "^5.131.0",
     "three": "^0.160.1"

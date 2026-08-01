@@ -8,6 +8,7 @@ import { store } from '../../../app/store';
 import { knowledgeGraphKeys } from './queryKeys';
 import type { ProgressiveExpandRequest, ProgressiveExpandResponse } from '../api/types';
 import type { GraphMutation } from '../types';
+import { getExpandModel, toRequestParams } from '../modelPreferences';
 
 interface StreamingState {
   isStreaming: boolean;
@@ -45,6 +46,8 @@ export function useProgressiveExpand(graphId: string) {
         throw new Error('Graph ID is required for progressive expand operation');
       }
 
+      const modelParams = toRequestParams(getExpandModel());
+      const requestWithModel = { ...request, ...modelParams };
       setIsLoading(true);
       setError(null);
 
@@ -54,7 +57,7 @@ export function useProgressiveExpand(graphId: string) {
 
           const response = await graphOperationsStreamingApi.progressiveExpand(
             graphId,
-            request,
+            requestWithModel,
             {
               onChunk: (chunk) => {
                 setStreaming((prev) => prev ? { ...prev, content: prev.content + chunk } : prev);
@@ -87,7 +90,7 @@ export function useProgressiveExpand(graphId: string) {
 
           return response;
         } else {
-          const response = await graphOperationsApi.progressiveExpand(graphId, request);
+          const response = await graphOperationsApi.progressiveExpand(graphId, requestWithModel);
 
           const state = store.getState();
           const graph = state.knowledgeGraphs.graphs[graphId];

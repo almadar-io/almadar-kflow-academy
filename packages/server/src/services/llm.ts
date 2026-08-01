@@ -4,6 +4,10 @@ import {
   type LLMStreamChunk,
   type LLMCallOptions,
 } from '@almadar/llm';
+import { profile, record } from '@almadar/logger/timing';
+import { createLogger } from '@almadar/logger';
+
+const perfLog = createLogger('kflow:llm:profile');
 
 export type LLMProvider = 'openai' | 'gemini' | 'deepseek' | 'openrouter';
 
@@ -16,6 +20,8 @@ export interface LLMRequest {
   maxTokens?: number;
   uid?: string;
   stream?: boolean;
+  /** Disable reasoning/thinking tokens (DeepSeek V4). Set to true for fast content generation. */
+  disableReasoning?: boolean;
 }
 
 export interface LLMResponseBase {
@@ -55,6 +61,7 @@ export async function callLLMJson<T>(request: LLMJsonRequest<T>): Promise<T> {
     model: request.model ?? defaultModelFor(kflowProvider),
     temperature: request.temperature,
     streaming: false,
+    reasoningEffort: request.disableReasoning ? 'none' : undefined,
   });
   try {
     return await client.call<T>({
@@ -103,6 +110,7 @@ export async function callLLM(request: LLMRequest): Promise<LLMResponse> {
     // Must be set for streamRaw's LangChain .stream() to emit token deltas — without it the
     // model is built non-streaming and .stream() yields the whole response as a single chunk.
     streaming: request.stream ?? false,
+    reasoningEffort: request.disableReasoning ? 'none' : undefined,
   });
 
   try {
@@ -117,16 +125,39 @@ export async function callLLM(request: LLMRequest): Promise<LLMResponse> {
         temperature: request.temperature,
       });
 
+      // Wrap the generator to measure time-to-first-token + total stream duration (DEV-only).
+      const profiling = process.env.NODE_ENV !== 'production';
+      const wrappedStream = profiling
+        ? (async function* (): AsyncGenerator<LLMStreamChunk> {
+            const streamStart = Date.now();
+            let firstChunkAt: number | undefined;
+            try {
+              for await (const chunk of rawStream) {
+                if (firstChunkAt === undefined) firstChunkAt = Date.now();
+                yield chunk;
+              }
+            } finally {
+              const totalMs = Date.now() - streamStart;
+              const ttftMs = firstChunkAt !== undefined ? firstChunkAt - streamStart : undefined;
+              record('llm-stream', totalMs);
+              perfLog.debug('[PROFILE] llm-stream', { model: actualModel, ttftMs, totalMs, uid: request.uid });
+            }
+          })()
+        : rawStream;
+
       const streamResponse: LLMResponseStream = {
         content: '',
-        raw: rawStream,
+        raw: wrappedStream,
         model: actualModel,
         stream: true,
       };
       return streamResponse;
     }
 
-    const raw = await client.callRaw({ systemPrompt, userPrompt, maxTokens: request.maxTokens });
+    const raw = await profile(perfLog, 'llm-call', () =>
+      client.callRaw({ systemPrompt, userPrompt, maxTokens: request.maxTokens }),
+      { model: actualModel, uid: request.uid },
+    );
     const textResponse: LLMResponseText = { content: raw, raw, model: actualModel };
     return textResponse;
   } catch (error) {

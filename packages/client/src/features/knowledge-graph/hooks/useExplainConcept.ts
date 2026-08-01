@@ -8,6 +8,7 @@ import { store } from '../../../app/store';
 import { knowledgeGraphKeys } from './queryKeys';
 import type { ExplainConceptRequest, ExplainConceptResponse } from '../api/types';
 import type { GraphMutation } from '../types';
+import { getExplainModel, toRequestParams } from '../modelPreferences';
 
 interface StreamingState {
   isStreaming: boolean;
@@ -46,6 +47,8 @@ export function useExplainConcept(graphId: string) {
         throw new Error('Graph ID is required for explain concept operation');
       }
 
+      const modelParams = toRequestParams(getExplainModel());
+      const requestWithModel = { ...request, ...modelParams };
       setIsLoading(true);
       setError(null);
 
@@ -55,7 +58,7 @@ export function useExplainConcept(graphId: string) {
 
           const response = await graphOperationsStreamingApi.explainConcept(
             graphId,
-            request,
+            requestWithModel,
             {
               onChunk: (chunk) => {
                 setStreaming((prev) => prev ? { ...prev, content: prev.content + chunk } : prev);
@@ -88,7 +91,7 @@ export function useExplainConcept(graphId: string) {
 
           return response;
         } else {
-          const response = await graphOperationsApi.explainConcept(graphId, request);
+          const response = await graphOperationsApi.explainConcept(graphId, requestWithModel);
 
           const state = store.getState();
           const graph = state.knowledgeGraphs.graphs[graphId];

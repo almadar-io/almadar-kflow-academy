@@ -15,6 +15,7 @@ import { AppShellTemplate } from '@design-system/templates/AppShellTemplate';
 import { CompanionBell } from '@design-system/organisms/CompanionBell';
 import { getNavigationItems, getUserForTemplate, mainNavItems } from '../config/navigation';
 import { useAuthContext } from '../features/auth/AuthContext';
+import { MODEL_OPTIONS, getExpandModel, getExplainModel, setExpandModel, setExplainModel } from '../features/knowledge-graph/modelPreferences';
 import kflowLogo from '../assets/kflow-logo.svg';
 
 export const SettingsPage: React.FC = () => {
@@ -57,6 +58,11 @@ export const SettingsPage: React.FC = () => {
     [availableFonts]
   );
 
+  const modelOptions: SelectOption[] = useMemo(
+    () => MODEL_OPTIONS.map((m) => ({ value: m.key, label: m.label })),
+    []
+  );
+
   const handleLocaleChange = useCallback((value: string | string[]) => {
     const next = Array.isArray(value) ? value[0] : value;
     emit('UI:SET_LOCALE', { locale: next });
@@ -76,6 +82,16 @@ export const SettingsPage: React.FC = () => {
     const next = Array.isArray(value) ? value[0] : value;
     setFont(next);
   }, [setFont]);
+
+  const handleExpandModelChange = useCallback((value: string | string[]) => {
+    const next = Array.isArray(value) ? value[0] : value;
+    setExpandModel(next);
+  }, []);
+
+  const handleExplainModelChange = useCallback((value: string | string[]) => {
+    const next = Array.isArray(value) ? value[0] : value;
+    setExplainModel(next);
+  }, []);
 
   const shellEntity = {
     navigationItems: navItems.map(item => ({
@@ -132,6 +148,27 @@ export const SettingsPage: React.FC = () => {
               options={fontOptions}
               value={font.id}
               onValueChange={handleFontChange}
+              className="w-full"
+            />
+          </Box>
+        </Card>
+        <Card className="p-6 mt-6">
+          <Typography variant="h4" className="mb-4">AI Models</Typography>
+          <Box className="mb-4">
+            <Typography variant="body2" className="mb-2">Expand Model</Typography>
+            <Select
+              options={modelOptions}
+              value={getExpandModel().key}
+              onValueChange={handleExpandModelChange}
+              className="w-full"
+            />
+          </Box>
+          <Box>
+            <Typography variant="body2" className="mb-2">Explain Model</Typography>
+            <Select
+              options={modelOptions}
+              value={getExplainModel().key}
+              onValueChange={handleExplainModelChange}
               className="w-full"
             />
           </Box>
