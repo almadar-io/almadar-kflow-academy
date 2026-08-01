@@ -65,7 +65,7 @@ function buildI18nValue(locale: SupportedLocale): I18nContextValue {
 /** Gates the companion behind auth + having at least one learning path. */
 function CompanionGate({ children }: { children: React.ReactNode }): React.JSX.Element {
   const { user } = useAuthContext();
-  const { learningPaths } = useLearningPaths();
+  const { learningPaths } = useLearningPaths({ enabled: !!user });
   const enabled = !!user && learningPaths.length > 0;
   return <CompanionProvider enabled={enabled}>{children}</CompanionProvider>;
 }
