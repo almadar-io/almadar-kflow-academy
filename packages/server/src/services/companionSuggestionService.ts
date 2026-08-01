@@ -4,6 +4,7 @@ import { suggestionSignature } from '@almadar-io/knowledge/server';
 import type { Suggestion, SuggestionType, SuggestionAction, SuggestionParams } from '@kflow-academy/shared';
 import { analyzeTrajectory } from './companionService';
 import { getGraphVersion } from './graphVersionService';
+import { listUserGraphIds } from '../utils/listUserGraphIds';
 
 const log = createLogger('kflow:server:services:companionSuggestionService');
 
@@ -29,6 +30,16 @@ interface StoredSuggestion {
 
 export function suggestionSig(s: Pick<Suggestion, 'type' | 'action' | 'target' | 'nodeId'>): string {
   return suggestionSignature(s);
+}
+
+/**
+ * A suggestion's target must point to a graph the user actually owns.
+ * The companion LLM can hallucinate or confuse graphId with nodeId/concept
+ * names; without this guard, clicking accept navigates to a dead URL.
+ */
+function isTargetValid(suggestion: Suggestion, validGraphIds: Set<string>): boolean {
+  if (suggestion.action === 'create-goal') return true;
+  return suggestion.target !== '' && validGraphIds.has(suggestion.target);
 }
 
 function collection(uid: string) {
@@ -121,6 +132,7 @@ export async function ensureSuggestions(
   locale?: string,
 ): Promise<EnsureSuggestionsResult> {
   const currentVersion = await getGraphVersion(uid);
+  const validGraphIds = new Set(await listUserGraphIds(uid));
 
   const active = await getActiveSuggestions(uid);
 
@@ -136,8 +148,13 @@ export async function ensureSuggestions(
     const graphChanged = newest ? newest.graphVersion !== currentVersion : true;
 
     if (!isStale && !graphChanged) {
-      log.info('ensureSuggestions: serving from cache', { uid, count: active.length, version: currentVersion });
-      return { suggestions: active, fromCache: true };
+      const valid = active.filter(s => isTargetValid(s, validGraphIds));
+      const dropped = active.length - valid.length;
+      if (dropped > 0) {
+        log.warn('ensureSuggestions: dropped cached suggestions with invalid targets', { uid, dropped, total: active.length });
+      }
+      log.info('ensureSuggestions: serving from cache', { uid, count: valid.length, version: currentVersion });
+      return { suggestions: valid, fromCache: true };
     }
 
     log.info('ensureSuggestions: cache stale, re-analyzing', { uid, isStale, graphChanged });
@@ -149,10 +166,12 @@ export async function ensureSuggestions(
   const result = await analyzeTrajectory(uid, skillName, locale, [...shown]);
   const dismissed = await getDismissedSigs(uid);
 
-  const candidates = result.suggestions.filter(s => !dismissed.has(suggestionSig(s)));
+  const candidates = result.suggestions
+    .filter(s => !dismissed.has(suggestionSig(s)))
+    .filter(s => isTargetValid(s, validGraphIds));
 
   if (candidates.length === 0) {
-    log.info('ensureSuggestions: all suggestions previously dismissed or deduped, skipping', { uid, totalEmitted: result.suggestions.length, shown: shown.size });
+    log.info('ensureSuggestions: all suggestions previously dismissed, deduped, or invalid, skipping', { uid, totalEmitted: result.suggestions.length, shown: shown.size, validGraphs: validGraphIds.size });
     return { suggestions: [], fromCache: false };
   }
 
