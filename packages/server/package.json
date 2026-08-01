@@ -20,7 +20,7 @@
     "@almadar-io/rabit": "^0.65.1",
     "@almadar/core": "^10.41.0",
     "@almadar/llm": "^2.36.0",
-    "@almadar/logger": "^1.10.0",
+    "@almadar/logger": "^1.11.0",
     "@almadar/sdk": "^0.2.5",
     "@almadar/server": "^2.27.0",
     "@kflow-academy/shared": "workspace:*",
