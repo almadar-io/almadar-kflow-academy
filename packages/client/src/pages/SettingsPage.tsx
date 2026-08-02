@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { useLocation } from 'react-router';
 import {
   Box,
@@ -25,6 +25,9 @@ export const SettingsPage: React.FC = () => {
   const { t } = useTranslate();
   const { theme, setTheme, mode, setMode, resolvedMode, availableThemes } = useTheme();
   const { font, setFont, availableFonts } = useFont();
+
+  const [expandModelKey, setExpandModelKey] = useState(() => getExpandModel().key);
+  const [explainModelKey, setExplainModelKey] = useState(() => getExplainModel().key);
 
   const templateUser = getUserForTemplate(user);
 
@@ -86,11 +89,13 @@ export const SettingsPage: React.FC = () => {
   const handleExpandModelChange = useCallback((value: string | string[]) => {
     const next = Array.isArray(value) ? value[0] : value;
     setExpandModel(next);
+    setExpandModelKey(next);
   }, []);
 
   const handleExplainModelChange = useCallback((value: string | string[]) => {
     const next = Array.isArray(value) ? value[0] : value;
     setExplainModel(next);
+    setExplainModelKey(next);
   }, []);
 
   const shellEntity = {
@@ -158,7 +163,7 @@ export const SettingsPage: React.FC = () => {
             <Typography variant="body2" className="mb-2">Expand Model</Typography>
             <Select
               options={modelOptions}
-              value={getExpandModel().key}
+              value={expandModelKey}
               onValueChange={handleExpandModelChange}
               className="w-full"
             />
@@ -167,7 +172,7 @@ export const SettingsPage: React.FC = () => {
             <Typography variant="body2" className="mb-2">Explain Model</Typography>
             <Select
               options={modelOptions}
-              value={getExplainModel().key}
+              value={explainModelKey}
               onValueChange={handleExplainModelChange}
               className="w-full"
             />
