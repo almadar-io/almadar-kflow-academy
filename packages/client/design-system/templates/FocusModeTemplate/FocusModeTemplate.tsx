@@ -47,6 +47,7 @@ export interface FocusModeEntity {
   viewMode?: 'list' | 'mindmap';
   isLoadingNextLevel?: boolean;
   nextLevelStreamContent?: string;
+  nextLevelModel?: string;
   focusedLevelId?: string;
   isGeneratingLayerPractice?: boolean;
   layerPracticeStreamContent?: string;
@@ -89,6 +90,7 @@ export const FocusModeTemplate: React.FC<FocusModeTemplateProps> = (props) => {
         viewMode: (props as LearnTemplateProps).viewMode,
         isLoadingNextLevel: (props as LearnTemplateProps).isLoadingNextLevel,
         nextLevelStreamContent: (props as LearnTemplateProps).nextLevelStreamContent,
+        nextLevelModel: (props as LearnTemplateProps).nextLevelModel,
         focusedLevelId: (props as LearnTemplateProps).focusedLevelId,
         isGeneratingLayerPractice: (props as LearnTemplateProps).isGeneratingLayerPractice,
         layerPracticeStreamContent: (props as LearnTemplateProps).layerPracticeStreamContent,
@@ -110,6 +112,7 @@ export const FocusModeTemplate: React.FC<FocusModeTemplateProps> = (props) => {
     viewMode = 'list',
     isLoadingNextLevel = false,
     nextLevelStreamContent,
+    nextLevelModel,
     focusedLevelId,
     isGeneratingLayerPractice = false,
     layerPracticeStreamContent,
@@ -320,6 +323,7 @@ export const FocusModeTemplate: React.FC<FocusModeTemplateProps> = (props) => {
           text={t('learning.generatingNextLevelConcepts')}
           streamContent={nextLevelStreamContent || ''}
           goal={goal?.description}
+          model={nextLevelModel}
         />
       )}
 

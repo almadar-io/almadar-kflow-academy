@@ -16,6 +16,7 @@ interface StreamingState {
   graphId: string | null;
   content: string;
   mutations: GraphMutation[];
+  model: string | null;
 }
 
 export function useExplainConcept(graphId: string) {
@@ -41,6 +42,7 @@ export function useExplainConcept(graphId: string) {
         stream?: boolean;
         onChunk?: (chunk: string) => void;
         onDone?: (finalResult: ExplainConceptResponse) => void;
+        onStart?: (model: string) => void;
       }
     ) => {
       if (!graphId || graphId.trim() === '') {
@@ -54,12 +56,16 @@ export function useExplainConcept(graphId: string) {
 
       try {
         if (options?.stream) {
-          setStreaming({ isStreaming: true, operation: 'explainConcept', graphId, content: '', mutations: [] });
+          setStreaming({ isStreaming: true, operation: 'explainConcept', graphId, content: '', mutations: [], model: null });
 
           const response = await graphOperationsStreamingApi.explainConcept(
             graphId,
             requestWithModel,
             {
+              onStart: (model) => {
+                setStreaming((prev) => prev ? { ...prev, model } : prev);
+                options.onStart?.(model);
+              },
               onChunk: (chunk) => {
                 setStreaming((prev) => prev ? { ...prev, content: prev.content + chunk } : prev);
                 options.onChunk?.(chunk);

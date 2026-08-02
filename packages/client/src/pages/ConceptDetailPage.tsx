@@ -128,6 +128,7 @@ export const ConceptDetailPage: React.FC = () => {
   // Local UI state
   const [streamingLessonContent, setStreamingLessonContent] = useState('');
   const [localLessonLoading, setLocalLessonLoading] = useState(false);
+  const [explainModel, setExplainModel] = useState<string | undefined>();
   const [isEditingLesson, setIsEditingLesson] = useState(false);
 
   // Question widget state
@@ -165,10 +166,12 @@ export const ConceptDetailPage: React.FC = () => {
     try {
       setLocalLessonLoading(true);
       setStreamingLessonContent('');
+      setExplainModel(undefined);
       await explain(
         { targetNodeId: conceptId, simple: simple ?? false, minimal: false },
         {
           stream: true,
+          onStart: (model) => setExplainModel(model),
           onChunk: (chunk: string) => { setStreamingLessonContent(prev => prev + chunk); },
         }
       );
@@ -479,6 +482,7 @@ export const ConceptDetailPage: React.FC = () => {
       conceptHasLesson={hasLesson}
       onGenerateLesson={(simple) => emit('UI:GENERATE_LESSON', { conceptId: conceptId || '', graphId: graphId || '', simple: simple ?? false })}
       isGenerating={localLessonLoading || isExplaining || annotationsLoading}
+      model={explainModel}
       prerequisites={lessonPrerequisites}
       onViewPrerequisite={(name) => emit('UI:VIEW_PREREQUISITE', { prerequisiteName: name, graphId: graphId || '' })}
       showGenerationButtons={true}

@@ -17,6 +17,7 @@ interface ConceptLoaderProps {
   className?: string;
   streamContent?: string;
   goal?: string;
+  model?: string;
 }
 
 const spinnerSize: Record<NonNullable<ConceptLoaderProps['size']>, 'sm' | 'md' | 'lg'> = {
@@ -35,6 +36,7 @@ const ConceptLoader: React.FC<ConceptLoaderProps> = ({
   className,
   streamContent = '',
   goal,
+  model,
 }) => {
   const { t } = useTranslate();
   const [parsedConcepts, setParsedConcepts] = useState<ParsedConcept[]>([]);
@@ -176,6 +178,9 @@ const ConceptLoader: React.FC<ConceptLoaderProps> = ({
           <Stack gap="md" align="center">
             <Spinner size={spinnerSize[size]} />
             {text && <Typography variant="body" weight="medium" className="text-muted-foreground text-center">{text}</Typography>}
+            {model && (
+              <Badge variant="secondary" size="sm" label={`AI: ${model}`} />
+            )}
           </Stack>
           {typeof progress === 'number' && (
             <Box className="w-full">

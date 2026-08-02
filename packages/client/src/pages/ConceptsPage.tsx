@@ -38,6 +38,7 @@ export const ConceptsPage: React.FC = () => {
   const [viewMode, setViewMode] = useState<'list' | 'mindmap'>('list');
   const [nextLevelStreamContent, setNextLevelStreamContent] = useState('');
   const [showNextLevelLoader, setShowNextLevelLoader] = useState(false);
+  const [nextLevelModel, setNextLevelModel] = useState<string | undefined>();
   const [focusedLevelId, setFocusedLevelId] = useState<string | undefined>(undefined);
 
   const navigationItems = getNavigationItems(location.pathname, mainNavItems).map(item => ({
@@ -126,12 +127,14 @@ export const ConceptsPage: React.FC = () => {
   const handleLoadNextLevel = useCallback(async () => {
     if (!graphId) return;
     setNextLevelStreamContent('');
+    setNextLevelModel(undefined);
     setShowNextLevelLoader(true);
     try {
       await expand(
         { numConcepts: 10 },
         {
           stream: true,
+          onStart: (model) => setNextLevelModel(model),
           onChunk: (chunk: string) => {
             setNextLevelStreamContent(prev => prev + chunk);
           },
@@ -335,6 +338,7 @@ export const ConceptsPage: React.FC = () => {
     viewMode,
     isLoadingNextLevel: isExpanding || showNextLevelLoader,
     nextLevelStreamContent: showNextLevelLoader ? nextLevelStreamContent : undefined,
+    nextLevelModel: showNextLevelLoader ? nextLevelModel : undefined,
     focusedLevelId,
     isGeneratingLayerPractice: isGeneratingPractice,
     layerPracticeStreamContent: practiceStreaming?.content,

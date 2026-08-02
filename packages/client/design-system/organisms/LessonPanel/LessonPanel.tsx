@@ -45,7 +45,12 @@ export interface LessonPanelProps {
    * @default false
    */
   isGenerating?: boolean;
-  
+
+  /**
+   * AI model used for generation (shown during streaming)
+   */
+  model?: string;
+
   /**
    * Prerequisites list
    */
@@ -120,6 +125,7 @@ export const LessonPanel: React.FC<LessonPanelProps> = ({
   conceptHasLesson,
   onGenerateLesson,
   isGenerating = false,
+  model,
   prerequisites = [],
   onViewPrerequisite,
   onAddPrerequisite,
@@ -301,6 +307,11 @@ export const LessonPanel: React.FC<LessonPanelProps> = ({
                 </>
               )}
             </button>
+            {isGenerating && model && (
+              <div className="text-center mt-2">
+                <Badge variant="secondary" size="sm" label={`AI: ${model}`} />
+              </div>
+            )}
           </div>
         )}
 

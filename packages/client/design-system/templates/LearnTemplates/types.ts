@@ -74,6 +74,7 @@ export interface LearnTemplateProps {
   onLoadNextLevel?: () => Promise<void>;
   isLoadingNextLevel?: boolean;
   nextLevelStreamContent?: string;
+  nextLevelModel?: string;
   
   // Focused level - when set, template will switch to this level (e.g., after generating a new level)
   focusedLevelId?: string;
