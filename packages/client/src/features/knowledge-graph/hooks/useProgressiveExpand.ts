@@ -41,7 +41,7 @@ export function useProgressiveExpand(graphId: string) {
         stream?: boolean;
         onChunk?: (chunk: string) => void;
         onDone?: (finalResult: ProgressiveExpandResponse) => void;
-        onStart?: (model: string) => void;
+        onStart?: (model: string, timing?: Record<string, number>) => void;
       }
     ) => {
       if (!graphId || graphId.trim() === '') {
@@ -61,9 +61,10 @@ export function useProgressiveExpand(graphId: string) {
             graphId,
             requestWithModel,
             {
-              onStart: (model) => {
+              onStart: (model, timing) => {
                 setStreaming((prev) => prev ? { ...prev, model } : prev);
-                options.onStart?.(model);
+                if (timing) console.info('[expand] server pre-stream timing (ms):', timing);
+                options.onStart?.(model, timing);
               },
               onChunk: (chunk) => {
                 setStreaming((prev) => prev ? { ...prev, content: prev.content + chunk } : prev);

@@ -24,7 +24,7 @@ export interface StreamingCallbacks<T = JsonValue> {
   onContent?: (content: JsonValue) => void;
   onError?: (error: string) => void;
   onDone?: (finalResult: T) => void;
-  onStart?: (model: string) => void;
+  onStart?: (model: string, timing?: Record<string, number>) => void;
 }
 
 export async function handleStreamingRequest<T, B extends object = Record<string, JsonValue>>(
@@ -96,7 +96,7 @@ export async function handleStreamingRequest<T, B extends object = Record<string
 
           if (event.type === 'start') {
             if (typeof data.model === 'string') {
-              callbacks.onStart?.(data.model);
+              callbacks.onStart?.(data.model, data.timing as Record<string, number> | undefined);
             }
             continue;
           }
