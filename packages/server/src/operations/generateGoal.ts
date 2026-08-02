@@ -61,6 +61,7 @@ Your task is to analyze a user's learning aspiration and their answers to follow
 
 Key principles:
 - Create a clear, specific, and achievable learning goal
+- The "title" MUST be the bare canonical subject name only (e.g. "Haskell", "Linear Algebra", "Organic Chemistry", "React"). NEVER add ANY prefix or suffix: not "Master", "Mastering", "Core", "Essential", "Fundamentals", "Learning", "Understanding", "Introduction to", "A guide to", "The Complete", or any similar word. Output the subject name and nothing else.
 - Infer the most appropriate goal type (common types: "certification", "skill_mastery", "language_level", "project_completion", or suggest a custom type if it fits better)
 - Extract relevant metadata from the user's answers (timeline, target scores, deadlines, etc.)
 - Make the goal actionable and measurable
@@ -69,7 +70,7 @@ Key principles:
 Output format:
 Return a JSON object with this structure:
 {
-  "title": "Short, clear goal title",
+  "title": "Bare canonical subject name only (e.g. \"Haskell\", NOT \"Master Haskell\" or \"Core Haskell\")",
   "description": "Detailed description of the learning goal",
   "type": "goal_type_here",
   "target": "Specific target (e.g., 'AWS Certified Solutions Architect', 'B1 Spanish', 'Publish research paper')",
