@@ -93,7 +93,7 @@ function toAlmadarProvider(provider: LLMProvider): AlmadarLLMProvider {
 
 function defaultModelFor(provider: LLMProvider): string {
   if (provider === 'openai') return 'gpt-5-nano';
-  if (provider === 'openrouter') return 'qwen/qwen-2.5-7b-instruct';
+  if (provider === 'openrouter') return 'qwen/qwen3-30b-a3b-instruct-2507';
   return 'deepseek-v4-flash';
 }
 
