@@ -19,7 +19,7 @@
     "@almadar-io/migration": "^0.1.0",
     "@almadar-io/rabit": "^0.65.1",
     "@almadar/core": "^10.41.0",
-    "@almadar/llm": "^2.36.0",
+    "@almadar/llm": "^2.39.1",
     "@almadar/logger": "^1.11.0",
     "@almadar/sdk": "^0.2.5",
     "@almadar/server": "^2.27.0",
