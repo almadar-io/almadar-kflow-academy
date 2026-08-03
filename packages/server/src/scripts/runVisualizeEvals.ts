@@ -29,17 +29,18 @@ if (!uid) {
   console.error('ERROR: EVAL_UID required');
   process.exit(1);
 }
+const USER_UID: string = uid;
 
 async function main() {
   const accessLayer = new KnowledgeGraphAccessLayer();
-  const graphIds = await listUserGraphIds(uid);
+  const graphIds = await listUserGraphIds(USER_UID);
   console.log(`\n${'='.repeat(70)}`);
   console.log(`Interactive Visualization Evals (g8-g10) — uid=${uid}`);
   console.log(`Graphs: ${graphIds.length} | Builder: ${process.env.BUILDER_URL ?? 'http://localhost:3003'}`);
   console.log(`${'='.repeat(70)}\n`);
 
   const config: GraphOperationEvalConfig = {
-    uid,
+    uid: USER_UID,
     accessLayer,
     graphIds,
     provider: 'openrouter',
