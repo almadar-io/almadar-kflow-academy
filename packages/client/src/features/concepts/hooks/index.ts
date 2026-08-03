@@ -15,7 +15,6 @@ export { useUserProgress } from './useUserProgress';
 export { useConceptViewState } from './useConceptViewState';
 export { useConceptLevels } from './useConceptLevels';
 export { useCreateConcept } from './useCreateConcept';
-export { useSimpleLessonGeneration } from './useSimpleLessonGeneration';
 export { useDeleteGraph } from './useDeleteGraph';
 export { useHomeConcepts } from './useHomeConcepts';
 export { useLayerPractice } from './useLayerPractice';

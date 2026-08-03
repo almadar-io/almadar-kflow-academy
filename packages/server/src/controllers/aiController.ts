@@ -16,10 +16,10 @@ import {
   ConceptOperationResponse,
   ErrorResponse,
 } from '../types';
-import { expand, progressiveExpandMultiple, advanceNextMultiple, deriveParents, deriveSummary, explain, generateLayerPractice, PracticeItem, answerQuestion, customOperation, synthesize, explore, tracePath, progressiveExplore, generateFlashCards, runCodeSimulation, generateInteractiveOrbital, type ExplainStreamResult } from '../operations';
+import { expand, progressiveExpandMultiple, advanceNextMultiple, deriveParents, deriveSummary, generateLayerPractice, PracticeItem, answerQuestion, customOperation, synthesize, explore, tracePath, progressiveExplore, generateFlashCards, runCodeSimulation, generateInteractiveOrbital } from '../operations';
 import { createGraph, addConceptsToGraph } from '../utils/graph';
 import { ConceptGraph, Concept, GraphDifficulty } from '../types/concept';
-import { ExplainConceptRequest, GenerateLayerPracticeRequest, GenerateLayerPracticeResponse, AnswerQuestionRequest, AnswerQuestionResponse, CustomOperationRequest, SynthesizeRequest, ExploreRequest, TracePathRequest, ProgressiveExploreRequest, GenerateFlashCardsRequest, RunCodeSimulationRequest, RunCodeSimulationResponse, GenerateInteractiveOrbitalRequest, GenerateInteractiveOrbitalResponse } from '../types';
+import { GenerateLayerPracticeRequest, GenerateLayerPracticeResponse, AnswerQuestionRequest, AnswerQuestionResponse, CustomOperationRequest, SynthesizeRequest, ExploreRequest, TracePathRequest, ProgressiveExploreRequest, GenerateFlashCardsRequest, RunCodeSimulationRequest, RunCodeSimulationResponse, GenerateInteractiveOrbitalRequest, GenerateInteractiveOrbitalResponse } from '../types';
 import { GenerateLayerPracticeResult, GenerateLayerPracticeStreamResult } from '../operations/generateLayerPractice';
 import { getUserGraphById } from '../services/graphService';
 import { upsertUser } from '../services/userService';
@@ -73,8 +73,6 @@ async function streamToSSE<T extends object>(
   }
   return fullContent;
 }
-import { getGoalsByGraphId, markMilestoneCompleted } from '../services/goalService';
-import type { LearningGoal } from '../types/goal';
 
 const findConceptInRecord = (concepts: Record<string, Concept>, target?: Concept): Concept | undefined => {
   if (!target) {
@@ -282,111 +280,6 @@ export async function deriveSummaryHandler(
     log.error('Error deriving summary', { error: error instanceof Error ? error.message : String(error) });
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     res.status(500).json({ error: 'Failed to derive summary', details: errorMessage });
-  }
-}
-
-export async function explainConcept(
-  req: Request<{}, ConceptOperationResponse | ErrorResponse, ExplainConceptRequest>,
-  res: Response<ConceptOperationResponse | ErrorResponse>
-): Promise<void | Response> {
-  try {
-    const { concept, seedConcept, simple, minimal, graphId, stream = false } = req.body;
-
-    if (!concept || !concept.name) {
-      return res.status(400).json({ error: 'Concept is required' });
-    }
-
-    const uid = req.firebaseUser?.uid;
-    const email = req.firebaseUser?.email;
-
-    // Save/update user data if authenticated
-    if (uid && email) {
-      await upsertUser(uid, email).catch((error) => {
-        log.error('Error upserting user', { error: error instanceof Error ? error.message : String(error) });
-      });
-    }
-
-    let resolvedConcept = concept;
-    let resolvedSeedConcept = seedConcept;
-    let conceptGraph: ConceptGraph | undefined;
-    let learningGoal: LearningGoal | undefined = undefined;
-
-    if (graphId) {
-      if (!uid) {
-        return res.status(401).json({ error: 'Unauthorized' });
-      }
-
-      const graph = await getUserGraphById(uid, graphId);
-
-      if (!graph) {
-        return res.status(404).json({ error: 'Graph not found' });
-      }
-
-      // Fetch learning goal for this graph
-      try {
-        const goals = await getGoalsByGraphId(uid, graphId);
-        // Use primary goal (first one, or most recent)
-        learningGoal = goals.length > 0 ? goals[0] : undefined;
-        
-        // If no goal found, log warning (existing graphs should have goals)
-        if (!learningGoal) {
-          log.warn(`No learning goal found for graph`, { graphId });
-          // Continue - operation will handle undefined goal gracefully
-        }
-      } catch (error) {
-        log.error('Error fetching learning goal', { error: error instanceof Error ? error.message : String(error) });
-        // Continue without goal - operation will handle gracefully
-      }
-
-      // Convert Record<string, Concept> to Map<string, Concept> for ConceptGraph
-      const conceptsMap = new Map<string, Concept>();
-      Object.values(graph.concepts).forEach(c => {
-        conceptsMap.set(c.name, c);
-      });
-      conceptGraph = { concepts: conceptsMap };
-
-      const storedConcept = findConceptInRecord(graph.concepts, concept);
-      resolvedConcept = storedConcept ?? concept;
-
-      if (!resolvedSeedConcept) {
-        const seed = getSeedConceptFromRecord(graph.concepts, graph.seedConceptId);
-        resolvedSeedConcept = seed ?? undefined;
-      }
-    }
-
-    // Pass stream option to explain (from request, default false)
-    const result = await explain(resolvedConcept, resolvedSeedConcept, {
-      stream,
-      simple, 
-      minimal,
-      uid, 
-      graph: conceptGraph,
-      learningGoal, // Pass fetched goal
-    });
-
-    // Extract prompt from result (if attached)
-    const operationPrompt = 'prompt' in result ? result.prompt : undefined;
-
-    // Check if result is a stream
-    if (result && typeof result === 'object' && 'stream' in result && result.stream) {
-      const streamResult = result as ExplainStreamResult;
-      await streamToSSE(streamResult.stream, req, res, {
-        onComplete: (fullContent) => {
-          const prerequisites = processPrerequisitesFromLesson(fullContent, resolvedConcept, conceptGraph);
-          return { prerequisites, prompt: streamResult.prompt };
-        },
-        errorMessage: 'Stream error',
-      });
-      
-      return;
-    }
-
-    // Non-streaming response (fallback) — result is OperationResult here (stream branch returned above)
-    res.json({ concepts: result as import('../types').OperationResult, prompt: operationPrompt });
-  } catch (error) {
-    log.error('Error generating lesson', { error: error instanceof Error ? error.message : String(error) });
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-    res.status(500).json({ error: 'Failed to generate lesson', details: errorMessage });
   }
 }
 

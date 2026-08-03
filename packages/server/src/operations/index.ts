@@ -21,8 +21,6 @@ export { progressiveExpandMultiple } from './unused-operations/progressiveExpand
 export { progressiveExplore } from './progressiveExplore';
 export { advanceNext } from './unused-operations/advanceNext';
 export { advanceNextMultiple } from './advanceNextMultiple';
-export { explain } from './explain';
-export type { ExplainStreamResult } from './explain';
 export { generateLayerPractice } from './generateLayerPractice';
 export type { PracticeItem } from './generateLayerPractice';
 export { answerQuestion } from './answerQuestion';

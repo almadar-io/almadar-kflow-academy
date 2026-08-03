@@ -13,6 +13,5 @@ export { systemPrompt as progressiveExpandSingleSystemPrompt } from './templates
 export { systemPrompt as progressiveExploreSystemPrompt } from './templates/progressiveExplore';
 export { systemPrompt as advanceNextSystemPrompt } from './templates/advanceNext';
 export { systemPrompt as advanceNextMultipleSystemPrompt } from './templates/advanceNextMultiple';
-export { systemPrompt as explainSystemPrompt } from './templates/explain';
 export { systemPrompt as progressiveExpandMultipleFromTextSystemPrompt, systemPromptFirstLayer as progressiveExpandMultipleFromTextSystemPromptFirstLayer } from './templates/progressiveExpandMultipleFromText';
 export { systemPrompt as customOperationSystemPrompt } from './templates/customOperation';

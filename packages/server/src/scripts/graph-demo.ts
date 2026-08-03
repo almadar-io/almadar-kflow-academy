@@ -24,7 +24,6 @@ import {
   progressiveExplore,
   advanceNext,
   advanceNextMultiple,
-  explain,
 } from '../operations';
 import { createGraph, addConceptsToGraph, getAllConcepts, getConcept } from '../utils/graph';
 import { setLLMProvider } from '../config/llmConfig';
@@ -708,47 +707,6 @@ async function runProgressiveExplore() {
 }
 
 /**
- * Operation: explain
- */
-async function runExplain() {
-  log.info('Explain Operation - Generates a detailed Markdown lesson for a concept');
-
-  const concept = await selectConcept('Select concept to explain');
-  if (!concept) return;
-
-  const latestConcept = getConcept(graph, concept.name) || concept;
-
-  try {
-    const simpleInput = await question('Generate simple lesson? (y/n) [n]: ');
-    const simple = simpleInput.trim().toLowerCase() === 'y';
-
-    log.info('Crafting lesson', { simple });
-    const explainResult = await explain(latestConcept, seedConcept, { simple });
-    if ('stream' in explainResult) throw new Error('Unexpected stream result in script');
-    const results = explainResult;
-    graph = addConceptsToGraph(graph, results);
-
-    const lessonConcept = results[0];
-
-    if (!lessonConcept) {
-      log.info('No lesson content returned');
-      return;
-    }
-
-    const lessonMarkdown = lessonConcept.lesson ?? lessonConcept.description ?? '';
-    if (!lessonMarkdown.trim()) {
-      log.info('Lesson content was empty');
-      return;
-    }
-
-    log.info('Lesson stored on concept', { field: 'lesson' });
-    log.debug('Lesson content', { content: lessonMarkdown });
-  } catch (error) {
-    log.error('Error', { error: error instanceof Error ? error.message : String(error) });
-  }
-}
-
-/**
  * Operation: progressiveExpandMultiple
  */
 async function runProgressiveExpandMultiple() {
@@ -1186,7 +1144,7 @@ async function runDemo() {
         await runAdvanceNextMultiple();
         break;
       case '15':
-        await runExplain();
+        log.info('Explain is now handled via the upstream @almadar-io/knowledge graph-operations API.');
         break;
       case '17':
         await createSeed();

@@ -472,6 +472,7 @@ export const ConceptDetailPage: React.FC = () => {
       onSelectForQuestion={(sel) => emit('UI:SELECT_FOR_QUESTION', { selectionText: sel.text, selectionTextChunks: sel.textChunks, posTop: sel.position.top, posLeft: sel.position.left })}
       onSelectForNote={(sel) => emit('UI:SELECT_FOR_NOTE', { selectionText: sel.text, selectionTextChunks: sel.textChunks, posTop: sel.position.top, posLeft: sel.position.left })}
       onAnnotationClick={(type, annotation) => emit('UI:ANNOTATION_CLICK', { type, annotationId: annotation.id })}
+      concept={concept ? { id: conceptId || concept.name, name: concept.name, description: concept.description } : undefined}
       disabled={localLessonLoading || isExplaining || isAnswering}
     />
   ) : null;

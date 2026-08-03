@@ -279,55 +279,6 @@ export const ConceptsAPI = {
     });
   },
 
-  explainConcept: async (
-    request: ExplainConceptRequest,
-    onStream?: (chunk: string) => void
-  ): Promise<ConceptOperationResponse> => {
-    const headers = await withAuthHeaders();
-    
-    // If onStream is provided, use streaming
-    if (onStream) {
-      return handleStreamingRequest<ConceptOperationResponse>({
-        endpoint: '/api/explain-concept',
-        requestBody: request,
-        headers,
-        onStream,
-        onData: () => {
-          // No additional processing needed for each data chunk
-        },
-        onDone: (data, fullContent) => {
-          // Create the final result with the complete concept
-          // Note: trim() only removes leading/trailing whitespace, preserving all internal newlines
-          const concept: Concept = {
-            ...request.concept,
-            lesson: fullContent.trim(),
-            prerequisites: data.prerequisites,
-          };
-          return { 
-            concepts: [concept],
-            prompt: data.prompt,
-          };
-        },
-        fallbackResult: (fullContent) => {
-          // Fallback: create result from accumulated content
-          // Note: trim() only removes leading/trailing whitespace, preserving all internal newlines
-          const concept: Concept = {
-            ...request.concept,
-            lesson: fullContent.trim(),
-          };
-          return { concepts: [concept] };
-        },
-      });
-    }
-
-    // Non-streaming fallback
-    return apiClient.fetch('/api/explain-concept', {
-      method: 'POST',
-      headers: { "Content-Type": "application/json", ...headers },
-      body: JSON.stringify(request),
-    });
-  },
-
   generateLayerPractice: async (
     request: GenerateLayerPracticeRequest,
     onStream?: (chunk: string) => void

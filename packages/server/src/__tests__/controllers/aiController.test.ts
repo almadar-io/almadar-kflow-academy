@@ -52,7 +52,6 @@ jest.mock('@almadar/server', () => ({
 describe('aiController exports', () => {
   it('exports expected handler functions', () => {
     expect(typeof aiController.health).toBe('function');
-    expect(typeof aiController.explainConcept).toBe('function');
     expect(typeof aiController.generateLayerPracticeHandler).toBe('function');
     expect(typeof aiController.answerQuestionHandler).toBe('function');
     expect(typeof aiController.generateFlashCardsHandler).toBe('function');

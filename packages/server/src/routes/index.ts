@@ -1,7 +1,6 @@
 import { Router } from 'express';
 import {
   health,
-  explainConcept,
   generateLayerPracticeHandler,
   answerQuestionHandler,
   customOperationHandler,
@@ -58,7 +57,6 @@ router.use('/concept-chat', conceptChatRoutes);
 router.use('/concept-icon', conceptIconRoutes);
 router.use('/companion', companionRoutes);
 router.use('/migration', migrationRoutes);
-router.post('/explain-concept', authenticateFirebase, explainConcept);
 router.post('/custom-operation', authenticateFirebase, customOperationHandler);
 router.post('/generate-layer-practice', authenticateFirebase, generateLayerPracticeHandler);
 router.post('/answer-question', authenticateFirebase, answerQuestionHandler);

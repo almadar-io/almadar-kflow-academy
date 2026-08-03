@@ -26,7 +26,7 @@ async function main() {
   const config = { uid, accessLayer, graphIds, provider, model, layerCohesionGraphOffset: graphOffset };
   console.log('Running layer cohesion eval (3 layers)...\n');
 
-  const result = await layerCohesionEval.run(config, graphOffset);
+  const result = await layerCohesionEval.run(config);
 
   console.log(`\n${'='.repeat(60)}`);
   console.log(`Result: ${result.success ? '✅ PASS' : '❌ FAIL'} | Score: ${(result.score * 100).toFixed(0)}%`);
