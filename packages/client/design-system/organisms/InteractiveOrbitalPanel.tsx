@@ -24,13 +24,13 @@ import {
 } from '@almadar/ui';
 
 export type InteractiveOrbitalType =
-  | "chart"
-  | "simulation"
+  | "algorithms"
   | "math"
   | "physics"
   | "biology"
   | "chemistry"
-  | "probability";
+  | "probability"
+  | "freeform";
 
 export interface InteractiveOrbitalPanelProps {
   /** Marker type */

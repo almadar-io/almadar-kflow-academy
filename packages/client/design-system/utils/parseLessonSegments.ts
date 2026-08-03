@@ -107,7 +107,7 @@ export const parseMarkdownWithCodeBlocks = (
  * - <reflect>prompt</reflect> - Reflection prompts
  * - <bloom level="level"><question>q</question><answer>a</answer></bloom> - Bloom's taxonomy questions
  * - <question>q</question><answer>a</answer> - Regular quiz questions
- * - <visualize type="chart|simulation|math|physics|biology|chemistry|probability" description="..." /> - Interactive visualizations
+ * - <visualize type="algorithms|math|physics|biology|chemistry|probability|freeform" description="..." /> - Interactive visualizations
  *
  * Also handles fenced code blocks (```language...```)
  */
@@ -146,7 +146,7 @@ export const parseLessonSegments = (lesson: string | undefined): Segment[] => {
     "(?<reflect><reflect>(?<reflectContent>[\\s\\S]*?)<\\/reflect>)|" +
       "(?<bloom><bloom\\s+level=\"(?<bloomLevel>remember|understand|apply|analyze|evaluate|create)\">(?<bloomBody>[\\s\\S]*?)<\\/bloom>)|" +
       "(?<quiz><question>(?<quizQuestion>[\\s\\S]*?)<\\/question>\\s*<answer>(?<quizAnswer>[\\s\\S]*?)<\\/answer>)|" +
-      "(?<visualize><visualize\\s+type=\"(?<vizType>chart|simulation|math|physics|biology|chemistry|probability)\"\\s+description=\"(?<vizDesc>[^\"]*?)\"\\s*\\/?>)",
+      "(?<visualize><visualize\\s+type=\"(?<vizType>algorithms|math|physics|biology|chemistry|probability|freeform)\"\\s+description=\"(?<vizDesc>[^\"]*?)\"\\s*\\/?>)",
     "gi",
   );
 
