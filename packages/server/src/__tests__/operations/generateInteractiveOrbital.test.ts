@@ -45,7 +45,7 @@ describe('generateInteractiveOrbital', () => {
   it('should return schema from SDK generate result for chart', async () => {
     const result = await generateInteractiveOrbital(
       {
-        type: 'chart',
+        type: 'math',
         concept,
         markerDescription: 'Bar chart of row vector components.',
       },
@@ -67,7 +67,7 @@ describe('generateInteractiveOrbital', () => {
   it('should return schema from SDK generate result for simulation', async () => {
     const result = await generateInteractiveOrbital(
       {
-        type: 'simulation',
+        type: 'physics',
         concept,
         markerDescription: 'Projectile motion preset.',
       },
@@ -110,7 +110,7 @@ describe('generateInteractiveOrbital', () => {
     await expect(
       generateInteractiveOrbital(
         {
-          type: 'chart',
+          type: 'math',
           concept,
           markerDescription: 'A chart.',
         },
@@ -125,7 +125,7 @@ describe('generateInteractiveOrbital', () => {
     await expect(
       generateInteractiveOrbital(
         {
-          type: 'chart',
+          type: 'math',
           concept,
           markerDescription: 'A chart.',
         },

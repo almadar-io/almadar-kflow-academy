@@ -856,9 +856,9 @@ export async function generateInteractiveOrbitalHandler(
   try {
     const { type, concept, markerDescription } = req.body;
 
-    const validTypes = ['chart', 'simulation', 'math', 'physics', 'biology', 'chemistry', 'probability'] as const;
+    const validTypes = ['algorithms', 'math', 'physics', 'biology', 'chemistry', 'probability'] as const;
     if (!type || !validTypes.includes(type)) {
-      res.status(400).json({ error: 'type is required and must be one of: chart, simulation, math, physics, biology, chemistry, probability' });
+      res.status(400).json({ error: 'type is required and must be one of: algorithms, math, physics, biology, chemistry, probability' });
       return;
     }
 

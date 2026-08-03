@@ -145,8 +145,7 @@ export interface RunCodeSimulationResponse {
 }
 
 export type InteractiveOrbitalType =
-  | 'chart'
-  | 'simulation'
+  | 'algorithms'
   | 'math'
   | 'physics'
   | 'biology'

@@ -2,8 +2,7 @@ import type { OrbitalSchema } from '@almadar/core';
 import { apiClient } from '../../../services/apiClient';
 
 export type InteractiveOrbitalType =
-  | 'chart'
-  | 'simulation'
+  | 'algorithms'
   | 'math'
   | 'physics'
   | 'biology'

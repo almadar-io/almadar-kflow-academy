@@ -10,8 +10,7 @@ import { getLearningOrganisms } from '@almadar-io/knowledge/server';
 import type { Concept } from '../types/concept';
 
 export type InteractiveOrbitalType =
-  | 'chart'
-  | 'simulation'
+  | 'algorithms'
   | 'math'
   | 'physics'
   | 'biology'
@@ -26,12 +25,7 @@ export interface GenerateInteractiveOrbitalOptions {
 
 function buildPrompt(options: GenerateInteractiveOrbitalOptions): string {
   const { type, concept, markerDescription } = options;
-  const label =
-    type === 'chart'
-      ? 'chart visualization'
-      : type === 'simulation'
-        ? 'physics simulation'
-        : `${type} visualization`;
+  const label = `${type} visualization`;
   return `Create a single interactive ${label} for a lesson about "${concept.name}".
 
 Concept description: ${concept.description}
