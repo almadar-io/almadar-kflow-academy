@@ -15,14 +15,14 @@
     "canonicalize:concepts": "tsx src/scripts/canonicalizeConcepts.ts"
   },
   "dependencies": {
-    "@almadar-io/knowledge": "^2.13.1",
+    "@almadar-io/knowledge": "^2.13.2",
     "@almadar-io/migration": "^0.1.0",
-    "@almadar-io/rabit": "^0.65.3",
-    "@almadar/core": "^10.41.0",
+    "@almadar-io/rabit": "^0.65.5",
+    "@almadar/core": "^10.52.0",
     "@almadar/llm": "^2.39.1",
     "@almadar/logger": "^1.11.0",
     "@almadar/sdk": "^0.2.5",
-    "@almadar/server": "^2.27.0",
+    "@almadar/server": "^2.34.0",
     "@kflow-academy/shared": "workspace:*",
     "apollo-server-express": "^3.13.0",
     "class-transformer": "^0.5.1",
@@ -44,7 +44,7 @@
     "zod": "^3.22.0"
   },
   "devDependencies": {
-    "@almadar/eslint-plugin": "^2.14.0",
+    "@almadar/eslint-plugin": "^2.15.0",
     "@types/cors": "^2.8.17",
     "@types/express": "^5.0.0",
     "@types/jest": "^29.5.11",
