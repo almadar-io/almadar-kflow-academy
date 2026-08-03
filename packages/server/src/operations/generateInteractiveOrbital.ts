@@ -6,6 +6,7 @@
 
 import type { OrbitalSchema } from '@almadar/core';
 import { AlmadarClient } from '@almadar/sdk/client';
+import { getLearningOrganisms } from '@almadar-io/knowledge/server';
 import type { Concept } from '../types/concept';
 
 export type InteractiveOrbitalType =
@@ -22,26 +23,6 @@ export interface GenerateInteractiveOrbitalOptions {
   concept: Concept;
   markerDescription: string;
 }
-
-// Organism-level allow-list only. almadar-rabit's Coordinator only selects
-// top-level organisms (`pick_organism`), and `extraTraits` is no longer
-// LLM-writable, so atoms/molecules/variations are not selectable here.
-// Keeping the list narrow to real `learning-*` organisms for the baseline.
-const CATALOG: Record<
-  InteractiveOrbitalType,
-  { stdAllowList: string[]; catalogMode: 'subset' }
-> = {
-  // NOTE: these are the real organism names in @almadar/std's ui/learning
-  // registry. Each lab exposes a single orbital with an "@config.mode" knob
-  // that selects the specific visualization (function-plot, wave, cell, etc.).
-  chart: { stdAllowList: ['learning-math-lab'], catalogMode: 'subset' },
-  simulation: { stdAllowList: ['learning-physics-lab'], catalogMode: 'subset' },
-  math: { stdAllowList: ['learning-math-lab'], catalogMode: 'subset' },
-  physics: { stdAllowList: ['learning-physics-lab'], catalogMode: 'subset' },
-  biology: { stdAllowList: ['learning-biology-lab'], catalogMode: 'subset' },
-  chemistry: { stdAllowList: ['learning-chemistry-lab'], catalogMode: 'subset' },
-  probability: { stdAllowList: ['learning-probability-lab'], catalogMode: 'subset' },
-};
 
 function buildPrompt(options: GenerateInteractiveOrbitalOptions): string {
   const { type, concept, markerDescription } = options;
@@ -78,7 +59,10 @@ export async function generateInteractiveOrbital(
   deps: GenerateInteractiveOrbitalDependencies = {},
 ): Promise<OrbitalSchema> {
   const { type, concept, markerDescription } = options;
-  const { stdAllowList, catalogMode } = CATALOG[type];
+
+  // Dynamic allowlist — all learning organisms from @almadar/std.
+  // Derived at runtime so new organisms appear automatically.
+  const stdAllowList = getLearningOrganisms();
 
   const apiKey = process.env.ALMADAR_API_KEY;
   if (!apiKey) {
@@ -95,7 +79,7 @@ export async function generateInteractiveOrbital(
     endUserId: concept.id,
     provider: 'deepseek',
     model: 'deepseek-v4-flash',
-    catalogMode,
+    catalogMode: 'subset',
     stdAllowList,
   });
 
