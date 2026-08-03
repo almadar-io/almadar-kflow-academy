@@ -15,9 +15,9 @@
     "canonicalize:concepts": "tsx src/scripts/canonicalizeConcepts.ts"
   },
   "dependencies": {
-    "@almadar-io/knowledge": "^2.12.1",
+    "@almadar-io/knowledge": "^2.13.1",
     "@almadar-io/migration": "^0.1.0",
-    "@almadar-io/rabit": "^0.65.1",
+    "@almadar-io/rabit": "^0.65.3",
     "@almadar/core": "^10.41.0",
     "@almadar/llm": "^2.39.1",
     "@almadar/logger": "^1.11.0",

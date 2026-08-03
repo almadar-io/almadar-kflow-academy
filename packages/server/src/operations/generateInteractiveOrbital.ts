@@ -15,7 +15,8 @@ export type InteractiveOrbitalType =
   | 'physics'
   | 'biology'
   | 'chemistry'
-  | 'probability';
+  | 'probability'
+  | 'freeform';
 
 export interface GenerateInteractiveOrbitalOptions {
   type: InteractiveOrbitalType;
