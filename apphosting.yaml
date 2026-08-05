@@ -96,8 +96,11 @@ env:
   - variable: ALMADAR_API_KEY
     secret: ALMADAR_API_KEY
 
+  # Direct to the builder's App Hosting (Cloud Run) gateway, NOT through Firebase
+  # Hosting (studio.almadar.io): Firebase Hosting's /api rewrite truncates long SSE
+  # generation streams (502 mid-stream). See docs/Almadar_Studio_Kflow_SSE_Gaps.md.
   - variable: ALMADAR_BASE_URL
-    value: "https://studio.almadar.io"
+    value: "https://kflow-builder-server--kflow-b3a39.us-central1.hosted.app"
     availability:
       - RUNTIME
 
