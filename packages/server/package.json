@@ -17,9 +17,9 @@
   "dependencies": {
     "@almadar-io/knowledge": "^2.13.2",
     "@almadar-io/migration": "^0.1.0",
-    "@almadar-io/rabit": "^0.65.5",
-    "@almadar/core": "^10.52.0",
-    "@almadar/llm": "^2.39.1",
+    "@almadar-io/rabit": "^0.65.9",
+    "@almadar/core": "^10.56.0",
+    "@almadar/llm": "^2.40.0",
     "@almadar/logger": "^1.11.0",
     "@almadar/sdk": "^0.2.5",
     "@almadar/server": "^2.34.0",

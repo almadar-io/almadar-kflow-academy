@@ -20,7 +20,7 @@
   "dependencies": {
     "@almadar-io/knowledge": "^2.13.2",
     "@almadar-io/migration": "^0.1.0",
-    "@almadar/core": "^10.52.0"
+    "@almadar/core": "^10.56.0"
   },
   "devDependencies": {
     "@typescript/native": "npm:typescript@^7.0.2",
