@@ -22,15 +22,9 @@ import {
   Card,
   useEventBus,
 } from '@almadar/ui';
+import type { InteractiveOrbitalType } from "@features/learning/api/interactiveOrbitalAPI";
 
-export type InteractiveOrbitalType =
-  | "algorithms"
-  | "math"
-  | "physics"
-  | "biology"
-  | "chemistry"
-  | "probability"
-  | "freeform";
+export type { InteractiveOrbitalType };
 
 export interface InteractiveOrbitalPanelProps {
   /** Marker type */
@@ -47,8 +41,12 @@ export interface InteractiveOrbitalPanelProps {
       markerDescription: string;
     },
   ) => Promise<OrbitalSchema | null>;
-  /** Tiers of config knobs to expose as auto-derived controls. */
+  /** Tiers of config knobs to expose as auto-derived controls (only used when `showControls` is true). */
   exposedTiers?: string[];
+  /** Whether to render the AlmadarApp config controls. @default false */
+  showControls?: boolean;
+  /** Current generation phase, streamed from the server. */
+  phase?: string | null;
   /** Whether to auto-generate when the panel mounts */
   autoGenerate?: boolean;
   /** Additional CSS classes */
@@ -61,6 +59,8 @@ export const InteractiveOrbitalPanel: React.FC<InteractiveOrbitalPanelProps> = (
   concept,
   onGenerate,
   exposedTiers = ["presentation", "domain"],
+  showControls = false,
+  phase = null,
   autoGenerate = false,
   className,
 }) => {
@@ -130,6 +130,12 @@ export const InteractiveOrbitalPanel: React.FC<InteractiveOrbitalPanelProps> = (
           </Button>
         </HStack>
 
+        {isGenerating && phase && (
+          <Typography variant="small" className="text-[var(--color-muted-foreground)]">
+            {phase}
+          </Typography>
+        )}
+
         {error && (
           <HStack
             gap="sm"
@@ -142,7 +148,13 @@ export const InteractiveOrbitalPanel: React.FC<InteractiveOrbitalPanelProps> = (
 
         {schema && (
           <Box className="border border-border rounded-lg overflow-hidden">
-            <AlmadarApp schema={schema} mode="static" height="24rem" exposedTiers={exposedTiers} />
+            <AlmadarApp
+              schema={schema}
+              mode="static"
+              height="24rem"
+              showControls={showControls}
+              {...(showControls ? { exposedTiers } : {})}
+            />
           </Box>
         )}
       </VStack>

@@ -1,6 +1,9 @@
 import { Request, Response } from 'express';
+import { createHash } from 'node:crypto';
 import { createLogger } from '@almadar/logger';
 import { parseJsonResponse } from '@almadar/llm';
+import type { OrbitalSchema } from '@almadar/core';
+import { getVisualizationCapabilities } from '@almadar-io/knowledge/server';
 
 /** Raw LLM concept payload — a Concept plus the delete marker the model emits. */
 type StreamedConceptItem = Concept & { delete?: boolean };
@@ -25,6 +28,7 @@ import { getUserGraphById } from '../services/graphService';
 import { upsertUser } from '../services/userService';
 import { saveLayer, getLayerByNumber } from '../services/layerService';
 import { processPrerequisitesFromLesson } from '../utils/prerequisites';
+import { hybridCache, CACHE_TTL } from '../services/cacheService';
 import { setupSSE, sendSSEEvent, sendSSEDone, closeSSE } from '@almadar/server';
 type StreamChunk = { choices?: Array<{ delta?: { content?: string } }>; content?: string };
 
@@ -849,6 +853,24 @@ export async function progressiveExploreHandler(
   }
 }
 
+interface CachedInteractiveOrbital {
+  schema: OrbitalSchema;
+  appId?: string;
+}
+
+/** Deterministic, stable appId for a (concept,type) — same inputs always resolve the same app. */
+function interactiveOrbitalAppId(conceptKey: string, type: string): string {
+  const hash = createHash('sha1').update(conceptKey).digest('hex').slice(0, 12);
+  return `kflow-io-${hash}-${type}`;
+}
+
+/**
+ * GET /api/visualization-capabilities
+ */
+export function visualizationCapabilitiesHandler(req: Request, res: Response): void {
+  res.json({ capabilities: getVisualizationCapabilities() });
+}
+
 export async function generateInteractiveOrbitalHandler(
   req: Request<{}, GenerateInteractiveOrbitalResponse | ErrorResponse, GenerateInteractiveOrbitalRequest>,
   res: Response<GenerateInteractiveOrbitalResponse | ErrorResponse>
@@ -856,9 +878,9 @@ export async function generateInteractiveOrbitalHandler(
   try {
     const { type, concept, markerDescription } = req.body;
 
-    const validTypes = ['algorithms', 'math', 'physics', 'biology', 'chemistry', 'probability', 'freeform'] as const;
+    const validTypes = getVisualizationCapabilities().map((capability) => capability.type);
     if (!type || !validTypes.includes(type)) {
-      res.status(400).json({ error: 'type is required and must be one of: algorithms, math, physics, biology, chemistry, probability, freeform' });
+      res.status(400).json({ error: `type is required and must be one of: ${validTypes.join(', ')}` });
       return;
     }
 
@@ -881,9 +903,88 @@ export async function generateInteractiveOrbitalHandler(
       });
     }
 
-    const schema = await generateInteractiveOrbital({ type, concept, markerDescription });
+    const conceptKey = concept.id ?? concept.name;
+    const cacheKey = `interactiveOrbital:${conceptKey}:${type}`;
+    const regenerate = req.query.regenerate === 'true';
+    const wantsStream = req.headers.accept?.includes('text/event-stream') || req.query.stream === 'true';
 
-    res.json({ schema });
+    const cached = await hybridCache.get<CachedInteractiveOrbital>(cacheKey);
+
+    if (cached && !regenerate) {
+      if (wantsStream) {
+        setupSSE(res);
+        sendSSEEvent(res, {
+          type: 'complete',
+          data: { schema: cached.schema, appId: cached.appId, cached: true },
+          timestamp: Date.now(),
+        });
+        sendSSEDone(res);
+        closeSSE(res);
+        return;
+      }
+      res.json({ schema: cached.schema, appId: cached.appId, cached: true });
+      return;
+    }
+
+    // Locked policy: pin only when this is a regenerate of an already-generated
+    // (concept,type). First-ever generation is always unpinned.
+    const shouldPin = regenerate && cached !== null;
+    const appId = interactiveOrbitalAppId(conceptKey, type);
+
+    if (wantsStream) {
+      setupSSE(res);
+      let clientDisconnected = false;
+      const cleanup = () => { clientDisconnected = true; if (!res.writableEnded) res.end(); };
+      req.on('close', cleanup);
+      req.on('aborted', cleanup);
+      try {
+        const result = await generateInteractiveOrbital({
+          type,
+          concept,
+          markerDescription,
+          appId,
+          pin: shouldPin,
+          onEvent: (phase) => {
+            if (!clientDisconnected && !res.writableEnded) {
+              try {
+                sendSSEEvent(res, { type: 'message', data: { content: phase }, timestamp: Date.now() });
+              } catch {
+                clientDisconnected = true;
+              }
+            }
+          },
+        });
+
+        if (!clientDisconnected && !res.writableEnded) {
+          const resolvedAppId = result.appId ?? appId;
+          await hybridCache.set(cacheKey, { schema: result.schema, appId: resolvedAppId }, CACHE_TTL.INTERACTIVE_ORBITAL);
+          sendSSEEvent(res, {
+            type: 'complete',
+            data: { schema: result.schema, appId: resolvedAppId, cached: false },
+            timestamp: Date.now(),
+          });
+          sendSSEDone(res);
+        }
+      } catch (streamError) {
+        log.error('Error generating interactive orbital (stream)', { error: streamError instanceof Error ? streamError.message : String(streamError) });
+        if (!clientDisconnected && !res.writableEnded) {
+          try {
+            sendSSEEvent(res, { type: 'error', data: { error: 'Failed to generate interactive orbital' }, timestamp: Date.now() });
+          } catch { /* client gone */ }
+        }
+      } finally {
+        req.removeListener('close', cleanup);
+        req.removeListener('aborted', cleanup);
+        if (!res.writableEnded) closeSSE(res);
+      }
+      return;
+    }
+
+    const result = await generateInteractiveOrbital({ type, concept, markerDescription, appId, pin: shouldPin });
+    const resolvedAppId = result.appId ?? appId;
+    await hybridCache.set(cacheKey, { schema: result.schema, appId: resolvedAppId }, CACHE_TTL.INTERACTIVE_ORBITAL);
+
+    res.json({ schema: result.schema, appId: resolvedAppId, cached: false });
   } catch (error) {
     log.error('Error generating interactive orbital', { error: error instanceof Error ? error.message : String(error) });
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';

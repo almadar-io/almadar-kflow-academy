@@ -15,7 +15,8 @@ import {
   progressiveExploreHandler,
   generateFlashCardsHandler,
   runCodeSimulationHandler,
-  generateInteractiveOrbitalHandler
+  generateInteractiveOrbitalHandler,
+  visualizationCapabilitiesHandler
 } from '../controllers/aiController';
 import { authenticateFirebase } from '@almadar/server';
 import graphRoutes from './graphs';
@@ -63,5 +64,6 @@ router.post('/answer-question', authenticateFirebase, answerQuestionHandler);
 router.post('/generate-flash-cards', authenticateFirebase, generateFlashCardsHandler);
 router.post('/run-code-simulation', authenticateFirebase, runCodeSimulationHandler);
 router.post('/generate-interactive-orbital', authenticateFirebase, generateInteractiveOrbitalHandler);
+router.get('/visualization-capabilities', authenticateFirebase, visualizationCapabilitiesHandler);
 
 export default router;

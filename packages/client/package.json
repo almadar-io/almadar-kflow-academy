@@ -16,7 +16,7 @@
     "@almadar-io/knowledge": "^2.13.2",
     "@almadar/core": "^10.56.0",
     "@almadar/logger": "^1.11.0",
-    "@almadar/sdk": "^0.2.5",
+    "@almadar/sdk": "^0.3.0",
     "@almadar/syntax": "^1.15.0",
     "@almadar/ui": "^5.146.3",
     "@apollo/client": "^3.14.0",

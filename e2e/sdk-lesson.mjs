@@ -40,8 +40,18 @@ await check('SDK lesson endpoint reachable and authenticated', async () => {
   await page.goto(`${BASE}/api/health`, { waitUntil: 'domcontentloaded', timeout: 30000 });
   await page.waitForTimeout(500);
 
+  // Derive the type from the live capability roster — never hardcode it (a fixed
+  // `type: 'chart'` here was ALWAYS invalid; the real capability is `charts`).
+  const capabilities = await page.evaluate(async () => {
+    const r = await fetch('/api/visualization-capabilities');
+    return r.json().catch(() => ({}));
+  });
+  const list = capabilities?.capabilities;
+  assert(Array.isArray(list) && list.length > 0, `capabilities list is empty or missing: ${JSON.stringify(capabilities).slice(0, 160)}`);
+  const type = list.find((c) => c.type === 'biology')?.type ?? list[0].type;
+
   const request = {
-    type: 'chart',
+    type,
     concept: {
       name: 'Photosynthesis',
       description: 'How plants convert light energy into chemical energy.',

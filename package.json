@@ -19,6 +19,7 @@
     "test": "pnpm -r --if-present test",
     "test:e2e": "node e2e/flows.mjs",
     "test:e2e:sdk-lesson": "node e2e/sdk-lesson.mjs",
+    "test:e2e:sdk-battery": "node e2e/sdk-battery.mjs",
     "test:e2e:profiling": "node e2e/profiling.mjs",
     "lint": "pnpm -r --if-present lint",
     "clean": "pnpm -r --if-present clean && rm -rf node_modules",

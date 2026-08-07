@@ -144,14 +144,8 @@ export interface RunCodeSimulationResponse {
   testResults: RunCodeSimulationTestResult[];
 }
 
-export type InteractiveOrbitalType =
-  | 'algorithms'
-  | 'math'
-  | 'physics'
-  | 'biology'
-  | 'chemistry'
-  | 'probability'
-  | 'freeform';
+import type { InteractiveOrbitalType } from '@almadar-io/knowledge';
+export type { InteractiveOrbitalType };
 
 export interface GenerateInteractiveOrbitalRequest {
   type: InteractiveOrbitalType;
@@ -161,6 +155,8 @@ export interface GenerateInteractiveOrbitalRequest {
 
 export interface GenerateInteractiveOrbitalResponse {
   schema: OrbitalSchema;
+  appId?: string;
+  cached?: boolean;
 }
 
 export interface CustomOperationRequest {

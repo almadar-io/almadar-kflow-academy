@@ -15,6 +15,7 @@ module.exports = {
         esModuleInterop: true,
         allowSyntheticDefaultImports: true,
         skipLibCheck: true,
+        ignoreDeprecations: '6.0',
       },
     }],
     '^.+\\.(ts|tsx)$': ['ts-jest', {
@@ -29,6 +30,7 @@ module.exports = {
         allowSyntheticDefaultImports: true,
         strict: false,
         skipLibCheck: true,
+        ignoreDeprecations: '6.0',
         baseUrl: '.',
         paths: {
           '@/*': ['src/*'],
@@ -51,6 +53,7 @@ module.exports = {
     '^@design-system/(.*)$': '<rootDir>/design-system/$1',
     '^@features/(.*)$': '<rootDir>/src/features/$1',
     '^@almadar/logger$': '<rootDir>/src/__tests__/__mocks__/almadarLoggerMock.js',
+    '^@almadar/sdk(/.*)?$': '<rootDir>/src/__tests__/__mocks__/almadarSdkMock.js',
     '^react$': '<rootDir>/node_modules/react/index.js',
     '^react-dom$': '<rootDir>/node_modules/react-dom/index.js',
     '^react-dom/(.*)$': '<rootDir>/node_modules/react-dom/$1',

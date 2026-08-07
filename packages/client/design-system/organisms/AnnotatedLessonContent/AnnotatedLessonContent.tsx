@@ -91,7 +91,7 @@ export const AnnotatedLessonContent: React.FC<AnnotatedLessonContentProps> = ({
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const { run: runCodeSimulation } = useRunCodeSimulation();
-  const { generate: generateInteractiveOrbital } = useGenerateInteractiveOrbital();
+  const { generate: generateInteractiveOrbital, phase: interactiveOrbitalPhase } = useGenerateInteractiveOrbital();
 
   const handleRunCodeSimulation = useCallback(
     async (code: string, language: string) => runCodeSimulation(language, code),
@@ -231,6 +231,7 @@ export const AnnotatedLessonContent: React.FC<AnnotatedLessonContentProps> = ({
               description={description}
               concept={concept}
               onGenerate={handleGenerateInteractiveOrbital}
+              phase={interactiveOrbitalPhase}
               autoGenerate={false}
             />
           ) : undefined}

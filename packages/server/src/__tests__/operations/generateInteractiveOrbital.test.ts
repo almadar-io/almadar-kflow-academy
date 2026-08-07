@@ -1,6 +1,8 @@
 import { jest, describe, beforeEach, it, expect } from '@jest/globals';
 import type { OrbitalSchema } from '@almadar/core';
-import type { AlmadarClient } from '@almadar/sdk/client';
+import type { AlmadarClient, GenerateOptions, GenerateResult } from '@almadar/sdk/client';
+import { getPinTargetForType, getModeMenuForOrganism } from '@almadar-io/knowledge/server';
+import { config } from '../../config/env';
 import {
   generateInteractiveOrbital,
   type GenerateInteractiveOrbitalDependencies,
@@ -29,12 +31,12 @@ const concept = {
 };
 
 describe('generateInteractiveOrbital', () => {
-  let generateMock: jest.Mock<() => Promise<{ schema: OrbitalSchema; appId?: string }>>;
+  let generateMock: jest.Mock<(input: GenerateOptions) => Promise<GenerateResult>>;
   let deps: GenerateInteractiveOrbitalDependencies;
 
   beforeEach(() => {
-    process.env.ALMADAR_API_KEY = 'sk_test_key';
-    process.env.ALMADAR_BASE_URL = 'http://localhost:3999';
+    config.almadar.apiKey = 'sk_test_key';
+    config.almadar.baseUrl = 'http://localhost:3999';
     generateMock = jest.fn(async () => ({ schema: sampleSchema, appId: 'test-app-id' }));
     deps = {
       createClient: () =>
@@ -42,7 +44,7 @@ describe('generateInteractiveOrbital', () => {
     };
   });
 
-  it('should return schema from SDK generate result for chart', async () => {
+  it('should return schema from SDK generate result for math', async () => {
     const result = await generateInteractiveOrbital(
       {
         type: 'math',
@@ -52,7 +54,7 @@ describe('generateInteractiveOrbital', () => {
       deps,
     );
 
-    expect(result).toEqual(sampleSchema);
+    expect(result.schema).toEqual(sampleSchema);
     expect(generateMock).toHaveBeenCalledTimes(1);
     const request = generateMock.mock.calls[0][0];
     expect(request.prompt).toContain('Row Vectors');
@@ -60,49 +62,84 @@ describe('generateInteractiveOrbital', () => {
     expect(request.endUserId).toBe(concept.id);
     expect(request.provider).toBe('deepseek');
     expect(request.model).toBe('deepseek-v4-flash');
-    expect(request.stdAllowList).toEqual(['learning-math-lab']);
-    expect(request.catalogMode).toBe('subset');
-  });
-
-  it('should return schema from SDK generate result for simulation', async () => {
-    const result = await generateInteractiveOrbital(
-      {
-        type: 'physics',
-        concept,
-        markerDescription: 'Projectile motion preset.',
-      },
-      deps,
-    );
-
-    expect(result).toEqual(sampleSchema);
-    const request = generateMock.mock.calls[0][0];
-    expect(request.prompt).toContain('Row Vectors');
-    expect(request.prompt).toContain('@config.mode');
-    expect(request.stdAllowList).toEqual(['learning-physics-lab']);
+    expect(request.stdAllowList).toEqual(['learning-math', 'learning-math-lab']);
     expect(request.catalogMode).toBe('subset');
   });
 
   it.each([
-    ['math', ['learning-math-lab']],
-    ['physics', ['learning-physics-lab']],
-    ['biology', ['learning-biology-lab']],
-    ['chemistry', ['learning-chemistry-lab']],
-    ['probability', ['learning-probability-lab']],
+    ['math', ['learning-math', 'learning-math-lab']],
+    ['physics', ['learning-physics', 'learning-physics-lab']],
+    ['biology', ['learning-biology', 'learning-biology-lab']],
+    ['chemistry', ['learning-chemistry', 'learning-chemistry-lab']],
+    ['probability', ['learning-probability', 'learning-probability-lab']],
+    ['algorithms', ['learning-algorithms']],
+    ['diagram', ['learning-diagram']],
+    ['charts', ['learning-charts']],
   ] as const)(
-    'should map %s to its field-scoped lab allow-list',
+    'should map %s to its family (base + lab, where present) allow-list',
     async (type, expectedAllowList) => {
       const result = await generateInteractiveOrbital(
         { type, concept, markerDescription: 'test' },
         deps,
       );
-      expect(result).toEqual(sampleSchema);
+      expect(result.schema).toEqual(sampleSchema);
       const request = generateMock.mock.calls[0][0];
       expect(request.prompt).toContain('Row Vectors');
-      expect(request.prompt).toContain('@config.mode');
       expect(request.stdAllowList).toEqual(expectedAllowList);
       expect(request.catalogMode).toBe('subset');
     },
   );
+
+  it('prompt contains only the requested type\'s mode values', async () => {
+    const physicsMenu = getModeMenuForOrganism(getPinTargetForType('physics')!.organism)!;
+    await generateInteractiveOrbital(
+      { type: 'physics', concept, markerDescription: 'Projectile motion preset.' },
+      deps,
+    );
+    const request = generateMock.mock.calls[0][0];
+    for (const value of physicsMenu.values) {
+      expect(request.prompt).toContain(value);
+    }
+    expect(request.prompt).not.toContain('coordinate-plane');
+  });
+
+  it('omits the concept description line when description is empty', async () => {
+    const conceptWithoutDescription = { ...concept, description: '' };
+    await generateInteractiveOrbital(
+      { type: 'math', concept: conceptWithoutDescription, markerDescription: 'test' },
+      deps,
+    );
+    const request = generateMock.mock.calls[0][0];
+    expect(request.prompt).not.toContain('undefined');
+  });
+
+  it('includes pin when options.pin is true and a pin target exists', async () => {
+    await generateInteractiveOrbital(
+      { type: 'math', concept, markerDescription: 'test', pin: true },
+      deps,
+    );
+    const request = generateMock.mock.calls[0][0];
+    expect(request.pin).toEqual(getPinTargetForType('math'));
+  });
+
+  it('omits pin when options.pin is not set', async () => {
+    await generateInteractiveOrbital(
+      { type: 'math', concept, markerDescription: 'test' },
+      deps,
+    );
+    const request = generateMock.mock.calls[0][0];
+    expect(request.pin).toBeUndefined();
+  });
+
+  it('omits pin when options.pin is true but the type has no deterministic pin target', async () => {
+    expect(getPinTargetForType('algorithms')).toBeNull();
+    await generateInteractiveOrbital(
+      { type: 'algorithms', concept, markerDescription: 'test', pin: true },
+      deps,
+    );
+    const request = generateMock.mock.calls[0][0];
+    expect(request.pin).toBeUndefined();
+  });
 
   it('should throw when SDK generate rejects', async () => {
     generateMock.mockRejectedValueOnce(new Error('Generation failed'));
@@ -120,7 +157,7 @@ describe('generateInteractiveOrbital', () => {
   });
 
   it('should throw when ALMADAR_API_KEY is missing', async () => {
-    delete process.env.ALMADAR_API_KEY;
+    config.almadar.apiKey = '';
 
     await expect(
       generateInteractiveOrbital(

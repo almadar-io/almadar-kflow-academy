@@ -1,12 +1,5 @@
-export {
-  parseLessonSegments,
-  parseMarkdownWithCodeBlocks,
-} from "./parseLessonSegments";
-
 // LaTeX delimiter normalization for math rendering
 export { normalizeLatexDelimiters } from "./normalizeLatexDelimiters";
-
-export type { Segment, BloomLevel } from "./parseLessonSegments";
 
 // Knowledge constants
 export {
