@@ -30,7 +30,7 @@ export interface GenerateInteractiveOrbitalResult {
   meta?: GenerateMeta;
 }
 
-function buildPrompt(options: GenerateInteractiveOrbitalOptions): string {
+export function buildPrompt(options: GenerateInteractiveOrbitalOptions): string {
   const { type, concept, markerDescription } = options;
   const label = `${type} visualization`;
   const hasDescription = typeof concept.description === 'string' && concept.description.length > 0;

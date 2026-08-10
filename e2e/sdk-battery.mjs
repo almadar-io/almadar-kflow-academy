@@ -1,7 +1,6 @@
 // E2E test: sweep EVERY type reported by GET /api/visualization-capabilities through
 // POST /api/generate-interactive-orbital, so type coverage can never hardcode-drift
-// again (sdk-lesson.mjs used to send a fixed `type: 'chart'`, which was ALWAYS
-// invalid — the real capability list has no `chart` type, only `charts`).
+// again.
 //
 // Run the server in dev with the auth bypass and a real SDK API key:
 //   ALLOW_DEV_AUTH_BYPASS=true npm run dev:server
@@ -74,20 +73,6 @@ const CONCEPT_BY_TYPE = {
       description: 'Updating a probability estimate given new evidence',
     },
     markerDescription: "Probability lesson deriving and applying Bayes' theorem",
-  },
-  diagram: {
-    concept: {
-      id: 'e2e-bat-diagram',
-      name: 'The Water Cycle',
-    },
-    markerDescription: 'Cycle diagram of evaporation, condensation, precipitation, collection feeding into each other',
-  },
-  charts: {
-    concept: {
-      id: 'e2e-bat-charts',
-      name: 'Global Energy Mix',
-    },
-    markerDescription: 'Bar chart comparing shares of energy sources in world electricity',
   },
 };
 

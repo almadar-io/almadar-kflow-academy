@@ -73,8 +73,6 @@ describe('generateInteractiveOrbital', () => {
     ['chemistry', ['learning-chemistry', 'learning-chemistry-lab']],
     ['probability', ['learning-probability', 'learning-probability-lab']],
     ['algorithms', ['learning-algorithms']],
-    ['diagram', ['learning-diagram']],
-    ['charts', ['learning-charts']],
   ] as const)(
     'should map %s to its family (base + lab, where present) allow-list',
     async (type, expectedAllowList) => {

@@ -40,8 +40,7 @@ await check('SDK lesson endpoint reachable and authenticated', async () => {
   await page.goto(`${BASE}/api/health`, { waitUntil: 'domcontentloaded', timeout: 30000 });
   await page.waitForTimeout(500);
 
-  // Derive the type from the live capability roster — never hardcode it (a fixed
-  // `type: 'chart'` here was ALWAYS invalid; the real capability is `charts`).
+  // Derive the type from the live capability roster — never hardcode it.
   const capabilities = await page.evaluate(async () => {
     const r = await fetch('/api/visualization-capabilities');
     return r.json().catch(() => ({}));
