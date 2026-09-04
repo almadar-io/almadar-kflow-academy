@@ -8,10 +8,30 @@
 import './../config/env.js';
 import { config } from '../config/env.js';
 import { AlmadarClient } from '@almadar/sdk/client';
+import type { JsonValue } from '@almadar/core';
+
+type KnobValue = string | number | boolean;
+
+/** argv carries arbitrary JSON; the SDK's `pin.knobs` takes scalars only. Reject
+ *  anything else here rather than widening the SDK contract to match the input. */
+function parseKnobs(raw: string): Record<string, KnobValue> {
+  const parsed: JsonValue = JSON.parse(raw);
+  if (typeof parsed !== 'object' || parsed === null || Array.isArray(parsed)) {
+    throw new Error('knobsJson must be a JSON object');
+  }
+  const knobs: Record<string, KnobValue> = {};
+  for (const [key, value] of Object.entries(parsed)) {
+    if (typeof value !== 'string' && typeof value !== 'number' && typeof value !== 'boolean') {
+      throw new Error(`knob "${key}" must be a string, number or boolean`);
+    }
+    knobs[key] = value;
+  }
+  return knobs;
+}
 
 async function main(): Promise<void> {
   const organism = process.argv[2];
-  const knobs = process.argv[3] ? (JSON.parse(process.argv[3]) as Record<string, unknown>) : undefined;
+  const knobs = process.argv[3] ? parseKnobs(process.argv[3]) : undefined;
   const prompt = process.argv[4] ?? `Learning app on ${organism}`;
   if (!organism) {
     console.error('usage: runPinProbe.ts <organism> <knobsJson> [prompt]');
@@ -49,14 +69,16 @@ async function main(): Promise<void> {
   );
 }
 
-main().catch((error: unknown) => {
-  if (error instanceof Error) {
-    const details = Object.fromEntries(
-      Object.entries(error as unknown as Record<string, unknown>).filter(([k]) => k !== 'stack'),
-    );
-    console.error('💥 pin-probe failed:', error.message, JSON.stringify(details, null, 2));
-  } else {
-    console.error('💥 pin-probe failed:', String(error));
+void (async () => {
+  try {
+    await main();
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      const details = Object.fromEntries(Object.entries(error).filter(([k]) => k !== 'stack'));
+      console.error('💥 pin-probe failed:', error.message, JSON.stringify(details, null, 2));
+    } else {
+      console.error('💥 pin-probe failed:', String(error));
+    }
+    process.exit(1);
   }
-  process.exit(1);
-});
+})();

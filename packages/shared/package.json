@@ -18,9 +18,9 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
-    "@almadar-io/knowledge": "^2.18.0",
+    "@almadar-io/knowledge": "^2.19.0",
     "@almadar-io/migration": "^0.1.7",
-    "@almadar/core": "^10.80.0"
+    "@almadar/core": "^10.84.0"
   },
   "devDependencies": {
     "@typescript/native": "npm:typescript@^7.0.2",

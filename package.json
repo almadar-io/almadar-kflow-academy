@@ -30,9 +30,9 @@
     "firebase:use": "firebase use kflow-b3a39"
   },
   "dependencies": {
-    "@almadar-io/knowledge": "^2.18.0",
-    "@almadar/core": "^10.80.0",
-    "@almadar/ui": "^6.4.0",
+    "@almadar-io/knowledge": "^2.19.0",
+    "@almadar/core": "^10.84.0",
+    "@almadar/ui": "^6.7.0",
     "three": "^0.160.1"
   },
   "devDependencies": {
