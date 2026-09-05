@@ -31,8 +31,8 @@
   },
   "dependencies": {
     "@almadar-io/knowledge": "^2.19.0",
-    "@almadar/core": "^10.84.0",
-    "@almadar/ui": "^6.8.0",
+    "@almadar/core": "^10.85.0",
+    "@almadar/ui": "^6.9.0",
     "three": "^0.160.1"
   },
   "devDependencies": {
