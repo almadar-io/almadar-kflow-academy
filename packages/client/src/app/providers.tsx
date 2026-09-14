@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { Provider } from 'react-redux';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ApolloProvider } from '@apollo/client';
-import { I18nProvider, createTranslate, useEventListener, NotifyListener } from '@almadar/ui';
+import { I18nProvider, createTranslate, useEventListener } from '@almadar/ui';
 import type { I18nContextValue } from '@almadar/ui';
 import { EventBusProvider } from '@almadar/ui/providers';
 import { ThemeProvider } from '@almadar/ui/context';
@@ -109,7 +109,6 @@ function I18nController({ children }: ProvidersProps): React.JSX.Element {
 export const Providers: React.FC<ProvidersProps> = ({ children }) => {
   return (
     <EventBusProvider>
-      <NotifyListener />
       <Provider store={store}>
         <QueryClientProvider client={queryClient}>
           <ApolloProvider client={apolloClient}>
