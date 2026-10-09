@@ -8,9 +8,11 @@ Every open gap this repo owns lives here. This file is the source of truth; the 
 - **Close by deleting.** Remove the entry in the same commit as the fix. There is no "closed" section; git history is the record.
 - **Cross-repo gaps don't go here.** If fixing it needs another repo, describe it in your report or PR body; the monorepo coordinator files it.
 
-Next code: `G-KFLOW-001`
+Next code: `G-KFLOW-002`
 
 ## Open gaps
+
+- **G-KFLOW-001** — `GET /api/learning/goals` drops each goal's `keywords`: `goalService.fromNode` maps the LearningGoal node's name/target/description/… but never `properties.keywords` (the domain search terms backfilled by `scripts/backfillGoalKeywords.ts`), and the shared `LearningGoal` type has no `keywords` field. A client composing a learner's current topics (the `knowledge` integration, G-CROSS-047) therefore only gets the goal's `target` as a keyword. Fix: add `keywords?: string[]` to `LearningGoal` and map it in `fromNode`. [mechanical]
 
 ### Apps tier
 

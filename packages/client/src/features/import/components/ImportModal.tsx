@@ -33,6 +33,7 @@ function previewUnits(preview: ImportPreviewDTO): ImportPreviewUnit[] {
   return preview.units.map((unit) => ({
     ref: unit.ref,
     targetEntity: unit.targetEntity,
+    ...(unit.title !== null ? { title: unit.title } : {}),
     fields: unit.fields,
     ...(unit.parentRef !== null ? { parentRef: unit.parentRef } : {}),
   }));

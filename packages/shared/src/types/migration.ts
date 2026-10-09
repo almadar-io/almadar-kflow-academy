@@ -42,6 +42,7 @@ export interface MigrationPreviewRequest {
 export interface ImportPreviewUnitDTO {
   ref: string;
   targetEntity: string;
+  title: string | null;
   fields: Record<string, FieldValue>;
   parentRef: string | null;
   provenance: { source: string; span: string | null };
