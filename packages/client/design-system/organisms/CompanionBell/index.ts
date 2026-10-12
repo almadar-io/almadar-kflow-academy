@@ -1,1 +1,0 @@
-export { CompanionBell } from './CompanionBell';

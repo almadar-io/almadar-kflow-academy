@@ -2,7 +2,7 @@
   "hosting": [
     {
       "target": "prod",
-      "public": "site/build",
+      "public": "build",
       "ignore": [
         "firebase.json",
         "**/.*",
@@ -45,47 +45,8 @@
           ]
         }
       ]
-    },
-    {
-      "target": "dev",
-      "public": "packages/client/dist",
-      "ignore": [
-        "firebase.json",
-        "**/.*",
-        "**/node_modules/**"
-      ],
-      "rewrites": [
-        {
-          "source": "**",
-          "destination": "/index.html"
-        }
-      ]
     }
   ],
-  "apphosting": {
-    "backendId": "kflow-academy-server",
-    "rootDir": ".",
-    "ignore": [
-      "node_modules",
-      ".git",
-      "firebase-debug.log",
-      "firebase-debug.*.log",
-      "packages/client",
-      "**/dist",
-      "**/__tests__",
-      "**/*.test.ts",
-      "**/*.test.tsx",
-      "**/*.stories.ts",
-      "**/*.stories.tsx",
-      "docs",
-      "**/docs",
-      "**/*.md",
-      "*.log",
-      "*.tsbuildinfo",
-      ".env",
-      ".env.*"
-    ]
-  },
   "firestore": {
     "database": "kflow",
     "rules": "firestore.rules",

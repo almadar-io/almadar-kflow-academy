@@ -1,57 +1,19 @@
 {
-  "name": "kflow-academy",
+  "name": "@kflow-academy/site",
   "version": "1.0.0",
+  "description": "kflow.academy — built from the std-kflow-site .lolo organism",
   "private": true,
-  "packageManager": "pnpm@10.30.3",
+  "type": "module",
   "scripts": {
-    "start": "node packages/server/dist/server.js",
-    "dev:chroma": "docker ps --filter \"name=chroma-local\" --format '{{.Names}}' | grep -q chroma-local || docker run -d --rm -p 8000:8000 -v chroma-data:/chroma/chroma --name chroma-local chromadb/chroma",
-    "dev": "node scripts/kill-orphans.mjs 3001 && pnpm run dev:chroma && concurrently -k -n server,client -c blue,green \"pnpm run dev:server\" \"pnpm run dev:client\"",
-    "dev:server": "pnpm run dev:chroma && CHROMA_HOST=http://localhost:8000 pnpm --filter @kflow-academy/shared build && CHROMA_HOST=http://localhost:8000 pnpm --filter @kflow-academy/server dev",
-    "dev:client": "pnpm --filter @kflow-academy/client dev",
-    "generate:taxonomy": "node scripts/generate-taxonomy.mjs",
-    "backfill:chroma": "pnpm --filter @kflow-academy/server backfill:chroma",
-    "build": "pnpm run build:server",
-    "build:all": "pnpm -r --if-present build",
-    "build:shared": "pnpm --filter @kflow-academy/shared build",
-    "build:client": "pnpm run build:shared && pnpm --filter @kflow-academy/client build",
-    "build:server": "pnpm run build:shared && pnpm --filter @kflow-academy/server build",
-    "test": "pnpm -r --if-present test",
-    "test:e2e": "node e2e/flows.mjs",
-    "test:e2e:sdk-lesson": "node e2e/sdk-lesson.mjs",
-    "test:e2e:sdk-battery": "node e2e/sdk-battery.mjs",
-    "test:e2e:profiling": "node e2e/profiling.mjs",
-    "lint": "pnpm -r --if-present lint",
-    "clean": "pnpm -r --if-present clean && rm -rf node_modules",
-    "deploy:prod": "pnpm run build:client && firebase deploy --only hosting:prod",
-    "deploy:dev": "pnpm run build:client && firebase deploy --only hosting:dev",
-    "deploy:server": "pnpm run build:server && firebase deploy --only apphosting",
-    "deploy:all": "pnpm run deploy:prod && pnpm run deploy:server",
-    "firebase:use": "firebase use kflow-b3a39"
-  },
-  "dependencies": {
-    "@almadar-io/knowledge": "^2.24.0",
-    "@almadar/core": "^10.125.0",
-    "@almadar/ui": "^6.63.0",
-    "three": "^0.160.1"
+    "build": "node scripts/build-site.mjs --organism std-kflow-site --origin https://kflow.academy",
+    "test": "node --test scripts/*.test.mjs"
   },
   "devDependencies": {
-    "@types/node": "^22.10.1",
-    "@typescript/native": "npm:typescript@^7.0.2",
-    "concurrently": "^9.1.0",
-    "esbuild": "^0.27.2",
-    "playwright": "^1.61.0",
-    "prettier": "^3.4.2",
-    "turbo": "^2.8.17",
-    "typescript": "npm:@typescript/typescript6@^6.0.2",
-    "vite": "^6.0.5"
+    "@almadar-io/behaviors": "^0.16.200",
+    "@almadar/core": "^10.125.0",
+    "@almadar/orb": "^18.0.1",
+    "@almadar/orb-shell-typescript": "^18.0.0",
+    "@almadar/std": "^16.249.0"
   },
-  "pnpm": {
-    "overrides": {
-      "firebase-admin": "^14.2.0"
-    }
-  },
-  "engines": {
-    "node": "22"
-  }
+  "packageManager": "pnpm@10.30.3"
 }

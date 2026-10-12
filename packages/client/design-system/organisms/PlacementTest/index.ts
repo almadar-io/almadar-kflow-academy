@@ -1,1 +1,0 @@
-export { PlacementTest } from './PlacementTest';

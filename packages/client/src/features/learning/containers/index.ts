@@ -1,3 +1,0 @@
-/**
- * Learning Feature Containers
- */

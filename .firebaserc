@@ -7,9 +7,6 @@
       "hosting": {
         "prod": [
           "kflow-b3a39"
-        ],
-        "dev": [
-          "kflow-dev"
         ]
       }
     }
