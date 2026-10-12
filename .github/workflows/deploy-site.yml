@@ -1,0 +1,63 @@
+name: Deploy site (kflow.academy)
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'site/**'
+      - 'firebase.json'
+      - '.github/workflows/deploy-site.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    name: Build & Deploy
+    runs-on: ${{ vars.ALMADAR_RUNNER || 'ubuntu-latest' }}
+    defaults:
+      run:
+        working-directory: site
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.30.3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: pnpm
+          cache-dependency-path: site/pnpm-lock.yaml
+
+      - name: Install dependencies
+        run: pnpm install --ignore-workspace --frozen-lockfile
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GH_PACKAGES_TOKEN }}
+
+      - name: Test
+        run: pnpm test
+
+      - name: Build
+        run: pnpm build
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GH_PACKAGES_TOKEN }}
+          NODE_OPTIONS: --max-old-space-size=6144
+
+      - name: Authenticate to Firebase
+        run: |
+          echo '${{ secrets.FIREBASE_SERVICE_ACCOUNT }}' > /tmp/firebase-sa.json
+
+      - name: Deploy to Firebase Hosting
+        working-directory: .
+        run: npx firebase-tools deploy --only hosting:prod --project kflow-b3a39
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS: /tmp/firebase-sa.json
+
+      - name: Cleanup credentials
+        if: always()
+        run: rm -f /tmp/firebase-sa.json

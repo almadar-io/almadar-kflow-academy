@@ -1,0 +1,19 @@
+{
+  "name": "@kflow-academy/site",
+  "version": "1.0.0",
+  "description": "kflow.academy — built from the std-kflow-site .lolo organism",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node scripts/build-site.mjs --organism std-kflow-site --origin https://kflow.academy",
+    "test": "node --test scripts/*.test.mjs"
+  },
+  "devDependencies": {
+    "@almadar-io/behaviors": "^0.16.200",
+    "@almadar/core": "^10.125.0",
+    "@almadar/orb": "^18.0.1",
+    "@almadar/orb-shell-typescript": "^18.0.0",
+    "@almadar/std": "^16.249.0"
+  },
+  "packageManager": "pnpm@10.30.3"
+}

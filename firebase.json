@@ -2,12 +2,14 @@
   "hosting": [
     {
       "target": "prod",
-      "public": "packages/client/dist",
+      "public": "site/build",
       "ignore": [
         "firebase.json",
         "**/.*",
         "**/node_modules/**"
       ],
+      "cleanUrls": true,
+      "trailingSlash": false,
       "rewrites": [
         {
           "source": "**",
@@ -20,7 +22,25 @@
           "headers": [
             {
               "key": "Cache-Control",
-              "value": "public, max-age=31536000, immutable"
+              "value": "public, max-age=300, must-revalidate"
+            }
+          ]
+        },
+        {
+          "source": "**/*.@(png|jpg|jpeg|gif|svg|ico|webp)",
+          "headers": [
+            {
+              "key": "Cache-Control",
+              "value": "public, max-age=300, must-revalidate"
+            }
+          ]
+        },
+        {
+          "source": "**/*.html",
+          "headers": [
+            {
+              "key": "Cache-Control",
+              "value": "no-cache"
             }
           ]
         }

@@ -6,7 +6,8 @@
  * This component only renders and triggers callbacks.
  */
 
-import React, { useRef, useCallback, useEffect, useMemo } from 'react';
+import React, { useRef, useCallback, useEffect, useMemo, useState } from 'react';
+import { useEventBus, type CodeSimulationOutput } from '@almadar/ui';
 import { SelectionToolbar, SelectionInfo } from '../SelectionToolbar';
 import { SegmentRenderer, parseLessonSegments } from '../LessonSegments';
 import { normalizeLatexDelimiters } from '../../utils/normalizeLatexDelimiters';
@@ -78,6 +79,8 @@ export type { SelectionInfo } from '../SelectionToolbar';
 /**
  * AnnotatedLessonContent component - Dumb component that renders and triggers callbacks
  */
+const RUN_LESSON_CODE = 'RUN_LESSON_CODE';
+
 export const AnnotatedLessonContent: React.FC<AnnotatedLessonContentProps> = ({
   content,
   questions = [],
@@ -93,10 +96,20 @@ export const AnnotatedLessonContent: React.FC<AnnotatedLessonContentProps> = ({
   const { run: runCodeSimulation } = useRunCodeSimulation();
   const { generate: generateInteractiveOrbital, phase: interactiveOrbitalPhase } = useGenerateInteractiveOrbital();
 
-  const handleRunCodeSimulation = useCallback(
-    async (code: string, language: string) => runCodeSimulation(language, code),
-    [runCodeSimulation],
-  );
+  const eventBus = useEventBus();
+  const [codeOutputs, setCodeOutputs] = useState<Record<string, CodeSimulationOutput>>({});
+  const [runningCode, setRunningCode] = useState<string | undefined>(undefined);
+
+  useEffect(() => eventBus.on(`UI:${RUN_LESSON_CODE}`, (event) => {
+    const payload = event.payload;
+    const code = typeof payload?.code === 'string' ? payload.code : '';
+    const language = typeof payload?.language === 'string' ? payload.language : '';
+    const runId = typeof payload?.runId === 'string' ? payload.runId : '';
+    setRunningCode(runId);
+    void runCodeSimulation(language, code)
+      .then((output) => setCodeOutputs((current) => ({ ...current, [runId]: output })))
+      .finally(() => setRunningCode((current) => (current === runId ? undefined : current)));
+  }), [eventBus, runCodeSimulation]);
 
   const handleGenerateInteractiveOrbital = useCallback(
     async (request: GenerateInteractiveOrbitalRequest) => generateInteractiveOrbital(request),
@@ -223,7 +236,9 @@ export const AnnotatedLessonContent: React.FC<AnnotatedLessonContentProps> = ({
       >
         <SegmentRenderer
           segments={segments}
-          onRunCodeSimulation={handleRunCodeSimulation}
+          runCodeEvent={RUN_LESSON_CODE}
+          codeOutputs={codeOutputs}
+          runningCode={runningCode}
           onRenderVisualization={concept ? (type, description, index) => (
             <InteractiveOrbitalPanel
               key={`visualize-${index}`}

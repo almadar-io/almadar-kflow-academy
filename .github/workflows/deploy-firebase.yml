@@ -1,4 +1,4 @@
-name: Deploy Client to Firebase Hosting
+name: Deploy legacy client to Firebase Hosting (dev)
 
 on:
   push:
@@ -74,7 +74,7 @@ jobs:
           NODE_OPTIONS: '--dns-result-order=ipv4first'
         run: |
           for attempt in 1 2 3 4 5; do
-            if firebase deploy --only hosting:prod --project ${{ env.FIREBASE_PROJECT }} --non-interactive; then
+            if firebase deploy --only hosting:dev --project ${{ env.FIREBASE_PROJECT }} --non-interactive; then
               echo "Deploy succeeded on attempt $attempt"
               exit 0
             fi
