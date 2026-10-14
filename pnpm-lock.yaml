@@ -9,48 +9,45 @@ importers:
   .:
     devDependencies:
       '@almadar-io/behaviors':
-        specifier: ^0.16.200
-        version: 0.16.200(@almadar/std@16.249.0)
+        specifier: ^0.16.203
+        version: 0.16.203(@almadar/std@16.256.0)
       '@almadar/core':
-        specifier: ^10.125.0
-        version: 10.125.0
+        specifier: ^10.128.0
+        version: 10.128.0
       '@almadar/orb':
-        specifier: ^18.0.1
-        version: 18.0.1
+        specifier: ^18.0.5
+        version: 18.0.5
       '@almadar/orb-shell-typescript':
         specifier: ^18.0.0
         version: 18.0.0
       '@almadar/std':
-        specifier: ^16.249.0
-        version: 16.249.0
+        specifier: ^16.256.0
+        version: 16.256.0
 
 packages:
 
-  '@almadar-io/behaviors@0.16.200':
-    resolution: {integrity: sha512-aLoxjGbDuIQLxJRHasI+Sp9eHE3sJyxZ0qUmQyJoXM+m2SvLk9Psa269zOM491hxtrzwhoVrlCvtOFsmj9TsFQ==, tarball: https://npm.pkg.github.com/download/@almadar-io/behaviors/0.16.200/63c8fe2c267a4c16bbfdae9fafbd77fa8a1df0a3}
+  '@almadar-io/behaviors@0.16.203':
+    resolution: {integrity: sha512-92IWQfd8fdhUDgRP/agfBzYRyKbKOz8LrLOF54wXiDFCcs8uwTGEcnM7QaPr8F3AtSwZwK/uBQH/W8FdHcbTrQ==, tarball: https://npm.pkg.github.com/download/@almadar-io/behaviors/0.16.203/35f456d3746fa87aad43770bb93385dc73a6fe26}
+    engines: {node: '>=22'}
     peerDependencies:
-      '@almadar/std': ^16.249.0
+      '@almadar/std': ^16.253.0
 
-  '@almadar/core@10.125.0':
-    resolution: {integrity: sha512-i9H/7CIsrsNsrkJWeDxMEgO05BDDWZnzdrecan0FzMaoFQ6/+z3Dj4mnmwYYCjOx1cCHEtWpJh6rMMES6VQmkQ==}
+  '@almadar/core@10.128.0':
+    resolution: {integrity: sha512-H5gDoXFAcLfj6CrKonK+zvGPapm/uorR3gO9zE8IebQCYWotCZphyFnegNwJPZg0MNAL/sDX2+vGk7tlQGFOqw==}
+    engines: {node: '>=22'}
 
-  '@almadar/orb-darwin-arm64@18.0.1':
-    resolution: {integrity: sha512-TIwJRDPzyOAeatw3JK4zvTd/yYpIXp9mrPXgqRr9yiMCmkyHebJmjTHY3Gv4N8rNfJMts+sSUIVprxWUS790Vw==}
-    cpu: [arm64]
-    os: [darwin]
-
-  '@almadar/orb-darwin-x64@18.0.1':
-    resolution: {integrity: sha512-AB4Lz1wTTK12qpfI9loywBLf35C1dIW1Sjojb8utp3SkC6cqLh3v4kwphA/D0o9UB+OpH14PK2ezFvzp0WHwSg==}
+  '@almadar/orb-darwin-x64@18.0.5':
+    resolution: {integrity: sha512-O29otFjguovkuYq2WnYd1FadZjueM4N+2mbzWz4VB5LzzpTCvv0kOSo2stcFDE9m1+z0RWb2XVvbV+Lzom8kOA==}
     cpu: [x64]
     os: [darwin]
 
-  '@almadar/orb-linux-arm64@18.0.1':
-    resolution: {integrity: sha512-kzg4H800TUN/+lkxGhhwjqfSDDyCKVY3RdyDQYqMZfQSM4ilocE0M3vX/yq/lqDuHbkoQ2Q/xaL6vPd0yqkVMg==}
+  '@almadar/orb-linux-arm64@18.0.5':
+    resolution: {integrity: sha512-FXYAxnF5kNTSGJGJ/RIzEeatNhpzqTY8LYbXnittY1CYA2yQEk47WgwIHuGlBkaSpsQI0zEQTGnWVuzpSIWhOA==}
     cpu: [arm64]
     os: [linux]
 
-  '@almadar/orb-linux-x64@18.0.1':
-    resolution: {integrity: sha512-7BwCklC0pXX19ZeKmRdBn/P9RN1i4zVH22oSS0nb6XHLitfHtyujJfFuCCT5kLl/8AUu/W3Of6uSPHAukX/hlQ==}
+  '@almadar/orb-linux-x64@18.0.5':
+    resolution: {integrity: sha512-iQbA0i2kZ5z7h3bePUOrsSF7o9hBwlTHmiqrR8bWkyP6vzrS6k/6wbRQP21U2lLxsf/JJgN2k+JcDOM67THgdw==}
     cpu: [x64]
     os: [linux]
 
@@ -87,20 +84,21 @@ packages:
   '@almadar/orb-shell-typescript@18.0.0':
     resolution: {integrity: sha512-E+3Ca/9Jc2fdydIDxQXkMplWAIPnIcSa0W8DfGT44DeAJdKMIxi93AahPu846+YhTRpE4o0MAzjJ4oGDN1+W3w==}
 
-  '@almadar/orb-windows-x64@18.0.1':
-    resolution: {integrity: sha512-2l7PzsyjVAurNf9jjD3+dMK1dN58sW8H/+imzCPo3RkgIeYr6ld4iz+5PZbxCKH3O4GKxoqCCJ887dg25Xo+Xw==}
+  '@almadar/orb-windows-x64@18.0.5':
+    resolution: {integrity: sha512-ND9O/scJOI0dsfg28lwftsXeeRhlbE1XRU7HBrkAMcDfbE50FyvThDrwYwblGTLJbDjvPgIfOJNzTogLHh0l4w==}
     cpu: [x64]
     os: [win32]
 
-  '@almadar/orb@18.0.1':
-    resolution: {integrity: sha512-RpKnbEvSS74EevoIN/l7CIsgapYawEcYlkLhebec+TAurkdH68N1ZQMbXlWzCCbUOnj0nNV+Dx0cq18WVFZx4g==}
+  '@almadar/orb@18.0.5':
+    resolution: {integrity: sha512-PFZDmnneRyQDCPWd02KUIiD476hMqFErOR6ZECWBTJE//mCl1e8teRN2utm04C4QgllR1vMK5bOF4/BkLwuG7w==}
     engines: {node: '>=16.0.0'}
     cpu: [x64, arm64]
     os: [darwin, linux, win32]
     hasBin: true
 
-  '@almadar/std@16.249.0':
-    resolution: {integrity: sha512-l0OoKm0djSCOKS02w+Fc5JG+ACy8gqTHAZwmMU3ZXESHtJM+N/r5GH7q2wnl+QETTcR0Ol+1RYN+iYCOd9Gcyw==}
+  '@almadar/std@16.256.0':
+    resolution: {integrity: sha512-0tG4fjT0g6NMYmk8zsGg5u4V27TCVzHlrbSs7HdTCLZqaw3o1Bjqzljaq3BLMZhQB1K8V/jgQSsDUR0HbHdt6w==}
+    engines: {node: '>=22'}
 
   '@oven/bun-darwin-aarch64@1.2.15':
     resolution: {integrity: sha512-DE2iO1xF6dTKBqHbRD/g9FxzuhbtVHnbSMV6KvvikYBRvteNJqV7I/FzoDXgbR3rRne3DF+gnCQO8T17tIfErw==}
@@ -168,25 +166,22 @@ packages:
 
 snapshots:
 
-  '@almadar-io/behaviors@0.16.200(@almadar/std@16.249.0)':
+  '@almadar-io/behaviors@0.16.203(@almadar/std@16.256.0)':
     dependencies:
-      '@almadar/core': 10.125.0
-      '@almadar/std': 16.249.0
+      '@almadar/core': 10.128.0
+      '@almadar/std': 16.256.0
 
-  '@almadar/core@10.125.0':
+  '@almadar/core@10.128.0':
     dependencies:
       zod: 3.25.76
 
-  '@almadar/orb-darwin-arm64@18.0.1':
+  '@almadar/orb-darwin-x64@18.0.5':
     optional: true
 
-  '@almadar/orb-darwin-x64@18.0.1':
+  '@almadar/orb-linux-arm64@18.0.5':
     optional: true
 
-  '@almadar/orb-linux-arm64@18.0.1':
-    optional: true
-
-  '@almadar/orb-linux-x64@18.0.1':
+  '@almadar/orb-linux-x64@18.0.5':
     optional: true
 
   '@almadar/orb-shell-typescript-darwin-arm64@18.0.0':
@@ -212,22 +207,21 @@ snapshots:
       '@almadar/orb-shell-typescript-linux-x64': 18.0.0
       '@almadar/orb-shell-typescript-windows-x64': 18.0.0
 
-  '@almadar/orb-windows-x64@18.0.1':
+  '@almadar/orb-windows-x64@18.0.5':
     optional: true
 
-  '@almadar/orb@18.0.1':
+  '@almadar/orb@18.0.5':
     dependencies:
       bun: 1.2.15
     optionalDependencies:
-      '@almadar/orb-darwin-arm64': 18.0.1
-      '@almadar/orb-darwin-x64': 18.0.1
-      '@almadar/orb-linux-arm64': 18.0.1
-      '@almadar/orb-linux-x64': 18.0.1
-      '@almadar/orb-windows-x64': 18.0.1
+      '@almadar/orb-darwin-x64': 18.0.5
+      '@almadar/orb-linux-arm64': 18.0.5
+      '@almadar/orb-linux-x64': 18.0.5
+      '@almadar/orb-windows-x64': 18.0.5
 
-  '@almadar/std@16.249.0':
+  '@almadar/std@16.256.0':
     dependencies:
-      '@almadar/core': 10.125.0
+      '@almadar/core': 10.128.0
 
   '@oven/bun-darwin-aarch64@1.2.15':
     optional: true

@@ -9,11 +9,11 @@
     "test": "node --test scripts/*.test.mjs"
   },
   "devDependencies": {
-    "@almadar-io/behaviors": "^0.16.200",
-    "@almadar/core": "^10.125.0",
-    "@almadar/orb": "^18.0.1",
+    "@almadar-io/behaviors": "^0.16.203",
+    "@almadar/core": "^10.128.0",
+    "@almadar/orb": "^18.0.5",
     "@almadar/orb-shell-typescript": "^18.0.0",
-    "@almadar/std": "^16.249.0"
+    "@almadar/std": "^16.256.0"
   },
   "packageManager": "pnpm@10.30.3"
 }
