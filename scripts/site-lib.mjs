@@ -1,10 +1,10 @@
 /**
- * Pure helper for build-site.mjs: find the organism in the installed behavior registry.
- * A copy of almadar/orb/scripts/site-lib.mjs — keep the two in step.
+ * Pure helper for build-site.mjs: read the organism's source path from `orb behaviors which`.
  */
-import path from 'node:path';
 
-/** The registry-relative path of `<organism>.orb` under an `organisms/` folder, or undefined. */
-export function findOrganism(registryFiles, organism) {
-  return registryFiles.find((p) => path.basename(p) === `${organism}.orb` && p.split(/[\\/]/).includes('organisms'));
+/** The path `orb behaviors which` printed before its ` (@package@version)` suffix; throws on any other line. */
+export function locatedSource(line) {
+  const match = /^(.+) \(@[^)]+\)$/.exec(line.trim());
+  if (match === null) throw new Error(`not a located behavior: ${line.trim()}`);
+  return match[1];
 }

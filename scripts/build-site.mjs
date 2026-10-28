@@ -13,7 +13,7 @@ import { execFileSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
 import { parseArgs } from 'node:util';
-import { findOrganism } from './site-lib.mjs';
+import { locatedSource } from './site-lib.mjs';
 
 const { values } = parseArgs({
   options: {
@@ -36,17 +36,12 @@ const out = path.resolve(values.out);
 const orb = process.env.ORB_BIN ?? path.join(root, 'node_modules', '.bin', 'orb');
 const run = (cmd, args, cwd, env = process.env) => execFileSync(cmd, args, { cwd, env, stdio: 'inherit' });
 
-const registry = path.join(root, 'node_modules', '@almadar-io', 'behaviors', 'behaviors', 'registry');
-const source = findOrganism(fs.readdirSync(registry, { recursive: true }).map(String), values.organism);
-if (source === undefined) throw new Error(`${values.organism}.orb is not in the installed @almadar-io/behaviors registry`);
-const program = JSON.parse(fs.readFileSync(path.join(registry, source), 'utf8'));
+const source = locatedSource(execFileSync(orb, ['behaviors', 'which', `almadar-behaviors/${values.organism}`], { cwd: root, encoding: 'utf8' }));
 
 fs.rmSync(work, { recursive: true, force: true });
 fs.mkdirSync(work, { recursive: true });
-const programFile = path.join(work, `${values.organism}.orb`);
-fs.writeFileSync(programFile, JSON.stringify(program, null, 2));
 
-run(orb, ['compile', programFile, '--mode', 'client', '-o', app], root);
+run(orb, ['compile', source, '--mode', 'client', '-o', app], root);
 if (fs.existsSync(values.static)) fs.cpSync(values.static, path.join(client, 'public'), { recursive: true });
 run('pnpm', ['install', '--no-frozen-lockfile'], app);
 run('pnpm', ['exec', 'playwright', 'install', 'chromium'], client);

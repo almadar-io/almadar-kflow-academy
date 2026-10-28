@@ -6,6 +6,7 @@
   "type": "module",
   "scripts": {
     "build": "node scripts/build-site.mjs --organism std-kflow-site --origin https://kflow.academy",
+    "build:app": "node scripts/build-app.mjs --organism std-kflow --out dist/client",
     "test": "node --test scripts/*.test.mjs"
   },
   "devDependencies": {
