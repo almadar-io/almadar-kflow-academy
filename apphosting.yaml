@@ -1,0 +1,87 @@
+# Firebase App Hosting: KFlow at kflow.academy, the std-kflow .lolo organism serving its own pages, client and API.
+# The build resolves the organism to dist/app.orb and lays the web client in dist/client (pnpm build, scripts/build-app.mjs);
+# the run starts the native orb binary on that program (scripts/start-app.sh). Backend: kflow-academy-server.
+
+scripts:
+  buildCommand: pnpm install --frozen-lockfile && pnpm build
+  runCommand: sh scripts/start-app.sh
+
+runConfig:
+  minInstances: 1
+  maxInstances: 3
+  # One kernel lane answers about 20-25 requests a second (P-017 server profile).
+  concurrency: 80
+  cpu: 1
+  memoryMiB: 1024
+  # Live event streams stay open for the length of a session.
+  timeoutSeconds: 3600
+
+env:
+  # Private @almadar-io packages from GitHub Packages (.npmrc reads NODE_AUTH_TOKEN)
+  - variable: NODE_AUTH_TOKEN
+    secret: GH_PACKAGES_TOKEN
+    availability:
+      - BUILD
+
+  - variable: NODE_ENV
+    value: production
+    availability:
+      - RUNTIME
+  - variable: AUTH_PROVIDER
+    value: firebase
+    availability:
+      - RUNTIME
+  - variable: FIREBASE_PROJECT_ID
+    value: kflow-b3a39
+    availability:
+      - RUNTIME
+  - variable: CORS_ORIGIN
+    value: "https://kflow.academy"
+    availability:
+      - RUNTIME
+  # Declared by the program and unset in production (empty reads as unset); PORT is set by App Hosting itself.
+  - variable: VAPID_PUBLIC_KEY
+    value: ""
+    availability:
+      - RUNTIME
+  - variable: ORB_TICK_INVOKER
+    value: ""
+    availability:
+      - RUNTIME
+  - variable: OIDC_ISSUER_URL
+    value: ""
+    availability:
+      - RUNTIME
+  - variable: OIDC_AUDIENCE
+    value: ""
+    availability:
+      - RUNTIME
+  - variable: FIREBASE_SERVICE_ACCOUNT_PATH
+    value: ""
+    availability:
+      - RUNTIME
+  - variable: FIREBASE_AUTH_EMULATOR_HOST
+    value: ""
+    availability:
+      - RUNTIME
+  - variable: FIRESTORE_EMULATOR_HOST
+    value: ""
+    availability:
+      - RUNTIME
+  - variable: ALMADAR_INTEGRATIONS_MODE
+    value: ""
+    availability:
+      - RUNTIME
+
+  - variable: ALMADAR_API_KEY_SALT
+    secret: ALMADAR_API_KEY_SALT
+    availability:
+      - RUNTIME
+  - variable: DEEPSEEK_API_KEY
+    secret: DEEPSEEK_API_KEY
+    availability:
+      - RUNTIME
+  - variable: OPEN_ROUTER_API_KEY
+    secret: OPEN_ROUTER_API_KEY
+    availability:
+      - RUNTIME

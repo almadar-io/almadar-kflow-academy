@@ -1,12 +1,12 @@
 {
   "name": "@kflow-academy/site",
   "version": "1.0.0",
-  "description": "kflow.academy — built from the std-kflow-site .lolo organism",
+  "description": "kflow.academy \u2014 the KFlow app, served by the std-kflow .lolo organism",
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "node scripts/build-site.mjs --organism std-kflow-site --origin https://kflow.academy",
-    "build:app": "node scripts/build-app.mjs --organism std-kflow --out dist/client",
+    "build": "node scripts/build-app.mjs --organism std-kflow --out dist/client --program dist/app.orb",
+    "start": "sh scripts/start-app.sh",
     "test": "node --test scripts/*.test.mjs"
   },
   "devDependencies": {

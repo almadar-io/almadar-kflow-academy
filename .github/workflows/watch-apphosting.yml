@@ -1,0 +1,30 @@
+name: Watch App Hosting rollout
+
+# App Hosting builds and rolls out kflow-academy-server from main by itself, so
+# its failures never reach GitHub. This run goes red when that commit's build or
+# rollout fails, which is what emails the owner.
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  watch:
+    name: kflow-academy-server ships this commit
+    runs-on: ${{ vars.ALMADAR_RUNNER || 'ubuntu-latest' }}
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: scripts
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verdict tests
+        run: node --test scripts/watch-apphosting.test.mjs
+      - name: Wait for build + rollout
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          APPHOSTING_BACKEND: kflow-academy-server
+        run: node scripts/watch-apphosting.mjs

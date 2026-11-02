@@ -1,44 +1,44 @@
 # KFlow Academy — kflow.academy
 
-The kflow.academy site and the KFlow app, built from their `.lolo` organisms (`std-kflow-site` and `std-kflow` in `@almadar-io/behaviors`) by `orb`.
+The KFlow app, served by its `.lolo` organism `std-kflow` (in `@almadar-io/behaviors`) through `orb serve`:
+the landing page, the signed-in learning pages, the web client and the API all come from the one program.
 
 ## Layout
 
 ```
 package.json       # the toolchain: @almadar/orb, @almadar/core, @almadar/orb-shell-typescript, std, behaviors
-scripts/           # build-site.mjs (site: compile → vite build → route documents → prerender), build-app.mjs (app client: orb compile --web-client) + site-lib
-Dockerfile         # the std-kflow app: dist/client + `orb serve std-kflow.lolo --no-mock` (its own http server)
-static/            # files copied beside the build (favicon, images)
-firebase.json      # Hosting (target prod → build/) and the Firestore rules for the kflow-b3a39 project
+apphosting.yaml    # Firebase App Hosting backend kflow-academy-server: build, run, instance size, env and secrets
+scripts/           # build-app.mjs (client + resolved program), start-app.sh + orb-binary.mjs (run the native orb),
+                   # watch-apphosting.mjs (CI verdict on a rollout), site-lib (pure helpers, tested)
+static/            # files copied beside the client (favicon, images)
+firebase.json      # the Firestore rules and indexes for the kflow-b3a39 project (database `kflow`)
 firestore.rules    # Firestore security rules (+ firestore.indexes.json)
-.github/workflows/deploy-site.yml   # build and deploy on push to main
-.github/workflows/deploy-app.yml    # build the app image and deploy it to Cloud Run (manual)
+.github/workflows/watch-apphosting.yml   # goes red when App Hosting fails to build or roll out a main commit
 ```
 
-## Build
+## Build and run
 
 ```bash
-pnpm install --ignore-workspace
+pnpm install --frozen-lockfile
 pnpm test
-pnpm build          # → build/       (the public site)
-pnpm build:app      # → dist/client  (the app's client; the app's server serves it)
+pnpm build          # → dist/client (the web client) + dist/app.orb (the resolved program)
+pnpm start          # the native orb binary serves dist/app.orb (needs the env apphosting.yaml declares)
 ```
 
-`pnpm build:app` runs `orb compile <std-kflow> --mode client --web-client`, which lays out the TypeScript
-shell's prebuilt web client with the app's runtime files over it (what `orb serve` prepares for apps without
-their own server). It needs no vite build.
+`pnpm build` runs `orb compile <std-kflow> --mode client --web-client`, which lays out the TypeScript shell's
+prebuilt web client with the app's runtime files over it, then `orb resolve <std-kflow> -o dist/app.orb`, so the
+server boots the resolved program without resolving it at start. Inside the monorepo, set `ORB_BIN` to use a
+local `orb`.
 
-`pnpm build` compiles the organism with the installed `orb` through the installed TypeScript shell. Inside the
-monorepo, set `ORB_BIN` to use a local `orb`.
+Local runs use `std-kflow-dev` instead (every std-kflow orbital, its rows in the Firestore emulator on
+127.0.0.1:8080, mock data seeded on start); std-kflow itself writes to production Firestore.
 
 ## Deploy
 
-Pushing to `main` runs `deploy-site.yml`: install, test, build, then `firebase deploy --only hosting:prod`.
+App Hosting builds and rolls out `main` itself (backend `kflow-academy-server`, us-central1, project
+`kflow-b3a39`); `watch-apphosting.yml` reports that rollout back to GitHub. The secrets `apphosting.yaml` names
+live in the project's Secret Manager.
 
-The app runs on Cloud Run as service `kflow-app` (europe-west4, project `kflow-b3a39`), deployed by running
-`deploy-app.yml` by hand. It needs, once: an Artifact Registry repository `kflow`, and the Secret Manager secrets
-the workflow names (Firebase service account, OpenRouter, OpenAI, DeepSeek and embedding keys, API key salt).
-Hosting sends the app's routes to the service with a `run` rewrite to `kflow-app`.
-
-The previous application (the Vite + React client, the Express server and its App Hosting backend
-`kflow-academy-server`) was removed on 2026-10-12; it remains in this repo's git history.
+Earlier deploy paths (the static std-kflow-site build on Hosting, and a hand-run Cloud Run container) are in
+the monorepo's `archive/apps/kflow/`; the Vite + React client and Express server removed on 2026-10-12 remain
+in this repo's git history.

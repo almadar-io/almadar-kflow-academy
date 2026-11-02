@@ -1,7 +1,0 @@
-node_modules
-.site
-build
-.firebase
-.env
-.env.*
-.git

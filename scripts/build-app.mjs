@@ -5,7 +5,9 @@
  * client with the app's runtime files over it (what `orb serve` prepares for other apps), then the
  * static files are copied beside it. No vite build.
  *
- * Usage: node scripts/build-app.mjs --organism <name> [--static static] [--out dist/client]
+ * Then the organism is resolved to one program file (--program) the server boots as-is, with no resolve at start.
+ *
+ * Usage: node scripts/build-app.mjs --organism <name> [--static static] [--out dist/client] [--program dist/app.orb]
  * The compiler is the installed @almadar/orb (node_modules/.bin/orb), or ORB_BIN.
  */
 import { execFileSync } from 'node:child_process';
@@ -19,6 +21,7 @@ const { values } = parseArgs({
     organism: { type: 'string' },
     static: { type: 'string', default: 'static' },
     out: { type: 'string', default: 'dist/client' },
+    program: { type: 'string', default: 'dist/app.orb' },
   },
 });
 if (!values.organism) {
@@ -38,4 +41,6 @@ execFileSync(orb, ['compile', source, '--mode', 'client', '--web-client', '-o', 
 fs.rmSync(out, { recursive: true, force: true });
 fs.cpSync(path.join(work, 'web-client'), out, { recursive: true });
 if (fs.existsSync(values.static)) fs.cpSync(values.static, out, { recursive: true });
-console.log(`[build-app] ${values.organism} → ${path.relative(root, out)}`);
+const program = path.resolve(values.program);
+execFileSync(orb, ['resolve', source, '-o', program], { cwd: root, stdio: 'inherit' });
+console.log(`[build-app] ${values.organism} → ${path.relative(root, out)} + ${path.relative(root, program)}`);
