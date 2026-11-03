@@ -8,7 +8,7 @@
 
 </div>
 
-<p align="center"><sub>Part of <a href="https://github.com/almadar-io/orb"><b>Orb</b></a>: the language where the rule is the program. <a href="https://orb.almadar.io">orb.almadar.io</a></sub></p>
+<p align="center"><sub>Part of <a href="https://github.com/almadar-io/orb"><b>Orb</b></a>: a programming language of composable state machines. <a href="https://orb.almadar.io">orb.almadar.io</a></sub></p>
 
 KFlow Academy is the signed-in learning product plus its landing page, web client and API. All of it comes from the `std-kflow` organism in `@almadar-io/behaviors`, served by `orb serve`. This repo is the thin assembler: toolchain pins, the build script, the App Hosting config and the Firestore rules.
 
