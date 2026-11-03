@@ -134,9 +134,8 @@ pnpm exec eslint --no-warn-ignored --max-warnings 0 <files you touched>
 The app has no logic of its own: change the organism in [behaviors](https://github.com/almadar-io/behaviors) (or the atoms in [almadar-std](https://github.com/almadar-io/almadar-std)) and validate it with `orb validate`. Open gaps for this repo are in `Almadar_Gaps.md`. Work on `main` only; never branch, never publish from here (releases go through CI).
 
 ## Docs
-- [Almadar summary](https://github.com/itechdom/kflow.ai/blob/main/docs/Almadar_Summary.md)
-- [Execution semantics](https://github.com/itechdom/kflow.ai/blob/main/docs/Almadar_Execution_Semantics.md)
-- [Gaps](https://github.com/itechdom/kflow.ai/blob/main/docs/Almadar_Gaps.md)
+
+- [Orb documentation](https://orb.almadar.io/docs): the language, the `orb` CLI and how the pieces fit
 
 ## License
 No license file and no `license` field in `package.json`; the package is `private: true`.
