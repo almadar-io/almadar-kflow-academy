@@ -2,8 +2,8 @@
 /**
  * Fails CI when Firebase App Hosting does not ship a pushed commit.
  *
- * App Hosting builds `main` on its own (rollout policy), outside GitHub, so a
- * failed build never shows up anywhere we look: from 2026-09-23 every server
+ * App Hosting builds a tagged commit outside GitHub (the workflow asks for the
+ * rollout), so a failed build never shows up anywhere we look: from 2026-09-23 every server
  * build 401'd on an expired GH_PACKAGES_TOKEN secret and production silently
  * stayed on the 09-19 build. This waits for the build of GITHUB_SHA, then for
  * the rollout that puts it on 100% of traffic, and exits non-zero otherwise.

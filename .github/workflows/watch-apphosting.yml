@@ -1,17 +1,17 @@
-name: Watch App Hosting rollout
+name: Roll out and watch App Hosting
 
-# App Hosting builds and rolls out kflow-academy-server from main by itself, so
-# its failures never reach GitHub. This run goes red when that commit's build or
-# rollout fails, which is what emails the owner.
+# A v* tag ships kflow-academy-server: this run rolls out the tagged commit through App Hosting
+# (automatic rollouts from main are off) and goes red when its build or rollout
+# fails, which is what emails the owner. A push to main publishes nothing.
 on:
   push:
-    branches:
-      - main
+    tags:
+      - 'v*'
   workflow_dispatch:
 
 jobs:
   watch:
-    name: kflow-academy-server ships this commit
+    name: kflow-academy-server ships this tag
     runs-on: ${{ vars.ALMADAR_RUNNER || 'ubuntu-latest' }}
     timeout-minutes: 120
     steps:
@@ -23,6 +23,14 @@ jobs:
           node-version: '22'
       - name: Verdict tests
         run: node --test scripts/watch-apphosting.test.mjs
+      - name: Roll out the tagged commit
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+        run: |
+          sa="$RUNNER_TEMP/firebase-sa.json"
+          trap 'rm -f "$sa"' EXIT
+          printf '%s' "$FIREBASE_SERVICE_ACCOUNT" > "$sa"
+          GOOGLE_APPLICATION_CREDENTIALS="$sa" npx -y firebase-tools@15.30.1 apphosting:rollouts:create kflow-academy-server --git-commit "$GITHUB_SHA" --force --project kflow-b3a39
       - name: Wait for build + rollout
         env:
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
