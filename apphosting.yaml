@@ -7,7 +7,7 @@ scripts:
   runCommand: sh scripts/start-app.sh
 
 runConfig:
-  minInstances: 1
+  minInstances: 0
   maxInstances: 3
   # One kernel lane answers about 20-25 requests a second (P-017 server profile).
   concurrency: 80
