@@ -1,7 +1,7 @@
 {
   "name": "@kflow-academy/site",
   "version": "1.0.0",
-  "description": "kflow.academy \u2014 the KFlow app, served by the std-kflow .lolo organism",
+  "description": "kflow.almadar.io \u2014 the KFlow app, served by the std-kflow .lolo organism",
   "private": true,
   "type": "module",
   "scripts": {

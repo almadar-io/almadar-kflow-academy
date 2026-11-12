@@ -1,4 +1,4 @@
-# Firebase App Hosting: KFlow at kflow.academy, the std-kflow .lolo organism serving its own pages, client and API.
+# Firebase App Hosting: KFlow at kflow.almadar.io, the std-kflow .lolo organism serving its own pages, client and API.
 # The build resolves the organism to dist/app.orb and lays the web client in dist/client (pnpm build, scripts/build-app.mjs);
 # the run starts the native orb binary on that program (scripts/start-app.sh). Backend: kflow-academy-server.
 
@@ -36,7 +36,7 @@ env:
     availability:
       - RUNTIME
   - variable: CORS_ORIGIN
-    value: "https://kflow.academy"
+    value: "https://kflow.almadar.io,https://kflow.academy"
     availability:
       - RUNTIME
   # Declared by the program and unset in production (empty reads as unset); PORT is set by App Hosting itself.

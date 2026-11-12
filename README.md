@@ -2,7 +2,7 @@
 
 # KFlow Academy
 
-**The KFlow learning app at kflow.academy, served by one `.lolo` program.**
+**The KFlow learning app at kflow.almadar.io, served by one `.lolo` program.**
 
 [![Watch App Hosting rollout](https://github.com/almadar-io/almadar-kflow-academy/actions/workflows/watch-apphosting.yml/badge.svg)](https://github.com/almadar-io/almadar-kflow-academy/actions/workflows/watch-apphosting.yml)
 
