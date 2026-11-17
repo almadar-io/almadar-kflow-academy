@@ -4,8 +4,6 @@
 
 **The KFlow learning app at kflow.almadar.io, served by one `.lolo` program.**
 
-[![Watch App Hosting rollout](https://github.com/almadar-io/almadar-kflow-academy/actions/workflows/watch-apphosting.yml/badge.svg)](https://github.com/almadar-io/almadar-kflow-academy/actions/workflows/watch-apphosting.yml)
-
 </div>
 
 <p align="center"><sub>Part of <a href="https://github.com/almadar-io/orb"><b>Orb</b></a>: a programming language of composable state machines. <a href="https://orb.almadar.io">orb.almadar.io</a></sub></p>
@@ -32,7 +30,7 @@ KFlow Academy is the signed-in learning product plus its landing page, web clien
 pnpm install --frozen-lockfile
 pnpm test
 pnpm build          # -> dist/client (the web client) + dist/app.orb (the resolved program)
-pnpm start          # the native orb binary serves dist/app.orb (needs the env apphosting.yaml declares)
+pnpm start          # the native orb binary serves dist/app.orb (needs the env the program declares: AUTH_PROVIDER, FIREBASE_PROJECT_ID, CORS_ORIGIN and the API key secrets)
 ```
 
 `pnpm build` runs `orb compile <std-kflow> --mode client --web-client`, which lays the TypeScript shell's prebuilt web client out with the app's runtime files over it, then `orb resolve <std-kflow> -o dist/app.orb`, so the server boots the resolved program without resolving it at start. Inside the monorepo, set `ORB_BIN` to use a local `orb`.
@@ -43,18 +41,16 @@ Local runs use `std-kflow-dev` instead: every std-kflow orbital, its rows in the
 
 ```
 package.json       # the toolchain: @almadar/orb, @almadar/core, @almadar/orb-shell-typescript, std, behaviors
-apphosting.yaml    # Firebase App Hosting backend kflow-academy-server: build, run, instance size, env and secrets
 scripts/           # build-app.mjs (client + resolved program), start-app.sh + orb-binary.mjs (run the native orb),
-                   # watch-apphosting.mjs (CI verdict on a rollout), site-lib (pure helpers, tested)
+                   # site-lib (pure helpers, tested)
 static/            # files copied beside the client (favicon, images)
 firebase.json      # the Firestore rules and indexes for the kflow-b3a39 project (database `kflow`)
 firestore.rules    # Firestore security rules (+ firestore.indexes.json)
-.github/workflows/watch-apphosting.yml   # goes red when App Hosting fails to build or roll out a main commit
 ```
 
 ## Deploy
 
-App Hosting builds and rolls out `main` itself (backend `kflow-academy-server`, us-central1, project `kflow-b3a39`); `watch-apphosting.yml` reports that rollout back to GitHub. The secrets `apphosting.yaml` names live in the project's Secret Manager. The earlier deploy paths (the static std-kflow-site build on Hosting, a hand-run Cloud Run container) are in the monorepo's `archive/apps/kflow/`; the Vite + React client and Express server removed on 2026-10-12 remain in this repo's git history.
+kflow.almadar.io is the Cloud Run service `kflow-orb` (europe-west4, project `kflow-b3a39`) through a Cloud Run domain mapping, running an image built with the dev `orb`, minimum 0 instances. Its secrets live in the project's Secret Manager. The earlier deploy paths (the static std-kflow-site build on Hosting, a hand-run Cloud Run container, and the App Hosting backend `kflow-academy-server`, retired 2026-11-17, in `apphosting/`) are in the monorepo's `archive/apps/kflow/`; the Vite + React client and Express server removed on 2026-10-12 remain in this repo's git history.
 
 ## Development
 ```bash
